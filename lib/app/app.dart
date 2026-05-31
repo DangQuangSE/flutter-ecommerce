@@ -9,6 +9,7 @@ import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.da
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -25,6 +26,9 @@ class App extends StatelessWidget {
         ),
         BlocProvider<ChatCubit>(
           create: (_) => sl<ChatCubit>()..loadChats(),
+        ),
+        BlocProvider<CustomizerCubit>(
+          create: (_) => sl<CustomizerCubit>(),
         ),
       ],
       child: MaterialApp.router(

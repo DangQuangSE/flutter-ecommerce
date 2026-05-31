@@ -25,6 +25,7 @@ import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profi
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
+import 'package:flutter_ecommerce/features/product/presentation/pages/product_customizer_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -173,6 +174,14 @@ class AppRouter {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/customizer/:productId',
+        name: AppRoutes.productCustomizer,
+        builder: (context, state) => ProductCustomizerPage(
+          productId: state.pathParameters['productId'] ?? '',
+          productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
+        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

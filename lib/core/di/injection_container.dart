@@ -19,6 +19,7 @@ import 'package:flutter_ecommerce/features/product/data/repositories/product_rep
 import 'package:flutter_ecommerce/features/product/domain/repositories/product_repository.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 
 // Cart
 import 'package:flutter_ecommerce/features/cart/data/repositories/cart_repository_impl.dart';
@@ -90,6 +91,7 @@ Future<void> configureDependencies() async {
       productRepository: sl<ProductRepository>(),
     ),
   );
+  sl.registerLazySingleton<CustomizerCubit>(() => CustomizerCubit());
 
   // ── Cart ────────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<CartRepository>(() => CartRepositoryImpl());

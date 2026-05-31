@@ -8,6 +8,9 @@ import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/payment_qr_card.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_state.dart';
+import 'package:flutter_ecommerce/features/product/domain/entities/customization_entity.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -347,6 +350,47 @@ class _CartPageState extends State<CartPage> {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                if (category == 'APPAREL') ...[
+                  Builder(
+                    builder: (context) {
+                      final customization = context.select((CustomizerCubit c) => c.getCustomizationOrDefault(item.productId));
+                      final bool isCustomized = context.select((CustomizerCubit c) {
+                        final state = c.state;
+                        if (state is CustomizerActive) {
+                          return state.customizations.containsKey(item.productId);
+                        }
+                        return false;
+                      });
+
+                      if (!isCustomized) return const SizedBox.shrink();
+
+                      return Container(
+                        margin: const EdgeInsets.only(top: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F5E9),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: const Color(0xFF2ECC71).withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.check_circle_rounded, color: Color(0xFF2ECC71), size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              "Đã thiết kế: '${customization.customText}' - ${customization.textColor}",
+                              style: GoogleFonts.inter(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF27AE60),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -360,65 +404,101 @@ class _CartPageState extends State<CartPage> {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-
-                    // Counter Controls
-                    Container(
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: const Color(0xFFC1C6D7),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              if (item.quantity > 1) {
-                                context.read<CartCubit>().addItem(
-                                      CartItemEntity(
-                                        productId: item.productId,
-                                        productName: item.productName,
-                                        price: item.price,
-                                        quantity: -1,
-                                        imageUrl: item.imageUrl,
-                                      ),
-                                    );
-                              } else {
-                                _showRemoveConfirmation(context, item);
-                              }
+                    Row(
+                      children: [
+                        if (category == 'APPAREL') ...[
+                          GestureDetector(
+                            onTap: () {
+                              context.goNamed(
+                                AppRoutes.productCustomizer,
+                                pathParameters: {'productId': item.productId},
+                                queryParameters: {'name': item.productName},
+                              );
                             },
-                            icon: const Icon(Icons.remove, size: 12),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                          ),
-                          Text(
-                            '${item.quantity}',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.primary, width: 1.2),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.brush_rounded, size: 12, color: AppColors.primary),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'CUSTOM',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              context.read<CartCubit>().addItem(
-                                    CartItemEntity(
-                                      productId: item.productId,
-                                      productName: item.productName,
-                                      price: item.price,
-                                      quantity: 1,
-                                      imageUrl: item.imageUrl,
-                                    ),
-                                  );
-                            },
-                            icon: const Icon(Icons.add, size: 12),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                          ),
                         ],
-                      ),
+                        Container(
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFFC1C6D7),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  if (item.quantity > 1) {
+                                    context.read<CartCubit>().addItem(
+                                          CartItemEntity(
+                                            productId: item.productId,
+                                            productName: item.productName,
+                                            price: item.price,
+                                            quantity: -1,
+                                            imageUrl: item.imageUrl,
+                                          ),
+                                        );
+                                  } else {
+                                    _showRemoveConfirmation(context, item);
+                                  }
+                                },
+                                icon: const Icon(Icons.remove, size: 12),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                              ),
+                              Text(
+                                '${item.quantity}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  context.read<CartCubit>().addItem(
+                                        CartItemEntity(
+                                          productId: item.productId,
+                                          productName: item.productName,
+                                          price: item.price,
+                                          quantity: 1,
+                                          imageUrl: item.imageUrl,
+                                        ),
+                                      );
+                                },
+                                icon: const Icon(Icons.add, size: 12),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

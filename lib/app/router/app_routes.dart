@@ -23,4 +23,6 @@ abstract final class AppRoutes {
 
   static const String chatList = 'chat-list';
   static const String chatDetail = 'chat-detail';
+
+  static const String productCustomizer = 'product-customizer';
 }
