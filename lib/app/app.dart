@@ -7,6 +7,8 @@ import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -15,10 +17,15 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        // Singleton BLoCs — provided at root so all routes can read them
         BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
         BlocProvider<CartCubit>(create: (_) => sl<CartCubit>()),
         BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>()),
+        BlocProvider<NotificationCubit>(
+          create: (_) => sl<NotificationCubit>()..loadNotifications(),
+        ),
+        BlocProvider<ChatCubit>(
+          create: (_) => sl<ChatCubit>()..loadChats(),
+        ),
       ],
       child: MaterialApp.router(
         title: AppConstants.appName,

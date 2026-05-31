@@ -10,6 +10,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/pages/login_page.da
 import 'package:flutter_ecommerce/features/auth/presentation/pages/register_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/splash_page.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/pages/cart_page.dart';
+import 'package:flutter_ecommerce/features/notification/presentation/pages/notification_page.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/pages/checkout_success_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_detail_page.dart';
@@ -19,8 +20,11 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dar
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_list_page.dart';
+import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -72,13 +76,13 @@ class AppRouter {
         builder: (context, state) => const RegisterPage(),
       ),
 
-      // Home shell (main screen after login)
+      // Home route (main screen after login)
       GoRoute(
         path: '/home',
         name: AppRoutes.home,
         builder: (context, state) => BlocProvider(
           create: (_) => sl<ProductBloc>(),
-          child: const ProductListPage(),
+          child: const HomePage(),
         ),
       ),
 
@@ -108,6 +112,12 @@ class AppRouter {
         path: '/cart',
         name: AppRoutes.cart,
         builder: (context, state) => const CartPage(),
+      ),
+
+      GoRoute(
+        path: '/notifications',
+        name: AppRoutes.notificationList,
+        builder: (context, state) => const NotificationPage(),
       ),
 
       GoRoute(
@@ -147,6 +157,20 @@ class AppRouter {
             path: 'edit',
             name: AppRoutes.editProfile,
             builder: (context, state) => const EditProfilePage(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/chats',
+        name: AppRoutes.chatList,
+        builder: (context, state) => const ChatListPage(),
+        routes: [
+          GoRoute(
+            path: ':chatId',
+            name: AppRoutes.chatDetail,
+            builder: (context, state) => ChatDetailPage(
+              chatId: state.pathParameters['chatId'] ?? '',
+            ),
           ),
         ],
       ),

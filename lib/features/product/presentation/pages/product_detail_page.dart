@@ -1,14 +1,671 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
+import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
+import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 
-class ProductDetailPage extends StatelessWidget {
+import 'package:flutter_ecommerce/features/product/presentation/widgets/product_carousel.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/color_selector.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/size_selector.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/delivery_banner.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/collapsible_panel.dart';
+import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
+
+class ProductDetailPage extends StatefulWidget {
   final String productId;
   const ProductDetailPage({super.key, required this.productId});
 
   @override
+  State<ProductDetailPage> createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends State<ProductDetailPage> {
+  int _selectedColorIndex = 0;
+  String _selectedSize = '42';
+  bool _isFavorited = false;
+
+  final List<Map<String, String>> _colors = [
+    {'name': 'Xanh Điện / Cam', 'hex': '#0058bc'},
+    {'name': 'Đen Bóng Đêm', 'hex': '#1a1c1f'},
+    {'name': 'Xám Cổ Điển', 'hex': '#717786'},
+  ];
+
+  final List<String> _sizes = ['40', '41', '42', '43', '44', '45'];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<ProductBloc>().add(ProductDetailRequested(widget.productId));
+      context.read<CartCubit>().loadCart();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Product Detail')),
-      body: Center(child: Text('Product $productId — stub')),
+      backgroundColor: AppColors.background,
+      body: BlocBuilder<ProductBloc, ProductState>(
+        builder: (context, state) {
+          if (state is ProductLoading) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                ),
+              ),
+            );
+          } else if (state is ProductDetailLoaded) {
+            return _buildContent(context, state.product);
+          } else if (state is ProductError) {
+            return _buildErrorState(context, state.message);
+          }
+          return const SizedBox.shrink();
+        },
+      ),
     );
+  }
+
+  Widget _buildContent(BuildContext context, ProductEntity product) {
+    final String categoryLabel = product.categoryId == 'cat-training'
+        ? "MEN'S ELITE TRAINING"
+        : "MEN'S ELITE RUNNING";
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: _buildAppBar(context),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ProductCarousel(imageUrl: product.imageUrl),
+                  _buildProductInfo(product, categoryLabel),
+                  _buildDivider(),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: ColorSelector(
+                      selectedColorIndex: _selectedColorIndex,
+                      colors: _colors,
+                      onColorSelected: (index) {
+                        setState(() {
+                          _selectedColorIndex = index;
+                        });
+                      },
+                    ),
+                  ),
+                  _buildDivider(),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SizeSelector(
+                      selectedSize: _selectedSize,
+                      sizes: _sizes,
+                      onSizeSelected: (size) {
+                        setState(() {
+                          _selectedSize = size;
+                        });
+                      },
+                    ),
+                  ),
+                  _buildDivider(),
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: DeliveryBanner(),
+                  ),
+                  _buildDivider(),
+                  _buildCollapsiblePanels(),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+          _buildBottomActionBar(context, product),
+        ],
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(
+          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          height: 1,
+        ),
+      ),
+      leading: IconButton(
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoutes.productList);
+          }
+        },
+        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary, size: 24),
+      ),
+      title: Align(
+        alignment: Alignment.centerLeft,
+        child: Transform(
+          transform: Matrix4.skewX(-0.15),
+          child: Text(
+            'Sport Pro',
+            style: GoogleFonts.lexend(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              fontStyle: FontStyle.italic,
+              color: AppColors.primary,
+              letterSpacing: -1.2,
+            ),
+          ),
+        ),
+      ),
+      centerTitle: false,
+      actions: [
+        const NotificationBellIcon(),
+        BlocBuilder<CartCubit, CartState>(
+          builder: (context, cartState) {
+            int cartCount = 0;
+            if (cartState is CartLoaded) {
+              cartCount = cartState.totalItems;
+            }
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  onPressed: () => context.goNamed(AppRoutes.cart),
+                  icon: const Icon(Icons.shopping_cart_outlined, color: AppColors.primary, size: 24),
+                ),
+                if (cartCount > 0)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.accent,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '$cartCount',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+        BlocBuilder<ChatCubit, ChatState>(
+          builder: (context, chatState) {
+            final unreadCount = context.read<ChatCubit>().totalUnreadMessages;
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  onPressed: () => context.goNamed(AppRoutes.chatList),
+                  icon: const Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                ),
+                if (unreadCount > 0)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.accent, // Safety Orange
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '$unreadCount',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(width: 12),
+      ],
+    );
+  }
+
+  Widget _buildProductInfo(ProductEntity product, String categoryLabel) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            categoryLabel,
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            product.name,
+            style: GoogleFonts.lexend(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+              height: 1.25,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Transform(
+                transform: Matrix4.skewX(-0.12),
+                child: Text(
+                  _formatPrice(product.price),
+                  style: GoogleFonts.lexend(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
+                    fontStyle: FontStyle.italic,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index < 4 ? Icons.star_rounded : Icons.star_half_rounded,
+                        color: AppColors.accent,
+                        size: 18,
+                      );
+                    }),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '(128)',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCollapsiblePanels() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Column(
+        children: [
+          CollapsiblePanel(
+            title: 'THÔNG SỐ KỸ THUẬT',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildSpecRow('Trọng lượng', '245g (Size 42)'),
+                _buildSpecRow('Độ dốc gót-mũi (Drop)', '8 mm'),
+                _buildSpecRow('Đệm đế', 'Bọt AeroPulse siêu nhẹ'),
+                _buildSpecRow('Mặt giày (Upper)', 'Vải mesh thoáng khí cao cấp'),
+                _buildSpecRow('Công dụng', 'Chạy bộ hàng ngày, thi đấu cự ly ngắn & vừa'),
+              ],
+            ),
+          ),
+          CollapsiblePanel(
+            title: 'ĐÁNH GIÁ KHÁCH HÀNG (128)',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildReviewRow(
+                  'Nguyễn Minh T.',
+                  5,
+                  'Giày cực kỳ êm và bám đường tốt. Trọng lượng nhẹ giúp nâng cao tốc độ chạy rõ rệt. Rất đáng tiền!',
+                ),
+                const Divider(height: 16, color: Color(0xFFE8E8ED)),
+                _buildReviewRow(
+                  'Hoàng Anh D.',
+                  4,
+                  'Giao hàng nhanh hỏa tốc đúng trong ngày. Thiết kế cam xanh nổi bật. Ôm chân vừa vặn.',
+                ),
+              ],
+            ),
+          ),
+          CollapsiblePanel(
+            title: 'CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH',
+            child: Text(
+              'Miễn phí đổi size trong vòng 7 ngày kể từ khi nhận hàng. Bảo hành chính hãng keo chỉ 3 tháng đối với các lỗi sản xuất. Dịch vụ chăm sóc vận động viên tận tình.',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpecRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewRow(String reviewer, int rating, String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              reviewer,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Row(
+              children: List.generate(5, (index) => Icon(
+                Icons.star_rounded,
+                color: index < rating ? AppColors.accent : const Color(0xFFC1C6D7),
+                size: 14,
+              )),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          content,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textSecondary,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomActionBar(BuildContext context, ProductEntity product) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isFavorited = !_isFavorited;
+                });
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      _isFavorited
+                          ? 'Đã thêm vào danh sách yêu thích!'
+                          : 'Đã xóa khỏi danh sách yêu thích.',
+                    ),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _isFavorited ? Colors.red : const Color(0xFFC1C6D7),
+                    width: 1.5,
+                  ),
+                ),
+                child: Icon(
+                  _isFavorited ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  color: _isFavorited ? Colors.red : AppColors.textSecondary,
+                  size: 24,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  context.read<CartCubit>().addItem(
+                        CartItemEntity(
+                          productId: product.id,
+                          productName: product.name,
+                          price: product.price,
+                          quantity: 1,
+                          imageUrl: product.imageUrl,
+                        ),
+                      );
+
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: AppColors.accent,
+                      behavior: SnackBarBehavior.floating,
+                      content: Row(
+                        children: [
+                          const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Đã thêm ${product.name} (Size $_selectedSize) vào giỏ hàng!',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      action: SnackBarAction(
+                        label: 'XEM GIỎ',
+                        textColor: Colors.white,
+                        onPressed: () => context.goNamed(AppRoutes.cart),
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.accent,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.shopping_bag_outlined, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      'ADD TO CART',
+                      style: GoogleFonts.lexend(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Container(
+      height: 1,
+      color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(
+                'Đã xảy ra lỗi khi tải chi tiết sản phẩm.',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<ProductBloc>().add(ProductDetailRequested(widget.productId));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('Thử lại'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatPrice(double price) {
+    final formatStr = price.toInt().toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < formatStr.length; i++) {
+      buffer.write(formatStr[i]);
+      if ((formatStr.length - 1 - i) % 3 == 0 && i != formatStr.length - 1) {
+        buffer.write('.');
+      }
+    }
+    return '${buffer.toString()}đ';
   }
 }

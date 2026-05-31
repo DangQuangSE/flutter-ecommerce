@@ -13,9 +13,14 @@ abstract final class AppRoutes {
   static const String checkout = 'checkout';
   static const String checkoutSuccess = 'checkout-success';
 
+  static const String notificationList = 'notification-list';
+
   static const String orderList = 'order-list';
   static const String orderDetail = 'order-detail';
 
   static const String profile = 'profile';
   static const String editProfile = 'edit-profile';
+
+  static const String chatList = 'chat-list';
+  static const String chatDetail = 'chat-detail';
 }
