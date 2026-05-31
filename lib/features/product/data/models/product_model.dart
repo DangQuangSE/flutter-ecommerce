@@ -60,5 +60,14 @@ class ProductModel extends ProductEntity {
           categoryId: 'cat-training',
           stockQuantity: 95,
         ),
+        const ProductModel(
+          id: 'cat-training-tee',
+          name: 'AeroTech Tee',
+          description: 'Áo thun thể thao chuyên dụng AeroTech siêu nhẹ, hỗ trợ tùy chỉnh thiết kế riêng biệt.',
+          price: 450000.0,
+          imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAg16llodl6Hl8MPqH6DvSysphHsH9azINDafCIQFp9rqCHyIEj5IyNuBfAVIK7-s1m70zLJYYuRDn7ps4e9BkxeY1wfIJ58BidKV1GgULrOntZ7svsuNpwj8nvPhazvHISS-5OqI81qGvWmbwLlQlDr7PaeNVO1DpmYgljTca2s33rrrPqLBq7MLlaEkQdj7fqz_fN5K-XrOluv8Ux-V0w9V8-aE1C5t5BlJtTl7b0-7Tot4btl19oWsO5WWVz6wdqu1TcpvcIJ6k',
+          categoryId: 'cat-training',
+          stockQuantity: 150,
+        ),
       ];
 }
