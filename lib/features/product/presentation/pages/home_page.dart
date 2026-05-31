@@ -9,6 +9,8 @@ import 'package:flutter_ecommerce/features/product/presentation/bloc/product_blo
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -149,13 +151,49 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-        IconButton(
-          onPressed: () => context.goNamed(AppRoutes.profile),
-          icon: const Icon(
-            Icons.account_circle_outlined,
-            color: AppColors.primary,
-            size: 24,
-          ),
+        BlocBuilder<ChatCubit, ChatState>(
+          builder: (context, chatState) {
+            final unreadCount = context.read<ChatCubit>().totalUnreadMessages;
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  onPressed: () => context.goNamed(AppRoutes.chatList),
+                  icon: const Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                ),
+                if (unreadCount > 0)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.accent, // Safety Orange
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '$unreadCount',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
         const SizedBox(width: 12),
       ],

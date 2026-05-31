@@ -34,6 +34,14 @@ import 'package:flutter_ecommerce/features/notification/domain/repositories/noti
 import 'package:flutter_ecommerce/features/notification/domain/usecases/get_notifications_usecase.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
 
+// Chat
+import 'package:flutter_ecommerce/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:flutter_ecommerce/features/chat/domain/repositories/chat_repository.dart';
+import 'package:flutter_ecommerce/features/chat/domain/usecases/get_chats_usecase.dart';
+import 'package:flutter_ecommerce/features/chat/domain/usecases/get_messages_usecase.dart';
+import 'package:flutter_ecommerce/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
+
 final GetIt sl = GetIt.instance;
 
 Future<void> configureDependencies() async {
@@ -99,6 +107,20 @@ Future<void> configureDependencies() async {
     () => NotificationCubit(
       getNotificationsUseCase: sl<GetNotificationsUseCase>(),
       repository: sl<NotificationRepository>(),
+    ),
+  );
+
+  // ── Chat ────────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
+  sl.registerLazySingleton<GetChatsUseCase>(() => GetChatsUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton<GetMessagesUseCase>(() => GetMessagesUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton<SendMessageUseCase>(() => SendMessageUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton<ChatCubit>(
+    () => ChatCubit(
+      getChatsUseCase: sl<GetChatsUseCase>(),
+      getMessagesUseCase: sl<GetMessagesUseCase>(),
+      sendMessageUseCase: sl<SendMessageUseCase>(),
+      repository: sl<ChatRepository>(),
     ),
   );
 

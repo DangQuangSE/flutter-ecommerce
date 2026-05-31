@@ -20,4 +20,7 @@ abstract final class AppRoutes {
 
   static const String profile = 'profile';
   static const String editProfile = 'edit-profile';
+
+  static const String chatList = 'chat-list';
+  static const String chatDetail = 'chat-detail';
 }

@@ -23,6 +23,8 @@ import 'package:flutter_ecommerce/features/product/presentation/pages/product_li
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -155,6 +157,20 @@ class AppRouter {
             path: 'edit',
             name: AppRoutes.editProfile,
             builder: (context, state) => const EditProfilePage(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/chats',
+        name: AppRoutes.chatList,
+        builder: (context, state) => const ChatListPage(),
+        routes: [
+          GoRoute(
+            path: ':chatId',
+            name: AppRoutes.chatDetail,
+            builder: (context, state) => ChatDetailPage(
+              chatId: state.pathParameters['chatId'] ?? '',
+            ),
           ),
         ],
       ),
