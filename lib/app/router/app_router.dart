@@ -20,6 +20,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dar
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_list_page.dart';
+import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 
@@ -73,13 +74,13 @@ class AppRouter {
         builder: (context, state) => const RegisterPage(),
       ),
 
-      // Home shell (main screen after login)
+      // Home route (main screen after login)
       GoRoute(
         path: '/home',
         name: AppRoutes.home,
         builder: (context, state) => BlocProvider(
           create: (_) => sl<ProductBloc>(),
-          child: const ProductListPage(),
+          child: const HomePage(),
         ),
       ),
 
