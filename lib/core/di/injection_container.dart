@@ -28,6 +28,12 @@ import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.da
 // Profile
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 
+// Notification
+import 'package:flutter_ecommerce/features/notification/data/repositories/notification_repository_impl.dart';
+import 'package:flutter_ecommerce/features/notification/domain/repositories/notification_repository.dart';
+import 'package:flutter_ecommerce/features/notification/domain/usecases/get_notifications_usecase.dart';
+import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
+
 final GetIt sl = GetIt.instance;
 
 Future<void> configureDependencies() async {
@@ -83,6 +89,18 @@ Future<void> configureDependencies() async {
 
   // ── Profile ─────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<ProfileCubit>(() => ProfileCubit());
+
+  // ── Notification ────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl());
+  sl.registerLazySingleton<GetNotificationsUseCase>(
+    () => GetNotificationsUseCase(sl<NotificationRepository>()),
+  );
+  sl.registerLazySingleton<NotificationCubit>(
+    () => NotificationCubit(
+      getNotificationsUseCase: sl<GetNotificationsUseCase>(),
+      repository: sl<NotificationRepository>(),
+    ),
+  );
 
   // Checkout / Order — register when implementations are added
 }

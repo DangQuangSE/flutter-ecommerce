@@ -15,6 +15,7 @@ import 'package:flutter_ecommerce/features/product/presentation/widgets/color_se
 import 'package:flutter_ecommerce/features/product/presentation/widgets/size_selector.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/delivery_banner.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/collapsible_panel.dart';
+import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String productId;
@@ -174,6 +175,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
       centerTitle: false,
       actions: [
+        const NotificationBellIcon(),
         BlocBuilder<CartCubit, CartState>(
           builder: (context, cartState) {
             int cartCount = 0;

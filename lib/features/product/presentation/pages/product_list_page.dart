@@ -6,6 +6,7 @@ import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
+import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 
 class ProductListPage extends StatefulWidget {
   const ProductListPage({super.key});
@@ -71,6 +72,7 @@ class _ProductListPageState extends State<ProductListPage> {
         ),
         centerTitle: false,
         actions: [
+          const NotificationBellIcon(),
           IconButton(
             onPressed: () => context.goNamed(AppRoutes.cart),
             icon: const Icon(

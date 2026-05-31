@@ -10,6 +10,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/pages/login_page.da
 import 'package:flutter_ecommerce/features/auth/presentation/pages/register_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/splash_page.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/pages/cart_page.dart';
+import 'package:flutter_ecommerce/features/notification/presentation/pages/notification_page.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/pages/checkout_success_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_detail_page.dart';
@@ -108,6 +109,12 @@ class AppRouter {
         path: '/cart',
         name: AppRoutes.cart,
         builder: (context, state) => const CartPage(),
+      ),
+
+      GoRoute(
+        path: '/notifications',
+        name: AppRoutes.notificationList,
+        builder: (context, state) => const NotificationPage(),
       ),
 
       GoRoute(
