@@ -60,7 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
               height: size.width * 0.8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -72,7 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
               height: size.width * 0.9,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.accent.withOpacity(0.05),
+                color: AppColors.accent.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -121,11 +121,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     // Main Container Card
                     Card(
                       elevation: 4,
-                      shadowColor: Colors.black.withOpacity(0.05),
+                      shadowColor: Colors.black.withValues(alpha: 0.05),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                         side: BorderSide(
-                          color: const Color(0xFFC1C6D7).withOpacity(0.3),
+                          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
