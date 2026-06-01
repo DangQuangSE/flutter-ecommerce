@@ -36,6 +36,7 @@ class _CartPageState extends State<CartPage> {
 
     Future.microtask(() {
       if (!mounted) return;
+      ScaffoldMessenger.of(context).clearSnackBars();
       context.read<CartCubit>().loadCart();
     });
   }

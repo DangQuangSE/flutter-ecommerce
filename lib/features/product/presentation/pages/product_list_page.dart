@@ -302,7 +302,7 @@ class _ProductListPageState extends State<ProductListPage> {
                       crossAxisCount: 2,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 12,
-                      childAspectRatio: 0.62,
+                      childAspectRatio: 0.54,
                     ),
                     itemCount: filteredProducts.length,
                     itemBuilder: (context, index) {
@@ -358,7 +358,7 @@ class _ProductListPageState extends State<ProductListPage> {
         ),
         child: SafeArea(
           child: SizedBox(
-            height: 64,
+            height: 75,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
