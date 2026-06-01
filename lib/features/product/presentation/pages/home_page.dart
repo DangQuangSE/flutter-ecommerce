@@ -461,7 +461,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisCount: 2,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
-              childAspectRatio: 0.65, // perfect aspect ratio for athletic cards
+              childAspectRatio: 0.51,
             ),
             itemCount: featuredList.length,
             itemBuilder: (context, index) {
@@ -599,7 +599,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBottomNavBar(BuildContext context) {
     return Container(
-      height: 60,
+      height: 75,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
