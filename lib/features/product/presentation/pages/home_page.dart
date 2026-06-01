@@ -11,6 +11,11 @@ import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.da
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
+import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/product_tactile_card.dart';
+
+import 'package:flutter_ecommerce/app/router/navigation_history.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -50,274 +55,243 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    NavigationHistory.pushTab(AppRoutes.home, replace: true);
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: _buildAppBar(context),
-      body: BlocBuilder<ProductBloc, ProductState>(
-        builder: (context, state) {
-          if (state is ProductLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            );
-          } else if (state is ProductLoaded) {
-            return _buildContent(context, state.products);
-          } else if (state is ProductError) {
-            return _buildErrorState(state.message);
+      extendBody: true,
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) {
+          if (didPop) return;
+          final prevTab = NavigationHistory.popTab();
+          if (prevTab != null) {
+            context.goNamed(prevTab);
           }
-          return const SizedBox.shrink();
         },
-      ),
-      bottomNavigationBar: _buildBottomNavBar(context),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      scrolledUnderElevation: 1,
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-          height: 1,
-        ),
-      ),
-      title: Align(
-        alignment: Alignment.centerLeft,
-        child: Transform(
-          transform: Matrix4.skewX(-0.15),
-          child: Text(
-            'Sport Pro',
-            style: GoogleFonts.lexend(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              fontStyle: FontStyle.italic,
-              color: AppColors.primary,
-              letterSpacing: -1.2,
+        child: Stack(
+          children: [
+            // 1. Core scrollable contents
+            BlocBuilder<ProductBloc, ProductState>(
+              builder: (context, state) {
+                if (state is ProductLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
+                  );
+                } else if (state is ProductLoaded) {
+                  return _buildContent(context, state.products, statusBarHeight);
+                } else if (state is ProductError) {
+                  return _buildErrorState(state.message);
+                }
+                return const SizedBox.shrink();
+              },
             ),
-          ),
+
+            // 2. Reusable Glassmorphic Top App Bar
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: const GlassAppBar(
+                showBackButton: false,
+                customTitle: 'Sport Pro',
+              ),
+            ),
+          ],
         ),
       ),
-      centerTitle: false,
-      actions: [
-        const NotificationBellIcon(),
-        BlocBuilder<CartCubit, CartState>(
-          builder: (context, cartState) {
-            int cartCount = 0;
-            if (cartState is CartLoaded) {
-              cartCount = cartState.totalItems;
-            }
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                IconButton(
-                  onPressed: () => context.goNamed(AppRoutes.cart),
-                  icon: const Icon(
-                    Icons.shopping_cart_outlined,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
-                ),
-                if (cartCount > 0)
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.accent,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Text(
-                        '$cartCount',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-        BlocBuilder<ChatCubit, ChatState>(
-          builder: (context, chatState) {
-            final unreadCount = context.read<ChatCubit>().totalUnreadMessages;
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                IconButton(
-                  onPressed: () => context.goNamed(AppRoutes.chatList),
-                  icon: const Icon(
-                    Icons.chat_bubble_outline_rounded,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
-                ),
-                if (unreadCount > 0)
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.accent, // Safety Orange
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Text(
-                        '$unreadCount',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-        const SizedBox(width: 12),
-      ],
+      bottomNavigationBar: const GlassBottomBar(currentTab: 'home'),
     );
   }
 
-  Widget _buildContent(BuildContext context, List<ProductEntity> products) {
-    return SingleChildScrollView(
+  Widget _buildContent(BuildContext context, List<ProductEntity> products, double statusBarHeight) {
+    return ListView(
       physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // 1. Hero Section
-          _buildHeroSection(context),
+      padding: EdgeInsets.fromLTRB(0, statusBarHeight + 92, 0, 120),
+      children: [
+        // 1. Hero Section (Nested Double-Bezel & Button-in-Button CTA)
+        _buildHeroSection(context),
 
-          // 2. Categories Snap Horizontal Scroll Section
-          _buildCategoriesSection(context),
+        // 2. Categories Snap Horizontal Scroll Section (Glassmorphic)
+        _buildCategoriesSection(context),
 
-          // 3. Featured Products Grid Section
-          _buildFeaturedProducts(context, products),
-
-          const SizedBox(height: 32),
-        ],
-      ),
+        // 3. Featured Products Grid Section (Asymmetric Bento)
+        _buildFeaturedProducts(context, products),
+      ],
     );
   }
 
   Widget _buildHeroSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+      // Outer Bezel Shell (Concentric outer frame)
       child: Container(
-        height: 360,
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Dark Background Image
-            Image.network(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c',
-              fit: BoxFit.cover,
-            ),
-            // Black gradient overlay for readability
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Colors.black87,
-                    Colors.black38,
-                    Colors.transparent,
+        // Inner Core Card
+        child: Container(
+          height: 380,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Background Image
+              Image.network(
+                'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c',
+                fit: BoxFit.cover,
+              ),
+              // Linear ambient darkening overlay
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black87,
+                      Colors.black26,
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+
+              // Content panel
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Eyebrow label
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white.withOpacity(0.15)),
+                      ),
+                      child: Text(
+                        'DÒNG SẢN PHẨM MỚI NHẤT',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Transform(
+                      transform: Matrix4.skewX(-0.12),
+                      child: Text(
+                        'BỨT PHÁ GIỚI HẠN',
+                        style: GoogleFonts.lexend(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                          letterSpacing: -0.6,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Trang bị đỉnh cao cho những vận động viên không ngừng vươn lên và chinh phục đỉnh cao mới.',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.75),
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Button-in-Button primary CTA
+                    _buildTactileCTA(
+                      context,
+                      label: 'MUA SẮM NGAY',
+                      onPressed: () => context.goNamed(AppRoutes.productList),
+                    ),
                   ],
                 ),
               ),
-            ),
-
-            // Content Overlay
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Transform(
-                    transform: Matrix4.skewX(-0.15),
-                    child: Text(
-                      'BỨT PHÁ GIỚI HẠN',
-                      style: GoogleFonts.lexend(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Trang bị tối tân cho những vận động viên không ngừng vươn lên.',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white.withValues(alpha: 0.85),
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => context.goNamed(AppRoutes.productList),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accent, // Safety Orange
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'MUA SẮM NGAY',
-                      style: GoogleFonts.lexend(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTactileCTA(BuildContext context, {required String label, required VoidCallback onPressed}) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 1.0, end: 1.0),
+      duration: const Duration(milliseconds: 150),
+      builder: (context, scale, child) {
+        return Transform.scale(
+          scale: scale,
+          child: ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accent,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.fromLTRB(20, 6, 6, 6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              minimumSize: const Size(0, 0),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.lexend(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // "Button-in-Button" circular trailing badge
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 16,
+                      color: AppColors.accent,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -328,7 +302,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -339,16 +313,16 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
-                    letterSpacing: -0.5,
+                    letterSpacing: -0.4,
                   ),
                 ),
                 GestureDetector(
                   onTap: () => context.goNamed(AppRoutes.productList),
                   child: Text(
                     'XEM TẤT CẢ',
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
+                    style: GoogleFonts.lexend(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
                       color: AppColors.primary,
                       letterSpacing: 0.5,
                     ),
@@ -357,69 +331,62 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+          
+          // Category horizontal gallery
           SizedBox(
-            height: 160,
+            height: 120,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: _categories.length,
               separatorBuilder: (context, index) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final cat = _categories[index];
                 return GestureDetector(
-                  onTap: () {
-                    // Navigate to product list prefiltering by category name
-                    context.goNamed(AppRoutes.productList);
-                  },
+                  onTap: () => context.goNamed(AppRoutes.productList),
                   child: Container(
-                    width: 120,
+                    width: 140,
                     decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        // Category Cover Image
+                        // Image
                         Image.network(
                           cat['image']!,
                           fit: BoxFit.cover,
                         ),
-                        // Dark Overlay
+                        // Soft overlay
                         Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
                               colors: [
-                                Colors.black87,
+                                Colors.black.withOpacity(0.7),
                                 Colors.black12,
                               ],
                             ),
                           ),
                         ),
-                        // Label text
+                        // Title text
                         Positioned(
                           bottom: 12,
                           left: 12,
                           right: 12,
                           child: Text(
                             cat['title']!,
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
                               color: Colors.white,
-                              letterSpacing: 0.5,
+                              letterSpacing: 0.2,
                             ),
                           ),
                         ),
@@ -436,11 +403,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildFeaturedProducts(BuildContext context, List<ProductEntity> products) {
-    // Limit to first 4 products for featured listing
     final featuredList = products.take(4).toList();
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -450,245 +416,53 @@ class _HomePageState extends State<HomePage> {
               fontSize: 18,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
-              letterSpacing: -0.5,
+              letterSpacing: -0.4,
             ),
+          ),
+          const SizedBox(height: 18),
+          
+          // Fully symmetrical featured products grid using unified ProductTactileCard
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ProductTactileCard(
+                  product: featuredList[0],
+                  badge: 'NEW',
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ProductTactileCard(
+                  product: featuredList[1],
+                  badge: '-15%',
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.51,
-            ),
-            itemCount: featuredList.length,
-            itemBuilder: (context, index) {
-              final product = featuredList[index];
-              return _buildProductCard(context, product, index);
-            },
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ProductTactileCard(
+                  product: featuredList[2],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ProductTactileCard(
+                  product: featuredList[3],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProductCard(BuildContext context, ProductEntity product, int index) {
-    // Alternate badges mockups to perfectly mirror Stitch mockup V2
-    String? badgeLabel;
-    if (index == 0) badgeLabel = 'NEW';
-    if (index == 1) badgeLabel = '-15%';
-
-    final categoryLabel = product.categoryId == 'cat-training'
-        ? 'TRANG PHỤC'
-        : 'GIÀY CHẠY BỘ';
-
-    return GestureDetector(
-      onTap: () {
-        context.goNamed(
-          AppRoutes.productDetail,
-          pathParameters: {'productId': product.id},
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Product Hero Image area (4:5 Ratio)
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    color: const Color(0xFFF3F3F8),
-                    child: Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                  // Optional Promo/New overlay Badge
-                  if (badgeLabel != null)
-                    Positioned(
-                      top: 10,
-                      left: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.accent, // Safety Orange
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          badgeLabel,
-                          style: GoogleFonts.inter(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            // Content Area
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    categoryLabel,
-                    style: GoogleFonts.inter(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textSecondary,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    product.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.lexend(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        _formatPrice(product.price),
-                        style: GoogleFonts.lexend(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.primary,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar(BuildContext context) {
-    return Container(
-      height: 75,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavTab(
-              context: context,
-              icon: Icons.home_rounded,
-              label: 'Home',
-              isActive: true,
-              onTap: () {},
-            ),
-            _buildNavTab(
-              context: context,
-              icon: Icons.directions_run_rounded,
-              label: 'Shop',
-              isActive: false,
-              onTap: () => context.goNamed(AppRoutes.productList),
-            ),
-            _buildNavTab(
-              context: context,
-              icon: Icons.receipt_long_rounded,
-              label: 'Orders',
-              isActive: false,
-              onTap: () => context.goNamed(AppRoutes.orderList),
-            ),
-            _buildNavTab(
-              context: context,
-              icon: Icons.person_rounded,
-              label: 'Profile',
-              isActive: false,
-              onTap: () => context.goNamed(AppRoutes.profile),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavTab({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 70,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? AppColors.accent : AppColors.textSecondary,
-              size: 22,
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w800 : FontWeight.w500,
-                color: isActive ? AppColors.accent : AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Shared Navigation component hooks are utilized dynamically
 
   Widget _buildErrorState(String message) {
     return Center(
@@ -697,13 +471,13 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded, size: 44, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Đã xảy ra lỗi khi tải trang chủ.',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.lexend(
                 fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -711,7 +485,7 @@ class _HomePageState extends State<HomePage> {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -735,16 +509,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  String _formatPrice(double price) {
-    final formatStr = price.toInt().toString();
-    final buffer = StringBuffer();
-    for (int i = 0; i < formatStr.length; i++) {
-      buffer.write(formatStr[i]);
-      if ((formatStr.length - 1 - i) % 3 == 0 && i != formatStr.length - 1) {
-        buffer.write('.');
-      }
-    }
-    return '${buffer.toString()}đ';
-  }
 }
+
+// Shared ProductTactileCard handles individual card details and tap physics dynamically

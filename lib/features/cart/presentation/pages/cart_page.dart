@@ -20,33 +20,14 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
-  late TextEditingController _phoneController;
-  late TextEditingController _addressController;
-
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'Alex Mercer');
-    _phoneController = TextEditingController(text: '+84 987 654 321');
-    _addressController = TextEditingController(
-      text: '123 Lê Lợi, Quận 1, TP. Hồ Chí Minh, Việt Nam',
-    );
-
     Future.microtask(() {
       if (!mounted) return;
       ScaffoldMessenger.of(context).clearSnackBars();
       context.read<CartCubit>().loadCart();
     });
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
-    super.dispose();
   }
 
   @override
@@ -79,7 +60,7 @@ class _CartPageState extends State<CartPage> {
           ),
         ),
         title: Text(
-          'CHECKOUT',
+          'GIỎ HÀNG',
           style: GoogleFonts.lexend(
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -101,7 +82,7 @@ class _CartPageState extends State<CartPage> {
             if (state.items.isEmpty) {
               return _buildEmptyState();
             }
-            return _buildCheckoutContent(context, state);
+            return _buildCartContent(context, state);
           } else if (state is CartError) {
             return _buildErrorState(state.message);
           }
@@ -187,55 +168,40 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget _buildCheckoutContent(BuildContext context, CartLoaded state) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Order Items Section
-                  _buildSectionHeader('SẢN PHẨM ĐƠN HÀNG', Icons.shopping_bag_outlined),
-                  const SizedBox(height: 12),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: state.items.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final item = state.items[index];
-                      return _buildCartItemCard(context, item);
-                    },
-                  ),
-                  const SizedBox(height: 28),
+  Widget _buildCartContent(BuildContext context, CartLoaded state) {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Cart Items Section
+                _buildSectionHeader('DANH SÁCH GIỎ HÀNG', Icons.shopping_bag_outlined),
+                const SizedBox(height: 12),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: state.items.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final item = state.items[index];
+                    return _buildCartItemCard(context, item);
+                  },
+                ),
+                const SizedBox(height: 28),
 
-                  // Shipping Section
-                  _buildSectionHeader('THÔNG TIN GIAO HÀNG', Icons.local_shipping_outlined),
-                  const SizedBox(height: 12),
-                  _buildShippingForm(),
-                  const SizedBox(height: 28),
-
-                  // Payment Section
-                  _buildSectionHeader('PHƯƠNG THỨC THANH TOÁN', Icons.qr_code_scanner_rounded),
-                  const SizedBox(height: 12),
-                  PaymentQrCard(formattedTotal: _formatPrice(state.totalPrice)),
-                  const SizedBox(height: 28),
-
-                  // Summary Section
-                  _buildOrderSummary(state),
-                  const SizedBox(height: 32),
-                ],
-              ),
+                // Summary Section
+                _buildOrderSummary(state),
+                const SizedBox(height: 32),
+              ],
             ),
           ),
-          _buildStickyFooter(context, state),
-        ],
-      ),
+        ),
+        _buildStickyFooter(context, state),
+      ],
     );
   }
 
@@ -410,7 +376,7 @@ class _CartPageState extends State<CartPage> {
                         if (category == 'APPAREL') ...[
                           GestureDetector(
                             onTap: () {
-                              context.goNamed(
+                              context.pushNamed(
                                 AppRoutes.productCustomizer,
                                 pathParameters: {'productId': item.productId},
                                 queryParameters: {'name': item.productName},
@@ -552,102 +518,7 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget _buildShippingForm() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTextField(
-            label: 'HỌ VÀ TÊN',
-            controller: _nameController,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập họ và tên' : null,
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            label: 'SỐ ĐIỆN THOẠI',
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập số điện thoại' : null,
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            label: 'ĐỊA CHỈ GIAO HÀNG',
-            controller: _addressController,
-            maxLines: 2,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập địa chỉ giao hàng' : null,
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    int maxLines = 1,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.5,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          maxLines: maxLines,
-          keyboardType: keyboardType,
-          validator: validator,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: const Color(0xFFF3F3F8),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-            ),
-            errorStyle: GoogleFonts.inter(fontSize: 11, color: AppColors.error),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildOrderSummary(CartLoaded state) {
     return Container(
@@ -775,23 +646,7 @@ class _CartPageState extends State<CartPage> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Clear the cart on successful order confirmation
-                context.read<CartCubit>().clearCart();
-                // Route to CheckoutSuccessPage
-                context.goNamed(AppRoutes.checkoutSuccess);
-              } else {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: AppColors.error,
-                    content: Text(
-                      'Vui lòng điền đầy đủ thông tin giao hàng!',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                );
-              }
+              context.pushNamed(AppRoutes.checkout);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accent, // Safety Orange
@@ -806,7 +661,7 @@ class _CartPageState extends State<CartPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'CONFIRM ORDER',
+                  'TIẾN HÀNH THANH TOÁN',
                   style: GoogleFonts.lexend(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -814,7 +669,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.bolt_rounded, size: 20),
+                const Icon(Icons.arrow_forward_rounded, size: 20),
               ],
             ),
           ),

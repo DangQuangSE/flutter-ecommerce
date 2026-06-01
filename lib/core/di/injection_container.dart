@@ -18,6 +18,17 @@ import 'package:flutter_ecommerce/features/product/data/datasources/product_remo
 import 'package:flutter_ecommerce/features/product/data/repositories/product_repository_impl.dart';
 import 'package:flutter_ecommerce/features/product/domain/repositories/product_repository.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_usecase.dart';
+import 'package:flutter_ecommerce/features/product/domain/usecases/add_product_usecase.dart';
+import 'package:flutter_ecommerce/features/product/domain/usecases/update_product_usecase.dart';
+import 'package:flutter_ecommerce/features/product/domain/usecases/delete_product_usecase.dart';
+
+// Admin
+import 'package:flutter_ecommerce/features/admin/data/datasources/admin_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/admin/data/datasources/admin_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/admin/data/repositories/admin_repository_impl.dart';
+import 'package:flutter_ecommerce/features/admin/domain/repositories/admin_repository.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_stats_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 
@@ -84,6 +95,15 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<GetProductsUseCase>(
     () => GetProductsUseCase(sl<ProductRepository>()),
   );
+  sl.registerLazySingleton<AddProductUseCase>(
+    () => AddProductUseCase(sl<ProductRepository>()),
+  );
+  sl.registerLazySingleton<UpdateProductUseCase>(
+    () => UpdateProductUseCase(sl<ProductRepository>()),
+  );
+  sl.registerLazySingleton<DeleteProductUseCase>(
+    () => DeleteProductUseCase(sl<ProductRepository>()),
+  );
   // Factory — each product route gets its own BLoC instance
   sl.registerFactory<ProductBloc>(
     () => ProductBloc(
@@ -92,6 +112,26 @@ Future<void> configureDependencies() async {
     ),
   );
   sl.registerLazySingleton<CustomizerCubit>(() => CustomizerCubit());
+
+  // ── Admin ───────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<AdminRemoteDataSource>(
+    () => AdminRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AdminRepository>(
+    () => AdminRepositoryImpl(sl<AdminRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<GetAdminStatsUseCase>(
+    () => GetAdminStatsUseCase(sl<AdminRepository>()),
+  );
+  sl.registerFactory<AdminBloc>(
+    () => AdminBloc(
+      getAdminStatsUseCase: sl<GetAdminStatsUseCase>(),
+      getProductsUseCase: sl<GetProductsUseCase>(),
+      addProductUseCase: sl<AddProductUseCase>(),
+      updateProductUseCase: sl<UpdateProductUseCase>(),
+      deleteProductUseCase: sl<DeleteProductUseCase>(),
+    ),
+  );
 
   // ── Cart ────────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<CartRepository>(() => CartRepositoryImpl());

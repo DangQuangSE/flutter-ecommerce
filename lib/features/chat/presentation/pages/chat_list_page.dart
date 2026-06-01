@@ -278,7 +278,7 @@ class _ChatListPageState extends State<ChatListPage> {
 
         return GestureDetector(
           onTap: () {
-            context.goNamed(
+            context.pushNamed(
               AppRoutes.chatDetail,
               pathParameters: {'chatId': chat.id},
             );

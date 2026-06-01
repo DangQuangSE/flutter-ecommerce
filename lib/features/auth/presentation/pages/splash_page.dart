@@ -30,7 +30,7 @@ class _SplashPageState extends State<SplashPage> {
       listener: (context, state) {
         switch (state) {
           case AuthAuthenticated():
-            context.goNamed(AppRoutes.productList);
+            context.goNamed(AppRoutes.home);
           case AuthUnauthenticated():
           case AuthError():
             context.goNamed(AppRoutes.login);

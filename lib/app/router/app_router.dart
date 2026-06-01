@@ -26,6 +26,9 @@ import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_pa
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_customizer_page.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_dashboard_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -44,7 +47,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/home',
     debugLogDiagnostics: true,
     // Wired to the AuthBloc singleton — router re-evaluates on every auth state change
     refreshListenable: GoRouterRefreshStream(sl<AuthBloc>().stream),
@@ -53,11 +56,22 @@ class AppRouter {
       final isGoingToAuth =
           path == '/login' || path == '/register' || path == '/splash';
 
-      // Derive auth status from BLoC state — no static bool needed
-      final isAuthenticated = sl<AuthBloc>().state is AuthAuthenticated;
+      final authState = sl<AuthBloc>().state;
+      final isAuthenticated = authState is AuthAuthenticated;
 
       if (!isAuthenticated && !isGoingToAuth) return '/login';
-      if (isAuthenticated && isGoingToAuth) return '/products';
+        if (isAuthenticated && isGoingToAuth) {
+          final user = (authState as AuthAuthenticated).user;
+          if (user.isAdmin) return '/admin';
+          return '/home';
+        }
+
+      // If regular user attempts to access /admin, redirect to /products
+      if (isAuthenticated && path.startsWith('/admin')) {
+        final user = (authState as AuthAuthenticated).user;
+        if (!user.isAdmin) return '/products';
+      }
+
       return null;
     },
     routes: [
@@ -75,6 +89,16 @@ class AppRouter {
         path: '/register',
         name: AppRoutes.register,
         builder: (context, state) => const RegisterPage(),
+      ),
+
+      // Admin Dashboard Route
+      GoRoute(
+        path: '/admin',
+        name: AppRoutes.adminDashboard,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<AdminBloc>()..add(const AdminStatsRequested()),
+          child: const AdminDashboardPage(),
+        ),
       ),
 
       // Home route (main screen after login)
