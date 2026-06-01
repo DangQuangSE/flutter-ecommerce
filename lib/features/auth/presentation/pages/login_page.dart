@@ -200,7 +200,11 @@ class _LoginPageState extends State<LoginPage> {
                             child: BlocConsumer<AuthBloc, AuthState>(
                               listener: (context, state) {
                                 if (state is AuthAuthenticated) {
-                                  context.goNamed(AppRoutes.productList);
+                                  if (state.user.isAdmin) {
+                                    context.goNamed(AppRoutes.adminDashboard);
+                                  } else {
+                                    context.goNamed(AppRoutes.productList);
+                                  }
                                 } else if (state is AuthError) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
