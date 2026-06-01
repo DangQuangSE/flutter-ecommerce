@@ -203,7 +203,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: BlocConsumer<AuthBloc, AuthState>(
                               listener: (context, state) {
                                 if (state is AuthAuthenticated) {
-                                  context.goNamed(AppRoutes.productList);
+                                   context.goNamed(AppRoutes.home);
                                 } else if (state is AuthError) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

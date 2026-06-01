@@ -18,8 +18,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'customer@gmail.com');
+  final _passwordController = TextEditingController(text: '123456');
   bool _obscurePassword = true;
 
   @override
@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                                   if (state.user.isAdmin) {
                                     context.goNamed(AppRoutes.adminDashboard);
                                   } else {
-                                    context.goNamed(AppRoutes.productList);
+                                     context.goNamed(AppRoutes.home);
                                   }
                                 } else if (state is AuthError) {
                                   ScaffoldMessenger.of(context).showSnackBar(

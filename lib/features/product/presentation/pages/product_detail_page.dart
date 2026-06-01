@@ -188,7 +188,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               clipBehavior: Clip.none,
               children: [
                 IconButton(
-                  onPressed: () => context.goNamed(AppRoutes.cart),
+                  onPressed: () => context.pushNamed(AppRoutes.cart),
                   icon: const Icon(Icons.shopping_cart_outlined, color: AppColors.primary, size: 24),
                 ),
                 if (cartCount > 0)
@@ -228,7 +228,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               clipBehavior: Clip.none,
               children: [
                 IconButton(
-                  onPressed: () => context.goNamed(AppRoutes.chatList),
+                  onPressed: () => context.pushNamed(AppRoutes.chatList),
                   icon: const Icon(
                     Icons.chat_bubble_outline_rounded,
                     color: AppColors.primary,
@@ -556,7 +556,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       action: SnackBarAction(
                         label: 'XEM GIỎ',
                         textColor: Colors.white,
-                        onPressed: () => context.goNamed(AppRoutes.cart),
+                        onPressed: () => context.pushNamed(AppRoutes.cart),
                       ),
                     ),
                   );
