@@ -4,6 +4,7 @@ class UserEntity extends Equatable {
   final String id;
   final String email;
   final String name;
+  final String role;
   final String? avatarUrl;
   final DateTime createdAt;
 
@@ -11,12 +12,13 @@ class UserEntity extends Equatable {
     required this.id,
     required this.email,
     required this.name,
+    required this.role,
     this.avatarUrl,
     required this.createdAt,
   });
 
-  bool get isAdmin => email.toLowerCase().contains('admin');
+  bool get isAdmin => role.toUpperCase() == 'ADMIN';
 
   @override
-  List<Object?> get props => [id, email, name, avatarUrl, createdAt];
+  List<Object?> get props => [id, email, name, role, avatarUrl, createdAt];
 }

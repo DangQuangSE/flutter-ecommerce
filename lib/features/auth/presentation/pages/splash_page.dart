@@ -29,10 +29,17 @@ class _SplashPageState extends State<SplashPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         switch (state) {
-          case AuthAuthenticated():
-            context.goNamed(AppRoutes.home);
+          case AuthAuthenticated(:final user):
+            if (user.isAdmin) {
+              context.goNamed(AppRoutes.adminDashboard);
+            } else {
+              context.goNamed(AppRoutes.home);
+            }
           case AuthUnauthenticated():
           case AuthError():
+          case AuthOtpSent():
+          case AuthRegistrationSuccess():
+          case AuthRegisterAccountExists():
             context.goNamed(AppRoutes.login);
           case AuthInitial():
           case AuthLoading():

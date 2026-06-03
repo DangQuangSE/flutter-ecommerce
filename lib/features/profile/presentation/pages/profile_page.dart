@@ -7,6 +7,9 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -234,6 +237,8 @@ class ProfilePage extends StatelessWidget {
           label: 'Phương thức thanh toán',
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
+        const SizedBox(height: 10),
+        _buildLogoutRow(context),
 
         const SizedBox(height: 24),
 
@@ -275,6 +280,67 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildLogoutRow(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        return ProfileMenuRow(
+          icon: Icons.logout_rounded,
+          label: 'Đăng xuất',
+          iconColor: AppColors.error,
+          labelColor: AppColors.error,
+          enabled: !isLoading,
+          onTap: () => _confirmLogout(context),
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmLogout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          'Đăng xuất',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Text(
+          'Bạn có chắc muốn đăng xuất?',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(
+              'Hủy',
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(
+              'Đăng xuất',
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w700,
+                color: AppColors.error,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      context.read<AuthBloc>().add(const AuthLogoutRequested());
+    }
+  }
 }
 
 // Stateful interactive menu row with tactile spring scale micro-physics feedback
@@ -282,12 +348,18 @@ class ProfileMenuRow extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Color? iconColor;
+  final Color? labelColor;
+  final bool enabled;
 
   const ProfileMenuRow({
     super.key,
     required this.icon,
     required this.label,
     required this.onTap,
+    this.iconColor,
+    this.labelColor,
+    this.enabled = true,
   });
 
   @override
@@ -299,55 +371,64 @@ class _ProfileMenuRowState extends State<ProfileMenuRow> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _scale = 0.97),
-      onTapUp: (_) {
-        setState(() => _scale = 1.0);
-        widget.onTap();
-      },
-      onTapCancel: () => setState(() => _scale = 1.0),
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.fastLinearToSlowEaseIn,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.01),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Icon(
-                widget.icon,
-                size: 20,
-                color: AppColors.textPrimary,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  widget.label,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+    final iconColor = widget.iconColor ?? AppColors.textPrimary;
+    final labelColor = widget.labelColor ?? AppColors.textPrimary;
+    final opacity = widget.enabled ? 1.0 : 0.5;
+
+    return Opacity(
+      opacity: opacity,
+      child: GestureDetector(
+        onTapDown: widget.enabled ? (_) => setState(() => _scale = 0.97) : null,
+        onTapUp: widget.enabled
+            ? (_) {
+                setState(() => _scale = 1.0);
+                widget.onTap();
+              }
+            : null,
+        onTapCancel: widget.enabled ? () => setState(() => _scale = 1.0) : null,
+        child: AnimatedScale(
+          scale: _scale,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.fastLinearToSlowEaseIn,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.01),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  widget.icon,
+                  size: 20,
+                  color: iconColor,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    widget.label,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: labelColor,
+                    ),
                   ),
                 ),
-              ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                size: 18,
-                color: AppColors.textSecondary,
-              ),
-            ],
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: widget.iconColor ?? AppColors.textSecondary,
+                ),
+              ],
+            ),
           ),
         ),
       ),
