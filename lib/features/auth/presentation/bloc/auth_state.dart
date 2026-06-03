@@ -29,6 +29,43 @@ final class AuthUnauthenticated extends AuthState {
   const AuthUnauthenticated();
 }
 
+final class AuthOtpSent extends AuthState {
+  final String email;
+  final String password;
+  final String name;
+
+  const AuthOtpSent({
+    required this.email,
+    required this.password,
+    required this.name,
+  });
+
+  @override
+  List<Object?> get props => [email, password, name];
+
+  @override
+  String toString() =>
+      'AuthOtpSent(email: $email, password: ***, name: $name)';
+}
+
+final class AuthRegistrationSuccess extends AuthState {
+  final String? welcomeName;
+
+  const AuthRegistrationSuccess({this.welcomeName});
+
+  @override
+  List<Object?> get props => [welcomeName];
+}
+
+final class AuthRegisterAccountExists extends AuthState {
+  final String message;
+
+  const AuthRegisterAccountExists(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 final class AuthError extends AuthState {
   final String message;
 

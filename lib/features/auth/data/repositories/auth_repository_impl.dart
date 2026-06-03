@@ -1,14 +1,17 @@
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/auth/data/models/user_model.dart';
 import 'package:flutter_ecommerce/features/auth/domain/entities/user_entity.dart';
 import 'package:flutter_ecommerce/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
+  final AuthLocalDataSource _localDataSource;
 
-  const AuthRepositoryImpl(this._remoteDataSource);
+  const AuthRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
   @override
   Future<Result<UserEntity>> login({
@@ -16,30 +19,97 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      final user = await _remoteDataSource.login(email: email, password: password);
-      return Success(user);
+      final loginResponse = await _remoteDataSource.login(
+        email: email,
+        password: password,
+      );
+      await _localDataSource.saveAccessToken(loginResponse.accessToken);
+      try {
+        final user = await _loadCurrentUser();
+        return Success(user);
+      } on AppException {
+        await _localDataSource.clearSession();
+        rethrow;
+      }
     } on UnauthorisedException catch (e) {
       return ResultFailure(AuthFailure(e.message));
+    } on ServerException catch (e) {
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
     } on NetworkException catch (e) {
-      return ResultFailure(NetworkFailure(e.message));
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     }
   }
 
   @override
-  Future<Result<UserEntity>> register({
+  Future<Result<UserEntity?>> getCurrentUser() async {
+    if (_localDataSource.getAccessToken() == null) {
+      return const Success(null);
+    }
+
+    try {
+      final user = await _loadCurrentUser();
+      return Success(user);
+    } on UnauthorisedException {
+      try {
+        final refreshed = await _remoteDataSource.refreshAccessToken();
+        await _localDataSource.saveAccessToken(refreshed.accessToken);
+        final user = await _loadCurrentUser();
+        return Success(user);
+      } on AppException {
+        await _localDataSource.clearSession();
+        return const Success(null);
+      }
+    } on AppException {
+      await _localDataSource.clearSession();
+      return const Success(null);
+    }
+  }
+
+  Future<UserEntity> _loadCurrentUser() async {
+    final me = await _remoteDataSource.fetchMe();
+    return UserModel.fromAuthMe(me);
+  }
+
+  @override
+  Future<Result<void>> requestRegistrationOtp({required String email}) async {
+    return _voidResult(() => _remoteDataSource.requestRegistrationOtp(email: email));
+  }
+
+  @override
+  Future<Result<void>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    return _voidResult(
+      () => _remoteDataSource.verifyOtp(email: email, otp: otp),
+    );
+  }
+
+  @override
+  Future<Result<void>> register({
     required String email,
     required String password,
-    required String name,
   }) async {
+    return _voidResult(
+      () => _remoteDataSource.register(email: email, password: password),
+    );
+  }
+
+  @override
+  Future<Result<void>> resendOtp({required String email}) async {
+    return _voidResult(() => _remoteDataSource.resendOtp(email: email));
+  }
+
+  Future<Result<void>> _voidResult(Future<void> Function() action) async {
     try {
-      final user = await _remoteDataSource.register(
-        email: email,
-        password: password,
-        name: name,
-      );
-      return Success(user);
+      await action();
+      return const Success(null);
+    } on ServerException catch (e) {
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
+    } on NetworkException catch (e) {
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     }
@@ -49,15 +119,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<void>> logout() async {
     try {
       await _remoteDataSource.logout();
-      return const Success(null);
-    } on AppException catch (e) {
-      return ResultFailure(NetworkFailure(e.message));
+    } on AppException {
+      // Still clear local session if server logout fails.
+    } finally {
+      await _localDataSource.clearSession();
     }
-  }
-
-  @override
-  Future<Result<UserEntity?>> getCurrentUser() async {
-    // TODO: check LocalStorage for cached token and return cached user
     return const Success(null);
   }
 }

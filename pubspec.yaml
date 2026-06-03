@@ -1,6 +1,6 @@
 name: flutter_ecommerce
 description: "Flutter e-commerce MVP."
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -26,7 +26,10 @@ dependencies:
 
   # Networking
   dio: ^5.0.0
-  image_picker: ^1.1.2
+  dio_cookie_manager: ^3.1.1
+  cookie_jar: ^4.0.8
+  path_provider: ^2.1.0
+  pinput: ^5.0.0
 
   # Dependency injection
   get_it: ^8.0.0
