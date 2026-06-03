@@ -1,7 +1,15 @@
-import 'package:flutter_ecommerce/features/auth/data/models/user_model.dart';
+import 'package:flutter_ecommerce/features/auth/data/models/auth_me_model.dart';
+import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
 
 abstract interface class AuthRemoteDataSource {
-  Future<UserModel> login({required String email, required String password});
+  Future<LoginResponseModel> login({
+    required String email,
+    required String password,
+  });
+
+  Future<LoginResponseModel> refreshAccessToken();
+
+  Future<AuthMeModel> fetchMe();
 
   Future<void> requestRegistrationOtp({required String email});
 

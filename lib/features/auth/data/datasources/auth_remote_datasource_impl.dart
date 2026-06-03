@@ -1,8 +1,8 @@
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
-import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:flutter_ecommerce/features/auth/data/models/user_model.dart';
+import 'package:flutter_ecommerce/features/auth/data/models/auth_me_model.dart';
+import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final DioClient _dioClient;
@@ -10,16 +10,34 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   const AuthRemoteDataSourceImpl(this._dioClient);
 
   @override
-  Future<UserModel> login({
+  Future<LoginResponseModel> login({
     required String email,
     required String password,
   }) async {
-    // TODO: replace with real login when login flow is wired
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (email.isEmpty || password.isEmpty) {
-      throw const NetworkException('Invalid credentials');
-    }
-    return UserModel.mock;
+    final response = await _dioClient.dio.post<Map<String, dynamic>>(
+      ApiConstants.login,
+      data: {
+        'email': email.trim().toLowerCase(),
+        'password': password,
+      },
+    );
+    return LoginResponseModel.fromApiResponse(response.data!);
+  }
+
+  @override
+  Future<LoginResponseModel> refreshAccessToken() async {
+    final response = await _dioClient.dio.post<Map<String, dynamic>>(
+      ApiConstants.refreshToken,
+    );
+    return LoginResponseModel.fromApiResponse(response.data!);
+  }
+
+  @override
+  Future<AuthMeModel> fetchMe() async {
+    final response = await _dioClient.dio.get<Map<String, dynamic>>(
+      ApiConstants.me,
+    );
+    return AuthMeModel.fromApiResponse(response.data!);
   }
 
   @override
@@ -65,6 +83,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> logout() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await _dioClient.dio.post(ApiConstants.logout);
   }
 }

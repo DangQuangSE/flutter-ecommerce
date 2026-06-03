@@ -49,7 +49,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/splash',
     debugLogDiagnostics: true,
     // Wired to the AuthBloc singleton — router re-evaluates on every auth state change
     refreshListenable: GoRouterRefreshStream(sl<AuthBloc>().stream),
@@ -68,16 +68,15 @@ class AppRouter {
       final isAuthenticated = authState is AuthAuthenticated;
 
       if (!isAuthenticated && !isGoingToAuth) return '/login';
-        if (isAuthenticated && isGoingToAuth) {
-          final user = (authState as AuthAuthenticated).user;
-          if (user.isAdmin) return '/admin';
-          return '/home';
-        }
 
-      // If regular user attempts to access /admin, redirect to /products
-      if (isAuthenticated && path.startsWith('/admin')) {
+      if (isAuthenticated) {
         final user = (authState as AuthAuthenticated).user;
-        if (!user.isAdmin) return '/products';
+        if (user.isAdmin) {
+          if (isGoingToAuth || path == '/home') return '/admin';
+        } else {
+          if (isGoingToAuth) return '/home';
+          if (path.startsWith('/admin')) return '/home';
+        }
       }
 
       return null;

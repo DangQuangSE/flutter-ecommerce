@@ -16,6 +16,8 @@ Physical device or custom host:
 flutter run --dart-define=BASE_URL=http://192.168.1.100:8080
 ```
 
+Login uses `POST /api/auth/login` (access token + refresh cookie). Role comes from `GET /api/auth/me` (`ADMIN` → admin dashboard, `USER` → home). Session is restored on app start via saved token and refresh cookie.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

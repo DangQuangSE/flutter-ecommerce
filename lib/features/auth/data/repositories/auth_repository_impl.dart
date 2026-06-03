@@ -1,14 +1,17 @@
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/auth/data/models/user_model.dart';
 import 'package:flutter_ecommerce/features/auth/domain/entities/user_entity.dart';
 import 'package:flutter_ecommerce/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
+  final AuthLocalDataSource _localDataSource;
 
-  const AuthRepositoryImpl(this._remoteDataSource);
+  const AuthRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
   @override
   Future<Result<UserEntity>> login({
@@ -16,8 +19,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      final user = await _remoteDataSource.login(email: email, password: password);
-      return Success(user);
+      final loginResponse = await _remoteDataSource.login(
+        email: email,
+        password: password,
+      );
+      await _localDataSource.saveAccessToken(loginResponse.accessToken);
+      try {
+        final user = await _loadCurrentUser();
+        return Success(user);
+      } on AppException {
+        await _localDataSource.clearSession();
+        rethrow;
+      }
     } on UnauthorisedException catch (e) {
       return ResultFailure(AuthFailure(e.message));
     } on ServerException catch (e) {
@@ -27,6 +40,36 @@ class AuthRepositoryImpl implements AuthRepository {
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     }
+  }
+
+  @override
+  Future<Result<UserEntity?>> getCurrentUser() async {
+    if (_localDataSource.getAccessToken() == null) {
+      return const Success(null);
+    }
+
+    try {
+      final user = await _loadCurrentUser();
+      return Success(user);
+    } on UnauthorisedException {
+      try {
+        final refreshed = await _remoteDataSource.refreshAccessToken();
+        await _localDataSource.saveAccessToken(refreshed.accessToken);
+        final user = await _loadCurrentUser();
+        return Success(user);
+      } on AppException {
+        await _localDataSource.clearSession();
+        return const Success(null);
+      }
+    } on AppException {
+      await _localDataSource.clearSession();
+      return const Success(null);
+    }
+  }
+
+  Future<UserEntity> _loadCurrentUser() async {
+    final me = await _remoteDataSource.fetchMe();
+    return UserModel.fromAuthMe(me);
   }
 
   @override
@@ -76,14 +119,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<void>> logout() async {
     try {
       await _remoteDataSource.logout();
-      return const Success(null);
-    } on AppException catch (e) {
-      return ResultFailure(NetworkFailure(e.message));
+    } on AppException {
+      // Still clear local session if server logout fails.
+    } finally {
+      await _localDataSource.clearSession();
     }
-  }
-
-  @override
-  Future<Result<UserEntity?>> getCurrentUser() async {
     return const Success(null);
   }
 }
