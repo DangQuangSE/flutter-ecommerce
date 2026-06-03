@@ -33,6 +33,9 @@ class _SplashPageState extends State<SplashPage> {
             context.goNamed(AppRoutes.home);
           case AuthUnauthenticated():
           case AuthError():
+          case AuthOtpSent():
+          case AuthRegistrationSuccess():
+          case AuthRegisterAccountExists():
             context.goNamed(AppRoutes.login);
           case AuthInitial():
           case AuthLoading():

@@ -8,6 +8,7 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -17,6 +18,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool _hasNavigatedToOtp = false;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -33,8 +35,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
+      setState(() => _hasNavigatedToOtp = false);
       context.read<AuthBloc>().add(
-            AuthRegisterRequested(
+            AuthOtpRequested(
               name: _nameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text,
@@ -202,8 +205,16 @@ class _RegisterPageState extends State<RegisterPage> {
                             padding: const EdgeInsets.all(24),
                             child: BlocConsumer<AuthBloc, AuthState>(
                               listener: (context, state) {
-                                if (state is AuthAuthenticated) {
-                                   context.goNamed(AppRoutes.home);
+                                if (state is AuthOtpSent && !_hasNavigatedToOtp) {
+                                  _hasNavigatedToOtp = true;
+                                  context.pushNamed(
+                                    AppRoutes.registerOtp,
+                                    extra: RegisterOtpExtra(
+                                      email: state.email,
+                                      password: state.password,
+                                      name: state.name,
+                                    ),
+                                  );
                                 } else if (state is AuthError) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

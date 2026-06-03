@@ -7,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/login_page.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/register_page.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/splash_page.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/pages/notification_page.dart';
@@ -53,10 +55,16 @@ class AppRouter {
     refreshListenable: GoRouterRefreshStream(sl<AuthBloc>().stream),
     redirect: (BuildContext context, GoRouterState state) {
       final path = state.uri.path;
-      final isGoingToAuth =
-          path == '/login' || path == '/register' || path == '/splash';
+      final isGoingToAuth = path == '/login' ||
+          path == '/register' ||
+          path == '/register/otp' ||
+          path == '/splash';
 
       final authState = sl<AuthBloc>().state;
+      if (authState is AuthOtpSent || authState is AuthRegistrationSuccess) {
+        return null;
+      }
+
       final isAuthenticated = authState is AuthAuthenticated;
 
       if (!isAuthenticated && !isGoingToAuth) return '/login';
@@ -89,6 +97,19 @@ class AppRouter {
         path: '/register',
         name: AppRoutes.register,
         builder: (context, state) => const RegisterPage(),
+        routes: [
+          GoRoute(
+            path: 'otp',
+            name: AppRoutes.registerOtp,
+            builder: (context, state) {
+              final extra = state.extra;
+              if (extra is! RegisterOtpExtra) {
+                return const RegisterPage();
+              }
+              return OtpVerificationPage(extra: extra);
+            },
+          ),
+        ],
       ),
 
       // Admin Dashboard Route

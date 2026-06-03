@@ -10,6 +10,10 @@ import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_dat
 import 'package:flutter_ecommerce/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:flutter_ecommerce/features/auth/domain/repositories/auth_repository.dart';
 import 'package:flutter_ecommerce/features/auth/domain/usecases/login_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/domain/usecases/register_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/domain/usecases/request_otp_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 
 // Product
@@ -77,10 +81,26 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<LoginUseCase>(
     () => LoginUseCase(sl<AuthRepository>()),
   );
+  sl.registerFactory<RequestOtpUseCase>(
+    () => RequestOtpUseCase(sl<AuthRepository>()),
+  );
+  sl.registerFactory<VerifyOtpUseCase>(
+    () => VerifyOtpUseCase(sl<AuthRepository>()),
+  );
+  sl.registerFactory<RegisterUseCase>(
+    () => RegisterUseCase(sl<AuthRepository>()),
+  );
+  sl.registerFactory<ResendOtpUseCase>(
+    () => ResendOtpUseCase(sl<AuthRepository>()),
+  );
   // Singleton — router's refresh stream reads from this one instance
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
       loginUseCase: sl<LoginUseCase>(),
+      requestOtpUseCase: sl<RequestOtpUseCase>(),
+      verifyOtpUseCase: sl<VerifyOtpUseCase>(),
+      registerUseCase: sl<RegisterUseCase>(),
+      resendOtpUseCase: sl<ResendOtpUseCase>(),
       authRepository: sl<AuthRepository>(),
     ),
   );

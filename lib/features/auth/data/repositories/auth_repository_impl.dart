@@ -20,26 +20,53 @@ class AuthRepositoryImpl implements AuthRepository {
       return Success(user);
     } on UnauthorisedException catch (e) {
       return ResultFailure(AuthFailure(e.message));
+    } on ServerException catch (e) {
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
     } on NetworkException catch (e) {
-      return ResultFailure(NetworkFailure(e.message));
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     }
   }
 
   @override
-  Future<Result<UserEntity>> register({
+  Future<Result<void>> requestRegistrationOtp({required String email}) async {
+    return _voidResult(() => _remoteDataSource.requestRegistrationOtp(email: email));
+  }
+
+  @override
+  Future<Result<void>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    return _voidResult(
+      () => _remoteDataSource.verifyOtp(email: email, otp: otp),
+    );
+  }
+
+  @override
+  Future<Result<void>> register({
     required String email,
     required String password,
-    required String name,
   }) async {
+    return _voidResult(
+      () => _remoteDataSource.register(email: email, password: password),
+    );
+  }
+
+  @override
+  Future<Result<void>> resendOtp({required String email}) async {
+    return _voidResult(() => _remoteDataSource.resendOtp(email: email));
+  }
+
+  Future<Result<void>> _voidResult(Future<void> Function() action) async {
     try {
-      final user = await _remoteDataSource.register(
-        email: email,
-        password: password,
-        name: name,
-      );
-      return Success(user);
+      await action();
+      return const Success(null);
+    } on ServerException catch (e) {
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
+    } on NetworkException catch (e) {
+      return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     }
@@ -57,7 +84,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<UserEntity?>> getCurrentUser() async {
-    // TODO: check LocalStorage for cached token and return cached user
     return const Success(null);
   }
 }

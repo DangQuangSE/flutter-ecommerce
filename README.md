@@ -2,6 +2,20 @@
 
 A new Flutter project.
 
+## Backend API (Android emulator)
+
+Default API base URL targets the host machine from the Android emulator (`http://10.0.2.2:8080`). Start the Spring Boot API with `docker-compose up` in `be-ecommerce`.
+
+```bash
+flutter run
+```
+
+Physical device or custom host:
+
+```bash
+flutter run --dart-define=BASE_URL=http://192.168.1.100:8080
+```
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

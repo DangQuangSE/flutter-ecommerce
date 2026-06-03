@@ -7,11 +7,16 @@ abstract interface class AuthRepository {
     required String password,
   });
 
-  Future<Result<UserEntity>> register({
+  Future<Result<void>> requestRegistrationOtp({required String email});
+
+  Future<Result<void>> verifyOtp({required String email, required String otp});
+
+  Future<Result<void>> register({
     required String email,
     required String password,
-    required String name,
   });
+
+  Future<Result<void>> resendOtp({required String email});
 
   Future<Result<void>> logout();
 
