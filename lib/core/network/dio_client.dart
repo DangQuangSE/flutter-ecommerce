@@ -3,11 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/constants/app_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
+import 'package:flutter_ecommerce/core/network/auth_interceptor.dart';
+import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 
 class DioClient {
   late final Dio dio;
 
-  DioClient() {
+  DioClient(LocalStorage localStorage) {
     dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
@@ -25,6 +27,7 @@ class DioClient {
       ));
     }
 
+    dio.interceptors.add(AuthInterceptor(localStorage));
     dio.interceptors.add(_ErrorInterceptor());
   }
 }

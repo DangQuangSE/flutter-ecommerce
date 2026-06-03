@@ -1,0 +1,160 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
+
+class AdminProductListPage extends StatefulWidget {
+  const AdminProductListPage({super.key});
+
+  @override
+  State<AdminProductListPage> createState() => _AdminProductListPageState();
+}
+
+class _AdminProductListPageState extends State<AdminProductListPage> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<AdminProductListBloc>().add(AdminProductListLoadedMore());
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context, int id, String name) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Xác nhận xóa'),
+        content: Text('Xóa sản phẩm "$name"?'),
+        actions: [
+          TextButton(
+              onPressed: () => ctx.pop(false), child: const Text('Hủy')),
+          TextButton(
+              onPressed: () => ctx.pop(true),
+              child:
+                  const Text('Xóa', style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      context.read<AdminProductListBloc>().add(AdminProductDeleted(id));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quản lý sản phẩm'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // TODO: show search bar / filter sheet
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/admin/products/create'),
+        child: const Icon(Icons.add),
+      ),
+      body: BlocConsumer<AdminProductListBloc, AdminProductListState>(
+        listener: (context, state) {
+          if (state is AdminProductListFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is AdminProductListLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is AdminProductListFailure) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(state.message),
+                  ElevatedButton(
+                    onPressed: () => context
+                        .read<AdminProductListBloc>()
+                        .add(AdminProductListLoaded()),
+                    child: const Text('Thử lại'),
+                  ),
+                ],
+              ),
+            );
+          }
+          if (state is AdminProductListSuccess) {
+            if (state.totalElements == 0 && state.products.isEmpty) {
+              return const Center(child: Text('Không có sản phẩm nào'));
+            }
+            return RefreshIndicator(
+              onRefresh: () async {
+                context
+                    .read<AdminProductListBloc>()
+                    .add(AdminProductListRefreshed());
+              },
+              child: ListView.separated(
+                controller: _scrollController,
+                itemCount: state.products.length + (state.isLoadingMore ? 1 : 0),
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  if (index >= state.products.length) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final product = state.products[index];
+                  return ListTile(
+                    leading: product.thumbnailUrl != null
+                        ? Image.network(product.thumbnailUrl!,
+                            width: 48, height: 48, fit: BoxFit.cover)
+                        : const Icon(Icons.image_not_supported),
+                    title: Text(product.name),
+                    subtitle: Text(
+                        '${product.brandName} • ${product.status.name.toUpperCase()}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined),
+                          onPressed: () =>
+                              context.push('/admin/products/${product.id}/edit'),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline,
+                              color: Colors.red),
+                          onPressed: () =>
+                              _confirmDelete(context, product.id, product.name),
+                        ),
+                      ],
+                    ),
+                    onTap: () =>
+                        context.push('/admin/products/${product.id}'),
+                  );
+                },
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+  }
+}

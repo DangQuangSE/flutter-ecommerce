@@ -4,6 +4,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 
+// Admin Product
+import 'package:flutter_ecommerce/features/admin/product/data/datasources/admin_product_datasource.dart';
+import 'package:flutter_ecommerce/features/admin/product/data/datasources/admin_product_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/admin/product/data/datasources/admin_product_variant_datasource.dart';
+import 'package:flutter_ecommerce/features/admin/product/data/datasources/admin_product_variant_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/admin/product/data/datasources/admin_product_image_datasource.dart';
+import 'package:flutter_ecommerce/features/admin/product/data/datasources/admin_product_image_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/admin/product/data/repositories/admin_product_repository_impl.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/repositories/admin_product_repository.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/get_admin_products_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/get_admin_product_detail_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_product_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_product_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_product_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variant_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_variant_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_variant_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/add_product_image_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_product_image_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
+
 // Auth
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_datasource_impl.dart';
@@ -54,7 +79,7 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<LocalStorage>(
     () => LocalStorage(sl<SharedPreferences>()),
   );
-  sl.registerLazySingleton<DioClient>(() => DioClient());
+  sl.registerLazySingleton<DioClient>(() => DioClient(sl<LocalStorage>()));
 
   // ── Auth ────────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -127,4 +152,80 @@ Future<void> configureDependencies() async {
   );
 
   // Checkout / Order — register when implementations are added
+
+  // ── Admin Product ────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<AdminProductDatasource>(
+    () => AdminProductDatasourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AdminProductVariantDatasource>(
+    () => AdminProductVariantDatasourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AdminProductImageDatasource>(
+    () => AdminProductImageDatasourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AdminProductRepository>(
+    () => AdminProductRepositoryImpl(
+      sl<AdminProductDatasource>(),
+      sl<AdminProductVariantDatasource>(),
+      sl<AdminProductImageDatasource>(),
+    ),
+  );
+  sl.registerLazySingleton<GetAdminProductsUseCase>(
+    () => GetAdminProductsUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<GetAdminProductDetailUseCase>(
+    () => GetAdminProductDetailUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<CreateProductUseCase>(
+    () => CreateProductUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<UpdateProductUseCase>(
+    () => UpdateProductUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<DeleteProductUseCase>(
+    () => DeleteProductUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<CreateVariantUseCase>(
+    () => CreateVariantUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<UpdateVariantUseCase>(
+    () => UpdateVariantUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<DeleteVariantUseCase>(
+    () => DeleteVariantUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<AddProductImageUseCase>(
+    () => AddProductImageUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<DeleteProductImageUseCase>(
+    () => DeleteProductImageUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerFactory<AdminProductListBloc>(
+    () => AdminProductListBloc(
+      sl<GetAdminProductsUseCase>(),
+      sl<DeleteProductUseCase>(),
+    ),
+  );
+  sl.registerFactory<AdminProductDetailCubit>(
+    () => AdminProductDetailCubit(sl<GetAdminProductDetailUseCase>()),
+  );
+  sl.registerFactory<AdminProductFormCubit>(
+    () => AdminProductFormCubit(
+      sl<CreateProductUseCase>(),
+      sl<UpdateProductUseCase>(),
+    ),
+  );
+  sl.registerFactory<AdminProductVariantCubit>(
+    () => AdminProductVariantCubit(
+      sl<CreateVariantUseCase>(),
+      sl<UpdateVariantUseCase>(),
+      sl<DeleteVariantUseCase>(),
+    ),
+  );
+  sl.registerFactory<AdminProductImageCubit>(
+    () => AdminProductImageCubit(
+      sl<AddProductImageUseCase>(),
+      sl<DeleteProductImageUseCase>(),
+    ),
+  );
 }

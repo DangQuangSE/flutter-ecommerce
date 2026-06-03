@@ -25,4 +25,10 @@ abstract final class AppRoutes {
   static const String chatDetail = 'chat-detail';
 
   static const String productCustomizer = 'product-customizer';
+
+  // Admin
+  static const String adminProductList = 'admin-product-list';
+  static const String adminProductDetail = 'admin-product-detail';
+  static const String adminProductCreate = 'admin-product-create';
+  static const String adminProductEdit = 'admin-product-edit';
 }

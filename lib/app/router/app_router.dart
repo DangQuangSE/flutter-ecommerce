@@ -26,6 +26,14 @@ import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_pa
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_customizer_page.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/pages/admin_product_list_page.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/pages/admin_product_detail_page.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/pages/admin_product_form_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -182,6 +190,70 @@ class AppRouter {
           productId: state.pathParameters['productId'] ?? '',
           productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
         ),
+      ),
+
+      // ── Admin Product ──────────────────────────────────────────────────────
+      GoRoute(
+        path: '/admin/products',
+        name: AppRoutes.adminProductList,
+        redirect: (context, routerState) {
+          final authState = sl<AuthBloc>().state;
+          if (authState is! AuthAuthenticated) return '/login';
+          if (authState.user.role != 'ADMIN') return '/';
+          return null;
+        },
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<AdminProductListBloc>()..add(AdminProductListLoaded()),
+          child: const AdminProductListPage(),
+        ),
+        routes: [
+          GoRoute(
+            path: 'create',
+            name: AppRoutes.adminProductCreate,
+            builder: (context, state) => BlocProvider(
+              create: (_) => sl<AdminProductFormCubit>(),
+              child: const AdminProductFormPage(),
+            ),
+          ),
+          GoRoute(
+            path: ':id',
+            name: AppRoutes.adminProductDetail,
+            builder: (context, state) {
+              final id = int.parse(state.pathParameters['id']!);
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) =>
+                        sl<AdminProductDetailCubit>()..loadDetail(id),
+                  ),
+                  BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
+                  BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
+                ],
+                child: AdminProductDetailPage(productId: id),
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'edit',
+                name: AppRoutes.adminProductEdit,
+                builder: (context, state) {
+                  final id = int.parse(state.pathParameters['id']!);
+                  return MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (_) =>
+                            sl<AdminProductDetailCubit>()..loadDetail(id),
+                      ),
+                      BlocProvider(
+                          create: (_) => sl<AdminProductFormCubit>()),
+                    ],
+                    child: AdminProductFormPage(productId: id),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
