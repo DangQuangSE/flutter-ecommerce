@@ -17,6 +17,8 @@ class UserEntity extends Equatable {
     this.role,
   });
 
+  bool get isAdmin => email.toLowerCase().contains('admin');
+
   @override
   List<Object?> get props => [id, email, name, avatarUrl, createdAt, role];
 }

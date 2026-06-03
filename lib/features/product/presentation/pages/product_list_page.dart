@@ -6,9 +6,10 @@ import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
-import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
-import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
-import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
+import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/product_tactile_card.dart';
+import 'package:flutter_ecommerce/app/router/navigation_history.dart';
 
 class ProductListPage extends StatefulWidget {
   const ProductListPage({super.key});
@@ -32,7 +33,6 @@ class _ProductListPageState extends State<ProductListPage> {
   @override
   void initState() {
     super.initState();
-    // Dispatch event safely using Future.microtask
     Future.microtask(() {
       if (!mounted) return;
       context.read<ProductBloc>().add(const ProductListRequested());
@@ -41,207 +41,29 @@ class _ProductListPageState extends State<ProductListPage> {
 
   @override
   Widget build(BuildContext context) {
+    NavigationHistory.pushTab(AppRoutes.productList);
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      
-      // 1. Premium Sticky Header App Bar
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 1,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-            height: 1,
-          ),
-        ),
-        title: Align(
-          alignment: Alignment.centerLeft,
-          child: Transform(
-            transform: Matrix4.skewX(-0.15),
-            child: Text(
-              'Sport Pro',
-              style: GoogleFonts.lexend(
-                fontSize: 32,
-                fontWeight: FontWeight.w800,
-                fontStyle: FontStyle.italic,
-                color: AppColors.primary,
-                letterSpacing: -1.5,
-              ),
-            ),
-          ),
-        ),
-        centerTitle: false,
-        actions: [
-          const NotificationBellIcon(),
-          IconButton(
-            onPressed: () => context.goNamed(AppRoutes.cart),
-            icon: const Icon(
-              Icons.shopping_cart_outlined,
-              color: AppColors.primary,
-              size: 24,
-            ),
-          ),
-          BlocBuilder<ChatCubit, ChatState>(
-            builder: (context, chatState) {
-              final unreadCount = context.read<ChatCubit>().totalUnreadMessages;
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  IconButton(
-                    onPressed: () => context.goNamed(AppRoutes.chatList),
-                    icon: const Icon(
-                      Icons.chat_bubble_outline_rounded,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
-                  ),
-                  if (unreadCount > 0)
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: AppColors.accent, // Safety Orange
-                          shape: BoxShape.circle,
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
-                        ),
-                        child: Text(
-                          '$unreadCount',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            height: 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(width: 12),
-        ],
-      ),
-
-      body: Column(
-        children: [
-          // 2. Action Bar (Back & Filter)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (context.canPop()) {
-                      context.pop();
-                    } else {
-                      context.goNamed(AppRoutes.home);
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.arrow_back_rounded,
-                        size: 20,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Trở về',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => _showFilterSheet(context),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Lọc',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.tune_rounded,
-                        size: 20,
-                        color: AppColors.textSecondary,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // 3. Horizontal category scroll bar
-          SizedBox(
-            height: 38,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories[index];
-                final isSelected = category == _selectedCategory;
-
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(category),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() {
-                          _selectedCategory = category;
-                        });
-                      }
-                    },
-                    selectedColor: AppColors.black,
-                    disabledColor: Colors.transparent,
-                    backgroundColor: const Color(0xFFF3F3F8),
-                    labelStyle: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    side: BorderSide(
-                      color: isSelected ? AppColors.black : const Color(0xFFC1C6D7).withValues(alpha: 0.5),
-                      width: 1,
-                    ),
-                    showCheckmark: false,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // 4. Product Grid
-          Expanded(
-            child: BlocBuilder<ProductBloc, ProductState>(
+      extendBody: true,
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) {
+          if (didPop) return;
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            final prevTab = NavigationHistory.popTab();
+            if (prevTab != null) {
+              context.goNamed(prevTab);
+            }
+          }
+        },
+        child: Stack(
+          children: [
+            // 1. Core scrollable contents
+            BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
                 if (state is ProductLoading) {
                   return const Center(
@@ -252,7 +74,7 @@ class _ProductListPageState extends State<ProductListPage> {
                 } else if (state is ProductLoaded) {
                   final products = List<ProductEntity>.from(state.products);
 
-                  // 1. Interactive category filtering
+                  // Category filtering
                   final filteredProducts = products.where((product) {
                     if (_selectedCategory == 'Tất cả') return true;
                     if (_selectedCategory == 'Giày chạy bộ') {
@@ -261,379 +83,353 @@ class _ProductListPageState extends State<ProductListPage> {
                     if (_selectedCategory == 'Quần áo') {
                       return product.categoryId == 'cat-clothing';
                     }
-                    // For Nam, Size 42, show unisex/all athletic shoes
                     return true;
                   }).toList();
 
-                  // 2. Sort pricing logic
+                  // Sort price
                   if (_selectedSort == 'Giá tăng dần') {
                     filteredProducts.sort((a, b) => a.price.compareTo(b.price));
                   } else if (_selectedSort == 'Giá giảm dần') {
                     filteredProducts.sort((a, b) => b.price.compareTo(a.price));
                   }
 
-                  if (filteredProducts.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.category_outlined,
-                            size: 48,
-                            color: AppColors.textSecondary.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Không có sản phẩm nào thuộc danh mục này.',
-                            style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return GridView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.62,
-                    ),
-                    itemCount: filteredProducts.length,
-                    itemBuilder: (context, index) {
-                      final product = filteredProducts[index];
-                      return _buildProductCard(context, product);
-                    },
-                  );
+                  return _buildScrollView(statusBarHeight, filteredProducts);
                 } else if (state is ProductError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Đã xảy ra lỗi khi tải sản phẩm.',
-                          style: GoogleFonts.inter(color: AppColors.error),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<ProductBloc>().add(const ProductListRequested());
-                          },
-                          child: const Text('Thử lại'),
-                        ),
-                      ],
-                    ),
-                  );
+                  return _buildErrorState(state.message);
                 }
-
                 return const SizedBox.shrink();
               },
             ),
-          ),
-        ],
-      ),
 
-      // 5. Sticky Bottom Navigation Bar
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
-          border: Border(
-            top: BorderSide(
-              color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-              width: 1,
-            ),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
+            // 2. Reusable Glassmorphic Top App Bar (showing back button)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: const GlassAppBar(
+                showBackButton: true,
+                customTitle: 'Sport Pro',
+              ),
             ),
           ],
         ),
-        child: SafeArea(
-          child: SizedBox(
-            height: 64,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+      ),
+      bottomNavigationBar: const GlassBottomBar(currentTab: 'shop'),
+    );
+  }
+
+  Widget _buildScrollView(double statusBarHeight, List<ProductEntity> products) {
+    // Symmetrical column listings
+    final List<ProductEntity> col1 = [];
+    final List<ProductEntity> col2 = [];
+
+    for (int i = 0; i < products.length; i++) {
+      if (i % 2 == 0) {
+        col1.add(products[i]);
+      } else {
+        col2.add(products[i]);
+      }
+    }
+
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(16, statusBarHeight + 92, 16, 120),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Elegant category header label
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'BỘ SƯU TẬP SPORT PRO',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: AppColors.accent,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 16),
+            child: Text(
+              _selectedCategory == 'Tất cả' ? 'Tất cả sản phẩm' : _selectedCategory,
+              style: GoogleFonts.lexend(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+                letterSpacing: -0.6,
+              ),
+            ),
+          ),
+
+          // 2. Filter & Category pills row
+          _buildActionAndFilterRow(context),
+          const SizedBox(height: 16),
+
+          if (products.isEmpty) ...[
+            _buildEmptyState()
+          ] else ...[
+            // 3. Fully symmetrical dual-column layout (no staggering offsets)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildNavItem(
-                  context,
-                  icon: Icons.home_outlined,
-                  label: 'Home',
-                  isActive: false,
-                  onTap: () => context.goNamed(AppRoutes.home),
+                Expanded(
+                  child: Column(
+                    children: List.generate(col1.length, (index) {
+                      final product = col1[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: ProductTactileCard(
+                          product: product,
+                        ),
+                      );
+                    }),
+                  ),
                 ),
-                _buildNavItem(
-                  context,
-                  icon: Icons.directions_run_rounded,
-                  label: 'Shop',
-                  isActive: true,
-                  onTap: () => context.goNamed(AppRoutes.productList),
-                ),
-                _buildNavItem(
-                  context,
-                  icon: Icons.receipt_long_outlined,
-                  label: 'Orders',
-                  isActive: false,
-                  onTap: () => context.goNamed(AppRoutes.orderList),
-                ),
-                _buildNavItem(
-                  context,
-                  icon: Icons.person_outline_rounded,
-                  label: 'Profile',
-                  isActive: false,
-                  onTap: () => context.goNamed(AppRoutes.profile),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    children: List.generate(col2.length, (index) {
+                      final product = col2[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: ProductTactileCard(
+                          product: product,
+                        ),
+                      );
+                    }),
+                  ),
                 ),
               ],
             ),
-          ),
-        ),
+          ],
+        ],
       ),
     );
   }
 
-  Widget _buildNavItem(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    const activeColor = AppColors.accent; // Safety Orange for active Shop tab
-    const inactiveColor = AppColors.textSecondary;
-
-    return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isActive ? activeColor : inactiveColor,
-                size: 24,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                  color: isActive ? activeColor : inactiveColor,
+  Widget _buildActionAndFilterRow(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.goNamed(AppRoutes.home);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.arrow_back_rounded,
+                      size: 16,
+                      color: AppColors.textPrimary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Trở về',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductCard(BuildContext context, ProductEntity product) {
-    // Determine mock tags and discount prices based on product ID to perfectly match mockup
-    bool isBestSeller = product.id == 'p-001' || product.id == 'p-002';
-    double? originalPrice;
-    int? discountPercent;
-
-    if (product.id == 'p-001') {
-      originalPrice = 3060000.0;
-      discountPercent = 20;
-    } else if (product.id == 'p-003') {
-      originalPrice = 2300000.0;
-      discountPercent = 15;
-    }
-
-    // Dynamic category name display
-    String categoryName = product.categoryId == 'cat-training' ? 'Giày tập luyện' : 'Giày chạy bộ';
-
-    return GestureDetector(
-      onTap: () {
-        context.goNamed(
-          AppRoutes.productDetail,
-          pathParameters: {'productId': product.id},
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Image + Absolute Tags
-            AspectRatio(
-              aspectRatio: 0.82, // High-aspect product shot 4:5
-              child: Stack(
-                children: [
-                  // Product Image
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
-                    ),
-                    child: Container(
-                      color: const Color(0xFFF3F3F8),
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: Image.network(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 32,
-                          color: AppColors.textSecondary,
-                        ),
+            GestureDetector(
+              onTap: () => _showFilterSheet(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      _selectedSort == 'Không sắp xếp' ? 'Bộ lọc' : _selectedSort,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                  ),
-
-                  // Absolute Tags
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (isBestSeller)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            margin: const EdgeInsets.only(bottom: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.accent, // Safety Orange
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                            child: Text(
-                              'BÁN CHẠY',
-                              style: GoogleFonts.inter(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ),
-                        if (discountPercent != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.error,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                            child: Text(
-                              '-$discountPercent%',
-                              style: GoogleFonts.inter(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Product Details Block
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    categoryName.toUpperCase(),
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    product.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.lexend(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.tune_rounded,
+                      size: 16,
                       color: AppColors.textPrimary,
-                      height: 1.3,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  
-                  // Price block (current & original)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        _formatPrice(product.price),
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Custom choice chip Row
+        SizedBox(
+          height: 38,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.zero,
+            itemCount: _categories.length,
+            itemBuilder: (context, index) {
+              final category = _categories[index];
+              final isSelected = category == _selectedCategory;
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedCategory = category;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.textPrimary : Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: isSelected ? AppColors.textPrimary : const Color(0xFFE2E8F0),
+                        width: 1,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              )
+                            ]
+                          : null,
+                    ),
+                    child: Center(
+                      child: Text(
+                        category,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected ? Colors.white : AppColors.textSecondary,
+                          letterSpacing: 0.2,
                         ),
                       ),
-                      if (originalPrice != null) ...[
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            _formatPrice(originalPrice),
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textSecondary,
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
-                ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      margin: const EdgeInsets.only(top: 60),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.category_outlined,
+            size: 48,
+            color: AppColors.textHint,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Không tìm thấy sản phẩm',
+            style: GoogleFonts.lexend(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Không có sản phẩm nào phù hợp với bộ lọc đã chọn.',
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline_rounded, size: 44, color: AppColors.error),
+            const SizedBox(height: 16),
+            Text(
+              'Đã xảy ra lỗi khi tải sản phẩm.',
+              style: GoogleFonts.lexend(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
               ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                context.read<ProductBloc>().add(const ProductListRequested());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Thử lại'),
             ),
           ],
         ),
       ),
     );
-  }
-
-  String _formatPrice(double price) {
-    // Format to currency representation (e.g. 2.450.000đ)
-    final formatStr = price.toInt().toString();
-    final buffer = StringBuffer();
-    for (int i = 0; i < formatStr.length; i++) {
-      buffer.write(formatStr[i]);
-      if ((formatStr.length - 1 - i) % 3 == 0 && i != formatStr.length - 1) {
-        buffer.write('.');
-      }
-    }
-    return '${buffer.toString()}đ';
   }
 
   void _showFilterSheet(BuildContext context) {
@@ -641,7 +437,7 @@ class _ProductListPageState extends State<ProductListPage> {
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         String localSort = _selectedSort;
@@ -649,38 +445,39 @@ class _ProductListPageState extends State<ProductListPage> {
           builder: (context, setSheetState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Center(
                       child: Container(
-                        width: 40,
+                        width: 36,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
+                          color: const Color(0xFFE2E8F0),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     Text(
                       'Bộ lọc & Sắp xếp',
                       style: GoogleFonts.lexend(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     Text(
                       'SẮP XẾP THEO GIÁ',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
                         color: AppColors.textSecondary,
-                        letterSpacing: 0.5,
+                        letterSpacing: 1.0,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -702,7 +499,7 @@ class _ProductListPageState extends State<ProductListPage> {
                       localSort,
                       (val) => setSheetState(() => localSort = val),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     Row(
                       children: [
                         Expanded(
@@ -713,17 +510,17 @@ class _ProductListPageState extends State<ProductListPage> {
                               });
                             },
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFFC1C6D7)),
+                              side: const BorderSide(color: Color(0xFFE2E8F0)),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               padding: const EdgeInsets.symmetric(vertical: 14),
                             ),
                             child: Text(
                               'Thiết lập lại',
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimary,
                               ),
                             ),
@@ -743,15 +540,16 @@ class _ProductListPageState extends State<ProductListPage> {
                               foregroundColor: Colors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               padding: const EdgeInsets.symmetric(vertical: 14),
+                              minimumSize: const Size(0, 0),
                             ),
                             child: Text(
                               'Áp dụng',
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
@@ -777,7 +575,7 @@ class _ProductListPageState extends State<ProductListPage> {
     final isSelected = value == currentValue;
     return InkWell(
       onTap: () => onTap(value),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Row(
@@ -785,22 +583,32 @@ class _ProductListPageState extends State<ProductListPage> {
           children: [
             Text(
               title,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                 color: isSelected ? AppColors.accent : AppColors.textPrimary,
               ),
             ),
             Container(
-              width: 20,
-              height: 20,
+              width: 18,
+              height: 18,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.accent : const Color(0xFFC1C6D7),
-                  width: isSelected ? 6 : 2,
+                  color: isSelected ? AppColors.accent : const Color(0xFFE2E8F0),
+                  width: 2,
                 ),
+                color: isSelected ? AppColors.accent : Colors.transparent,
               ),
+              child: isSelected
+                  ? const Center(
+                      child: Icon(
+                        Icons.check,
+                        size: 10,
+                        color: Colors.white,
+                      ),
+                    )
+                  : null,
             ),
           ],
         ),
@@ -808,3 +616,5 @@ class _ProductListPageState extends State<ProductListPage> {
     );
   }
 }
+
+// Shared ProductTactileCard handles individual card details and tap physics dynamically

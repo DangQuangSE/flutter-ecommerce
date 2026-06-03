@@ -31,12 +31,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // Simulate a short network delay for premium visual feedback (500ms)
     await Future.delayed(const Duration(milliseconds: 500));
     
+    final String email = event.email.trim().toLowerCase();
+    final bool isAdminLogin = (email == 'admin' || email == 'admin@sportpro.com') && event.password == 'admin';
+
     // Mock user for UI demo to bypass backend connectivity issues
     final mockUser = UserEntity(
-      id: 'mock-u-001',
-      email: event.email.isEmpty ? 'demo@sportpro.com' : event.email,
-      name: 'VĐV Sport Pro',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
+      id: isAdminLogin ? 'mock-admin' : 'mock-u-001',
+      email: isAdminLogin ? 'admin@sportpro.com' : (event.email.isEmpty ? 'demo@sportpro.com' : event.email),
+      name: isAdminLogin ? 'Admin Sport Pro' : 'VĐV Sport Pro',
+      avatarUrl: isAdminLogin
+          ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e'
+          : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
       createdAt: DateTime.now(),
     );
     
