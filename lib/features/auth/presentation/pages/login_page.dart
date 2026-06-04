@@ -396,7 +396,10 @@ class _LoginPageState extends State<LoginPage> {
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: GestureDetector(
-                                          onTap: () {},
+                                          onTap: () =>
+                                              context.pushNamed(
+                                                AppRoutes.forgotPassword,
+                                              ),
                                           child: Text(
                                             'Quên mật khẩu?',
                                             style: GoogleFonts.inter(

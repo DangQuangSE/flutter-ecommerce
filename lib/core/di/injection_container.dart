@@ -19,6 +19,14 @@ import 'package:flutter_ecommerce/features/auth/domain/usecases/request_otp_usec
 import 'package:flutter_ecommerce/features/auth/domain/usecases/resend_otp_usecase.dart';
 import 'package:flutter_ecommerce/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/data/datasources/forgot_password_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/data/datasources/forgot_password_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/data/repositories/forgot_password_repository_impl.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/repositories/forgot_password_repository.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/usecases/forgot_password_request_otp_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/usecases/forgot_password_reset_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/usecases/forgot_password_verify_otp_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 
 // Product
 import 'package:flutter_ecommerce/features/product/data/datasources/product_remote_datasource.dart';
@@ -127,6 +135,30 @@ Future<void> configureDependencies() async {
       registerUseCase: sl<RegisterUseCase>(),
       resendOtpUseCase: sl<ResendOtpUseCase>(),
       authRepository: sl<AuthRepository>(),
+    ),
+  );
+
+  // ── Forgot password ─────────────────────────────────────────────────────────
+  sl.registerLazySingleton<ForgotPasswordRemoteDataSource>(
+    () => ForgotPasswordRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ForgotPasswordRepository>(
+    () => ForgotPasswordRepositoryImpl(sl<ForgotPasswordRemoteDataSource>()),
+  );
+  sl.registerFactory<ForgotPasswordRequestOtpUseCase>(
+    () => ForgotPasswordRequestOtpUseCase(sl<ForgotPasswordRepository>()),
+  );
+  sl.registerFactory<ForgotPasswordVerifyOtpUseCase>(
+    () => ForgotPasswordVerifyOtpUseCase(sl<ForgotPasswordRepository>()),
+  );
+  sl.registerFactory<ForgotPasswordResetUseCase>(
+    () => ForgotPasswordResetUseCase(sl<ForgotPasswordRepository>()),
+  );
+  sl.registerFactory<ForgotPasswordBloc>(
+    () => ForgotPasswordBloc(
+      requestOtpUseCase: sl<ForgotPasswordRequestOtpUseCase>(),
+      verifyOtpUseCase: sl<ForgotPasswordVerifyOtpUseCase>(),
+      resetUseCase: sl<ForgotPasswordResetUseCase>(),
     ),
   );
 
