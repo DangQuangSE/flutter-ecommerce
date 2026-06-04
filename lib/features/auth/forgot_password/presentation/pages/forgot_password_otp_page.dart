@@ -76,6 +76,13 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
     _startResendCooldown();
   }
 
+  void _onBackToEmail() {
+    if (context.read<ForgotPasswordBloc>().state is ForgotPasswordLoading) {
+      return;
+    }
+    context.pop();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -105,7 +112,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => context.goNamed(AppRoutes.forgotPassword),
+          onPressed: _onBackToEmail,
         ),
       ),
       body: SafeArea(
@@ -240,6 +247,16 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: isLoading ? null : _onBackToEmail,
+                    child: Text(
+                      'Quay lại nhập email',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ),

@@ -16,6 +16,18 @@ void main() {
     expect(ApiConstants.forgotPasswordReset, '/api/forgot-password/reset');
   });
 
+  test('mapForgotPasswordRequestFailure translates 429 OTP rate limit', () {
+    expect(
+      mapForgotPasswordRequestFailure(
+        const NetworkFailure(
+          'You are requesting OTP too frequently. Please try again in a few seconds',
+          statusCode: 429,
+        ),
+      ),
+      forgotPasswordOtpRateLimitMessage,
+    );
+  });
+
   test('mapForgotPasswordOtpFailure normalizes distinct BE messages', () {
     expect(
       mapForgotPasswordOtpFailure(
