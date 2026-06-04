@@ -40,6 +40,26 @@ import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.da
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 
+// Brand
+import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/brand/data/repositories/brand_repository_impl.dart';
+import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
+import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
+
+// Color
+import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/color/data/repositories/product_color_repository_impl.dart';
+import 'package:flutter_ecommerce/features/color/domain/repositories/product_color_repository.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
+
+import 'package:flutter_ecommerce/features/color/data/datasources/printing_color_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/color/data/datasources/printing_color_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/color/data/repositories/printing_color_repository_impl.dart';
+import 'package:flutter_ecommerce/features/color/domain/repositories/printing_color_repository.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
+
 // Cart
 import 'package:flutter_ecommerce/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:flutter_ecommerce/features/cart/domain/repositories/cart_repository.dart';
@@ -176,6 +196,39 @@ Future<void> configureDependencies() async {
       updateProductUseCase: sl<UpdateProductUseCase>(),
       deleteProductUseCase: sl<DeleteProductUseCase>(),
     ),
+  );
+
+  // Brand Management
+  sl.registerLazySingleton<BrandRemoteDataSource>(
+    () => BrandRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<BrandRepository>(
+    () => BrandRepositoryImpl(sl<BrandRemoteDataSource>()),
+  );
+  sl.registerFactory<BrandCubit>(
+    () => BrandCubit(sl<BrandRepository>()),
+  );
+
+  // Product Color Management
+  sl.registerLazySingleton<ProductColorRemoteDataSource>(
+    () => ProductColorRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ProductColorRepository>(
+    () => ProductColorRepositoryImpl(sl<ProductColorRemoteDataSource>()),
+  );
+  sl.registerFactory<ProductColorCubit>(
+    () => ProductColorCubit(sl<ProductColorRepository>()),
+  );
+
+  // Printing Color Management
+  sl.registerLazySingleton<PrintingColorRemoteDataSource>(
+    () => PrintingColorRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<PrintingColorRepository>(
+    () => PrintingColorRepositoryImpl(sl<PrintingColorRemoteDataSource>()),
+  );
+  sl.registerFactory<PrintingColorCubit>(
+    () => PrintingColorCubit(sl<PrintingColorRepository>()),
   );
 
   // ── Cart ────────────────────────────────────────────────────────────────────

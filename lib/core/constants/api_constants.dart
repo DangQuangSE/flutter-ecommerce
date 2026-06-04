@@ -13,6 +13,15 @@ abstract final class ApiConstants {
   static const String register = '/api/auth/register';
   static const String resendOtp = '/api/auth/resend-otp';
 
+  static const String brands = '/api/brands';
+  static const String adminBrands = '/api/admin/brands';
+  
+  static const String colors = '/api/colors';
+  static const String adminColors = '/api/admin/colors';
+  
+  static const String printingColors = '/api/public/printing/colors';
+  static const String adminPrintingColors = '/api/admin/printing/colors';
+
   // TODO: align with backend when product/cart APIs are wired
   static const String products = '/products';
   static const String cart = '/cart';
