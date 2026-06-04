@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/utils/extensions/string_extensions.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
@@ -17,6 +18,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _hideBlocLoginError = false;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(text: 'customer@gmail.com');
   final _passwordController = TextEditingController(text: '123456');
@@ -31,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
+      setState(() => _hideBlocLoginError = false);
       context.read<AuthBloc>().add(
             AuthLoginRequested(
               email: _emailController.text.trim(),
@@ -203,18 +206,20 @@ class _LoginPageState extends State<LoginPage> {
                                   if (state.user.isAdmin) {
                                     context.goNamed(AppRoutes.adminDashboard);
                                   } else {
-                                     context.goNamed(AppRoutes.home);
+                                    context.goNamed(AppRoutes.home);
                                   }
-                                } else if (state is AuthError) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(state.message),
-                                      backgroundColor: AppColors.error,
-                                    ),
-                                  );
                                 }
                               },
                               builder: (context, state) {
+                                final isLoading = state is AuthLoading;
+                                final loginError = _hideBlocLoginError
+                                    ? null
+                                    : switch (state) {
+                                        AuthLoginFailed(:final message) => message,
+                                        _ => null,
+                                      };
+                                final hasCredentialError = loginError != null;
+
                                 return Form(
                                   key: _formKey,
                                   child: Column(
@@ -234,6 +239,15 @@ class _LoginPageState extends State<LoginPage> {
                                       TextFormField(
                                         controller: _emailController,
                                         keyboardType: TextInputType.emailAddress,
+                                        autovalidateMode:
+                                            AutovalidateMode.onUserInteraction,
+                                        onChanged: (_) {
+                                          if (!_hideBlocLoginError) {
+                                            setState(
+                                              () => _hideBlocLoginError = true,
+                                            );
+                                          }
+                                        },
                                         decoration: InputDecoration(
                                           hintText: 'vvd@example.com',
                                           prefixIcon: const Icon(
@@ -243,21 +257,42 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFC1C6D7),
+                                            borderSide: BorderSide(
+                                              color: hasCredentialError
+                                                  ? AppColors.error
+                                                  : const Color(0xFFC1C6D7),
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
+                                            borderSide: BorderSide(
+                                              color: hasCredentialError
+                                                  ? AppColors.error
+                                                  : AppColors.primary,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
                                             borderSide: const BorderSide(
-                                              color: AppColors.primary,
+                                              color: AppColors.error,
+                                            ),
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                              color: AppColors.error,
                                               width: 1.5,
                                             ),
                                           ),
                                         ),
                                         validator: (v) {
-                                          if (v?.isEmpty ?? true) {
+                                          final value = v?.trim() ?? '';
+                                          if (value.isEmpty) {
                                             return 'Vui lòng nhập email';
+                                          }
+                                          if (!value.isValidEmail) {
+                                            return 'Email không đúng định dạng';
                                           }
                                           return null;
                                         },
@@ -278,6 +313,13 @@ class _LoginPageState extends State<LoginPage> {
                                       TextFormField(
                                         controller: _passwordController,
                                         obscureText: _obscurePassword,
+                                        onChanged: (_) {
+                                          if (!_hideBlocLoginError) {
+                                            setState(
+                                              () => _hideBlocLoginError = true,
+                                            );
+                                          }
+                                        },
                                         decoration: InputDecoration(
                                           hintText: '••••••••',
                                           prefixIcon: const Icon(
@@ -301,14 +343,31 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFC1C6D7),
+                                            borderSide: BorderSide(
+                                              color: hasCredentialError
+                                                  ? AppColors.error
+                                                  : const Color(0xFFC1C6D7),
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
+                                            borderSide: BorderSide(
+                                              color: hasCredentialError
+                                                  ? AppColors.error
+                                                  : AppColors.primary,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
                                             borderSide: const BorderSide(
-                                              color: AppColors.primary,
+                                              color: AppColors.error,
+                                            ),
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                              color: AppColors.error,
                                               width: 1.5,
                                             ),
                                           ),
@@ -320,6 +379,17 @@ class _LoginPageState extends State<LoginPage> {
                                           return null;
                                         },
                                       ),
+                                      if (loginError != null) ...[
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          loginError,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: AppColors.error,
+                                            height: 1.3,
+                                          ),
+                                        ),
+                                      ],
                                       const SizedBox(height: 8),
 
                                       // Quên mật khẩu
@@ -342,7 +412,7 @@ class _LoginPageState extends State<LoginPage> {
 
                                       // Primary Action "Vào sân"
                                       ElevatedButton(
-                                        onPressed: state is AuthLoading ? null : _onSubmit,
+                                        onPressed: isLoading ? null : _onSubmit,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.accent,
                                           foregroundColor: Colors.white,
@@ -352,7 +422,7 @@ class _LoginPageState extends State<LoginPage> {
                                             borderRadius: BorderRadius.circular(8),
                                           ),
                                         ),
-                                        child: state is AuthLoading
+                                        child: isLoading
                                             ? const SizedBox(
                                                 height: 20,
                                                 width: 20,

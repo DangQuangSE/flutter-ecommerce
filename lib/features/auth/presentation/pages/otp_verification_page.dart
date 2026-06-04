@@ -62,7 +62,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             email: widget.extra.email,
             otp: otp,
             password: widget.extra.password,
-            name: widget.extra.name,
           ),
         );
   }
@@ -75,7 +74,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           AuthResendOtpRequested(
             email: widget.extra.email,
             password: widget.extra.password,
-            name: widget.extra.name,
           ),
         );
     _startResendCooldown();
@@ -119,11 +117,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthRegistrationSuccess) {
-                final msg = state.welcomeName != null
-                    ? 'Đăng ký thành công, ${state.welcomeName}! Vui lòng đăng nhập.'
-                    : 'Đăng ký thành công! Vui lòng đăng nhập.';
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(msg)),
+                  const SnackBar(
+                    content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
+                  ),
                 );
                 context.goNamed(AppRoutes.login);
               } else if (state is AuthRegisterAccountExists) {

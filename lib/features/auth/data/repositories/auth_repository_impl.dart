@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/auth/data/models/user_model.dart';
@@ -31,6 +33,8 @@ class AuthRepositoryImpl implements AuthRepository {
         await _localDataSource.clearSession();
         rethrow;
       }
+    } on DioException catch (e) {
+      return ResultFailure(failureFromDioException(e));
     } on UnauthorisedException catch (e) {
       return ResultFailure(AuthFailure(e.message));
     } on ServerException catch (e) {
@@ -106,6 +110,8 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await action();
       return const Success(null);
+    } on DioException catch (e) {
+      return ResultFailure(failureFromDioException(e));
     } on ServerException catch (e) {
       return ResultFailure(NetworkFailure(e.message, statusCode: e.statusCode));
     } on NetworkException catch (e) {
