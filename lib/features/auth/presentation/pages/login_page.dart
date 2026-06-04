@@ -410,7 +410,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                       const SizedBox(height: 24),
 
-                                      // Primary Action "Vào sân"
+                                      // Primary Action "Đăng nhập"
                                       ElevatedButton(
                                         onPressed: isLoading ? null : _onSubmit,
                                         style: ElevatedButton.styleFrom(
@@ -438,7 +438,7 @@ class _LoginPageState extends State<LoginPage> {
                                                     MainAxisAlignment.center,
                                                 children: [
                                                   Text(
-                                                    'Vào sân',
+                                                    'Đăng nhập',
                                                     style: GoogleFonts.lexend(
                                                       fontSize: 15,
                                                       fontWeight: FontWeight.w700,
@@ -463,77 +463,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-
-                    // Alternate authentication (Divider)
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Divider(color: Color(0xFFC1C6D7)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'Hoặc',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                          child: Divider(color: Color(0xFFC1C6D7)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Google Login Button (Full-width, NO Apple Login)
-                    OutlinedButton(
-                      onPressed: () {
-                        // Xử lý đăng nhập bằng Google
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Tính năng Đăng nhập bằng Google đang được triển khai.',
-                            ),
-                          ),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFFC1C6D7)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.network(
-                            'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png',
-                            height: 20,
-                            width: 20,
-                            errorBuilder: (context, error, stackTrace) => const Icon(
-                              Icons.g_mobiledata_rounded,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Google',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
 
                     // Footer terms and policy
                     Padding(
