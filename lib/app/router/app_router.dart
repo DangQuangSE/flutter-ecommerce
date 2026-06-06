@@ -6,6 +6,12 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/models/forgot_password_otp_extra.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/models/forgot_password_reset_extra.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/pages/forgot_password_email_page.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/pages/forgot_password_otp_page.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/pages/forgot_password_reset_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/login_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/register_page.dart';
@@ -39,6 +45,11 @@ import 'package:flutter_ecommerce/features/admin/product/presentation/pages/admi
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_dashboard_page.dart';
+import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
+import 'package:flutter_ecommerce/features/brand/presentation/pages/brand_management_page.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
+import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -63,10 +74,12 @@ class AppRouter {
     refreshListenable: GoRouterRefreshStream(sl<AuthBloc>().stream),
     redirect: (BuildContext context, GoRouterState state) {
       final path = state.uri.path;
+      final isForgotPasswordFlow = path.startsWith('/forgot-password');
       final isGoingToAuth = path == '/login' ||
           path == '/register' ||
           path == '/register/otp' ||
-          path == '/splash';
+          path == '/splash' ||
+          isForgotPasswordFlow;
 
       final authState = sl<AuthBloc>().state;
       if (authState is AuthOtpSent || authState is AuthRegistrationSuccess) {
@@ -79,6 +92,9 @@ class AppRouter {
 
       if (isAuthenticated) {
         final user = (authState as AuthAuthenticated).user;
+        if (isForgotPasswordFlow) {
+          return user.isAdmin ? '/admin' : '/home';
+        }
         if (user.isAdmin) {
           if (isGoingToAuth || path == '/home') return '/admin';
         } else {
@@ -118,6 +134,49 @@ class AppRouter {
           ),
         ],
       ),
+      ShellRoute(
+        builder: (context, state, child) => BlocProvider(
+          create: (_) => sl<ForgotPasswordBloc>(),
+          child: child,
+        ),
+        routes: [
+          GoRoute(
+            path: '/forgot-password',
+            name: AppRoutes.forgotPassword,
+            builder: (context, state) => const ForgotPasswordEmailPage(),
+            routes: [
+              GoRoute(
+                path: 'otp',
+                name: AppRoutes.forgotPasswordOtp,
+                redirect: (context, state) {
+                  if (state.extra is! ForgotPasswordOtpExtra) {
+                    return '/forgot-password';
+                  }
+                  return null;
+                },
+                builder: (context, state) {
+                  final extra = state.extra! as ForgotPasswordOtpExtra;
+                  return ForgotPasswordOtpPage(extra: extra);
+                },
+              ),
+              GoRoute(
+                path: 'reset',
+                name: AppRoutes.forgotPasswordReset,
+                redirect: (context, state) {
+                  if (state.extra is! ForgotPasswordResetExtra) {
+                    return '/forgot-password';
+                  }
+                  return null;
+                },
+                builder: (context, state) {
+                  final extra = state.extra! as ForgotPasswordResetExtra;
+                  return ForgotPasswordResetPage(extra: extra);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
 
       // Admin Dashboard Route
       GoRoute(
@@ -126,6 +185,25 @@ class AppRouter {
         builder: (context, state) => BlocProvider(
           create: (_) => sl<AdminBloc>()..add(const AdminStatsRequested()),
           child: const AdminDashboardPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/brands',
+        name: AppRoutes.adminBrands,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<BrandCubit>()..loadBrands(),
+          child: const BrandManagementPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/colors',
+        name: AppRoutes.adminColors,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
+            BlocProvider(create: (_) => sl<PrintingColorCubit>()..loadColors()),
+          ],
+          child: const ColorManagementPage(),
         ),
       ),
 

@@ -9,6 +9,7 @@ import 'package:flutter_ecommerce/features/auth/domain/usecases/resend_otp_useca
 import 'package:flutter_ecommerce/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/utils/auth_error_messages.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase _loginUseCase;
@@ -45,15 +46,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _loginUseCase(
-      email: event.email.trim(),
-      password: event.password,
-    );
-    switch (result) {
-      case Success(:final data):
-        emit(AuthAuthenticated(data));
-      case ResultFailure(:final failure):
-        emit(AuthError(_failureMessage(failure)));
+    try {
+      final result = await _loginUseCase(
+        email: event.email.trim(),
+        password: event.password,
+      );
+      switch (result) {
+        case Success(:final data):
+          emit(AuthAuthenticated(data));
+        case ResultFailure(:final failure):
+          emit(AuthLoginFailed(mapLoginFailureMessage(failure)));
+      }
+    } catch (_) {
+      emit(const AuthLoginFailed('Không thể đăng nhập. Vui lòng thử lại.'));
     }
   }
 
@@ -62,16 +67,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _requestOtpUseCase(email: event.email.trim());
-    switch (result) {
-      case Success():
-        emit(AuthOtpSent(
-          email: event.email.trim(),
-          password: event.password,
-          name: event.name.trim(),
-        ));
-      case ResultFailure(:final failure):
-        emit(AuthError(_failureMessage(failure)));
+    try {
+      final result = await _requestOtpUseCase(email: event.email.trim());
+      switch (result) {
+        case Success():
+          emit(AuthOtpSent(
+            email: event.email.trim(),
+            password: event.password,
+          ));
+        case ResultFailure(:final failure):
+          _emitRegisterFailure(failure, emit);
+      }
+    } catch (_) {
+      emit(const AuthError('Không thể đăng ký. Vui lòng thử lại.'));
     }
   }
 
@@ -100,15 +108,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     switch (registerResult) {
       case Success():
-        emit(AuthRegistrationSuccess(
-          welcomeName: event.name.trim().isEmpty ? null : event.name.trim(),
-        ));
+        emit(const AuthRegistrationSuccess());
       case ResultFailure(:final failure):
-        if (failure is NetworkFailure && failure.statusCode == 409) {
-          emit(AuthRegisterAccountExists(_failureMessage(failure)));
-        } else {
-          emit(AuthError(_failureMessage(failure)));
-        }
+        _emitRegisterFailure(failure, emit);
     }
   }
 
@@ -123,10 +125,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthOtpSent(
           email: event.email.trim(),
           password: event.password,
-          name: event.name.trim(),
         ));
       case ResultFailure(:final failure):
-        emit(AuthError(_failureMessage(failure)));
+        _emitRegisterFailure(failure, emit);
     }
   }
 
@@ -153,6 +154,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       case ResultFailure():
         emit(const AuthUnauthenticated());
+    }
+  }
+
+  void _emitRegisterFailure(Failure failure, Emitter<AuthState> emit) {
+    final message = mapRegisterFailureMessage(failure);
+    if (isRegisterEmailExistsFailure(failure)) {
+      emit(AuthRegisterAccountExists(message));
+    } else {
+      emit(AuthError(message));
     }
   }
 

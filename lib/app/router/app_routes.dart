@@ -3,6 +3,9 @@ abstract final class AppRoutes {
   static const String login = 'login';
   static const String register = 'register';
   static const String registerOtp = 'registerOtp';
+  static const String forgotPassword = 'forgotPassword';
+  static const String forgotPasswordOtp = 'forgotPasswordOtp';
+  static const String forgotPasswordReset = 'forgotPasswordReset';
   static const String adminDashboard = 'admin-dashboard';
 
   static const String home = 'home';
@@ -33,4 +36,6 @@ abstract final class AppRoutes {
   static const String adminProductDetail = 'admin-product-detail';
   static const String adminProductCreate = 'admin-product-create';
   static const String adminProductEdit = 'admin-product-edit';
+  static const String adminBrands = 'admin-brands';
+  static const String adminColors = 'admin-colors';
 }

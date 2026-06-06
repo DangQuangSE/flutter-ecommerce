@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/utils/extensions/string_extensions.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
@@ -19,15 +20,14 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _hasNavigatedToOtp = false;
+  bool _hideBlocEmailError = false;
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -35,10 +35,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
-      setState(() => _hasNavigatedToOtp = false);
+      setState(() {
+        _hasNavigatedToOtp = false;
+        _hideBlocEmailError = false;
+      });
       context.read<AuthBloc>().add(
             AuthOtpRequested(
-              name: _nameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text,
             ),
@@ -212,68 +214,26 @@ class _RegisterPageState extends State<RegisterPage> {
                                     extra: RegisterOtpExtra(
                                       email: state.email,
                                       password: state.password,
-                                      name: state.name,
-                                    ),
-                                  );
-                                } else if (state is AuthError) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(state.message),
-                                      backgroundColor: AppColors.error,
                                     ),
                                   );
                                 }
                               },
                               builder: (context, state) {
+                                final isLoading = state is AuthLoading;
+                                final emailApiError = _hideBlocEmailError
+                                    ? null
+                                    : switch (state) {
+                                        AuthRegisterAccountExists(:final message) =>
+                                          message,
+                                        AuthError(:final message) => message,
+                                        _ => null,
+                                      };
+
                                 return Form(
                                   key: _formKey,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                      // Name field
-                                      Text(
-                                        'HỌ VÀ TÊN',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textPrimary,
-                                          letterSpacing: 0.8,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      TextFormField(
-                                        controller: _nameController,
-                                        keyboardType: TextInputType.name,
-                                        decoration: InputDecoration(
-                                          hintText: 'Nguyễn Văn A',
-                                          prefixIcon: const Icon(
-                                            Icons.person_outline_rounded,
-                                            size: 20,
-                                            color: AppColors.textSecondary,
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFC1C6D7),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: AppColors.primary,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                        ),
-                                        validator: (v) {
-                                          if (v?.isEmpty ?? true) {
-                                            return 'Vui lòng nhập họ và tên';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 20),
-
                                       // Email field
                                       Text(
                                         'EMAIL',
@@ -288,6 +248,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                       TextFormField(
                                         controller: _emailController,
                                         keyboardType: TextInputType.emailAddress,
+                                        autovalidateMode:
+                                            AutovalidateMode.onUserInteraction,
+                                        onChanged: (_) {
+                                          if (!_hideBlocEmailError) {
+                                            setState(
+                                              () => _hideBlocEmailError = true,
+                                            );
+                                          }
+                                        },
                                         decoration: InputDecoration(
                                           hintText: 'vvd@example.com',
                                           prefixIcon: const Icon(
@@ -297,25 +266,57 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ),
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFC1C6D7),
+                                            borderSide: BorderSide(
+                                              color: emailApiError != null
+                                                  ? AppColors.error
+                                                  : const Color(0xFFC1C6D7),
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
+                                            borderSide: BorderSide(
+                                              color: emailApiError != null
+                                                  ? AppColors.error
+                                                  : AppColors.primary,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
                                             borderSide: const BorderSide(
-                                              color: AppColors.primary,
+                                              color: AppColors.error,
+                                            ),
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                              color: AppColors.error,
                                               width: 1.5,
                                             ),
                                           ),
                                         ),
                                         validator: (v) {
-                                          if (v?.isEmpty ?? true) {
+                                          final value = v?.trim() ?? '';
+                                          if (value.isEmpty) {
                                             return 'Vui lòng nhập email';
+                                          }
+                                          if (!value.isValidEmail) {
+                                            return 'Email không đúng định dạng';
                                           }
                                           return null;
                                         },
                                       ),
+                                      if (emailApiError != null) ...[
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          emailApiError,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: AppColors.error,
+                                            height: 1.3,
+                                          ),
+                                        ),
+                                      ],
                                       const SizedBox(height: 20),
 
                                       // Password field
@@ -381,7 +382,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                                       // Primary Action "Đăng ký"
                                       ElevatedButton(
-                                        onPressed: state is AuthLoading ? null : _onSubmit,
+                                        onPressed: isLoading ? null : _onSubmit,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.accent,
                                           foregroundColor: Colors.white,
@@ -391,7 +392,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                             borderRadius: BorderRadius.circular(8),
                                           ),
                                         ),
-                                        child: state is AuthLoading
+                                        child: isLoading
                                             ? const SizedBox(
                                                 height: 20,
                                                 width: 20,
@@ -432,77 +433,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-
-                    // Alternate authentication (Divider)
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Divider(color: Color(0xFFC1C6D7)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'Hoặc',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                          child: Divider(color: Color(0xFFC1C6D7)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Google Login Button (Full-width, NO Apple Login)
-                    OutlinedButton(
-                      onPressed: () {
-                        // Xử lý đăng ký bằng Google
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Tính năng Đăng ký bằng Google đang được triển khai.',
-                            ),
-                          ),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFFC1C6D7)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.network(
-                            'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png',
-                            height: 20,
-                            width: 20,
-                            errorBuilder: (context, error, stackTrace) => const Icon(
-                              Icons.g_mobiledata_rounded,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Google',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
 
                     // Footer terms and policy
                     Padding(

@@ -13,6 +13,24 @@ abstract final class ApiConstants {
   static const String register = '/api/auth/register';
   static const String resendOtp = '/api/auth/resend-otp';
 
+  // Forgot password — verify body uses `otpCode` (not register's `otp`).
+  // request-otp: { email } → message (neutral), data: null
+  // verify-otp: { email, otpCode } → data: { message, forgotPasswordToken }
+  // reset: { forgotPasswordToken, newPassword }
+  static const String forgotPasswordRequestOtp =
+      '/api/forgot-password/request-otp';
+  static const String forgotPasswordVerifyOtp =
+      '/api/forgot-password/verify-otp';
+  static const String forgotPasswordReset = '/api/forgot-password/reset';
+  static const String brands = '/api/brands';
+  static const String adminBrands = '/api/admin/brands';
+  
+  static const String colors = '/api/colors';
+  static const String adminColors = '/api/admin/colors';
+  
+  static const String printingColors = '/api/public/printing/colors';
+  static const String adminPrintingColors = '/api/admin/printing/colors';
+
   // TODO: align with backend when product/cart APIs are wired
   static const String products = '/products';
   static const String cart = '/cart';

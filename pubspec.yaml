@@ -43,6 +43,7 @@ dependencies:
   # Code generation runtime annotations
   freezed_annotation: ^2.4.0
   json_annotation: ^4.9.0
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1555,6 +1555,24 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                   const Divider(height: 1),
                   ListTile(
+                    leading: const Icon(Icons.branding_watermark_rounded, color: AppColors.primary),
+                    title: Text('Quản lý Thương hiệu', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                    onTap: () {
+                      context.pushNamed(AppRoutes.adminBrands);
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.color_lens_rounded, color: AppColors.primary),
+                    title: Text('Quản lý Màu sắc', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                    onTap: () {
+                      context.pushNamed(AppRoutes.adminColors);
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
                     leading: const Icon(Icons.logout_rounded, color: AppColors.error),
                     title: Text('Đăng xuất tài khoản', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.error)),
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.error),

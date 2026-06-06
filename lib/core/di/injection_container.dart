@@ -44,6 +44,14 @@ import 'package:flutter_ecommerce/features/auth/domain/usecases/request_otp_usec
 import 'package:flutter_ecommerce/features/auth/domain/usecases/resend_otp_usecase.dart';
 import 'package:flutter_ecommerce/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/data/datasources/forgot_password_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/data/datasources/forgot_password_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/data/repositories/forgot_password_repository_impl.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/repositories/forgot_password_repository.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/usecases/forgot_password_request_otp_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/usecases/forgot_password_reset_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/domain/usecases/forgot_password_verify_otp_usecase.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 
 // Product
 import 'package:flutter_ecommerce/features/product/data/datasources/product_remote_datasource.dart';
@@ -64,6 +72,26 @@ import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_stats
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
+
+// Brand
+import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/brand/data/repositories/brand_repository_impl.dart';
+import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
+import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
+
+// Color
+import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/color/data/repositories/product_color_repository_impl.dart';
+import 'package:flutter_ecommerce/features/color/domain/repositories/product_color_repository.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
+
+import 'package:flutter_ecommerce/features/color/data/datasources/printing_color_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/color/data/datasources/printing_color_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/color/data/repositories/printing_color_repository_impl.dart';
+import 'package:flutter_ecommerce/features/color/domain/repositories/printing_color_repository.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 
 // Cart
 import 'package:flutter_ecommerce/features/cart/data/repositories/cart_repository_impl.dart';
@@ -156,6 +184,30 @@ Future<void> configureDependencies() async {
     ),
   );
 
+  // ── Forgot password ─────────────────────────────────────────────────────────
+  sl.registerLazySingleton<ForgotPasswordRemoteDataSource>(
+    () => ForgotPasswordRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ForgotPasswordRepository>(
+    () => ForgotPasswordRepositoryImpl(sl<ForgotPasswordRemoteDataSource>()),
+  );
+  sl.registerFactory<ForgotPasswordRequestOtpUseCase>(
+    () => ForgotPasswordRequestOtpUseCase(sl<ForgotPasswordRepository>()),
+  );
+  sl.registerFactory<ForgotPasswordVerifyOtpUseCase>(
+    () => ForgotPasswordVerifyOtpUseCase(sl<ForgotPasswordRepository>()),
+  );
+  sl.registerFactory<ForgotPasswordResetUseCase>(
+    () => ForgotPasswordResetUseCase(sl<ForgotPasswordRepository>()),
+  );
+  sl.registerFactory<ForgotPasswordBloc>(
+    () => ForgotPasswordBloc(
+      requestOtpUseCase: sl<ForgotPasswordRequestOtpUseCase>(),
+      verifyOtpUseCase: sl<ForgotPasswordVerifyOtpUseCase>(),
+      resetUseCase: sl<ForgotPasswordResetUseCase>(),
+    ),
+  );
+
   // ── Product ─────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<ProductRemoteDataSource>(
     () => ProductRemoteDataSourceImpl(sl<DioClient>()),
@@ -202,6 +254,39 @@ Future<void> configureDependencies() async {
       updateProductUseCase: sl<UpdateProductUseCase>(),
       deleteProductUseCase: sl<DeleteProductUseCase>(),
     ),
+  );
+
+  // Brand Management
+  sl.registerLazySingleton<BrandRemoteDataSource>(
+    () => BrandRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<BrandRepository>(
+    () => BrandRepositoryImpl(sl<BrandRemoteDataSource>()),
+  );
+  sl.registerFactory<BrandCubit>(
+    () => BrandCubit(sl<BrandRepository>()),
+  );
+
+  // Product Color Management
+  sl.registerLazySingleton<ProductColorRemoteDataSource>(
+    () => ProductColorRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ProductColorRepository>(
+    () => ProductColorRepositoryImpl(sl<ProductColorRemoteDataSource>()),
+  );
+  sl.registerFactory<ProductColorCubit>(
+    () => ProductColorCubit(sl<ProductColorRepository>()),
+  );
+
+  // Printing Color Management
+  sl.registerLazySingleton<PrintingColorRemoteDataSource>(
+    () => PrintingColorRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<PrintingColorRepository>(
+    () => PrintingColorRepositoryImpl(sl<PrintingColorRemoteDataSource>()),
+  );
+  sl.registerFactory<PrintingColorCubit>(
+    () => PrintingColorCubit(sl<PrintingColorRepository>()),
   );
 
   // ── Cart ────────────────────────────────────────────────────────────────────
