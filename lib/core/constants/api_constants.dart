@@ -22,6 +22,14 @@ abstract final class ApiConstants {
   static const String forgotPasswordVerifyOtp =
       '/api/forgot-password/verify-otp';
   static const String forgotPasswordReset = '/api/forgot-password/reset';
+  static const String brands = '/api/brands';
+  static const String adminBrands = '/api/admin/brands';
+  
+  static const String colors = '/api/colors';
+  static const String adminColors = '/api/admin/colors';
+  
+  static const String printingColors = '/api/public/printing/colors';
+  static const String adminPrintingColors = '/api/admin/printing/colors';
 
   // TODO: align with backend when product/cart APIs are wired
   static const String products = '/products';

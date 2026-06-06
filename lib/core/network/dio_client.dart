@@ -9,6 +9,26 @@ import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
 
+import 'package:dio/io.dart';
+import 'package:flutter_ecommerce/core/errors/exceptions.dart';
+
+class _AppExceptionDio extends DioForNative {
+  _AppExceptionDio([super.options]);
+
+  @override
+  Future<Response<T>> fetch<T>(RequestOptions requestOptions) async {
+    try {
+      return await super.fetch<T>(requestOptions);
+    } on DioException catch (e) {
+      final error = e.error;
+      if (error is AppException) {
+        throw error;
+      }
+      rethrow;
+    }
+  }
+}
+
 class DioClient {
   late final Dio dio;
 
@@ -16,7 +36,7 @@ class DioClient {
     required AuthTokenStorage authTokenStorage,
     required CookieJar cookieJar,
   }) {
-    dio = Dio(
+    dio = _AppExceptionDio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
         connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),

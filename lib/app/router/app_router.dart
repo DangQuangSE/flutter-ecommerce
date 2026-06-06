@@ -37,6 +37,11 @@ import 'package:flutter_ecommerce/features/product/presentation/pages/product_cu
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_dashboard_page.dart';
+import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
+import 'package:flutter_ecommerce/features/brand/presentation/pages/brand_management_page.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
+import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -172,6 +177,25 @@ class AppRouter {
         builder: (context, state) => BlocProvider(
           create: (_) => sl<AdminBloc>()..add(const AdminStatsRequested()),
           child: const AdminDashboardPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/brands',
+        name: AppRoutes.adminBrands,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<BrandCubit>()..loadBrands(),
+          child: const BrandManagementPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/colors',
+        name: AppRoutes.adminColors,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
+            BlocProvider(create: (_) => sl<PrintingColorCubit>()..loadColors()),
+          ],
+          child: const ColorManagementPage(),
         ),
       ),
 

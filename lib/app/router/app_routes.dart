@@ -30,4 +30,7 @@ abstract final class AppRoutes {
   static const String chatDetail = 'chat-detail';
 
   static const String productCustomizer = 'product-customizer';
+
+  static const String adminBrands = 'admin-brands';
+  static const String adminColors = 'admin-colors';
 }
