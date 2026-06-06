@@ -37,6 +37,7 @@ class _SplashPageState extends State<SplashPage> {
             }
           case AuthUnauthenticated():
           case AuthError():
+          case AuthLoginFailed():
           case AuthOtpSent():
           case AuthRegistrationSuccess():
           case AuthRegisterAccountExists():

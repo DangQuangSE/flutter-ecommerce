@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/constants/app_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
+import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
 
@@ -124,28 +125,58 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
 }
 
 class _ErrorInterceptor extends Interceptor {
+  DioException _rejectWith(
+    DioException err,
+    Object error,
+  ) {
+    return DioException(
+      requestOptions: err.requestOptions,
+      response: err.response,
+      type: err.type,
+      error: error,
+      message: err.message,
+    );
+  }
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     switch (err.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        throw const NetworkException('Connection timed out');
+        handler.reject(
+          _rejectWith(err, const NetworkException('Connection timed out')),
+        );
+        return;
       case DioExceptionType.badResponse:
         final statusCode = err.response?.statusCode ?? 0;
+        final message =
+            extractApiMessage(err.response?.data) ?? 'Server error';
         if (statusCode == 401) {
-          throw UnauthorisedException(
-            err.response?.data?['message'] as String? ?? 'Unauthorised',
+          handler.reject(
+            _rejectWith(err, UnauthorisedException(message)),
           );
+          return;
         }
-        throw ServerException(
-          err.response?.data?['message'] as String? ?? 'Server error',
-          statusCode: statusCode,
+        handler.reject(
+          _rejectWith(
+            err,
+            ServerException(message, statusCode: statusCode),
+          ),
         );
+        return;
       case DioExceptionType.connectionError:
-        throw const NetworkException('No internet connection');
+        handler.reject(
+          _rejectWith(err, const NetworkException('No internet connection')),
+        );
+        return;
       default:
-        throw NetworkException(err.message ?? 'Unexpected error');
+        handler.reject(
+          _rejectWith(
+            err,
+            NetworkException(err.message ?? 'Unexpected error'),
+          ),
+        );
     }
   }
 }

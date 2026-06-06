@@ -7,21 +7,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_event.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_state.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/models/forgot_password_otp_extra.dart';
+import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/models/forgot_password_reset_extra.dart';
 
-class OtpVerificationPage extends StatefulWidget {
-  final RegisterOtpExtra extra;
+class ForgotPasswordOtpPage extends StatefulWidget {
+  final ForgotPasswordOtpExtra extra;
 
-  const OtpVerificationPage({super.key, required this.extra});
+  const ForgotPasswordOtpPage({super.key, required this.extra});
 
   @override
-  State<OtpVerificationPage> createState() => _OtpVerificationPageState();
+  State<ForgotPasswordOtpPage> createState() => _ForgotPasswordOtpPageState();
 }
 
-class _OtpVerificationPageState extends State<OtpVerificationPage> {
+class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
   final _pinController = TextEditingController();
   Timer? _resendTimer;
   int _resendSeconds = 0;
@@ -57,11 +58,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     final otp = _pinController.text.trim();
     if (otp.length != 6) return;
     setState(() => _inlineError = null);
-    context.read<AuthBloc>().add(
-          AuthOtpVerifyRequested(
+    context.read<ForgotPasswordBloc>().add(
+          ForgotPasswordOtpSubmitted(
             email: widget.extra.email,
-            otp: otp,
-            password: widget.extra.password,
+            otpCode: otp,
           ),
         );
   }
@@ -70,13 +70,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     if (_resendSeconds > 0) return;
     _pinController.clear();
     setState(() => _inlineError = null);
-    context.read<AuthBloc>().add(
-          AuthResendOtpRequested(
-            email: widget.extra.email,
-            password: widget.extra.password,
-          ),
+    context.read<ForgotPasswordBloc>().add(
+          ForgotPasswordResendRequested(email: widget.extra.email),
         );
     _startResendCooldown();
+  }
+
+  void _onBackToEmail() {
+    if (context.read<ForgotPasswordBloc>().state is ForgotPasswordLoading) {
+      return;
+    }
+    context.pop();
   }
 
   @override
@@ -108,43 +112,34 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => context.goNamed(AppRoutes.register),
+          onPressed: _onBackToEmail,
         ),
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: BlocConsumer<AuthBloc, AuthState>(
+          child: BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
             listener: (context, state) {
-              if (state is AuthRegistrationSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
+              if (state is ForgotPasswordOtpVerified) {
+                context.pushNamed(
+                  AppRoutes.forgotPasswordReset,
+                  extra: ForgotPasswordResetExtra(
+                    email: state.email,
+                    forgotPasswordToken: state.forgotPasswordToken,
                   ),
                 );
-                context.goNamed(AppRoutes.login);
-              } else if (state is AuthRegisterAccountExists) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    action: SnackBarAction(
-                      label: 'Đăng nhập',
-                      onPressed: () => context.goNamed(AppRoutes.login),
-                    ),
-                  ),
-                );
-              } else if (state is AuthError) {
-                setState(() => _inlineError = state.message);
-              } else if (state is AuthOtpSent) {
+              } else if (state is ForgotPasswordResendSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Mã OTP đã được gửi lại')),
                 );
                 _pinController.clear();
                 setState(() => _inlineError = null);
+              } else if (state is ForgotPasswordError) {
+                setState(() => _inlineError = state.message);
               }
             },
             builder: (context, state) {
-              final isLoading = state is AuthLoading;
+              final isLoading = state is ForgotPasswordLoading;
               final canVerify =
                   !isLoading && _pinController.text.trim().length == 6;
 
@@ -152,7 +147,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Xác minh email',
+                    'Nhập mã OTP',
                     style: GoogleFonts.lexend(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
@@ -164,6 +159,25 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     'Nhập mã 6 số đã gửi tới ${_maskEmail(widget.extra.email)}',
                     style: GoogleFonts.inter(
                       fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  if (widget.extra.neutralMessage.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.extra.neutralMessage,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  Text(
+                    'Nếu bạn không nhận được mã, kiểm tra email hoặc quay lại.',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -229,10 +243,20 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     child: Text(
                       _resendSeconds > 0
                           ? 'Gửi lại sau ${_resendSeconds}s'
-                          : 'Gửi lại mã OTP',
+                          : 'Gửi lại mã',
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: isLoading ? null : _onBackToEmail,
+                    child: Text(
+                      'Quay lại nhập email',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ),
