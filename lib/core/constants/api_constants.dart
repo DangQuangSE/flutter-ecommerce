@@ -35,5 +35,6 @@ abstract final class ApiConstants {
   static const String products = '/products';
   static const String cart = '/cart';
   static const String orders = '/orders';
+  static const String adminOrders = '/api/v1/admin/orders';
   static const String profile = '/profile';
 }

@@ -44,6 +44,14 @@ import 'package:flutter_ecommerce/features/admin/data/datasources/admin_remote_d
 import 'package:flutter_ecommerce/features/admin/data/repositories/admin_repository_impl.dart';
 import 'package:flutter_ecommerce/features/admin/domain/repositories/admin_repository.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_stats_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_orders_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_order_detail_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/update_admin_order_status_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/data/datasources/admin_order_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/admin/data/datasources/admin_order_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/admin/domain/repositories/admin_order_repository.dart';
+import 'package:flutter_ecommerce/features/admin/data/repositories/admin_order_repository_impl.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
@@ -220,9 +228,32 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<GetAdminStatsUseCase>(
     () => GetAdminStatsUseCase(sl<AdminRepository>()),
   );
+  sl.registerLazySingleton<AdminOrderRemoteDataSource>(
+    () => AdminOrderRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AdminOrderRepository>(
+    () => AdminOrderRepositoryImpl(sl<AdminOrderRemoteDataSource>()),
+  );
+  sl.registerFactory<GetAdminOrdersUseCase>(
+    () => GetAdminOrdersUseCase(sl<AdminOrderRepository>()),
+  );
+  sl.registerFactory<GetAdminOrderDetailUseCase>(
+    () => GetAdminOrderDetailUseCase(sl<AdminOrderRepository>()),
+  );
+  sl.registerFactory<UpdateAdminOrderStatusUseCase>(
+    () => UpdateAdminOrderStatusUseCase(sl<AdminOrderRepository>()),
+  );
+  sl.registerFactory<AdminOrderCubit>(
+    () => AdminOrderCubit(
+      getAdminOrdersUseCase: sl<GetAdminOrdersUseCase>(),
+      getAdminOrderDetailUseCase: sl<GetAdminOrderDetailUseCase>(),
+      updateAdminOrderStatusUseCase: sl<UpdateAdminOrderStatusUseCase>(),
+    ),
+  );
   sl.registerFactory<AdminBloc>(
     () => AdminBloc(
       getAdminStatsUseCase: sl<GetAdminStatsUseCase>(),
+      getAdminOrdersUseCase: sl<GetAdminOrdersUseCase>(),
       getProductsUseCase: sl<GetProductsUseCase>(),
       addProductUseCase: sl<AddProductUseCase>(),
       updateProductUseCase: sl<UpdateProductUseCase>(),
