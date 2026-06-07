@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
 
 class ProductEntity extends Equatable {
   final String id;
@@ -8,6 +9,7 @@ class ProductEntity extends Equatable {
   final String imageUrl;
   final String categoryId;
   final int stockQuantity;
+  final List<ProductVariantEntity>? variants;
 
   const ProductEntity({
     required this.id,
@@ -17,11 +19,12 @@ class ProductEntity extends Equatable {
     required this.imageUrl,
     required this.categoryId,
     required this.stockQuantity,
+    this.variants,
   });
 
   bool get isInStock => stockQuantity > 0;
 
   @override
   List<Object?> get props =>
-      [id, name, description, price, imageUrl, categoryId, stockQuantity];
+      [id, name, description, price, imageUrl, categoryId, stockQuantity, variants];
 }

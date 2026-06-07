@@ -8,7 +8,7 @@ import 'package:flutter_ecommerce/features/product/presentation/bloc/product_blo
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
-import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
 
 import 'package:flutter_ecommerce/features/product/presentation/widgets/product_carousel.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/color_selector.dart';
@@ -80,6 +80,55 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ? "MEN'S ELITE TRAINING"
         : "MEN'S ELITE RUNNING";
 
+    final variants = product.variants ?? [];
+    final colorMap = <String, String>{};
+    final sizeList = <String>[];
+
+    for (final variant in variants) {
+      if (variant.colorName.isNotEmpty) {
+        colorMap[variant.colorName] = variant.colorHex.isNotEmpty ? variant.colorHex : '#000000';
+      }
+      if (variant.size.isNotEmpty && !sizeList.contains(variant.size)) {
+        sizeList.add(variant.size);
+      }
+    }
+
+    final List<Map<String, String>> colors = colorMap.isNotEmpty
+        ? colorMap.entries.map((e) => {'name': e.key, 'hex': e.value}).toList()
+        : _colors;
+
+    final List<String> sizes = sizeList.isNotEmpty ? sizeList : _sizes;
+
+    final selectedColorIndex = _selectedColorIndex.clamp(0, colors.isEmpty ? 0 : colors.length - 1);
+    final selectedColor = colors.isNotEmpty ? colors[selectedColorIndex]['name'] : null;
+
+    final String selectedSize = sizes.contains(_selectedSize)
+        ? _selectedSize
+        : (sizes.isNotEmpty ? sizes.first : _selectedSize);
+
+    ProductVariantEntity? matchingVariant;
+    if (variants.isNotEmpty) {
+      try {
+        matchingVariant = variants.firstWhere(
+          (v) => v.colorName == selectedColor && v.size == selectedSize,
+          orElse: () => variants.firstWhere(
+            (v) => v.size == selectedSize,
+            orElse: () => variants.first,
+          ),
+        );
+      } catch (_) {}
+    }
+
+    final priceToDisplay = matchingVariant != null
+        ? (matchingVariant.salePrice ?? matchingVariant.originalPrice)
+        : product.price;
+
+    final stockToDisplay = matchingVariant != null
+        ? matchingVariant.stockQuantity
+        : product.stockQuantity;
+
+    final bool isInStock = stockToDisplay > 0;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(context),
@@ -92,13 +141,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ProductCarousel(imageUrl: product.imageUrl),
-                  _buildProductInfo(product, categoryLabel),
+                  _buildProductInfo(product, categoryLabel, priceToDisplay),
                   _buildDivider(),
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: ColorSelector(
-                      selectedColorIndex: _selectedColorIndex,
-                      colors: _colors,
+                      selectedColorIndex: selectedColorIndex,
+                      colors: colors,
                       onColorSelected: (index) {
                         setState(() {
                           _selectedColorIndex = index;
@@ -110,8 +159,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: SizeSelector(
-                      selectedSize: _selectedSize,
-                      sizes: _sizes,
+                      selectedSize: selectedSize,
+                      sizes: sizes,
                       onSizeSelected: (size) {
                         setState(() {
                           _selectedSize = size;
@@ -131,7 +180,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           ),
-          _buildBottomActionBar(context, product),
+          _buildBottomActionBar(
+            context,
+            product,
+            matchingVariant,
+            selectedSize,
+            priceToDisplay,
+            isInStock,
+          ),
         ],
       ),
     );
@@ -270,7 +326,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildProductInfo(ProductEntity product, String categoryLabel) {
+  Widget _buildProductInfo(ProductEntity product, String categoryLabel, double priceToDisplay) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: Column(
@@ -303,7 +359,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               Transform(
                 transform: Matrix4.skewX(-0.12),
                 child: Text(
-                  _formatPrice(product.price),
+                  _formatPrice(priceToDisplay),
                   style: GoogleFonts.lexend(
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
@@ -461,7 +517,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildBottomActionBar(BuildContext context, ProductEntity product) {
+  Widget _buildBottomActionBar(
+    BuildContext context,
+    ProductEntity product,
+    ProductVariantEntity? matchingVariant,
+    String selectedSize,
+    double priceToDisplay,
+    bool isInStock,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -522,48 +585,49 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: () {
-                  context.read<CartCubit>().addItem(
-                        CartItemEntity(
-                          productId: product.id,
-                          productName: product.name,
-                          price: product.price,
-                          quantity: 1,
-                          imageUrl: product.imageUrl,
-                        ),
-                      );
+                onPressed: !isInStock
+                    ? null
+                    : () {
+                        final targetVariantId = matchingVariant?.id ??
+                            (product.variants?.isNotEmpty == true ? product.variants!.first.id : 1);
+                        context.read<CartCubit>().addItem(
+                              variantId: targetVariantId,
+                              quantity: 1,
+                            );
 
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: AppColors.accent,
-                      behavior: SnackBarBehavior.floating,
-                      content: Row(
-                        children: [
-                          const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Đã thêm ${product.name} (Size $_selectedSize) vào giỏ hàng!',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              ),
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: AppColors.accent,
+                            behavior: SnackBarBehavior.floating,
+                            content: Row(
+                              children: [
+                                const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Đã thêm ${product.name} (Size $selectedSize) vào giỏ hàng!',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            action: SnackBarAction(
+                              label: 'XEM GIỎ',
+                              textColor: Colors.white,
+                              onPressed: () => context.pushNamed(AppRoutes.cart),
                             ),
                           ),
-                        ],
-                      ),
-                      action: SnackBarAction(
-                        label: 'XEM GIỎ',
-                        textColor: Colors.white,
-                        onPressed: () => context.pushNamed(AppRoutes.cart),
-                      ),
-                    ),
-                  );
-                },
+                        );
+                      },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
+                  backgroundColor: isInStock ? AppColors.accent : Colors.grey[400],
                   foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey[300],
+                  disabledForegroundColor: Colors.grey[600],
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -573,10 +637,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.shopping_bag_outlined, size: 20),
+                    Icon(
+                      isInStock ? Icons.shopping_bag_outlined : Icons.remove_shopping_cart_outlined,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
-                      'ADD TO CART',
+                      isInStock ? 'ADD TO CART' : 'HẾT HÀNG',
                       style: GoogleFonts.lexend(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
