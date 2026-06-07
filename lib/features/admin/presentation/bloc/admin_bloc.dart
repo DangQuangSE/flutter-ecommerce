@@ -1,6 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/features/admin/domain/entities/admin_stats_entity.dart';
+import 'package:flutter_ecommerce/features/admin/domain/entities/recent_order_entity.dart';
+import 'package:flutter_ecommerce/features/admin/domain/mappers/admin_order_mapper.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_stats_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_orders_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/add_product_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/update_product_usecase.dart';
@@ -11,6 +15,7 @@ import 'admin_state.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   final GetAdminStatsUseCase _getAdminStatsUseCase;
+  final GetAdminOrdersUseCase _getAdminOrdersUseCase;
   final GetProductsUseCase _getProductsUseCase;
   final AddProductUseCase _addProductUseCase;
   final UpdateProductUseCase _updateProductUseCase;
@@ -18,11 +23,13 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   AdminBloc({
     required GetAdminStatsUseCase getAdminStatsUseCase,
+    required GetAdminOrdersUseCase getAdminOrdersUseCase,
     required GetProductsUseCase getProductsUseCase,
     required AddProductUseCase addProductUseCase,
     required UpdateProductUseCase updateProductUseCase,
     required DeleteProductUseCase deleteProductUseCase,
   })  : _getAdminStatsUseCase = getAdminStatsUseCase,
+        _getAdminOrdersUseCase = getAdminOrdersUseCase,
         _getProductsUseCase = getProductsUseCase,
         _addProductUseCase = addProductUseCase,
         _updateProductUseCase = updateProductUseCase,
@@ -39,13 +46,35 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     Emitter<AdminState> emit,
   ) async {
     emit(const AdminLoading());
-    
+
     final statsResult = await _getAdminStatsUseCase();
     final productsResult = await _getProductsUseCase();
+    final recentOrdersResult = await _getAdminOrdersUseCase(page: 0, size: 5);
 
     if (statsResult is Success && productsResult is Success) {
+      final stats = (statsResult as Success).data as AdminStatsEntity;
+      final List<RecentOrderEntity> recentOrders;
+      if (recentOrdersResult is Success) {
+        recentOrders = (recentOrdersResult as Success)
+            .data
+            .content
+            .map<RecentOrderEntity>(adminOrderToRecentOrder)
+            .toList();
+      } else {
+        recentOrders = stats.recentOrders;
+      }
+
       emit(AdminLoaded(
-        stats: (statsResult as Success).data,
+        stats: AdminStatsEntity(
+          totalRevenue: stats.totalRevenue,
+          revenueGrowth: stats.revenueGrowth,
+          totalOrders: stats.totalOrders,
+          ordersGrowth: stats.ordersGrowth,
+          newCustomers: stats.newCustomers,
+          customersGrowth: stats.customersGrowth,
+          weeklyTraffic: stats.weeklyTraffic,
+          recentOrders: recentOrders,
+        ),
         products: (productsResult as Success).data,
       ));
     } else if (statsResult is ResultFailure) {
