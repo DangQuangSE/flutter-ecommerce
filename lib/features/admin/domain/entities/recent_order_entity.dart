@@ -4,7 +4,8 @@ class RecentOrderEntity extends Equatable {
   final String id;
   final String orderCode;
   final String productName;
-  final String status; // ĐANG GIAO, CHỜ LẤY, HOÀN THÀNH
+  final String rawStatus;
+  final String status;
   final double price;
   final DateTime date;
 
@@ -12,11 +13,12 @@ class RecentOrderEntity extends Equatable {
     required this.id,
     required this.orderCode,
     required this.productName,
+    required this.rawStatus,
     required this.status,
     required this.price,
     required this.date,
   });
 
   @override
-  List<Object?> get props => [id, orderCode, productName, status, price, date];
+  List<Object?> get props => [id, orderCode, productName, rawStatus, status, price, date];
 }

@@ -45,6 +45,9 @@ import 'package:flutter_ecommerce/features/admin/product/presentation/pages/admi
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_dashboard_page.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_order_list_page.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_order_detail_page.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/pages/brand_management_page.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
@@ -225,6 +228,28 @@ class AppRouter {
           create: (_) => sl<CouponCubit>(),
           child: const CouponManagementPage(),
         ),
+      ),
+      GoRoute(
+        path: '/admin/orders',
+        name: AppRoutes.adminOrders,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<AdminOrderCubit>()..loadOrders(),
+          child: const AdminOrderListPage(),
+        ),
+        routes: [
+          GoRoute(
+            path: ':orderId',
+            name: AppRoutes.adminOrderDetail,
+            builder: (context, state) {
+              final orderId = state.pathParameters['orderId'] ?? '';
+              return BlocProvider(
+                create: (_) => sl<AdminOrderCubit>()
+                  ..loadOrderDetail(int.tryParse(orderId) ?? 0),
+                child: AdminOrderDetailPage(orderId: orderId),
+              );
+            },
+          ),
+        ],
       ),
 
       // Home route (main screen after login)

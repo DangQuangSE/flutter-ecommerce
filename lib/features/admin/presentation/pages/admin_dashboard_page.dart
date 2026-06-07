@@ -12,6 +12,7 @@ import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.d
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/recent_order_entity.dart';
+import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
@@ -461,12 +462,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   color: AppColors.textPrimary,
                 ),
               ),
-              Text(
-                'XEM TẤT CẢ',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+              GestureDetector(
+                onTap: () => context.pushNamed(AppRoutes.adminOrders),
+                child: Text(
+                  'XEM TẤT CẢ',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],
@@ -474,7 +478,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           const SizedBox(height: 12),
 
           // Recent Orders List
-          ...stats.recentOrders.map((order) => _buildRecentOrderCard(context, order, shortCurrencyFormat)),
+          ...stats.recentOrders.map(
+            (order) => _buildRecentOrderCard(context, order, shortCurrencyFormat),
+          ),
         ],
       ),
     );
@@ -540,21 +546,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildRecentOrderCard(BuildContext context, RecentOrderEntity order, NumberFormat format) {
-    Color badgeBg;
-    Color badgeText;
-    
-    if (order.status == 'ĐANG GIAO') {
-      badgeBg = const Color(0xFFFEF3C7);
-      badgeText = const Color(0xFFD97706);
-    } else if (order.status == 'CHỜ LẤY') {
-      badgeBg = const Color(0xFFF3F4F6);
-      badgeText = const Color(0xFF4B5563);
-    } else {
-      badgeBg = const Color(0xFFD1FAE5);
-      badgeText = const Color(0xFF059669);
-    }
+    final (badgeBg, badgeText) = OrderStatusLabel.badgeColors(order.rawStatus);
 
-    return Container(
+    return GestureDetector(
+      onTap: () => context.pushNamed(
+        AppRoutes.adminOrderDetail,
+        pathParameters: {'orderId': order.id},
+      ),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -631,6 +630,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           ),
         ],
       ),
+    ),
     );
   }
 
