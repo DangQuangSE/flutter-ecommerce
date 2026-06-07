@@ -403,7 +403,73 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildFeaturedProducts(BuildContext context, List<ProductEntity> products) {
+    if (products.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Sản phẩm nổi bật',
+              style: GoogleFonts.lexend(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                child: Text(
+                  'Không có sản phẩm nổi bật nào.',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final featuredList = products.take(4).toList();
+    final List<Widget> rows = [];
+    
+    for (int i = 0; i < featuredList.length; i += 2) {
+      final item1 = featuredList[i];
+      final item2 = (i + 1 < featuredList.length) ? featuredList[i + 1] : null;
+      
+      rows.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ProductTactileCard(
+                product: item1,
+                badge: i == 0 ? 'NEW' : null,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: item2 != null
+                  ? ProductTactileCard(
+                      product: item2,
+                      badge: i == 0 ? '-15%' : null,
+                    )
+                  : const SizedBox(),
+            ),
+          ],
+        ),
+      );
+      
+      if (i + 2 < featuredList.length) {
+        rows.add(const SizedBox(height: 16));
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -420,43 +486,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 18),
-          
-          // Fully symmetrical featured products grid using unified ProductTactileCard
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: ProductTactileCard(
-                  product: featuredList[0],
-                  badge: 'NEW',
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ProductTactileCard(
-                  product: featuredList[1],
-                  badge: '-15%',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: ProductTactileCard(
-                  product: featuredList[2],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ProductTactileCard(
-                  product: featuredList[3],
-                ),
-              ),
-            ],
-          ),
+          ...rows,
         ],
       ),
     );

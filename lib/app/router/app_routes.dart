@@ -31,6 +31,11 @@ abstract final class AppRoutes {
 
   static const String productCustomizer = 'product-customizer';
 
+  // Admin
+  static const String adminProductList = 'admin-product-list';
+  static const String adminProductDetail = 'admin-product-detail';
+  static const String adminProductCreate = 'admin-product-create';
+  static const String adminProductEdit = 'admin-product-edit';
   static const String adminBrands = 'admin-brands';
   static const String adminColors = 'admin-colors';
   static const String adminOrders = 'admin-orders';

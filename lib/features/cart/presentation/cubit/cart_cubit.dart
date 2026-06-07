@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
-import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/domain/repositories/cart_repository.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 
@@ -20,18 +19,50 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> addItem(CartItemEntity item) async {
-    await _repository.addItem(item);
-    await loadCart();
+  Future<void> addItem({
+    required int variantId,
+    required int quantity,
+    bool isReplace = false,
+    int? customDesignId,
+  }) async {
+    emit(const CartLoading());
+    final result = await _repository.addOrUpdateItem(
+      variantId: variantId,
+      quantity: quantity,
+      isReplace: isReplace,
+      customDesignId: customDesignId,
+    );
+    switch (result) {
+      case Success(:final data):
+        emit(CartLoaded(data));
+      case ResultFailure(:final failure):
+        emit(CartError(failure.message));
+    }
   }
 
-  Future<void> removeItem(String productId) async {
-    await _repository.removeItem(productId);
-    await loadCart();
+  Future<void> updateQuantity({
+    required int variantId,
+    required int quantity,
+  }) async {
+    await addItem(
+      variantId: variantId,
+      quantity: quantity,
+      isReplace: true,
+    );
   }
 
-  Future<void> clearCart() async {
-    await _repository.clearCart();
+  Future<void> removeItem(int itemId) async {
+    emit(const CartLoading());
+    final result = await _repository.removeItem(itemId);
+    switch (result) {
+      case Success(:final data):
+        emit(CartLoaded(data));
+      case ResultFailure(:final failure):
+        emit(CartError(failure.message));
+    }
+  }
+
+  void clearCart() {
     emit(const CartLoaded([]));
   }
 }

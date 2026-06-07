@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
+
 abstract final class ApiConstants {
-  static const String baseUrl = String.fromEnvironment(
-    'BASE_URL',
-    defaultValue: 'http://10.0.2.2:8080',
-  );
+  static const String baseUrl = kIsWeb
+      ? 'http://127.0.0.1:8081'
+      : String.fromEnvironment(
+          'BASE_URL',
+          defaultValue: 'http://10.0.2.2:8081',
+        );
 
   static const String login = '/api/auth/login';
   static const String me = '/api/auth/me';
@@ -32,9 +36,23 @@ abstract final class ApiConstants {
   static const String adminPrintingColors = '/api/admin/printing/colors';
 
   // TODO: align with backend when product/cart APIs are wired
-  static const String products = '/products';
-  static const String cart = '/cart';
+  static const String products = '/api/products';
+  static const String cart = '/api/carts/me';
   static const String orders = '/orders';
   static const String adminOrders = '/api/v1/admin/orders';
   static const String profile = '/profile';
+
+  // Admin Product
+  static const String adminProducts = '/api/admin/products';
+  static String adminProductById(int id) => '/api/admin/products/$id';
+  static String adminProductVariants(int productId) =>
+      '/api/admin/products/$productId/variants';
+  static String adminProductImages(int productId) =>
+      '/api/admin/products/$productId/images';
+
+  // Admin Variant / Image (standalone)
+  static String adminVariantById(int variantId) =>
+      '/api/admin/product-variants/$variantId';
+  static String adminImageById(int imageId) =>
+      '/api/admin/product-images/$imageId';
 }
