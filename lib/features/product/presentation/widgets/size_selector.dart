@@ -71,41 +71,6 @@ class SizeSelector extends StatelessWidget {
           itemBuilder: (context, index) {
             final size = sizes[index];
             final isSelected = selectedSize == size;
-            final isDisabled = false;
-
-            if (isDisabled) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F3F8),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Text(
-                      size,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFFC1C6D7),
-                      ),
-                    ),
-                    Transform.rotate(
-                      angle: -0.4,
-                      child: Container(
-                        width: 32,
-                        height: 1.5,
-                        color: const Color(0xFFC1C6D7),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-
             return GestureDetector(
               onTap: () => onSizeSelected(size),
               child: Container(
