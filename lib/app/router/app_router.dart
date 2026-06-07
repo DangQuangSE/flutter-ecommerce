@@ -53,6 +53,10 @@ import 'package:flutter_ecommerce/features/brand/presentation/pages/brand_manage
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
+import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
+import 'package:flutter_ecommerce/features/category/presentation/pages/category_management_page.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_management_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -207,6 +211,22 @@ class AppRouter {
             BlocProvider(create: (_) => sl<PrintingColorCubit>()..loadColors()),
           ],
           child: const ColorManagementPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/categories',
+        name: AppRoutes.adminCategories,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<CategoryCubit>(),
+          child: const CategoryManagementPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/coupons',
+        name: AppRoutes.adminCoupons,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<CouponCubit>(),
+          child: const CouponManagementPage(),
         ),
       ),
       GoRoute(
