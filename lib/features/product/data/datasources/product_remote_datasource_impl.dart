@@ -8,7 +8,7 @@ import 'package:flutter_ecommerce/features/product/data/models/product_model.dar
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   final DioClient _dioClient;
   
-  static final List<ProductModel> _inMemoryProducts = List.from(ProductModel.mockList);
+  static final List<ProductModel> _inMemoryProducts = [];
 
   const ProductRemoteDataSourceImpl(this._dioClient);
 

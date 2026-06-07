@@ -71,7 +71,7 @@ class SizeSelector extends StatelessWidget {
           itemBuilder: (context, index) {
             final size = sizes[index];
             final isSelected = selectedSize == size;
-            final isDisabled = size == '45'; // Mock disabled size 45
+            final isDisabled = false;
 
             if (isDisabled) {
               return Container(
