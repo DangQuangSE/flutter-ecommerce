@@ -32,7 +32,8 @@ class AdminProductImageDatasourceImpl implements AdminProductImageDatasource {
         data: formData,
         onSendProgress: onSendProgress,
       );
-      return ProductImageModel.fromJson(response.data as Map<String, dynamic>);
+      final responseMap = response.data as Map<String, dynamic>;
+      return ProductImageModel.fromJson(responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ?? e.message ?? 'Network error',

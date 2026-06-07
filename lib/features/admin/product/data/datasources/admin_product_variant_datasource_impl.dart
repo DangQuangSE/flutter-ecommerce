@@ -19,7 +19,8 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
         ApiConstants.adminProductVariants(productId),
         data: request.toJson(),
       );
-      return ProductVariantModel.fromJson(response.data as Map<String, dynamic>);
+      final responseMap = response.data as Map<String, dynamic>;
+      return ProductVariantModel.fromJson(responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
@@ -36,7 +37,8 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
         ApiConstants.adminVariantById(variantId),
         data: request.toJson(),
       );
-      return ProductVariantModel.fromJson(response.data as Map<String, dynamic>);
+      final responseMap = response.data as Map<String, dynamic>;
+      return ProductVariantModel.fromJson(responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ?? e.message ?? 'Network error',

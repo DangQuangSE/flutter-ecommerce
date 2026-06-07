@@ -1,4 +1,5 @@
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
+import 'package:flutter_ecommerce/features/admin/product/data/models/product_variant_model.dart';
 
 class ProductModel extends ProductEntity {
   const ProductModel({
@@ -9,17 +10,33 @@ class ProductModel extends ProductEntity {
     required super.imageUrl,
     required super.categoryId,
     required super.stockQuantity,
+    super.variants,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    final rawVariants = json['variants'] as List<dynamic>? ?? [];
     return ProductModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
+      id: json['slug'] as String? ?? (json['id'] ?? '').toString(),
+      name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      price: (json['price'] as num).toDouble(),
-      imageUrl: json['image_url'] as String? ?? '',
-      categoryId: json['category_id'] as String? ?? '',
-      stockQuantity: json['stock_quantity'] as int? ?? 0,
+      price: ((json['salePrice'] ??
+              json['price'] ??
+              json['basePrice'] ??
+              json['minPrice'] ??
+              0.0) as num)
+          .toDouble(),
+      imageUrl: json['imageUrl'] as String? ??
+          json['thumbnailUrl'] as String? ??
+          json['image_url'] as String? ??
+          '',
+      categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
+      stockQuantity: (json['totalStock'] ??
+          json['stockQuantity'] ??
+          json['stock_quantity'] ??
+          0) as int,
+      variants: rawVariants
+          .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>).toEntity())
+          .toList(),
     );
   }
 

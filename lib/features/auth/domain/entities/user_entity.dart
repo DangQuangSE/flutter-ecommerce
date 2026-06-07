@@ -7,7 +7,6 @@ class UserEntity extends Equatable {
   final String role;
   final String? avatarUrl;
   final DateTime createdAt;
-  final String? role;
 
   const UserEntity({
     required this.id,
@@ -16,7 +15,6 @@ class UserEntity extends Equatable {
     required this.role,
     this.avatarUrl,
     required this.createdAt,
-    this.role,
   });
 
   bool get isAdmin => role.toUpperCase() == 'ADMIN';

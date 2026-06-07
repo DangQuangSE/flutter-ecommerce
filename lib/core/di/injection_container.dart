@@ -1,4 +1,5 @@
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -94,6 +95,8 @@ import 'package:flutter_ecommerce/features/color/domain/repositories/printing_co
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 
 // Cart
+import 'package:flutter_ecommerce/features/cart/data/datasources/cart_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/cart/data/datasources/cart_remote_datasource_impl.dart';
 import 'package:flutter_ecommerce/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:flutter_ecommerce/features/cart/domain/repositories/cart_repository.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
@@ -126,19 +129,24 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<LocalStorage>(
     () => LocalStorage(sl<SharedPreferences>()),
   );
-  sl.registerLazySingleton<DioClient>(() => DioClient(sl<LocalStorage>()));
   sl.registerLazySingleton<AuthTokenStorage>(
     () => AuthTokenStorage(sl<LocalStorage>()),
   );
 
-  final appDocDir = await getApplicationDocumentsDirectory();
-  final cookieJar = PersistCookieJar(
-    storage: FileStorage('${appDocDir.path}/.cookies/'),
-  );
+  final CookieJar cookieJar;
+  if (kIsWeb) {
+    cookieJar = CookieJar();
+  } else {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    cookieJar = PersistCookieJar(
+      storage: FileStorage('${appDocDir.path}/.cookies/'),
+    );
+  }
   sl.registerSingleton<CookieJar>(cookieJar);
 
   sl.registerLazySingleton<DioClient>(
     () => DioClient(
+      localStorage: sl<LocalStorage>(),
       authTokenStorage: sl<AuthTokenStorage>(),
       cookieJar: sl<CookieJar>(),
     ),
@@ -290,7 +298,12 @@ Future<void> configureDependencies() async {
   );
 
   // ── Cart ────────────────────────────────────────────────────────────────────
-  sl.registerLazySingleton<CartRepository>(() => CartRepositoryImpl());
+  sl.registerLazySingleton<CartRemoteDataSource>(
+    () => CartRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(sl<CartRemoteDataSource>()),
+  );
   sl.registerLazySingleton<CartCubit>(() => CartCubit(sl<CartRepository>()));
 
   // ── Profile ─────────────────────────────────────────────────────────────────
@@ -350,11 +363,11 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<CreateProductUseCase>(
     () => CreateProductUseCase(sl<AdminProductRepository>()),
   );
-  sl.registerLazySingleton<UpdateProductUseCase>(
-    () => UpdateProductUseCase(sl<AdminProductRepository>()),
+  sl.registerLazySingleton<UpdateAdminProductUseCase>(
+    () => UpdateAdminProductUseCase(sl<AdminProductRepository>()),
   );
-  sl.registerLazySingleton<DeleteProductUseCase>(
-    () => DeleteProductUseCase(sl<AdminProductRepository>()),
+  sl.registerLazySingleton<DeleteAdminProductUseCase>(
+    () => DeleteAdminProductUseCase(sl<AdminProductRepository>()),
   );
   sl.registerLazySingleton<CreateVariantUseCase>(
     () => CreateVariantUseCase(sl<AdminProductRepository>()),
@@ -374,7 +387,7 @@ Future<void> configureDependencies() async {
   sl.registerFactory<AdminProductListBloc>(
     () => AdminProductListBloc(
       sl<GetAdminProductsUseCase>(),
-      sl<DeleteProductUseCase>(),
+      sl<DeleteAdminProductUseCase>(),
     ),
   );
   sl.registerFactory<AdminProductDetailCubit>(
@@ -383,7 +396,7 @@ Future<void> configureDependencies() async {
   sl.registerFactory<AdminProductFormCubit>(
     () => AdminProductFormCubit(
       sl<CreateProductUseCase>(),
-      sl<UpdateProductUseCase>(),
+      sl<UpdateAdminProductUseCase>(),
     ),
   );
   sl.registerFactory<AdminProductVariantCubit>(

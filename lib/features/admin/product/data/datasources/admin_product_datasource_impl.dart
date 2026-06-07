@@ -38,8 +38,10 @@ class AdminProductDatasourceImpl implements AdminProductDatasource {
         ApiConstants.adminProducts,
         queryParameters: params,
       );
+      final responseMap = response.data as Map<String, dynamic>;
+      final dataMap = responseMap['data'] as Map<String, dynamic>;
       return PagedResponse.fromJson(
-        response.data as Map<String, dynamic>,
+        dataMap,
         AdminProductListModel.fromJson,
       );
     } on DioException catch (e) {
@@ -55,8 +57,9 @@ class AdminProductDatasourceImpl implements AdminProductDatasource {
     try {
       final response =
           await _dioClient.dio.get(ApiConstants.adminProductById(id));
+      final responseMap = response.data as Map<String, dynamic>;
       return AdminProductDetailModel.fromJson(
-          response.data as Map<String, dynamic>);
+          responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
@@ -73,8 +76,9 @@ class AdminProductDatasourceImpl implements AdminProductDatasource {
         ApiConstants.adminProducts,
         data: request.toJson(),
       );
+      final responseMap = response.data as Map<String, dynamic>;
       return AdminProductDetailModel.fromJson(
-          response.data as Map<String, dynamic>);
+          responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
@@ -91,8 +95,9 @@ class AdminProductDatasourceImpl implements AdminProductDatasource {
         ApiConstants.adminProductById(id),
         data: request.toJson(),
       );
+      final responseMap = response.data as Map<String, dynamic>;
       return AdminProductDetailModel.fromJson(
-          response.data as Map<String, dynamic>);
+          responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ?? e.message ?? 'Network error',

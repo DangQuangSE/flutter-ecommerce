@@ -13,7 +13,7 @@ part 'admin_product_form_state.dart';
 
 class AdminProductFormCubit extends Cubit<AdminProductFormState> {
   final CreateProductUseCase _createProduct;
-  final UpdateProductUseCase _updateProduct;
+  final UpdateAdminProductUseCase _updateProduct;
 
   AdminProductFormCubit(this._createProduct, this._updateProduct)
       : super(const AdminProductFormState());

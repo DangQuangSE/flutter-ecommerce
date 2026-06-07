@@ -7,10 +7,8 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
-import 'package:flutter_ecommerce/features/cart/presentation/widgets/payment_qr_card.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_state.dart';
-import 'package:flutter_ecommerce/features/product/domain/entities/customization_entity.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -225,9 +223,7 @@ class _CartPageState extends State<CartPage> {
 
   Widget _buildCartItemCard(BuildContext context, CartItemEntity item) {
     // Dynamic category label
-    final String category = item.productId.contains('cat-training')
-        ? 'APPAREL'
-        : 'FOOTWEAR';
+    final String category = item.isCustomizable ? 'APPAREL' : 'FOOTWEAR';
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -262,7 +258,7 @@ class _CartPageState extends State<CartPage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                item.imageUrl,
+                item.imageUrl ?? '',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => const Center(
                   child: Icon(Icons.image_not_supported_outlined, color: AppColors.textSecondary),
@@ -310,7 +306,7 @@ class _CartPageState extends State<CartPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Size: EU 42',
+                  '${item.color != null ? "${item.color}  •  " : ""}Size: ${item.size ?? "N/A"}',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -320,11 +316,11 @@ class _CartPageState extends State<CartPage> {
                 if (category == 'APPAREL') ...[
                   Builder(
                     builder: (context) {
-                      final customization = context.select((CustomizerCubit c) => c.getCustomizationOrDefault(item.productId));
+                      final customization = context.select((CustomizerCubit c) => c.getCustomizationOrDefault(item.productSlug));
                       final bool isCustomized = context.select((CustomizerCubit c) {
                         final state = c.state;
                         if (state is CustomizerActive) {
-                          return state.customizations.containsKey(item.productId);
+                          return state.customizations.containsKey(item.productSlug);
                         }
                         return false;
                       });
@@ -378,7 +374,7 @@ class _CartPageState extends State<CartPage> {
                             onTap: () {
                               context.pushNamed(
                                 AppRoutes.productCustomizer,
-                                pathParameters: {'productId': item.productId},
+                                pathParameters: {'productId': item.productSlug},
                                 queryParameters: {'name': item.productName},
                               );
                             },
@@ -421,14 +417,9 @@ class _CartPageState extends State<CartPage> {
                               IconButton(
                                 onPressed: () {
                                   if (item.quantity > 1) {
-                                    context.read<CartCubit>().addItem(
-                                          CartItemEntity(
-                                            productId: item.productId,
-                                            productName: item.productName,
-                                            price: item.price,
-                                            quantity: -1,
-                                            imageUrl: item.imageUrl,
-                                          ),
+                                    context.read<CartCubit>().updateQuantity(
+                                          variantId: item.variantId,
+                                          quantity: item.quantity - 1,
                                         );
                                   } else {
                                     _showRemoveConfirmation(context, item);
@@ -448,14 +439,9 @@ class _CartPageState extends State<CartPage> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  context.read<CartCubit>().addItem(
-                                        CartItemEntity(
-                                          productId: item.productId,
-                                          productName: item.productName,
-                                          price: item.price,
-                                          quantity: 1,
-                                          imageUrl: item.imageUrl,
-                                        ),
+                                  context.read<CartCubit>().updateQuantity(
+                                        variantId: item.variantId,
+                                        quantity: item.quantity + 1,
                                       );
                                 },
                                 icon: const Icon(Icons.add, size: 12),
@@ -502,7 +488,7 @@ class _CartPageState extends State<CartPage> {
           ),
           TextButton(
             onPressed: () {
-              context.read<CartCubit>().removeItem(item.productId);
+              context.read<CartCubit>().removeItem(item.itemId);
               Navigator.pop(dialogCtx);
             },
             child: Text(

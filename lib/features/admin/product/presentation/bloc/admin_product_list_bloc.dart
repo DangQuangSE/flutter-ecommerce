@@ -10,7 +10,7 @@ part 'admin_product_list_state.dart';
 class AdminProductListBloc
     extends Bloc<AdminProductListEvent, AdminProductListState> {
   final GetAdminProductsUseCase _getProducts;
-  final DeleteProductUseCase _deleteProduct;
+  final DeleteAdminProductUseCase _deleteProduct;
 
   AdminProductListBloc(this._getProducts, this._deleteProduct)
       : super(AdminProductListInitial()) {
