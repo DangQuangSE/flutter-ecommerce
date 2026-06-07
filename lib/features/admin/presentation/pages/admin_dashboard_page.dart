@@ -1573,6 +1573,24 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                   const Divider(height: 1),
                   ListTile(
+                    leading: const Icon(Icons.category_rounded, color: AppColors.primary),
+                    title: Text('Quản lý Danh mục', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                    onTap: () {
+                      context.pushNamed(AppRoutes.adminCategories);
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.local_offer_rounded, color: AppColors.primary),
+                    title: Text('Quản lý Mã giảm giá', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                    onTap: () {
+                      context.pushNamed(AppRoutes.adminCoupons);
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
                     leading: const Icon(Icons.logout_rounded, color: AppColors.error),
                     title: Text('Đăng xuất tài khoản', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.error)),
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.error),

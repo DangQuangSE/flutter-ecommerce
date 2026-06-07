@@ -94,6 +94,19 @@ import 'package:flutter_ecommerce/features/color/data/repositories/printing_colo
 import 'package:flutter_ecommerce/features/color/domain/repositories/printing_color_repository.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 
+// Category
+import 'package:flutter_ecommerce/features/category/data/network/category_api_client.dart';
+import 'package:flutter_ecommerce/features/category/data/datasources/category_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/category/data/repositories/category_repository_impl.dart';
+import 'package:flutter_ecommerce/features/category/domain/repositories/category_repository.dart';
+import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
+
+// Coupon
+import 'package:flutter_ecommerce/features/coupon/data/datasources/coupon_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/coupon/data/repositories/coupon_repository_impl.dart';
+import 'package:flutter_ecommerce/features/coupon/domain/repositories/coupon_repository.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
+
 // Cart
 import 'package:flutter_ecommerce/features/cart/data/datasources/cart_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/cart/data/datasources/cart_remote_datasource_impl.dart';
@@ -295,6 +308,31 @@ Future<void> configureDependencies() async {
   );
   sl.registerFactory<PrintingColorCubit>(
     () => PrintingColorCubit(sl<PrintingColorRepository>()),
+  );
+
+  // Category Management — uses its own backend client (self-contained auth)
+  sl.registerLazySingleton<CategoryApiClient>(
+    () => CategoryApiClient(sl<LocalStorage>()),
+  );
+  sl.registerLazySingleton<CategoryRemoteDataSource>(
+    () => CategoryRemoteDataSourceImpl(sl<CategoryApiClient>()),
+  );
+  sl.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImpl(sl<CategoryRemoteDataSource>()),
+  );
+  sl.registerFactory<CategoryCubit>(
+    () => CategoryCubit(sl<CategoryRepository>()),
+  );
+
+  // Coupon Management — admin-only, over the shared DioClient
+  sl.registerLazySingleton<CouponRemoteDataSource>(
+    () => CouponRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<CouponRepository>(
+    () => CouponRepositoryImpl(sl<CouponRemoteDataSource>()),
+  );
+  sl.registerFactory<CouponCubit>(
+    () => CouponCubit(sl<CouponRepository>()),
   );
 
   // ── Cart ────────────────────────────────────────────────────────────────────

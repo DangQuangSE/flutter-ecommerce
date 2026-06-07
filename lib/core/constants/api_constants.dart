@@ -35,6 +35,13 @@ abstract final class ApiConstants {
   static const String printingColors = '/api/public/printing/colors';
   static const String adminPrintingColors = '/api/admin/printing/colors';
 
+  // Categories — public reads + admin writes
+  static const String categories = '/api/categories';
+  static const String adminCategories = '/api/admin/categories';
+
+  // Coupons — admin only (requires ADMIN role)
+  static const String adminCoupons = '/api/v1/admin/coupons';
+
   // TODO: align with backend when product/cart APIs are wired
   static const String products = '/api/products';
   static const String cart = '/api/carts/me';
