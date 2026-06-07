@@ -6,13 +6,10 @@ import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 
 /// Dio client for the real Sport Pro backend (category endpoints).
 ///
-/// Self-contained inside the category module — it does NOT touch the app's
-/// shared [DioClient] (mock base URL) nor the app-wide (still mocked) auth.
-///
-/// Because the app login is mocked and stores no real token, this client
-/// obtains its OWN Bearer token by logging in with a dev admin account, so
-/// that category writes (`POST/PUT/DELETE/PATCH /api/admin/categories`) are
-/// accepted by the server and persist to the database. Reads stay public.
+/// Self-contained inside the category module (its own [Dio] instance). For
+/// admin writes (`POST/PUT/DELETE/PATCH /api/admin/categories`) it attaches the
+/// Bearer token saved by the app's real login under [AppConstants.tokenKey];
+/// reads (`GET /api/categories`) are public and need no token.
 class CategoryApiClient {
   /// Real backend base URL. Overridable at build time via
   /// `--dart-define=BASE_URL=...`; the default suits the iOS Simulator / macOS,
@@ -25,17 +22,10 @@ class CategoryApiClient {
     defaultValue: 'http://localhost:8080',
   );
 
-  // DEV ONLY — admin credentials used to fetch a real Bearer token so writes
-  // persist, without wiring the app-wide auth module. Remove once real login
-  // stores a token in LocalStorage under [AppConstants.tokenKey].
-  static const String _devAdminEmail = 'admin@sportpro.com';
-  static const String _devAdminPassword = 'Admin@123';
-
   late final Dio dio;
   final LocalStorage _storage;
 
   String? _token;
-  Future<String?>? _loginInFlight;
 
   CategoryApiClient(this._storage) {
     dio = Dio(
@@ -89,40 +79,17 @@ class CategoryApiClient {
     dio.interceptors.add(_ErrorInterceptor());
   }
 
-  /// Resolves a Bearer token: in-memory cache → stored real token (if app auth
-  /// is ever wired) → dev admin login. Concurrent callers share one login.
+  /// Resolves a Bearer token: in-memory cache → token saved by the app's real
+  /// login (under [AppConstants.tokenKey]). Returns null when not logged in —
+  /// public reads still work; admin writes then get 401 until the user logs in.
   Future<String?> _ensureToken() {
     if (_token != null && _token!.isNotEmpty) return Future.value(_token);
 
     final stored = _storage.getString(AppConstants.tokenKey);
     if (stored != null && stored.isNotEmpty) {
       _token = stored;
-      return Future.value(_token);
     }
-
-    return _loginInFlight ??=
-        _devLogin().whenComplete(() => _loginInFlight = null);
-  }
-
-  /// Logs in via a bare Dio (no interceptors → no recursion) and caches the token.
-  Future<String?> _devLogin() async {
-    try {
-      final bare = Dio(BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
-        receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-      ));
-      final resp = await bare.post(
-        '/api/auth/login',
-        data: {'email': _devAdminEmail, 'password': _devAdminPassword},
-      );
-      final data = (resp.data as Map<String, dynamic>)['data'];
-      _token = data is Map<String, dynamic> ? data['accessToken'] as String? : null;
-      return _token;
-    } catch (_) {
-      return null;
-    }
+    return Future.value(_token);
   }
 }
 
