@@ -38,4 +38,6 @@ abstract final class AppRoutes {
   static const String adminProductEdit = 'admin-product-edit';
   static const String adminBrands = 'admin-brands';
   static const String adminColors = 'admin-colors';
+  static const String adminCategories = 'admin-categories';
+  static const String adminCoupons = 'admin-coupons';
 }
