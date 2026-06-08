@@ -8,6 +8,8 @@ class CustomizationEntity extends Equatable {
   final String printMethod;
   final bool logoEnabled;
   final double textScale;
+  final String layersJson;
+  final int? customDesignId;
 
   const CustomizationEntity({
     required this.productId,
@@ -17,6 +19,8 @@ class CustomizationEntity extends Equatable {
     required this.printMethod,
     required this.logoEnabled,
     this.textScale = 1.0,
+    this.layersJson = '',
+    this.customDesignId,
   });
 
   CustomizationEntity copyWith({
@@ -27,6 +31,8 @@ class CustomizationEntity extends Equatable {
     String? printMethod,
     bool? logoEnabled,
     double? textScale,
+    String? layersJson,
+    int? customDesignId,
   }) {
     return CustomizationEntity(
       productId: productId ?? this.productId,
@@ -36,6 +42,8 @@ class CustomizationEntity extends Equatable {
       printMethod: printMethod ?? this.printMethod,
       logoEnabled: logoEnabled ?? this.logoEnabled,
       textScale: textScale ?? this.textScale,
+      layersJson: layersJson ?? this.layersJson,
+      customDesignId: customDesignId ?? this.customDesignId,
     );
   }
 
@@ -48,5 +56,7 @@ class CustomizationEntity extends Equatable {
         printMethod,
         logoEnabled,
         textScale,
+        layersJson,
+        customDesignId,
       ];
 }
