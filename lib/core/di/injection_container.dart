@@ -59,6 +59,10 @@ import 'package:flutter_ecommerce/features/product/data/datasources/product_remo
 import 'package:flutter_ecommerce/features/product/data/datasources/product_remote_datasource_impl.dart';
 import 'package:flutter_ecommerce/features/product/data/repositories/product_repository_impl.dart';
 import 'package:flutter_ecommerce/features/product/domain/repositories/product_repository.dart';
+import 'package:flutter_ecommerce/features/product/data/datasources/custom_design_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/product/data/datasources/custom_design_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/product/data/repositories/custom_design_repository_impl.dart';
+import 'package:flutter_ecommerce/features/product/domain/repositories/custom_design_repository.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/add_product_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/update_product_usecase.dart';
@@ -264,6 +268,12 @@ Future<void> configureDependencies() async {
     ),
   );
   sl.registerLazySingleton<CustomizerCubit>(() => CustomizerCubit());
+  sl.registerLazySingleton<CustomDesignRemoteDataSource>(
+    () => CustomDesignRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<CustomDesignRepository>(
+    () => CustomDesignRepositoryImpl(sl<CustomDesignRemoteDataSource>()),
+  );
 
   // ── Admin ───────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<AdminRemoteDataSource>(

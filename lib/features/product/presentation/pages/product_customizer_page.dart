@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +11,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/di/injection_container.dart';
+import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/customization_entity.dart';
+import 'package:flutter_ecommerce/features/product/domain/repositories/custom_design_repository.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 
 enum LayerType { text, logo }
@@ -16,13 +22,13 @@ enum LayerType { text, logo }
 class DesignLayer {
   final String id;
   final LayerType type;
-  String text;
-  String font;
-  Color color;
-  double fontSize;
-  double x;
+  final String text;
+  final String font;
+  final Color color;
+  final double fontSize;
+  final double x;
   final double y;
-  String? logoPath;
+  final String? logoPath;
 
   DesignLayer({
     required this.id,
@@ -57,6 +63,30 @@ class DesignLayer {
       logoPath: logoPath ?? this.logoPath,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': type.name,
+        'text': text,
+        'font': font,
+        'color': color.toARGB32(),
+        'fontSize': fontSize,
+        'x': x,
+        'y': y,
+        'logoPath': logoPath,
+      };
+
+  factory DesignLayer.fromJson(Map<String, dynamic> json) => DesignLayer(
+        id: json['id'] as String,
+        type: LayerType.values.byName(json['type'] as String),
+        text: json['text'] as String? ?? '',
+        font: json['font'] as String? ?? 'Lexend',
+        color: Color(json['color'] as int),
+        fontSize: (json['fontSize'] as num?)?.toDouble() ?? 20.0,
+        x: (json['x'] as num?)?.toDouble() ?? 0.0,
+        y: (json['y'] as num?)?.toDouble() ?? 0.0,
+        logoPath: json['logoPath'] as String?,
+      );
 }
 
 class ProductCustomizerPage extends StatefulWidget {
@@ -74,6 +104,9 @@ class ProductCustomizerPage extends StatefulWidget {
 }
 
 class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
+  final GlobalKey _canvasKey = GlobalKey();
+  bool _isSaving = false;
+  
   // Core config states
   String _printMethod = 'In chuyển nhiệt'; // 'In chuyển nhiệt' or 'Decal phản quang'
   bool _isFrontView = true;
@@ -109,25 +142,65 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
     'Montserrat',
   ];
 
+  bool _isInitialized = false;
+
   @override
   void initState() {
     super.initState();
     _textController = TextEditingController();
+  }
 
-    // Load initial mockup layer from saved customization
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _isInitialized = true;
+      _initializeCustomizer();
+    }
+  }
+
+  void _initializeCustomizer() {
+    // Load saved customization layers
     final cubit = context.read<CustomizerCubit>();
     final saved = cubit.getCustomizationOrDefault(widget.productId);
 
     _printMethod = saved.printMethod;
 
-    if (saved.customText.isNotEmpty && saved.customText != 'TEAM SPORT') {
+    final double maxHOffset = MediaQuery.of(context).size.width * 0.85 * 0.35;
+    final double maxVOffset = MediaQuery.of(context).size.height * 0.42 * 0.25;
+
+    if (saved.layersJson.isNotEmpty) {
+      try {
+        final List<dynamic> decoded = jsonDecode(saved.layersJson);
+        final restored = decoded.map((e) {
+          var layer = DesignLayer.fromJson(e as Map<String, dynamic>);
+          // If coordinates are in normalized form, convert them to pixels
+          if (layer.x.abs() <= 1.0 && layer.y.abs() <= 1.0 && (layer.x != 0.0 || layer.y != 0.0)) {
+            layer = layer.copyWith(
+              x: layer.x * maxHOffset,
+              y: layer.y * maxVOffset,
+            );
+          }
+          return layer;
+        }).toList();
+        _layers.addAll(restored);
+        if (_layers.isNotEmpty) {
+          _activeLayer = _layers.last;
+          if (_activeLayer!.type == LayerType.text) {
+            _textController.text = _activeLayer!.text;
+          }
+        }
+      } catch (e) {
+        debugPrint('Error restoring layers: $e');
+      }
+    } else if (saved.customText.isNotEmpty && saved.customText != 'TEAM SPORT') {
       final initialLayer = DesignLayer(
         id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
         type: LayerType.text,
         text: saved.customText,
         color: Color(saved.colorHex),
         fontSize: (22.0 * saved.textScale).clamp(12.0, 60.0),
-        y: -0.1,
+        y: -0.1 * maxVOffset,
       );
       _layers.add(initialLayer);
       _activeLayer = initialLayer;
@@ -140,7 +213,7 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
         text: 'SPORT PRO',
         color: const Color(0xFF0058BC),
         fontSize: 22.0,
-        y: -0.1,
+        y: -0.1 * maxVOffset,
       );
       _layers.add(defaultLayer);
       _activeLayer = defaultLayer;
@@ -170,17 +243,22 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
 
   void _addNewTextLayer() {
     setState(() {
+      final double offset = (_layers.length % 4) * 0.1 - 0.15;
       final newLayer = DesignLayer(
         id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
         type: LayerType.text,
         text: 'LỚP CHỮ MỚI',
         color: const Color(0xFFBA1A1A),
         fontSize: 18.0,
-        y: 0.1,
+        x: offset,
+        y: offset,
       );
       _layers.add(newLayer);
       _activeLayer = newLayer;
       _textController.text = newLayer.text;
+      _textController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _textController.text.length),
+      );
     });
   }
 
@@ -229,8 +307,53 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
     });
   }
 
-  void _handleConfirm() {
-    // Generate customization entity from active configuration
+  Future<Uint8List?> _captureCanvas() async {
+    try {
+      final boundary = _canvasKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) return null;
+      final image = await boundary.toImage(pixelRatio: 2.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      debugPrint('Error capturing canvas: $e');
+      return null;
+    }
+  }
+
+  Future<void> _handleConfirm() async {
+    // 1. Capture design image bytes
+    setState(() => _isSaving = true);
+    
+    // De-activate current layer to hide borders/close buttons from the screenshot
+    final previousActiveLayer = _activeLayer;
+    setState(() {
+      _activeLayer = null;
+    });
+
+    // Wait a frame for UI to repaint without active layer borders
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    final bytes = await _captureCanvas();
+    if (bytes == null) {
+      setState(() {
+        _activeLayer = previousActiveLayer;
+        _isSaving = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Không thể chụp hình thiết kế. Vui lòng thử lại!'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    // Restore active layer
+    setState(() {
+      _activeLayer = previousActiveLayer;
+    });
+
+    // 2. Prepare request data
     String activeText = '';
     int activeColor = 0xFF1A1C1F;
     double activeFontSize = 22.0;
@@ -244,41 +367,78 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
     }
 
     final hasLogo = _layers.any((l) => l.type == LayerType.logo);
+    final layersJsonStr = jsonEncode(_layers.map((l) => l.toJson()).toList());
 
-    final customization = CustomizationEntity(
-      productId: widget.productId,
-      customText: activeText,
-      textColor: 'Selected Color',
-      colorHex: activeColor,
-      printMethod: _printMethod,
-      logoEnabled: hasLogo,
-      textScale: activeFontSize / 22.0,
+    final int materialId = _printMethod == 'In chuyển nhiệt' ? 1 : 2;
+    final int numTextLines = textLayers.length;
+    final int numImages = _layers.where((l) => l.type == LayerType.logo).length;
+
+    // 3. Upload to backend
+    final repository = sl<CustomDesignRepository>();
+    final result = await repository.saveDesign(
+      materialId: materialId,
+      numTextLines: numTextLines,
+      numImages: numImages,
+      metadata: layersJsonStr,
+      imageBytes: bytes,
     );
 
-    context.read<CustomizerCubit>().saveCustomization(widget.productId, customization);
+    setState(() => _isSaving = false);
 
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'Đã thiết kế sản phẩm thành công!',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+    if (!mounted) return;
+
+    switch (result) {
+      case Success(:final data):
+        final customDesignId = data;
+        
+        // Save the customization entity locally with the customDesignId from backend
+        final customization = CustomizationEntity(
+          productId: widget.productId,
+          customText: activeText,
+          textColor: 'Selected Color',
+          colorHex: activeColor,
+          printMethod: _printMethod,
+          logoEnabled: hasLogo,
+          textScale: activeFontSize / 22.0,
+          layersJson: layersJsonStr,
+          customDesignId: customDesignId,
+        );
+
+        await context.read<CustomizerCubit>().saveCustomization(widget.productId, customization);
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Đã lưu thiết kế lên hệ thống thành công!',
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
-          ],
-        ),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+            backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 2),
+          ),
+        );
 
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.goNamed(AppRoutes.cart);
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.goNamed(AppRoutes.cart);
+        }
+        break;
+        
+      case ResultFailure(:final failure):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Không thể đồng bộ với server: ${failure.message}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        break;
     }
   }
 
@@ -349,7 +509,9 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Stack(
+      children: [
+        Scaffold(
       backgroundColor: const Color(0xFFF3F3F8),
       appBar: _buildAppBar(context),
       body: SafeArea(
@@ -382,175 +544,196 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
                       transform: Matrix4.identity()
                         ..scale(_zoomScale)
                         ..rotateZ(_rotationAngle),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.85,
-                        height: MediaQuery.of(context).size.height * 0.42,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
+                      child: RepaintBoundary(
+                        key: _canvasKey,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.85,
+                          height: MediaQuery.of(context).size.height * 0.42,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
                             children: [
                               // White shirt template model
                               AnimatedRotation(
                                 turns: _isFrontView ? 0.0 : 0.5, // Subtle visual indicator
                                 duration: const Duration(milliseconds: 300),
                                 child: Image.network(
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuAg16llodl6Hl8MPqH6DvSysphHsH9azINDafCIQFp9rqCHyIEj5IyNuBfAVIK7-s1m70zLJYYuRDn7ps4e9BkxeY1wfIJ58BidKV1GgULrOntZ7svsuNpwj8nvPhazvHISS-5OqI81qGvWmbwLlQlDr7PaeNVO1DpmYgljTca2s33rrrPqLBq7MLlaEkQdj7fqz_fN5K-XrOluv8Ux-V0w9V8-aE1C5t5BlJtTl7b0-7Tot4btl19oWsO5WWVz6wdqu1TcpvcIJ6k',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-
-                            // Flip side indicator badge overlay
-                            if (!_isFrontView)
-                              Positioned(
-                                top: 12,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.6),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    'MẶT SAU (BACK VIEW)',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAg16llodl6Hl8MPqH6DvSysphHsH9azINDafCIQFp9rqCHyIEj5IyNuBfAVIK7-s1m70zLJYYuRDn7ps4e9BkxeY1wfIJ58BidKV1GgULrOntZ7svsuNpwj8nvPhazvHISS-5OqI81qGvWmbwLlQlDr7PaeNVO1DpmYgljTca2s33rrrPqLBq7MLlaEkQdj7fqz_fN5K-XrOluv8Ux-V0w9V8-aE1C5t5BlJtTl7b0-7Tot4btl19oWsO5WWVz6wdqu1TcpvcIJ6k',
+                                  fit: BoxFit.contain,
                                 ),
                               ),
 
-                            // Overlay layers on the chest area
-                            ..._layers.map((layer) {
-                              final bool isActive = _activeLayer?.id == layer.id;
-                              final double maxHOffset = MediaQuery.of(context).size.width * 0.85 * 0.35;
-                              final double maxVOffset = MediaQuery.of(context).size.height * 0.42 * 0.25;
-
-                              return Center(
-                                child: GestureDetector(
-                                  onTapDown: (_) {
-                                    setState(() {
-                                      _activeLayer = layer;
-                                      if (layer.type == LayerType.text) {
-                                        _textController.text = layer.text;
-                                      }
-                                    });
-                                  },
-                                  onPanUpdate: (details) {
-                                    setState(() {
-                                      final idx = _layers.indexWhere((l) => l.id == layer.id);
-                                      if (idx == -1) return;
-                                      final current = _layers[idx];
-                                      final double dx = (details.delta.dx / _zoomScale) / maxHOffset;
-                                      final double dy = (details.delta.dy / _zoomScale) / maxVOffset;
-                                      _layers[idx] = current.copyWith(
-                                        x: (current.x + dx).clamp(-1.0, 1.0),
-                                        y: (current.y + dy).clamp(-0.5, 0.5),
-                                      );
-                                      _activeLayer = _layers[idx];
-                                    });
-                                  },
-                                  child: Transform.translate(
-                                    offset: Offset(layer.x * maxHOffset, layer.y * maxVOffset),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: isActive ? AppColors.primary : Colors.transparent,
-                                          width: 1.5,
-                                          style: BorderStyle.solid,
-                                        ),
-                                        borderRadius: BorderRadius.circular(6),
+                              // Flip side indicator badge overlay
+                              if (!_isFrontView)
+                                Positioned(
+                                  top: 12,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withValues(alpha: 0.6),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      'MẶT SAU (BACK VIEW)',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
                                       ),
-                                      child: Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          if (layer.type == LayerType.text)
-                                            Transform(
-                                              alignment: Alignment.center,
-                                              transform: Matrix4.skewX(-0.15),
-                                              child: Text(
-                                                layer.text.toUpperCase(),
-                                                style: _getFontFamily(layer.font).copyWith(
-                                                  fontSize: layer.fontSize,
-                                                  fontWeight: FontWeight.w900,
-                                                  fontStyle: FontStyle.italic,
-                                                  color: layer.color,
-                                                  letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ),
+
+                              // Overlay layers on the chest area
+                              ..._layers.map((layer) {
+                                final bool isActive = _activeLayer?.id == layer.id;
+                                final double canvasWidth = MediaQuery.of(context).size.width * 0.85;
+                                final double canvasHeight = MediaQuery.of(context).size.height * 0.42;
+
+                                return Positioned(
+                                  left: (canvasWidth / 2) + layer.x,
+                                  top: (canvasHeight / 2) + layer.y,
+                                  child: FractionalTranslation(
+                                    translation: const Offset(-0.5, -0.5),
+                                    child: GestureDetector(
+                                      onTapDown: (_) {
+                                        setState(() {
+                                          _activeLayer = layer;
+                                          if (layer.type == LayerType.text) {
+                                            _textController.text = layer.text;
+                                            _textController.selection = TextSelection.fromPosition(
+                                              TextPosition(offset: _textController.text.length),
+                                            );
+                                          }
+                                        });
+                                      },
+                                      onPanStart: (_) {
+                                        setState(() {
+                                          _activeLayer = layer;
+                                          if (layer.type == LayerType.text) {
+                                            _textController.text = layer.text;
+                                            _textController.selection = TextSelection.fromPosition(
+                                              TextPosition(offset: _textController.text.length),
+                                            );
+                                          }
+                                        });
+                                      },
+                                      onPanUpdate: (details) {
+                                        setState(() {
+                                          final idx = _layers.indexWhere((l) => l.id == layer.id);
+                                          if (idx == -1) return;
+                                          final current = _layers[idx];
+                                          
+                                          // Clamp movement within printable area bounds (40% width, 40% height of canvas)
+                                          final double maxH = canvasWidth * 0.40;
+                                          final double maxV = canvasHeight * 0.40;
+                                          final double newX = (current.x + details.delta.dx / _zoomScale).clamp(-maxH, maxH);
+                                          final double newY = (current.y + details.delta.dy / _zoomScale).clamp(-maxV, maxV);
+                                          
+                                          _layers[idx] = current.copyWith(x: newX, y: newY);
+                                          _activeLayer = _layers[idx];
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: isActive ? AppColors.primary : Colors.transparent,
+                                            width: 1.5,
+                                            style: BorderStyle.solid,
+                                          ),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            if (layer.type == LayerType.text)
+                                              Transform(
+                                                alignment: Alignment.center,
+                                                transform: Matrix4.skewX(-0.15),
+                                                child: Text(
+                                                  layer.text.toUpperCase(),
+                                                  style: _getFontFamily(layer.font).copyWith(
+                                                    fontSize: layer.fontSize,
+                                                    fontWeight: FontWeight.w900,
+                                                    fontStyle: FontStyle.italic,
+                                                    color: layer.color,
+                                                    letterSpacing: -0.5,
+                                                  ),
                                                 ),
                                               ),
-                                            )
-                                          else if (layer.type == LayerType.logo)
-                                            Container(
-                                              width: 48,
-                                              height: 48,
-                                              decoration: const BoxDecoration(
-                                                shape: BoxShape.circle,
+                                            if (layer.type == LayerType.logo)
+                                              Container(
+                                                width: 48,
+                                                height: 48,
+                                                decoration: const BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                clipBehavior: Clip.antiAlias,
+                                                child: !kIsWeb && layer.logoPath != null
+                                                    ? Image.file(
+                                                        File(layer.logoPath!),
+                                                        fit: BoxShape.circle == BoxShape.circle ? BoxFit.cover : BoxFit.contain,
+                                                      )
+                                                    : const Icon(Icons.sports_soccer_rounded, size: 28),
                                               ),
-                                              clipBehavior: Clip.antiAlias,
-                                              child: !kIsWeb && layer.logoPath != null
-                                                  ? Image.file(
-                                                      File(layer.logoPath!),
-                                                      fit: BoxShape.circle == BoxShape.circle ? BoxFit.cover : BoxFit.contain,
-                                                    )
-                                                  : const Icon(Icons.sports_soccer_rounded, size: 28),
-                                            ),
-                                          if (isActive)
-                                            Positioned(
-                                              top: -16,
-                                              right: -16,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    _layers.removeWhere((l) => l.id == layer.id);
-                                                    _activeLayer = null;
-                                                    _textController.clear();
-                                                  });
-                                                },
+                                            if (isActive)
+                                              Positioned(
+                                                top: -16,
+                                                right: -16,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _layers.removeWhere((l) => l.id == layer.id);
+                                                      _activeLayer = null;
+                                                      _textController.clear();
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    padding: const EdgeInsets.all(2),
+                                                    decoration: const BoxDecoration(
+                                                      color: Colors.white,
+                                                      shape: BoxShape.circle,
+                                                      boxShadow: [
+                                                        BoxShadow(color: Colors.black12, blurRadius: 4),
+                                                      ],
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.close_rounded,
+                                                      size: 12,
+                                                      color: AppColors.error,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            if (isActive)
+                                              Positioned(
+                                                bottom: -16,
+                                                right: -16,
                                                 child: Container(
                                                   padding: const EdgeInsets.all(2),
                                                   decoration: const BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: AppColors.primary,
                                                     shape: BoxShape.circle,
-                                                    boxShadow: [
-                                                      BoxShadow(color: Colors.black12, blurRadius: 4),
-                                                    ],
                                                   ),
                                                   child: const Icon(
-                                                    Icons.close_rounded,
-                                                    size: 12,
-                                                    color: AppColors.error,
+                                                    Icons.open_in_full_rounded,
+                                                    size: 10,
+                                                    color: Colors.white,
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          if (isActive)
-                                            Positioned(
-                                              bottom: -16,
-                                              right: -16,
-                                              child: Container(
-                                                padding: const EdgeInsets.all(2),
-                                                decoration: const BoxDecoration(
-                                                  color: AppColors.primary,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: const Icon(
-                                                  Icons.open_in_full_rounded,
-                                                  size: 10,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }),
-                          ],
+                                );
+                              }),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -1248,6 +1431,34 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
           ],
         ),
       ),
+    ),
+        if (_isSaving)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.5),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Đang lưu thiết kế lên server...',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

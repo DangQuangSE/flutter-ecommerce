@@ -68,6 +68,9 @@ class AuthRepositoryImpl implements AuthRepository {
     } on AppException {
       await _localDataSource.clearSession();
       return const Success(null);
+    } on DioException {
+      await _localDataSource.clearSession();
+      return const Success(null);
     }
   }
 
