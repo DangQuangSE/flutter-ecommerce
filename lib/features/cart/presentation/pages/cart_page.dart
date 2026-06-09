@@ -356,102 +356,106 @@ class _CartPageState extends State<CartPage> {
                 ],
                 const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      _formatPrice(item.price),
-                      style: GoogleFonts.lexend(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
-                        fontStyle: FontStyle.italic,
+                    Flexible(
+                      child: Text(
+                        _formatPrice(item.price),
+                        style: GoogleFonts.lexend(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        if (category == 'APPAREL') ...[
-                          GestureDetector(
-                            onTap: () {
-                              context.pushNamed(
-                                AppRoutes.productCustomizer,
-                                pathParameters: {'productId': item.productSlug},
-                                queryParameters: {'name': item.productName},
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: AppColors.primary, width: 1.2),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.brush_rounded, size: 12, color: AppColors.primary),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'CUSTOM',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                        Container(
-                          height: 28,
+                    const SizedBox(width: 8),
+                    if (category == 'APPAREL') ...[
+                      GestureDetector(
+                        onTap: () {
+                          context.pushNamed(
+                            AppRoutes.productCustomizer,
+                            pathParameters: {'productId': item.productSlug},
+                            queryParameters: {'name': item.productName},
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: const Color(0xFFC1C6D7),
-                            ),
+                            border: Border.all(color: AppColors.primary, width: 1.2),
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                onPressed: () {
-                                  if (item.quantity > 1) {
-                                    context.read<CartCubit>().updateQuantity(
-                                          variantId: item.variantId,
-                                          quantity: item.quantity - 1,
-                                        );
-                                  } else {
-                                    _showRemoveConfirmation(context, item);
-                                  }
-                                },
-                                icon: const Icon(Icons.remove, size: 12),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                              ),
+                              const Icon(Icons.brush_rounded, size: 12, color: AppColors.primary),
+                              const SizedBox(width: 4),
                               Text(
-                                '${item.quantity}',
+                                'CUSTOM',
                                 style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.primary,
                                 ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  context.read<CartCubit>().updateQuantity(
-                                        variantId: item.variantId,
-                                        quantity: item.quantity + 1,
-                                      );
-                                },
-                                icon: const Icon(Icons.add, size: 12),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Container(
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFC1C6D7),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (item.quantity > 1) {
+                                context.read<CartCubit>().updateQuantity(
+                                      variantId: item.variantId,
+                                      quantity: item.quantity - 1,
+                                    );
+                              } else {
+                                _showRemoveConfirmation(context, item);
+                              }
+                            },
+                            child: const SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: Icon(Icons.remove, size: 12),
+                            ),
+                          ),
+                          Text(
+                            '${item.quantity}',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              context.read<CartCubit>().updateQuantity(
+                                    variantId: item.variantId,
+                                    quantity: item.quantity + 1,
+                                  );
+                            },
+                            child: const SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: Icon(Icons.add, size: 12),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

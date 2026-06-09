@@ -49,6 +49,8 @@ abstract final class ApiConstants {
   static const String adminOrders = '/api/v1/admin/orders';
   static const String profile = '/profile';
 
+  static const String customDesigns = '/api/custom-designs';
+
   // Admin Product
   static const String adminProducts = '/api/admin/products';
   static String adminProductById(int id) => '/api/admin/products/$id';

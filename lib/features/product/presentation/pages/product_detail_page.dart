@@ -9,7 +9,6 @@ import 'package:flutter_ecommerce/features/product/domain/entities/product_entit
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
-
 import 'package:flutter_ecommerce/features/product/presentation/widgets/product_carousel.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/color_selector.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/size_selector.dart';
@@ -18,6 +17,7 @@ import 'package:flutter_ecommerce/features/product/presentation/widgets/collapsi
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String productId;
@@ -590,9 +590,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     : () {
                         final targetVariantId = matchingVariant?.id ??
                             (product.variants?.isNotEmpty == true ? product.variants!.first.id : 1);
+                        final custId = context.read<CustomizerCubit>()
+                            .getCustomizationOrDefault(product.id)
+                            .customDesignId;
                         context.read<CartCubit>().addItem(
                               variantId: targetVariantId,
                               quantity: 1,
+                              customDesignId: custId,
                             );
 
                         ScaffoldMessenger.of(context).clearSnackBars();
