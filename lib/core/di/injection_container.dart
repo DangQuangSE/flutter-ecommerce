@@ -33,6 +33,16 @@ import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admi
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
 
+// Checkout
+import 'package:flutter_ecommerce/features/checkout/data/datasources/checkout_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/checkout/data/datasources/checkout_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/checkout/data/repositories/checkout_repository_impl.dart';
+import 'package:flutter_ecommerce/features/checkout/domain/repositories/checkout_repository.dart';
+import 'package:flutter_ecommerce/features/checkout/domain/usecases/create_vnpay_payment_usecase.dart';
+import 'package:flutter_ecommerce/features/checkout/domain/usecases/place_order_usecase.dart';
+import 'package:flutter_ecommerce/features/checkout/domain/usecases/verify_vnpay_payment_usecase.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
+
 // Auth
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_remote_datasource.dart';
@@ -414,7 +424,29 @@ Future<void> configureDependencies() async {
     ),
   );
 
-  // Checkout / Order — register when implementations are added
+  // ── Checkout / VNPay ───────────────────────────────────────────────────────
+  sl.registerLazySingleton<CheckoutRemoteDataSource>(
+    () => CheckoutRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<CheckoutRepository>(
+    () => CheckoutRepositoryImpl(sl<CheckoutRemoteDataSource>()),
+  );
+  sl.registerFactory<PlaceOrderUseCase>(
+    () => PlaceOrderUseCase(sl<CheckoutRepository>()),
+  );
+  sl.registerFactory<CreateVnpayPaymentUseCase>(
+    () => CreateVnpayPaymentUseCase(sl<CheckoutRepository>()),
+  );
+  sl.registerFactory<VerifyVnpayPaymentUseCase>(
+    () => VerifyVnpayPaymentUseCase(sl<CheckoutRepository>()),
+  );
+  sl.registerFactory<CheckoutBloc>(
+    () => CheckoutBloc(
+      placeOrderUseCase: sl<PlaceOrderUseCase>(),
+      createVnpayPaymentUseCase: sl<CreateVnpayPaymentUseCase>(),
+      verifyVnpayPaymentUseCase: sl<VerifyVnpayPaymentUseCase>(),
+    ),
+  );
 
   // ── Admin Product ────────────────────────────────────────────────────────────
   sl.registerLazySingleton<AdminProductDatasource>(

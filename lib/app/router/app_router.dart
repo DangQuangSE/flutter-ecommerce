@@ -19,8 +19,12 @@ import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp
 import 'package:flutter_ecommerce/features/auth/presentation/pages/splash_page.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/pages/notification_page.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/pages/checkout_success_page.dart';
+import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
+import 'package:flutter_ecommerce/features/payment/presentation/pages/payment_result_page.dart';
+import 'package:flutter_ecommerce/features/payment/presentation/pages/vnpay_payment_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_detail_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_list_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
@@ -299,7 +303,10 @@ class AppRouter {
       GoRoute(
         path: '/checkout',
         name: AppRoutes.checkout,
-        builder: (context, state) => const CheckoutPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<CheckoutBloc>(),
+          child: const CheckoutPage(),
+        ),
         routes: [
           GoRoute(
             path: 'success',
@@ -307,6 +314,27 @@ class AppRouter {
             builder: (context, state) => const CheckoutSuccessPage(),
           ),
         ],
+      ),
+
+      GoRoute(
+        path: '/payment/vnpay',
+        name: AppRoutes.vnpayPayment,
+        builder: (context, state) {
+          final extra = state.extra! as VnpayPaymentExtra;
+          return VnpayPaymentPage(extra: extra);
+        },
+      ),
+
+      GoRoute(
+        path: '/payment/result',
+        name: AppRoutes.paymentResult,
+        builder: (context, state) {
+          final extra = state.extra! as Map<String, dynamic>;
+          return PaymentResultPage(
+            success: extra['success'] as bool? ?? false,
+            message: extra['message'] as String? ?? '',
+          );
+        },
       ),
 
       GoRoute(

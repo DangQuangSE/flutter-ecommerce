@@ -7,6 +7,12 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/payment_qr_card.dart';
+import 'package:flutter_ecommerce/features/checkout/domain/entities/order_request_entity.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_event.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_state.dart';
+import 'package:flutter_ecommerce/features/payment/domain/entities/vnpay_payment_result.dart';
+import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -25,7 +31,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: 'Alex Mercer');
-    _phoneController = TextEditingController(text: '+84 987 654 321');
+    _phoneController = TextEditingController(text: '0987654321');
     _addressController = TextEditingController(
       text: '123 Lê Lợi, Quận 1, TP. Hồ Chí Minh, Việt Nam',
     );
@@ -39,9 +45,56 @@ class _CheckoutPageState extends State<CheckoutPage> {
     super.dispose();
   }
 
+  String _normalizePhone(String raw) => raw.replaceAll(RegExp(r'\s+'), '');
+
+  Future<void> _openVnpayWebView(
+    BuildContext context,
+    CheckoutAwaitingPayment state,
+  ) async {
+    final result = await context.pushNamed<VnpayPaymentResult?>(
+      AppRoutes.vnpayPayment,
+      extra: VnpayPaymentExtra(
+        orderId: state.session.orderId,
+        paymentUrl: state.session.paymentUrl,
+      ),
+    );
+    if (!context.mounted) return;
+    context.read<CheckoutBloc>().add(
+          CheckoutPaymentReturned(
+            orderId: state.session.orderId,
+            result: result,
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<CheckoutBloc, CheckoutState>(
+      listenWhen: (previous, current) =>
+          (current is CheckoutAwaitingPayment &&
+              previous is! CheckoutAwaitingPayment) ||
+          current is CheckoutSuccess ||
+          current is CheckoutFailure,
+      listener: (context, checkoutState) async {
+        if (checkoutState is CheckoutAwaitingPayment) {
+          await _openVnpayWebView(context, checkoutState);
+        } else if (checkoutState is CheckoutSuccess) {
+          await context.read<CartCubit>().loadCart();
+          if (!context.mounted) return;
+          context.goNamed(AppRoutes.checkoutSuccess);
+        } else if (checkoutState is CheckoutFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: AppColors.error,
+              content: Text(
+                checkoutState.message,
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
+            ),
+          );
+        }
+      },
+      child: Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -79,7 +132,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         centerTitle: true,
       ),
-      body: BlocBuilder<CartCubit, CartState>(
+      body: BlocBuilder<CheckoutBloc, CheckoutState>(
+        builder: (context, checkoutState) {
+          final isCheckoutBusy = checkoutState is CheckoutLoading ||
+              checkoutState is CheckoutVerifying;
+
+          return Stack(
+            children: [
+              BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
           if (state is CartLoading) {
             return const Center(
@@ -98,6 +158,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
           return const SizedBox.shrink();
         },
       ),
+              if (isCheckoutBusy)
+                const ColoredBox(
+                  color: Color(0x66FFFFFF),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    ),
     );
   }
 
@@ -456,10 +531,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
           child: ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                // Clear the cart on successful order confirmation
-                context.read<CartCubit>().clearCart();
-                // Route to CheckoutSuccessPage
-                context.goNamed(AppRoutes.checkoutSuccess);
+                final cartItemIds =
+                    state.items.map((item) => item.itemId).toList();
+                context.read<CheckoutBloc>().add(
+                      CheckoutSubmitted(
+                        OrderRequestEntity(
+                          shippingAddress: _addressController.text.trim(),
+                          phoneNumber: _normalizePhone(_phoneController.text),
+                          cartItemIds: cartItemIds,
+                        ),
+                      ),
+                    );
               } else {
                 ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(

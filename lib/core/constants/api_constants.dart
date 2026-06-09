@@ -45,7 +45,10 @@ abstract final class ApiConstants {
   // TODO: align with backend when product/cart APIs are wired
   static const String products = '/api/products';
   static const String cart = '/api/carts/me';
-  static const String orders = '/orders';
+  static const String orders = '/api/v1/orders';
+  static const String vnpayCreate = '/api/v1/payments/vnpay/create';
+  static String vnpayVerify(int orderId) =>
+      '/api/v1/payments/vnpay/verify/$orderId';
   static const String adminOrders = '/api/v1/admin/orders';
   static const String profile = '/profile';
 

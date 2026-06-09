@@ -17,6 +17,8 @@ abstract final class AppRoutes {
 
   static const String checkout = 'checkout';
   static const String checkoutSuccess = 'checkout-success';
+  static const String vnpayPayment = 'vnpay-payment';
+  static const String paymentResult = 'payment-result';
 
   static const String notificationList = 'notification-list';
 
