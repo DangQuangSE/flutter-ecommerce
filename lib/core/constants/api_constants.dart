@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 
 abstract final class ApiConstants {
   static const String baseUrl = kIsWeb
-      ? 'http://127.0.0.1:8081'
+      ? 'http://127.0.0.1:8080'
       : String.fromEnvironment(
           'BASE_URL',
-          defaultValue: 'http://10.0.2.2:8081',
+          defaultValue: 'http://10.0.2.2:8080',
         );
 
   static const String login = '/api/auth/login';
