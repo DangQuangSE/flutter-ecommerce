@@ -28,8 +28,8 @@ class ChatCubit extends Cubit<ChatState> {
         _sendMessageUseCase = sendMessageUseCase,
         _repository = repository,
         super(const ChatInitial()) {
-    // Listen to real-time bot replies app-wide!
-    _botReplySubscription = _repository.botReplyStream.listen(_onBotReplyReceived);
+    // Listen to real-time inbound messages (WebSocket) app-wide.
+    _botReplySubscription = _repository.botReplyStream.listen(_onIncomingMessage);
   }
 
   int get totalUnreadMessages {
@@ -41,8 +41,11 @@ class ChatCubit extends Cubit<ChatState> {
     final result = await _getChatsUseCase();
     switch (result) {
       case Success(:final data):
-        _cachedChats = data;
-        emit(ChatsLoaded(List.from(data)));
+        // Reify as List<ChatEntity>: the datasource returns ChatModel instances,
+        // so a plain assignment leaves the runtime type as List<ChatModel>, which
+        // breaks firstWhere(orElse: () => ChatEntity(...)) below.
+        _cachedChats = List<ChatEntity>.from(data);
+        emit(ChatsLoaded(List<ChatEntity>.from(data)));
       case ResultFailure(:final failure):
         emit(ChatError(failure.message));
     }
@@ -55,7 +58,7 @@ class ChatCubit extends Cubit<ChatState> {
     if (_cachedChats.isEmpty) {
       final chatsResult = await _getChatsUseCase();
       if (chatsResult is Success<List<ChatEntity>>) {
-        _cachedChats = chatsResult.data;
+        _cachedChats = List<ChatEntity>.from(chatsResult.data);
       }
     }
     
@@ -138,37 +141,39 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  void _onBotReplyReceived(MessageEntity botMessage) {
-    final currentState = state;
-    
-    // 1. Update the local chat thread cache first
-    final threadIndex = _cachedChats.indexWhere((c) => c.id == 'chat-support' || c.id == 'chat-designer');
-    if (threadIndex != -1) {
-      final targetChat = _cachedChats[threadIndex];
-      
-      // If we are NOT currently chatting in that room, increment unread count!
-      final isCurrentRoomActive = currentState is ChatRoomLoaded && currentState.chat.id == targetChat.id;
-      final newUnread = isCurrentRoomActive ? 0 : targetChat.unreadCount + 1;
+  /// Handles a real-time inbound message pushed over WebSocket. Routes it to
+  /// the right thread by [MessageEntity.conversationId].
+  void _onIncomingMessage(MessageEntity message) {
+    final conversationId = message.conversationId;
+    if (conversationId == null) return;
 
-      _cachedChats[threadIndex] = targetChat.copyWith(
-        lastMessage: botMessage.content,
-        lastMessageTime: botMessage.timestamp,
-        unreadCount: newUnread,
+    final currentState = state;
+    final isViewingRoom =
+        currentState is ChatRoomLoaded && currentState.chat.id == conversationId;
+
+    // 1. Update the cached inbox entry (last message + unread badge).
+    final threadIndex = _cachedChats.indexWhere((c) => c.id == conversationId);
+    if (threadIndex != -1) {
+      final target = _cachedChats[threadIndex];
+      _cachedChats[threadIndex] = target.copyWith(
+        lastMessage: message.content,
+        lastMessageTime: message.timestamp,
+        unreadCount: isViewingRoom ? 0 : target.unreadCount + 1,
       );
     }
 
-    // 2. If the user is currently viewing the active chat room, append the message in real-time!
-    if (currentState is ChatRoomLoaded && (currentState.chat.id == 'chat-support' || currentState.chat.id == 'chat-designer')) {
-      final updatedMessages = List<MessageEntity>.from(currentState.messages)..add(botMessage);
+    // 2. Reflect the change in the current view.
+    if (isViewingRoom) {
+      final updatedMessages =
+          List<MessageEntity>.from(currentState.messages)..add(message);
       emit(ChatRoomLoaded(
         chat: currentState.chat.copyWith(
-          lastMessage: botMessage.content,
-          lastMessageTime: botMessage.timestamp,
+          lastMessage: message.content,
+          lastMessageTime: message.timestamp,
         ),
         messages: updatedMessages,
       ));
     } else if (currentState is ChatsLoaded) {
-      // If the user is currently looking at the inbox list, update the list instantly!
       emit(ChatsLoaded(List.from(_cachedChats)));
     }
   }
