@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
@@ -21,8 +22,19 @@ class AdminProductImageDatasourceImpl implements AdminProductImageDatasource {
     void Function(int sent, int total)? onSendProgress,
   }) async {
     try {
+      // Explicitly set content type so the backend's MIME-type validation passes.
+      final ext = fileName.split('.').last.toLowerCase();
+      final mime = switch (ext) {
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+        _ => 'image/jpeg',
+      };
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+        'file': await MultipartFile.fromFile(
+          filePath,
+          filename: fileName,
+          contentType: MediaType.parse(mime),
+        ),
         'isThumbnail': isThumbnail,
         'sortOrder': sortOrder,
         if (variantId != null) 'variantId': variantId,
