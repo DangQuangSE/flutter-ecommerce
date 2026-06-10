@@ -26,7 +26,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   final _pinController = TextEditingController();
   Timer? _resendTimer;
   int _resendSeconds = 0;
-  String? _inlineError;
 
   @override
   void dispose() {
@@ -57,7 +56,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void _onVerify() {
     final otp = _pinController.text.trim();
     if (otp.length != 6) return;
-    setState(() => _inlineError = null);
     context.read<AuthBloc>().add(
           AuthOtpVerifyRequested(
             email: widget.extra.email,
@@ -69,7 +67,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void _onResend() {
     if (_resendSeconds > 0) return;
     _pinController.clear();
-    setState(() => _inlineError = null);
     context.read<AuthBloc>().add(
           AuthResendOtpRequested(email: widget.extra.email),
         );
@@ -80,6 +77,13 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void initState() {
     super.initState();
     _startResendCooldown();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<AuthBloc>().state;
+      if (state is AuthRegisterOtpError) {
+        _pinController.clear();
+      }
+    });
   }
 
   @override
@@ -126,18 +130,19 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   }
                 });
               } else if (state is AuthRegisterOtpError) {
-                setState(() => _inlineError = state.message);
                 _pinController.clear();
               } else if (state is AuthOtpSent) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Mã OTP đã được gửi lại')),
                 );
                 _pinController.clear();
-                setState(() => _inlineError = null);
               }
             },
             builder: (context, state) {
               final isLoading = state is AuthLoading;
+              final inlineError = state is AuthRegisterOtpError
+                  ? state.message
+                  : null;
               final canVerify =
                   !isLoading && _pinController.text.trim().length == 6;
 
@@ -177,10 +182,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     onChanged: (_) => setState(() {}),
                     onCompleted: (_) => _onVerify(),
                   ),
-                  if (_inlineError != null) ...[
+                  if (inlineError != null) ...[
                     const SizedBox(height: 12),
                     Text(
-                      _inlineError!,
+                      inlineError,
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         color: AppColors.error,
