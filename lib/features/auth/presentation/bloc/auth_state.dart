@@ -50,6 +50,20 @@ final class AuthOtpVerified extends AuthState {
   List<Object?> get props => [email];
 }
 
+/// OTP step failed (wrong code, resend error, etc.) — keeps email so router stays on OTP page.
+final class AuthRegisterOtpError extends AuthState {
+  final String email;
+  final String message;
+
+  const AuthRegisterOtpError({
+    required this.email,
+    required this.message,
+  });
+
+  @override
+  List<Object?> get props => [email, message];
+}
+
 final class AuthRegistrationSuccess extends AuthState {
   const AuthRegistrationSuccess();
 }

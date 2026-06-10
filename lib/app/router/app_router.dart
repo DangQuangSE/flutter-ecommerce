@@ -85,6 +85,7 @@ RegisterOtpExtra? _resolveRegisterOtpExtra(GoRouterState state) {
   }
   return switch (sl<AuthBloc>().state) {
     AuthOtpSent(:final email) => RegisterOtpExtra(email: email),
+    AuthRegisterOtpError(:final email) => RegisterOtpExtra(email: email),
     _ => null,
   };
 }
@@ -116,12 +117,16 @@ class AppRouter {
           isForgotPasswordFlow;
 
       final authState = sl<AuthBloc>().state;
+      if (authState is AuthRegistrationSuccess) {
+        if (path.startsWith('/register')) return '/login';
+        return null;
+      }
       if (authState is AuthOtpVerified && path == '/register/otp') {
         return '/register/password';
       }
       if (authState is AuthOtpSent ||
-          authState is AuthOtpVerified ||
-          authState is AuthRegistrationSuccess) {
+          authState is AuthRegisterOtpError ||
+          authState is AuthOtpVerified) {
         return null;
       }
 
@@ -169,7 +174,10 @@ class AppRouter {
                 return '/register/password';
               }
               if (state.extra is RegisterOtpExtra) return null;
-              if (authState is AuthOtpSent) return null;
+              if (authState is AuthOtpSent ||
+                  authState is AuthRegisterOtpError) {
+                return null;
+              }
               return '/register';
             },
             builder: (context, state) {
@@ -182,9 +190,10 @@ class AppRouter {
             path: 'password',
             name: AppRoutes.registerPassword,
             redirect: (context, state) {
-              if (state.extra is RegisterPasswordExtra) return null;
               final authState = sl<AuthBloc>().state;
+              if (authState is AuthRegistrationSuccess) return '/login';
               if (authState is AuthOtpVerified) return null;
+              if (state.extra is RegisterPasswordExtra) return null;
               return '/register';
             },
             builder: (context, state) {

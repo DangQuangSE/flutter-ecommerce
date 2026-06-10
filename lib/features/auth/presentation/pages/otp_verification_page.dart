@@ -125,8 +125,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     );
                   }
                 });
-              } else if (state is AuthError) {
+              } else if (state is AuthRegisterOtpError) {
                 setState(() => _inlineError = state.message);
+                _pinController.clear();
               } else if (state is AuthOtpSent) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Mã OTP đã được gửi lại')),

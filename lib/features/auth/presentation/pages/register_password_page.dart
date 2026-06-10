@@ -66,7 +66,13 @@ class _RegisterPasswordPageState extends State<RegisterPasswordPage> {
                     content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
                   ),
                 );
-                context.goNamed(AppRoutes.login);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!context.mounted) return;
+                  final location = GoRouterState.of(context).uri.path;
+                  if (location != '/login') {
+                    context.goNamed(AppRoutes.login);
+                  }
+                });
               }
             },
             builder: (context, state) {

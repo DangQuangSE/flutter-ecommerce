@@ -94,7 +94,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     switch (verifyResult) {
       case ResultFailure(:final failure):
-        emit(AuthError(mapRegisterOtpFailureMessage(failure)));
+        emit(AuthRegisterOtpError(
+          email: email,
+          message: mapRegisterOtpFailureMessage(failure),
+        ));
       case Success():
         emit(AuthOtpVerified(email: email));
     }
@@ -125,11 +128,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     final result = await _resendOtpUseCase(email: event.email.trim());
+    final email = event.email.trim();
     switch (result) {
       case Success():
-        emit(AuthOtpSent(email: event.email.trim()));
+        emit(AuthOtpSent(email: email));
       case ResultFailure(:final failure):
-        _emitRegisterFailure(failure, emit);
+        emit(AuthRegisterOtpError(
+          email: email,
+          message: mapRegisterFailureMessage(failure),
+        ));
     }
   }
 
