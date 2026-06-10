@@ -8,9 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
-import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
-import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/recent_order_entity.dart';
 import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
@@ -28,9 +26,6 @@ class AdminDashboardPage extends StatefulWidget {
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   int _currentIndex = 0;
-  final TextEditingController _searchController = TextEditingController();
-  String _selectedCategory = 'All Products';
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -38,12 +33,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     // Load the support inbox (admin → all conversations) and open the realtime
     // socket so new customer messages arrive live + the unread badge updates.
     context.read<ChatCubit>().loadChats();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   /// Header button → support chat inbox, with a live unread badge.
@@ -127,7 +116,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               index: _currentIndex,
               children: [
                 _buildDashboardTab(context, state),
-                _buildProductsTab(context, state),
+                _buildManagementTab(context),
                 _buildLocationTab(context),
                 _buildProfileTab(context),
               ],
@@ -169,9 +158,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               label: 'Tổng quan',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_rounded, size: 22),
-              activeIcon: Icon(Icons.shopping_bag_rounded, size: 24),
-              label: 'Sản phẩm',
+              icon: Icon(Icons.tune_rounded, size: 22),
+              activeIcon: Icon(Icons.tune_rounded, size: 24),
+              label: 'Quản lý',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.location_on_rounded, size: 22),
@@ -688,620 +677,97 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  // ── Tab 2: Manage Products ──────────────────────────────────────────────────
-  Widget _buildProductsTab(BuildContext context, AdminLoaded state) {
-    final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
-    final activeProducts = state.products.where((p) {
-      // Filter by category
-      if (_selectedCategory == 'Shoes') {
-        if (p.categoryId != 'cat-running') return false;
-      } else if (_selectedCategory == 'Apparel') {
-        if (p.categoryId != 'cat-training' && p.categoryId != 'cat-apparel') return false;
-      }
-      
-      // Filter by search query
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
-        return p.name.toLowerCase().contains(q) || p.description.toLowerCase().contains(q);
-      }
-      return true;
-    }).toList();
-
+  // ── Tab 2: Management Hub ───────────────────────────────────────────────────
+  Widget _buildManagementTab(BuildContext context) {
     return SafeArea(
-      child: Column(
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         children: [
-          // Header Products View
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'VP',
-                      style: GoogleFonts.lexend(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.accent,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'VELOCITY PRO',
-                      style: GoogleFonts.lexend(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.shopping_cart_outlined, size: 20, color: AppColors.textPrimary),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.settings_outlined, size: 20, color: AppColors.textPrimary),
-                    ),
-                  ],
-                ),
-              ],
+          Text(
+            'Quản lý',
+            style: GoogleFonts.lexend(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
             ),
           ),
-
-          // Title & Add Product button row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Manage',
-                      style: GoogleFonts.lexend(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                        height: 1.1,
-                      ),
-                    ),
-                    Text(
-                      'Products',
-                      style: GoogleFonts.lexend(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => _openAddEditProductSheet(context),
-                  icon: const Icon(Icons.add, size: 16, color: Colors.white),
-                  label: Text(
-                    'ADD PRODUCT',
-                    style: GoogleFonts.lexend(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 1,
-                    minimumSize: const Size(0, 0),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Search Field
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (val) {
-                setState(() {
-                  _searchQuery = val;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Search gear by name, SKU or brand...',
-                hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
-                prefixIcon: const Icon(Icons.search_rounded, size: 18, color: AppColors.textSecondary),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.close_rounded, size: 16, color: AppColors.textSecondary),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {
-                            _searchQuery = '';
-                          });
-                        },
-                      )
-                    : null,
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 1.2),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Filter pills row
-          SizedBox(
-            height: 34,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                _buildCategoryPill('All Products'),
-                _buildCategoryPill('Shoes'),
-                _buildCategoryPill('Apparel'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Product list scroll
-          Expanded(
-            child: activeProducts.isEmpty
-                ? Center(
-                    child: Text(
-                      'Không tìm thấy sản phẩm nào.',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: activeProducts.length,
-                    itemBuilder: (context, index) {
-                      final product = activeProducts[index];
-                      return _buildProductItemCard(context, product, currencyFormat);
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryPill(String name) {
-    final bool isSelected = _selectedCategory == name;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedCategory = name;
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.textPrimary : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? Colors.transparent : Colors.grey.shade200,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            name,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductItemCard(BuildContext context, ProductEntity product, NumberFormat format) {
-    Color stockBg;
-    Color stockText;
-    String stockLabel;
-
-    if (product.stockQuantity == 0) {
-      stockBg = const Color(0xFFFEE2E2);
-      stockText = const Color(0xFFEF4444);
-      stockLabel = 'OUT OF STOCK';
-    } else if (product.stockQuantity < 15) {
-      stockBg = const Color(0xFFFEF3C7);
-      stockText = const Color(0xFFF59E0B);
-      stockLabel = 'LOW STOCK (${product.stockQuantity} UNITS)';
-    } else {
-      stockBg = const Color(0xFFE0F2FE);
-      stockText = const Color(0xFF0284C7);
-      stockLabel = 'IN STOCK (${product.stockQuantity} UNITS)';
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Product image with custom frame
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: 76,
-              height: 76,
-              color: const Color(0xFFF3F4F6),
-              child: Image.network(
-                product.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.shopping_bag, size: 28, color: AppColors.textHint),
-              ),
-            ),
-          ),
-          const SizedBox(width: 14),
-
-          // Details middle
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      product.categoryId == 'cat-running' ? 'SHOES' : 'APPAREL',
-                      style: GoogleFonts.inter(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textSecondary,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => _openAddEditProductSheet(context, product: product),
-                          child: const Icon(Icons.edit_outlined, size: 16, color: AppColors.textSecondary),
-                        ),
-                        const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () => _confirmDeleteProduct(context, product),
-                          child: const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.error),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  product.name,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  format.format(product.price),
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: stockBg,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    stockLabel,
-                    style: GoogleFonts.inter(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w700,
-                      color: stockText,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _openAddEditProductSheet(BuildContext context, {ProductEntity? product}) {
-    final bool isEdit = product != null;
-    final nameController = TextEditingController(text: product?.name ?? '');
-    final descController = TextEditingController(text: product?.description ?? '');
-    final priceController = TextEditingController(text: product != null ? product.price.toInt().toString() : '');
-    final stockController = TextEditingController(text: product != null ? product.stockQuantity.toString() : '');
-    String selectedCatId = product?.categoryId ?? 'cat-running';
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 24,
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới',
-                      style: GoogleFonts.lexend(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.pop(sheetContext),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 12),
-
-                // Name Field
-                Text(
-                  'TÊN SẢN PHẨM',
-                  style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Nhập tên sản phẩm',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Price & Stock row
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'GIÁ BÁN (VNĐ)',
-                            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
-                          ),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: priceController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              hintText: 'Ví dụ: 1200000',
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'SỐ LƯỢNG KHO',
-                            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
-                          ),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: stockController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              hintText: 'Ví dụ: 50',
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Category dropdown
-                Text(
-                  'DANH MỤC',
-                  style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 6),
-                DropdownButtonFormField<String>(
-                  value: selectedCatId,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'cat-running', child: Text('Giày chạy (Shoes)')),
-                    DropdownMenuItem(value: 'cat-training', child: Text('Trang phục thể thao (Apparel)')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) {
-                      selectedCatId = val;
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Description Field
-                Text(
-                  'MÔ TẢ',
-                  style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: descController,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    hintText: 'Nhập mô tả sản phẩm...',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.all(12),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Submit Action
-                ElevatedButton(
-                  onPressed: () {
-                    final name = nameController.text.trim();
-                    final desc = descController.text.trim();
-                    final price = double.tryParse(priceController.text) ?? 0.0;
-                    final stock = int.tryParse(stockController.text) ?? 0;
-
-                    if (name.isEmpty || price <= 0.0) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Vui lòng nhập tên và giá bán hợp lệ!'),
-                          backgroundColor: AppColors.error,
-                        ),
-                      );
-                      return;
-                    }
-
-                    final newProduct = ProductEntity(
-                      id: product?.id ?? 'p-${DateTime.now().millisecondsSinceEpoch}',
-                      name: name,
-                      description: desc,
-                      price: price,
-                      imageUrl: product?.imageUrl ?? 
-                          (selectedCatId == 'cat-running'
-                              ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuBhgk4WkWkBXTRrUCXJt6iovhM2-wJzKcWFp1HBGJ2pLpBOe93MIfa1XOL3XXbHcUvA-_F6JDtc6pM4Yk8dgBWZJ4hLbRYaka6u6IAMHjJ2V9u6-0hiXYyDoYj-IVyv5B0PsvZcGg4nG520HHbRjayi4JywFFl2EM6aBawUw96VQlMYLM7fWrMPC2RwlOeugRegU1rzkI4GMgE1vtZPCB60wlUc1THtKIdvVC4NYM5yWvLydWxWuzZpnLsPvE7pcGnWdB0lYk4KQz0'
-                              : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAg16llodl6Hl8MPqH6DvSysphHsH9azINDafCIQFp9rqCHyIEj5IyNuBfAVIK7-s1m70zLJYYuRDn7ps4e9BkxeY1wfIJ58BidKV1GgULrOntZ7svsuNpwj8nvPhazvHISS-5OqI81qGvWmbwLlQlDr7PaeNVO1DpmYgljTca2s33rrrPqLBq7MLlaEkQdj7fqz_fN5K-XrOluv8Ux-V0w9V8-aE1C5t5BlJtTl7b0-7Tot4btl19oWsO5WWVz6wdqu1TcpvcIJ6k'),
-                      categoryId: selectedCatId,
-                      stockQuantity: stock,
-                    );
-
-                    if (isEdit) {
-                      context.read<AdminBloc>().add(AdminProductUpdated(newProduct));
-                    } else {
-                      context.read<AdminBloc>().add(AdminProductAdded(newProduct));
-                    }
-
-                    Navigator.pop(sheetContext);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    isEdit ? 'LƯU THAY ĐỔI' : 'THÊM MỚI',
-                    style: GoogleFonts.lexend(fontWeight: FontWeight.w700, letterSpacing: 0.5),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _confirmDeleteProduct(BuildContext context, ProductEntity product) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(
-            'Xóa sản phẩm?',
-            style: GoogleFonts.lexend(fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-          ),
-          content: Text(
-            'Bạn có chắc chắn muốn xóa "${product.name}" khỏi danh sách? Thao tác này không thể hoàn tác.',
+          const SizedBox(height: 4),
+          Text(
+            'Truy cập nhanh các mục quản trị',
             style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(
-                'HỦY BỎ',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textSecondary),
-              ),
+          const SizedBox(height: 24),
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: BorderSide(color: Colors.grey.shade200),
             ),
-            ElevatedButton(
-              onPressed: () {
-                context.read<AdminBloc>().add(AdminProductDeleted(product.id));
-                Navigator.pop(dialogContext);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(0, 0),
-              ),
-              child: Text(
-                'XÓA BỎ',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700),
-              ),
+            child: Column(
+              children: [
+                _buildManagementItem(
+                  context,
+                  icon: Icons.shopping_bag_rounded,
+                  label: 'Quản lý Sản phẩm',
+                  onTap: () => context.pushNamed(AppRoutes.adminProductList),
+                ),
+                const Divider(height: 1),
+                _buildManagementItem(
+                  context,
+                  icon: Icons.branding_watermark_rounded,
+                  label: 'Quản lý Thương hiệu',
+                  onTap: () => context.pushNamed(AppRoutes.adminBrands),
+                ),
+                const Divider(height: 1),
+                _buildManagementItem(
+                  context,
+                  icon: Icons.color_lens_rounded,
+                  label: 'Quản lý Màu sắc',
+                  onTap: () => context.pushNamed(AppRoutes.adminColors),
+                ),
+                const Divider(height: 1),
+                _buildManagementItem(
+                  context,
+                  icon: Icons.category_rounded,
+                  label: 'Quản lý Danh mục',
+                  onTap: () => context.pushNamed(AppRoutes.adminCategories),
+                ),
+                const Divider(height: 1),
+                _buildManagementItem(
+                  context,
+                  icon: Icons.local_offer_rounded,
+                  label: 'Quản lý Mã giảm giá',
+                  onTap: () => context.pushNamed(AppRoutes.adminCoupons),
+                ),
+                const Divider(height: 1),
+                _buildManagementItem(
+                  context,
+                  icon: Icons.support_agent_rounded,
+                  label: 'Tin nhắn hỗ trợ',
+                  onTap: () => context.pushNamed(AppRoutes.chatList),
+                ),
+              ],
             ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
     );
   }
+
+  Widget _buildManagementItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: AppColors.primary),
+      title: Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+      onTap: onTap,
+    );
+  }
+
 
   // ── Tab 3: Showroom Location ────────────────────────────────────────────────
   Widget _buildLocationTab(BuildContext context) {
@@ -1605,51 +1071,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: () {
                       context.goNamed(AppRoutes.productList);
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.branding_watermark_rounded, color: AppColors.primary),
-                    title: Text('Quản lý Thương hiệu', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                    onTap: () {
-                      context.pushNamed(AppRoutes.adminBrands);
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.color_lens_rounded, color: AppColors.primary),
-                    title: Text('Quản lý Màu sắc', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                    onTap: () {
-                      context.pushNamed(AppRoutes.adminColors);
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.category_rounded, color: AppColors.primary),
-                    title: Text('Quản lý Danh mục', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                    onTap: () {
-                      context.pushNamed(AppRoutes.adminCategories);
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.local_offer_rounded, color: AppColors.primary),
-                    title: Text('Quản lý Mã giảm giá', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                    onTap: () {
-                      context.pushNamed(AppRoutes.adminCoupons);
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.support_agent_rounded, color: AppColors.primary),
-                    title: Text('Tin nhắn hỗ trợ', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                    onTap: () {
-                      context.pushNamed(AppRoutes.chatList);
                     },
                   ),
                   const Divider(height: 1),
