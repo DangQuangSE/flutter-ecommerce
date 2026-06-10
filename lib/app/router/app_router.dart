@@ -15,7 +15,9 @@ import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/pag
 import 'package:flutter_ecommerce/features/auth/presentation/pages/login_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/register_page.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/pages/register_password_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/models/register_password_extra.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/splash_page.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/pages/notification_page.dart';
@@ -77,6 +79,27 @@ class GoRouterRefreshStream extends ChangeNotifier {
   }
 }
 
+RegisterOtpExtra? _resolveRegisterOtpExtra(GoRouterState state) {
+  if (state.extra is RegisterOtpExtra) {
+    return state.extra as RegisterOtpExtra;
+  }
+  return switch (sl<AuthBloc>().state) {
+    AuthOtpSent(:final email) => RegisterOtpExtra(email: email),
+    AuthRegisterOtpError(:final email) => RegisterOtpExtra(email: email),
+    _ => null,
+  };
+}
+
+RegisterPasswordExtra? _resolveRegisterPasswordExtra(GoRouterState state) {
+  if (state.extra is RegisterPasswordExtra) {
+    return state.extra as RegisterPasswordExtra;
+  }
+  return switch (sl<AuthBloc>().state) {
+    AuthOtpVerified(:final email) => RegisterPasswordExtra(email: email),
+    _ => null,
+  };
+}
+
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/splash',
@@ -89,11 +112,21 @@ class AppRouter {
       final isGoingToAuth = path == '/login' ||
           path == '/register' ||
           path == '/register/otp' ||
+          path == '/register/password' ||
           path == '/splash' ||
           isForgotPasswordFlow;
 
       final authState = sl<AuthBloc>().state;
-      if (authState is AuthOtpSent || authState is AuthRegistrationSuccess) {
+      if (authState is AuthRegistrationSuccess) {
+        if (path.startsWith('/register')) return '/login';
+        return null;
+      }
+      if (authState is AuthOtpVerified && path == '/register/otp') {
+        return '/register/password';
+      }
+      if (authState is AuthOtpSent ||
+          authState is AuthRegisterOtpError ||
+          authState is AuthOtpVerified) {
         return null;
       }
 
@@ -135,12 +168,38 @@ class AppRouter {
           GoRoute(
             path: 'otp',
             name: AppRoutes.registerOtp,
-            builder: (context, state) {
-              final extra = state.extra;
-              if (extra is! RegisterOtpExtra) {
-                return const RegisterPage();
+            redirect: (context, state) {
+              final authState = sl<AuthBloc>().state;
+              if (authState is AuthOtpVerified) {
+                return '/register/password';
               }
+              if (state.extra is RegisterOtpExtra) return null;
+              if (authState is AuthOtpSent ||
+                  authState is AuthRegisterOtpError) {
+                return null;
+              }
+              return '/register';
+            },
+            builder: (context, state) {
+              final extra = _resolveRegisterOtpExtra(state);
+              if (extra == null) return const RegisterPage();
               return OtpVerificationPage(extra: extra);
+            },
+          ),
+          GoRoute(
+            path: 'password',
+            name: AppRoutes.registerPassword,
+            redirect: (context, state) {
+              final authState = sl<AuthBloc>().state;
+              if (authState is AuthRegistrationSuccess) return '/login';
+              if (authState is AuthOtpVerified) return null;
+              if (state.extra is RegisterPasswordExtra) return null;
+              return '/register';
+            },
+            builder: (context, state) {
+              final extra = _resolveRegisterPasswordExtra(state);
+              if (extra == null) return const RegisterPage();
+              return RegisterPasswordPage(extra: extra);
             },
           ),
         ],

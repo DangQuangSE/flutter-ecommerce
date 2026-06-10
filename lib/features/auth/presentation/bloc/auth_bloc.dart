@@ -37,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthOtpRequested>(_onOtpRequested);
     on<AuthOtpVerifyRequested>(_onOtpVerifyRequested);
     on<AuthResendOtpRequested>(_onResendOtpRequested);
+    on<AuthRegisterPasswordSubmitted>(_onRegisterPasswordSubmitted);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthCheckRequested>(_onCheckRequested);
   }
@@ -71,10 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final result = await _requestOtpUseCase(email: event.email.trim());
       switch (result) {
         case Success():
-          emit(AuthOtpSent(
-            email: event.email.trim(),
-            password: event.password,
-          ));
+          emit(AuthOtpSent(email: event.email.trim()));
         case ResultFailure(:final failure):
           _emitRegisterFailure(failure, emit);
       }
@@ -96,11 +94,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     switch (verifyResult) {
       case ResultFailure(:final failure):
-        emit(AuthError(_failureMessage(failure)));
-        return;
+        emit(AuthRegisterOtpError(
+          email: email,
+          message: mapRegisterOtpFailureMessage(failure),
+        ));
       case Success():
-        break;
+        emit(AuthOtpVerified(email: email));
     }
+  }
+
+  Future<void> _onRegisterPasswordSubmitted(
+    AuthRegisterPasswordSubmitted event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final email = event.email.trim();
 
     final registerResult = await _registerUseCase(
       email: email,
@@ -120,14 +128,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     final result = await _resendOtpUseCase(email: event.email.trim());
+    final email = event.email.trim();
     switch (result) {
       case Success():
-        emit(AuthOtpSent(
-          email: event.email.trim(),
-          password: event.password,
-        ));
+        emit(AuthOtpSent(email: email));
       case ResultFailure(:final failure):
-        _emitRegisterFailure(failure, emit);
+        emit(AuthRegisterOtpError(
+          email: email,
+          message: mapRegisterFailureMessage(failure),
+        ));
     }
   }
 
@@ -165,6 +174,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthError(message));
     }
   }
-
-  String _failureMessage(Failure failure) => failure.message;
 }

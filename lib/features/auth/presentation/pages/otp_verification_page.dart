@@ -11,6 +11,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/models/register_password_extra.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final RegisterOtpExtra extra;
@@ -25,7 +26,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   final _pinController = TextEditingController();
   Timer? _resendTimer;
   int _resendSeconds = 0;
-  String? _inlineError;
 
   @override
   void dispose() {
@@ -56,12 +56,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void _onVerify() {
     final otp = _pinController.text.trim();
     if (otp.length != 6) return;
-    setState(() => _inlineError = null);
     context.read<AuthBloc>().add(
           AuthOtpVerifyRequested(
             email: widget.extra.email,
             otp: otp,
-            password: widget.extra.password,
           ),
         );
   }
@@ -69,12 +67,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void _onResend() {
     if (_resendSeconds > 0) return;
     _pinController.clear();
-    setState(() => _inlineError = null);
     context.read<AuthBloc>().add(
-          AuthResendOtpRequested(
-            email: widget.extra.email,
-            password: widget.extra.password,
-          ),
+          AuthResendOtpRequested(email: widget.extra.email),
         );
     _startResendCooldown();
   }
@@ -83,6 +77,13 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void initState() {
     super.initState();
     _startResendCooldown();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<AuthBloc>().state;
+      if (state is AuthRegisterOtpError) {
+        _pinController.clear();
+      }
+    });
   }
 
   @override
@@ -116,35 +117,32 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
-              if (state is AuthRegistrationSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
-                  ),
-                );
-                context.goNamed(AppRoutes.login);
-              } else if (state is AuthRegisterAccountExists) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    action: SnackBarAction(
-                      label: 'Đăng nhập',
-                      onPressed: () => context.goNamed(AppRoutes.login),
-                    ),
-                  ),
-                );
-              } else if (state is AuthError) {
-                setState(() => _inlineError = state.message);
+              if (state is AuthOtpVerified) {
+                // Router redirect handles navigation; post-frame fallback if refresh races.
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!context.mounted) return;
+                  final location = GoRouterState.of(context).uri.path;
+                  if (location != '/register/password') {
+                    context.goNamed(
+                      AppRoutes.registerPassword,
+                      extra: RegisterPasswordExtra(email: state.email),
+                    );
+                  }
+                });
+              } else if (state is AuthRegisterOtpError) {
+                _pinController.clear();
               } else if (state is AuthOtpSent) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Mã OTP đã được gửi lại')),
                 );
                 _pinController.clear();
-                setState(() => _inlineError = null);
               }
             },
             builder: (context, state) {
               final isLoading = state is AuthLoading;
+              final inlineError = state is AuthRegisterOtpError
+                  ? state.message
+                  : null;
               final canVerify =
                   !isLoading && _pinController.text.trim().length == 6;
 
@@ -184,10 +182,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     onChanged: (_) => setState(() {}),
                     onCompleted: (_) => _onVerify(),
                   ),
-                  if (_inlineError != null) ...[
+                  if (inlineError != null) ...[
                     const SizedBox(height: 12),
                     Text(
-                      _inlineError!,
+                      inlineError,
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         color: AppColors.error,

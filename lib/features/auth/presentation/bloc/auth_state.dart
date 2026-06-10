@@ -31,18 +31,37 @@ final class AuthUnauthenticated extends AuthState {
 
 final class AuthOtpSent extends AuthState {
   final String email;
-  final String password;
 
-  const AuthOtpSent({
+  const AuthOtpSent({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+
+  @override
+  String toString() => 'AuthOtpSent(email: $email)';
+}
+
+final class AuthOtpVerified extends AuthState {
+  final String email;
+
+  const AuthOtpVerified({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}
+
+/// OTP step failed (wrong code, resend error, etc.) — keeps email so router stays on OTP page.
+final class AuthRegisterOtpError extends AuthState {
+  final String email;
+  final String message;
+
+  const AuthRegisterOtpError({
     required this.email,
-    required this.password,
+    required this.message,
   });
 
   @override
-  List<Object?> get props => [email, password];
-
-  @override
-  String toString() => 'AuthOtpSent(email: $email, password: ***)';
+  List<Object?> get props => [email, message];
 }
 
 final class AuthRegistrationSuccess extends AuthState {
