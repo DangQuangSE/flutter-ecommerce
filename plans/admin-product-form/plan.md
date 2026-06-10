@@ -27,7 +27,7 @@ Refactor the single-page admin product form into a 3-step wizard (Basic Info →
 ## Phases
 - [x] Phase 1: State + Cubit Extension — Extend `AdminProductFormState` with step, dropdown data, and `createdProductId`; add parallel load and `submitStep1` returning entity id; verify `CreateProductUseCase` return type (already confirmed: `Result<AdminProductDetailEntity>`)
 - [x] Phase 2: Basic Info UI — Replace the flat form page with `IndexedStack`-based step scaffold, step indicator widget, and Step 1 form with category/brand dropdowns and FR-10 retry
-- [ ] Phase 3: Variants Step — Wire `AdminProductVariantCubit` into Step 2, render variant list with add/delete, pass `state.createdProductId` at call sites
+- [x] Phase 3: Variants Step — Wire `AdminProductVariantCubit` into Step 2, render variant list with add/delete, pass `state.createdProductId` at call sites
 - [ ] Phase 4: Images Step — Wire `AdminProductImageCubit` into Step 3, image picker with thumbnail preview, upload progress, and "Done" navigation
 - [ ] Phase 5: Edit Mode + DI Integration — Pre-populate all 3 steps from existing product detail, update router to provide all 3 cubits in both create and edit routes, end-to-end smoke test
 
