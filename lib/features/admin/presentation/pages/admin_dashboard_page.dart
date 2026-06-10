@@ -16,6 +16,8 @@ import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -31,9 +33,60 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   String _searchQuery = '';
 
   @override
+  void initState() {
+    super.initState();
+    // Load the support inbox (admin → all conversations) and open the realtime
+    // socket so new customer messages arrive live + the unread badge updates.
+    context.read<ChatCubit>().loadChats();
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// Header button → support chat inbox, with a live unread badge.
+  Widget _buildChatInboxButton(BuildContext context) {
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        final unread = state is ChatsLoaded
+            ? state.chats.fold<int>(0, (sum, c) => sum + c.unreadCount)
+            : 0;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            IconButton(
+              onPressed: () => context.pushNamed(AppRoutes.chatList),
+              icon: const Icon(Icons.chat_bubble_outline_rounded,
+                  color: AppColors.textPrimary),
+            ),
+            if (unread > 0)
+              Positioned(
+                right: 6,
+                top: 6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  decoration: const BoxDecoration(
+                    color: AppColors.error,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    unread > 9 ? '9+' : '$unread',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -166,6 +219,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ),
               Row(
                 children: [
+                  _buildChatInboxButton(context),
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.notifications_none_rounded, color: AppColors.textPrimary),
@@ -1587,6 +1641,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: () {
                       context.pushNamed(AppRoutes.adminCoupons);
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.support_agent_rounded, color: AppColors.primary),
+                    title: Text('Tin nhắn hỗ trợ', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                    onTap: () {
+                      context.pushNamed(AppRoutes.chatList);
                     },
                   ),
                   const Divider(height: 1),

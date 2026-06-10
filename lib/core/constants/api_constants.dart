@@ -42,6 +42,9 @@ abstract final class ApiConstants {
   // Coupons — admin only (requires ADMIN role)
   static const String adminCoupons = '/api/v1/admin/coupons';
 
+  // Chat — any authenticated user (USER: own conversations, ADMIN: support inbox)
+  static const String chatConversations = '/api/chat/conversations';
+
   // TODO: align with backend when product/cart APIs are wired
   static const String products = '/api/products';
   static const String cart = '/api/carts/me';
