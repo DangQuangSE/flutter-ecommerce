@@ -33,6 +33,9 @@ dependencies:
   path_provider: ^2.1.0
   pinput: ^5.0.0
 
+  # Real-time chat (STOMP over WebSocket)
+  stomp_dart_client: ^2.0.0
+
   # Dependency injection
   get_it: ^8.0.0
 

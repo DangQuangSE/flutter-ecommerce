@@ -146,6 +146,8 @@ import 'package:flutter_ecommerce/features/notification/domain/usecases/get_noti
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
 
 // Chat
+import 'package:flutter_ecommerce/features/chat/data/datasources/chat_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/chat/data/datasources/chat_socket_client.dart';
 import 'package:flutter_ecommerce/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:flutter_ecommerce/features/chat/domain/repositories/chat_repository.dart';
 import 'package:flutter_ecommerce/features/chat/domain/usecases/get_chats_usecase.dart';
@@ -411,7 +413,15 @@ Future<void> configureDependencies() async {
   );
 
   // ── Chat ────────────────────────────────────────────────────────────────────
-  sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
+  sl.registerLazySingleton<ChatRemoteDataSource>(
+    () => ChatRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ChatSocketClient>(
+    () => ChatSocketClient(sl<AuthTokenStorage>()),
+  );
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(sl<ChatRemoteDataSource>(), sl<ChatSocketClient>()),
+  );
   sl.registerLazySingleton<GetChatsUseCase>(() => GetChatsUseCase(sl<ChatRepository>()));
   sl.registerLazySingleton<GetMessagesUseCase>(() => GetMessagesUseCase(sl<ChatRepository>()));
   sl.registerLazySingleton<SendMessageUseCase>(() => SendMessageUseCase(sl<ChatRepository>()));
