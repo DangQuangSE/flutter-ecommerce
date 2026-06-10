@@ -31,18 +31,23 @@ final class AuthUnauthenticated extends AuthState {
 
 final class AuthOtpSent extends AuthState {
   final String email;
-  final String password;
 
-  const AuthOtpSent({
-    required this.email,
-    required this.password,
-  });
+  const AuthOtpSent({required this.email});
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => [email];
 
   @override
-  String toString() => 'AuthOtpSent(email: $email, password: ***)';
+  String toString() => 'AuthOtpSent(email: $email)';
+}
+
+final class AuthOtpVerified extends AuthState {
+  final String email;
+
+  const AuthOtpVerified({required this.email});
+
+  @override
+  List<Object?> get props => [email];
 }
 
 final class AuthRegistrationSuccess extends AuthState {

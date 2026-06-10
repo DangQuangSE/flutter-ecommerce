@@ -33,7 +33,7 @@ String mapRegisterOtpFailureMessage(Failure failure) {
 
   final lower = failure.message.trim().toLowerCase();
   if (lower.contains('otp code is incorrect') || lower == 'invalid otp') {
-    return 'Mã OTP không đúng. Vui lòng thử lại.';
+    return 'OTP không hợp lệ';
   }
   if (lower.contains('otp has expired')) {
     return 'Mã OTP đã hết hạn. Vui lòng gửi lại mã mới.';

@@ -11,6 +11,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/models/register_password_extra.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final RegisterOtpExtra extra;
@@ -61,7 +62,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           AuthOtpVerifyRequested(
             email: widget.extra.email,
             otp: otp,
-            password: widget.extra.password,
           ),
         );
   }
@@ -71,10 +71,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     _pinController.clear();
     setState(() => _inlineError = null);
     context.read<AuthBloc>().add(
-          AuthResendOtpRequested(
-            email: widget.extra.email,
-            password: widget.extra.password,
-          ),
+          AuthResendOtpRequested(email: widget.extra.email),
         );
     _startResendCooldown();
   }
@@ -116,23 +113,18 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
-              if (state is AuthRegistrationSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
-                  ),
-                );
-                context.goNamed(AppRoutes.login);
-              } else if (state is AuthRegisterAccountExists) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    action: SnackBarAction(
-                      label: 'Đăng nhập',
-                      onPressed: () => context.goNamed(AppRoutes.login),
-                    ),
-                  ),
-                );
+              if (state is AuthOtpVerified) {
+                // Router redirect handles navigation; post-frame fallback if refresh races.
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!context.mounted) return;
+                  final location = GoRouterState.of(context).uri.path;
+                  if (location != '/register/password') {
+                    context.goNamed(
+                      AppRoutes.registerPassword,
+                      extra: RegisterPasswordExtra(email: state.email),
+                    );
+                  }
+                });
               } else if (state is AuthError) {
                 setState(() => _inlineError = state.message);
               } else if (state is AuthOtpSent) {

@@ -23,13 +23,10 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _hideBlocEmailError = false;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
@@ -40,10 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _hideBlocEmailError = false;
       });
       context.read<AuthBloc>().add(
-            AuthOtpRequested(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
+            AuthOtpRequested(email: _emailController.text.trim()),
           );
     }
   }
@@ -56,7 +50,6 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // 1. Ambient Background Accents (Kinetic/Atmospheric glows)
           Positioned(
             top: -size.height * 0.1,
             right: -size.width * 0.2,
@@ -81,8 +74,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-
-          // 2. Main content
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -91,7 +82,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Brand Anchor (Slanted SPORT PRO heading)
                     Center(
                       child: Column(
                         children: [
@@ -122,8 +112,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     const SizedBox(height: 36),
-
-                    // Main Container Card
                     Card(
                       elevation: 4,
                       shadowColor: Colors.black.withValues(alpha: 0.05),
@@ -136,7 +124,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       child: Column(
                         children: [
-                          // Tabs
                           Row(
                             children: [
                               Expanded(
@@ -171,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               Expanded(
                                 child: InkWell(
-                                  onTap: () {}, // Already on register
+                                  onTap: () {},
                                   borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(16),
                                   ),
@@ -201,8 +188,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ],
                           ),
-
-                          // Form
                           Padding(
                             padding: const EdgeInsets.all(24),
                             child: BlocConsumer<AuthBloc, AuthState>(
@@ -211,10 +196,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   _hasNavigatedToOtp = true;
                                   context.pushNamed(
                                     AppRoutes.registerOtp,
-                                    extra: RegisterOtpExtra(
-                                      email: state.email,
-                                      password: state.password,
-                                    ),
+                                    extra: RegisterOtpExtra(email: state.email),
                                   );
                                 }
                               },
@@ -234,7 +216,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                      // Email field
                                       Text(
                                         'EMAIL',
                                         style: GoogleFonts.inter(
@@ -317,70 +298,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ),
                                         ),
                                       ],
-                                      const SizedBox(height: 20),
-
-                                      // Password field
-                                      Text(
-                                        'MẬT KHẨU',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textPrimary,
-                                          letterSpacing: 0.8,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      TextFormField(
-                                        controller: _passwordController,
-                                        obscureText: _obscurePassword,
-                                        decoration: InputDecoration(
-                                          hintText: '••••••••',
-                                          prefixIcon: const Icon(
-                                            Icons.lock_outlined,
-                                            size: 20,
-                                            color: AppColors.textSecondary,
-                                          ),
-                                          suffixIcon: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _obscurePassword = !_obscurePassword;
-                                              });
-                                            },
-                                            icon: Icon(
-                                              _obscurePassword
-                                                  ? Icons.visibility_off_outlined
-                                                  : Icons.visibility_outlined,
-                                              size: 20,
-                                              color: AppColors.textSecondary,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFC1C6D7),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: AppColors.primary,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                        ),
-                                        validator: (v) {
-                                          if (v?.isEmpty ?? true) {
-                                            return 'Vui lòng nhập mật khẩu';
-                                          }
-                                          if ((v?.length ?? 0) < 6) {
-                                            return 'Mật khẩu phải chứa ít nhất 6 ký tự';
-                                          }
-                                          return null;
-                                        },
-                                      ),
                                       const SizedBox(height: 28),
-
-                                      // Primary Action "Đăng ký"
                                       ElevatedButton(
                                         onPressed: isLoading ? null : _onSubmit,
                                         style: ElevatedButton.styleFrom(
@@ -427,14 +345,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 );
                               },
-                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 32),
-
-                    // Footer terms and policy
+                    ),
+                    const SizedBox(height: 32),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: RichText(
