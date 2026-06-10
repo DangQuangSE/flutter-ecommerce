@@ -89,6 +89,8 @@ class AdminProductFormState extends Equatable {
     );
   }
 
+  int? get resolvedProductId => createdProductId ?? editingId;
+
   @override
   List<Object?> get props => [
         name,
