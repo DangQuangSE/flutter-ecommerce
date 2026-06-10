@@ -3,6 +3,7 @@ abstract final class AppRoutes {
   static const String login = 'login';
   static const String register = 'register';
   static const String registerOtp = 'registerOtp';
+  static const String registerPassword = 'registerPassword';
   static const String forgotPassword = 'forgotPassword';
   static const String forgotPasswordOtp = 'forgotPasswordOtp';
   static const String forgotPasswordReset = 'forgotPasswordReset';
