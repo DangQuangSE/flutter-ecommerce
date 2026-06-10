@@ -96,7 +96,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     switch (verifyResult) {
       case ResultFailure(:final failure):
-        emit(AuthError(_failureMessage(failure)));
+        emit(AuthError(mapRegisterOtpFailureMessage(failure)));
         return;
       case Success():
         break;
@@ -166,5 +166,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  String _failureMessage(Failure failure) => failure.message;
 }

@@ -313,6 +313,8 @@ class _LoginPageState extends State<LoginPage> {
                                       TextFormField(
                                         controller: _passwordController,
                                         obscureText: _obscurePassword,
+                                        autovalidateMode:
+                                            AutovalidateMode.onUserInteraction,
                                         onChanged: (_) {
                                           if (!_hideBlocLoginError) {
                                             setState(
@@ -375,6 +377,9 @@ class _LoginPageState extends State<LoginPage> {
                                         validator: (v) {
                                           if (v?.isEmpty ?? true) {
                                             return 'Vui lòng nhập mật khẩu';
+                                          }
+                                          if ((v?.length ?? 0) < 6) {
+                                            return 'Mật khẩu phải chứa ít nhất 6 ký tự';
                                           }
                                           return null;
                                         },
