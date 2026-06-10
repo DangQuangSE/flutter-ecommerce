@@ -464,8 +464,13 @@ class AppRouter {
           GoRoute(
             path: 'create',
             name: AppRoutes.adminProductCreate,
-            builder: (context, state) => BlocProvider(
-              create: (_) => sl<AdminProductFormCubit>(),
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()),
+                BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
+                BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
+                BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
+              ],
               child: const AdminProductFormPage(),
             ),
           ),
@@ -473,7 +478,11 @@ class AppRouter {
             path: ':id',
             name: AppRoutes.adminProductDetail,
             builder: (context, state) {
-              final id = int.parse(state.pathParameters['id']!);
+              final id = int.tryParse(state.pathParameters['id'] ?? '');
+              if (id == null) {
+                return const Scaffold(
+                    body: Center(child: Text('ID sản phẩm không hợp lệ')));
+              }
               return MultiBlocProvider(
                 providers: [
                   BlocProvider(
@@ -491,7 +500,11 @@ class AppRouter {
                 path: 'edit',
                 name: AppRoutes.adminProductEdit,
                 builder: (context, state) {
-                  final id = int.parse(state.pathParameters['id']!);
+                  final id = int.tryParse(state.pathParameters['id'] ?? '');
+                  if (id == null) {
+                    return const Scaffold(
+                        body: Center(child: Text('ID sản phẩm không hợp lệ')));
+                  }
                   return MultiBlocProvider(
                     providers: [
                       BlocProvider(
@@ -499,7 +512,10 @@ class AppRouter {
                             sl<AdminProductDetailCubit>()..loadDetail(id),
                       ),
                       BlocProvider(
-                          create: (_) => sl<AdminProductFormCubit>()),
+                          create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()..beginEditMode()),
+                      BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
+                      BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
+                      BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
                     ],
                     child: AdminProductFormPage(productId: id),
                   );
