@@ -409,6 +409,7 @@ class AppRouter {
               providers: [
                 BlocProvider(create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()),
                 BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
+                BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
                 BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
               ],
               child: const AdminProductFormPage(),
@@ -454,6 +455,7 @@ class AppRouter {
                       BlocProvider(
                           create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()),
                       BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
+                      BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
                       BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
                     ],
                     child: AdminProductFormPage(productId: id),

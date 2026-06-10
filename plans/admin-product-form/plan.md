@@ -4,21 +4,18 @@ Status: In Progress
 ## Session Notes
 <!-- Updated by cook automatically — do not edit manually -->
 
-**Last active:** 2026-06-10
-**Phase in progress:** phase-03-variants-step
-**Status:** Phase 2 complete; starting Phase 3 (Variants Step)
+**Last active:** 2026-06-11
+**Phase in progress:** phase-05-edit-mode-integration
+**Status:** Phase 4 complete; starting Phase 5 (Edit Mode + DI Integration)
 
 ### Decisions made this session
-- `submit()` backward-compat alias removed in Phase 2 (no longer needed after page rewrite)
-- `DropdownButtonFormField` uses `initialValue:` (not deprecated `value:`) per Flutter 3.33+ API
-- `SwitchListTile` uses `activeThumbColor:` (not deprecated `activeColor:`)
-- `PopScope(canPop: !needsConfirm)` wraps BlocBuilder — needsConfirm = `createdProductId != null && currentStep < 2`
-- `_flattenCategories` is a method on `_Step1BasicInfoFormState` (recursive, depth-based prefix)
-- `_Step1BasicInfoForm` is `StatefulWidget` to own `GlobalKey<FormState>`
+- `_Step3ImagesForm` converted to StatefulWidget; `_lastKnownImages` field prevents blank grid on upload/delete failure
+- All nav buttons gated on `isUploading`
+- `_imageCubit` stored as `late final` in `initState` instead of `context.read` in builder
 
 ### Next immediate action
-Phase 3: Wire `AdminProductVariantCubit` + `ProductColorCubit` into Step 2; update create route in router to provide both cubits
-Date: 2026-06-10
+Phase 5: Pre-populate all 3 steps from existing product detail, update router to provide all 3 cubits in both create and edit routes, end-to-end smoke test
+Date: 2026-06-11
 Mode: Hard
 
 ## Overview
@@ -28,7 +25,7 @@ Refactor the single-page admin product form into a 3-step wizard (Basic Info →
 - [x] Phase 1: State + Cubit Extension — Extend `AdminProductFormState` with step, dropdown data, and `createdProductId`; add parallel load and `submitStep1` returning entity id; verify `CreateProductUseCase` return type (already confirmed: `Result<AdminProductDetailEntity>`)
 - [x] Phase 2: Basic Info UI — Replace the flat form page with `IndexedStack`-based step scaffold, step indicator widget, and Step 1 form with category/brand dropdowns and FR-10 retry
 - [x] Phase 3: Variants Step — Wire `AdminProductVariantCubit` into Step 2, render variant list with add/delete, pass `state.createdProductId` at call sites
-- [ ] Phase 4: Images Step — Wire `AdminProductImageCubit` into Step 3, image picker with thumbnail preview, upload progress, and "Done" navigation
+- [x] Phase 4: Images Step — Wire `AdminProductImageCubit` into Step 3, image picker with thumbnail preview, upload progress, and "Done" navigation
 - [ ] Phase 5: Edit Mode + DI Integration — Pre-populate all 3 steps from existing product detail, update router to provide all 3 cubits in both create and edit routes, end-to-end smoke test
 
 ## Research Summary

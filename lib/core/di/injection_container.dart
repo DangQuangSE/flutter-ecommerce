@@ -518,6 +518,9 @@ Future<void> configureDependencies() async {
     () => AdminProductFormCubit(
       sl<CreateProductUseCase>(),
       sl<UpdateAdminProductUseCase>(),
+      sl<DeleteAdminProductUseCase>(),
+      sl<CategoryRepository>(),
+      sl<BrandRepository>(),
     ),
   );
   sl.registerFactory<AdminProductVariantCubit>(

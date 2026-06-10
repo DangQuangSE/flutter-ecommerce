@@ -1,5 +1,7 @@
 part of 'admin_product_form_cubit.dart';
 
+enum DropdownStatus { idle, loading, loaded, error }
+
 class AdminProductFormState extends Equatable {
   final String name;
   final String description;
@@ -13,6 +15,13 @@ class AdminProductFormState extends Equatable {
   final bool isLoadingDetail;
   final String? errorMessage;
   final int? editingId;
+  // multi-step fields
+  final int currentStep;
+  final DropdownStatus dropdownStatus;
+  final List<CategoryTreeNode> categories;
+  final List<BrandEntity> brands;
+  final int? createdProductId;
+  final String? dropdownErrorMessage;
 
   const AdminProductFormState({
     this.name = '',
@@ -27,6 +36,12 @@ class AdminProductFormState extends Equatable {
     this.isLoadingDetail = false,
     this.errorMessage,
     this.editingId,
+    this.currentStep = 0,
+    this.dropdownStatus = DropdownStatus.idle,
+    this.categories = const [],
+    this.brands = const [],
+    this.createdProductId,
+    this.dropdownErrorMessage,
   });
 
   AdminProductFormState copyWith({
@@ -43,6 +58,14 @@ class AdminProductFormState extends Equatable {
     String? errorMessage,
     int? editingId,
     bool clearError = false,
+    int? currentStep,
+    DropdownStatus? dropdownStatus,
+    List<CategoryTreeNode>? categories,
+    List<BrandEntity>? brands,
+    int? createdProductId,
+    bool clearCreatedProductId = false,
+    String? dropdownErrorMessage,
+    bool clearDropdownError = false,
   }) {
     return AdminProductFormState(
       name: name ?? this.name,
@@ -57,6 +80,12 @@ class AdminProductFormState extends Equatable {
       isLoadingDetail: isLoadingDetail ?? this.isLoadingDetail,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       editingId: editingId ?? this.editingId,
+      currentStep: currentStep ?? this.currentStep,
+      dropdownStatus: dropdownStatus ?? this.dropdownStatus,
+      categories: categories ?? this.categories,
+      brands: brands ?? this.brands,
+      createdProductId: clearCreatedProductId ? null : createdProductId ?? this.createdProductId,
+      dropdownErrorMessage: clearDropdownError ? null : dropdownErrorMessage ?? this.dropdownErrorMessage,
     );
   }
 
@@ -74,5 +103,11 @@ class AdminProductFormState extends Equatable {
         isLoadingDetail,
         errorMessage,
         editingId,
+        currentStep,
+        dropdownStatus,
+        categories,
+        brands,
+        createdProductId,
+        dropdownErrorMessage,
       ];
 }
