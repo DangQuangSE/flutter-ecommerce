@@ -453,7 +453,7 @@ class AppRouter {
                             sl<AdminProductDetailCubit>()..loadDetail(id),
                       ),
                       BlocProvider(
-                          create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()),
+                          create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()..beginEditMode()),
                       BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
                       BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
                       BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),

@@ -39,6 +39,9 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
   void statusChanged(ProductStatus s) => emit(state.copyWith(status: s));
   void featuredToggled() => emit(state.copyWith(isFeatured: !state.isFeatured));
 
+  void beginEditMode() =>
+      emit(state.copyWith(isLoadingDetail: true));
+
   void goBack() {
     if (state.currentStep > 0) {
       emit(state.copyWith(currentStep: state.currentStep - 1));

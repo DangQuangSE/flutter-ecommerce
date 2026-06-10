@@ -32,7 +32,16 @@ class AdminProductFormPage extends StatelessWidget {
           BlocListener<AdminProductDetailCubit, AdminProductDetailState>(
             listener: (context, state) {
               if (state is AdminProductDetailSuccess) {
+                // All three are synchronous — they populate in the same listener callback.
                 context.read<AdminProductFormCubit>().loadForEdit(state.product);
+                context.read<AdminProductVariantCubit>().loadFromDetail(state.product.variants);
+                context.read<AdminProductImageCubit>().loadFromDetail(state.product.images);
+              } else if (state is AdminProductDetailFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.error,
+                ));
+                context.pop();
               }
             },
           ),
@@ -115,7 +124,7 @@ class AdminProductFormPage extends StatelessWidget {
   Widget _buildBody(BuildContext context, AdminProductFormState state,
       AdminProductFormCubit cubit) {
     if (state.dropdownStatus == DropdownStatus.loading ||
-        state.isLoadingDetail) {
+        (state.isLoadingDetail && state.dropdownStatus != DropdownStatus.error)) {
       return const Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -152,7 +161,12 @@ class AdminProductFormPage extends StatelessWidget {
     return IndexedStack(
       index: state.currentStep,
       children: [
-        _Step1BasicInfoForm(state: state, cubit: cubit),
+        // key forces recreation when editingId resolves so initialValue: picks up edit data.
+        _Step1BasicInfoForm(
+          key: ValueKey(state.editingId != null ? 'edit_${state.editingId}' : 'create'),
+          state: state,
+          cubit: cubit,
+        ),
         _Step2VariantsForm(formState: state, formCubit: cubit),
         _Step3ImagesForm(formState: state, formCubit: cubit),
       ],
@@ -269,7 +283,7 @@ class _Step1BasicInfoForm extends StatefulWidget {
   final AdminProductFormState state;
   final AdminProductFormCubit cubit;
 
-  const _Step1BasicInfoForm({required this.state, required this.cubit});
+  const _Step1BasicInfoForm({super.key, required this.state, required this.cubit});
 
   @override
   State<_Step1BasicInfoForm> createState() => _Step1BasicInfoFormState();
@@ -278,9 +292,10 @@ class _Step1BasicInfoForm extends StatefulWidget {
 class _Step1BasicInfoFormState extends State<_Step1BasicInfoForm> {
   final _formKey = GlobalKey<FormState>();
 
+  late final TextEditingController _nameController;
+  late final TextEditingController _descController;
+
   // Cached flattened category list — recomputed only when categories change.
-  // TODO(Phase5): replace TextFormField(initialValue:) with TextEditingController
-  // so that loadForEdit() pre-populates text fields in edit mode.
   late List<({int id, String label})> _flatCategories;
 
   List<({int id, String label})> _flattenCategories(
@@ -297,6 +312,8 @@ class _Step1BasicInfoFormState extends State<_Step1BasicInfoForm> {
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController(text: widget.state.name);
+    _descController = TextEditingController(text: widget.state.description);
     _flatCategories = _flattenCategories(widget.state.categories);
   }
 
@@ -306,6 +323,23 @@ class _Step1BasicInfoFormState extends State<_Step1BasicInfoForm> {
     if (widget.state.categories != oldWidget.state.categories) {
       _flatCategories = _flattenCategories(widget.state.categories);
     }
+    // Sync controllers when edit-mode data loads (cubit state diverges from controller).
+    // copyWith preserves cursor position; the condition prevents spurious syncs during typing.
+    if (_nameController.text != widget.state.name) {
+      _nameController.value =
+          _nameController.value.copyWith(text: widget.state.name);
+    }
+    if (_descController.text != widget.state.description) {
+      _descController.value =
+          _descController.value.copyWith(text: widget.state.description);
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    super.dispose();
   }
 
   @override
@@ -323,7 +357,7 @@ class _Step1BasicInfoFormState extends State<_Step1BasicInfoForm> {
           children: [
             // Name
             TextFormField(
-              initialValue: state.name,
+              controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Tên sản phẩm *',
                 border: OutlineInputBorder(),
@@ -336,7 +370,7 @@ class _Step1BasicInfoFormState extends State<_Step1BasicInfoForm> {
 
             // Description
             TextFormField(
-              initialValue: state.description,
+              controller: _descController,
               decoration: const InputDecoration(
                 labelText: 'Mô tả',
                 border: OutlineInputBorder(),

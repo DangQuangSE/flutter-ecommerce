@@ -1,22 +1,16 @@
 # Plan: Admin Product Form — Dropdown & Multi-Step Refactor
-Status: In Progress
+Status: Complete
 
 ## Session Notes
 <!-- Updated by cook automatically — do not edit manually -->
 
 **Last active:** 2026-06-11
-**Phase in progress:** phase-05-edit-mode-integration
-**Status:** Phase 4 complete; starting Phase 5 (Edit Mode + DI Integration)
+**Phase in progress:** (none — all phases complete)
+**Status:** All 5 phases complete. Plan done.
 
-### Decisions made this session
-- `_Step3ImagesForm` converted to StatefulWidget; `_lastKnownImages` field prevents blank grid on upload/delete failure
-- All nav buttons gated on `isUploading`
-- `_imageCubit` stored as `late final` in `initState` instead of `context.read` in builder
-
-### Next immediate action
-Phase 5: Pre-populate all 3 steps from existing product detail, update router to provide all 3 cubits in both create and edit routes, end-to-end smoke test
-Date: 2026-06-11
-Mode: Hard
+### Decisions made across all sessions
+- Phase 4: `_Step3ImagesForm` converted to StatefulWidget; `_lastKnownImages` field prevents blank grid on upload/delete failure; all nav buttons gated on `isUploading`; `_imageCubit` stored as `late final` in `initState` instead of `context.read` in builder
+- Phase 5: `key: ValueKey('edit_${id}' / 'create')` on `_Step1BasicInfoForm` forces widget recreation when editingId resolves; `beginEditMode()` in cubit sets isLoadingDetail=true; spinner guard updated to allow dropdown error UI through in edit mode; `AdminProductDetailFailure` handled with snackbar+pop; cursor-safe copyWith on TextEditingController sync
 
 ## Overview
 Refactor the single-page admin product form into a 3-step wizard (Basic Info → Variants → Images) that replaces the raw integer ID inputs with real category and brand dropdowns, wires the existing `AdminProductVariantCubit` and `AdminProductImageCubit` into the step flow, and preserves edit-mode pre-population throughout.
@@ -26,7 +20,7 @@ Refactor the single-page admin product form into a 3-step wizard (Basic Info →
 - [x] Phase 2: Basic Info UI — Replace the flat form page with `IndexedStack`-based step scaffold, step indicator widget, and Step 1 form with category/brand dropdowns and FR-10 retry
 - [x] Phase 3: Variants Step — Wire `AdminProductVariantCubit` into Step 2, render variant list with add/delete, pass `state.createdProductId` at call sites
 - [x] Phase 4: Images Step — Wire `AdminProductImageCubit` into Step 3, image picker with thumbnail preview, upload progress, and "Done" navigation
-- [ ] Phase 5: Edit Mode + DI Integration — Pre-populate all 3 steps from existing product detail, update router to provide all 3 cubits in both create and edit routes, end-to-end smoke test
+- [x] Phase 5: Edit Mode + DI Integration — Pre-populate all 3 steps from existing product detail, update router to provide all 3 cubits in both create and edit routes, end-to-end smoke test
 
 ## Research Summary
 Primary approach follows the researcher's recommendation:
