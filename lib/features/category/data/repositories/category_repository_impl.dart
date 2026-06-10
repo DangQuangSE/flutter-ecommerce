@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/features/category/data/datasources/category_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/category/data/models/category_model.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
@@ -67,6 +69,8 @@ class CategoryRepositoryImpl implements CategoryRepository {
       return ResultFailure(ParseFailure(e.message));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
+    } on DioException catch (e) {
+      return ResultFailure(failureFromDioException(e));
     }
   }
 }

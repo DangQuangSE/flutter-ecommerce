@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/constants/app_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/storage/local_storage.dart';
@@ -11,17 +12,6 @@ import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 /// Bearer token saved by the app's real login under [AppConstants.tokenKey];
 /// reads (`GET /api/categories`) are public and need no token.
 class CategoryApiClient {
-  /// Real backend base URL. Overridable at build time via
-  /// `--dart-define=BASE_URL=...`; the default suits the iOS Simulator / macOS,
-  /// where `localhost` reaches the machine running the backend.
-  ///   • iOS Simulator / macOS : 'http://localhost:8080' (default)
-  ///   • Android emulator      : --dart-define=BASE_URL=http://10.0.2.2:8080
-  ///   • Physical device       : --dart-define=BASE_URL=http://<Mac-LAN-IP>:8080
-  static const String baseUrl = String.fromEnvironment(
-    'BASE_URL',
-    defaultValue: 'http://localhost:8080',
-  );
-
   late final Dio dio;
   final LocalStorage _storage;
 
@@ -30,7 +20,7 @@ class CategoryApiClient {
   CategoryApiClient(this._storage) {
     dio = Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: ApiConstants.baseUrl,
         connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
         receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
@@ -96,25 +86,33 @@ class CategoryApiClient {
 class _ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
+    final AppException appEx;
     switch (err.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        throw const NetworkException('Hết thời gian kết nối tới máy chủ');
+        appEx = const NetworkException('Hết thời gian kết nối tới máy chủ');
       case DioExceptionType.badResponse:
         final statusCode = err.response?.statusCode ?? 0;
         final data = err.response?.data;
         final message = (data is Map && data['message'] is String)
             ? data['message'] as String
             : 'Lỗi máy chủ';
-        if (statusCode == 401 || statusCode == 403) {
-          throw UnauthorisedException(message);
-        }
-        throw ServerException(message, statusCode: statusCode);
+        appEx = (statusCode == 401 || statusCode == 403)
+            ? UnauthorisedException(message)
+            : ServerException(message, statusCode: statusCode);
       case DioExceptionType.connectionError:
-        throw const NetworkException('Không thể kết nối tới máy chủ');
+        appEx = const NetworkException('Không thể kết nối tới máy chủ');
       default:
-        throw NetworkException(err.message ?? 'Lỗi không xác định');
+        appEx = NetworkException(err.message ?? 'Lỗi không xác định');
     }
+    handler.reject(
+      DioException(
+        requestOptions: err.requestOptions,
+        response: err.response,
+        type: err.type,
+        error: appEx,
+      ),
+    );
   }
 }
