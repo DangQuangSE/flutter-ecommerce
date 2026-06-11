@@ -28,7 +28,9 @@ class ProductModel extends ProductEntity {
       imageUrl: json['imageUrl'] as String? ??
           json['thumbnailUrl'] as String? ??
           json['image_url'] as String? ??
-          '',
+          ((json['images'] as List<dynamic>?)?.isNotEmpty == true
+              ? (json['images'] as List<dynamic>).first['imageUrl'] as String? ?? ''
+              : ''),
       categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
       stockQuantity: (json['totalStock'] ??
           json['stockQuantity'] ??
