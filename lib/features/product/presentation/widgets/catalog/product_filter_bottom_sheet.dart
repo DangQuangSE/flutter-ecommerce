@@ -179,7 +179,7 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
                   onSelect: (id, name) => setState(() {
                     _categoryId = id;
                     _categoryName = name;
-                  }),
+                  }),  // null id/name = deselect
                   onToggleExpand: (id) => setState(() {
                     if (_expandedCategories.contains(id)) {
                       _expandedCategories.remove(id);
@@ -195,7 +195,7 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
                   onSelect: (id, name) => setState(() {
                     _brandId = id;
                     _brandName = name;
-                  }),
+                  }),  // null = deselect
                 ),
                 _GenderSection(
                   selected: _gender,
@@ -297,7 +297,7 @@ class _CategorySection extends StatelessWidget {
   final String? error;
   final int? selectedId;
   final Set<int> expandedIds;
-  final void Function(int id, String name) onSelect;
+  final void Function(int? id, String? name) onSelect;
   final void Function(int id) onToggleExpand;
 
   const _CategorySection({
@@ -334,6 +334,8 @@ class _CategorySection extends StatelessWidget {
                         onTap: () {
                           if (node.children.isNotEmpty) {
                             onToggleExpand(node.id);
+                          } else if (selectedId == node.id) {
+                            onSelect(null, null);
                           } else {
                             onSelect(node.id, node.name);
                           }
@@ -375,7 +377,9 @@ class _CategorySection extends StatelessWidget {
                           child: Column(
                             children: node.children.map((child) {
                               return InkWell(
-                                onTap: () => onSelect(child.id, child.name),
+                                onTap: () => selectedId == child.id
+                                    ? onSelect(null, null)
+                                    : onSelect(child.id, child.name),
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 7),
@@ -421,7 +425,7 @@ class _BrandSection extends StatelessWidget {
   final List<BrandEntity> brands;
   final bool loading;
   final int? selectedId;
-  final void Function(int id, String name) onSelect;
+  final void Function(int? id, String? name) onSelect;
 
   const _BrandSection({
     required this.brands,
@@ -449,7 +453,12 @@ class _BrandSection extends StatelessWidget {
                   final selected = selectedId == brand.id;
                   return GestureDetector(
                     onTap: () {
-                      if (brand.id != null) onSelect(brand.id!, brand.name);
+                      if (brand.id == null) return;
+                      if (selectedId == brand.id) {
+                        onSelect(null, null);
+                      } else {
+                        onSelect(brand.id!, brand.name);
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -549,7 +558,7 @@ class _GenderSection extends StatelessWidget {
 
 class _SizeSection extends StatelessWidget {
   final String? selected;
-  final void Function(String size) onSelect;
+  final void Function(String? size) onSelect;
 
   const _SizeSection({required this.selected, required this.onSelect});
 
@@ -577,7 +586,7 @@ class _SizeSection extends StatelessWidget {
             final size = sizes[i];
             final isSelected = selected == size;
             return GestureDetector(
-              onTap: () => onSelect(size),
+              onTap: () => onSelect(selected == size ? null : size),
               child: Container(
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : AppColors.background,
@@ -610,7 +619,7 @@ class _SizeSection extends StatelessWidget {
 
 class _ColorSection extends StatelessWidget {
   final String? selected;
-  final void Function(String color) onSelect;
+  final void Function(String? color) onSelect;
 
   const _ColorSection({required this.selected, required this.onSelect});
 
@@ -626,7 +635,7 @@ class _ColorSection extends StatelessWidget {
           children: productColorMap.entries.map((entry) {
             final isSelected = selected == entry.key;
             return GestureDetector(
-              onTap: () => onSelect(entry.key),
+              onTap: () => onSelect(selected == entry.key ? null : entry.key),
               child: Container(
                 width: 36,
                 height: 36,

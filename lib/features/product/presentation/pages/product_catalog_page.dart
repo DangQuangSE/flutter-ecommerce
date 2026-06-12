@@ -49,7 +49,10 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => ProductFilterBottomSheet(appliedState: state),
+      builder: (_) => BlocProvider.value(
+        value: context.read<ProductCatalogBloc>(),
+        child: ProductFilterBottomSheet(appliedState: state),
+      ),
     );
   }
 
