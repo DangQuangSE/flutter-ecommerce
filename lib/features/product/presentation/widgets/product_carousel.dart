@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
@@ -37,10 +38,11 @@ class _ProductCarouselState extends State<ProductCarousel> {
               // Slide 1: Main Product Image
               Container(
                 color: const Color(0xFFF3F3F8),
-                child: Image.network(
-                  widget.imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: widget.imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
+                  placeholder: (_, __) => const ColoredBox(color: Color(0xFFF3F3F8)),
+                  errorWidget: (_, __, ___) => const Icon(
                     Icons.image_not_supported_outlined,
                     size: 48,
                     color: AppColors.textSecondary,
@@ -53,9 +55,11 @@ class _ProductCarouselState extends State<ProductCarousel> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.network(
-                      widget.imageUrl,
+                    CachedNetworkImage(
+                      imageUrl: widget.imageUrl,
                       fit: BoxFit.cover,
+                      placeholder: (_, __) => const ColoredBox(color: Color(0xFFE8E8ED)),
+                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
                     ),
                     Container(
                       color: Colors.black.withValues(alpha: 0.05),

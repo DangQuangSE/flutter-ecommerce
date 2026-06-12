@@ -28,7 +28,7 @@ class ProductModel extends ProductEntity {
       imageUrl: json['imageUrl'] as String? ??
           json['thumbnailUrl'] as String? ??
           json['image_url'] as String? ??
-          '',
+          _extractThumbnail(json['images'] as List<dynamic>?),
       categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
       stockQuantity: (json['totalStock'] ??
           json['stockQuantity'] ??
@@ -38,5 +38,17 @@ class ProductModel extends ProductEntity {
           .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>).toEntity())
           .toList(),
     );
+  }
+
+  static String _extractThumbnail(List<dynamic>? images) {
+    if (images == null || images.isEmpty) return '';
+    final sorted = List<Map<String, dynamic>>.from(
+      images.map((e) => e as Map<String, dynamic>),
+    )..sort((a, b) => ((a['sortOrder'] as int?) ?? 0).compareTo((b['sortOrder'] as int?) ?? 0));
+    final thumb = sorted.firstWhere(
+      (img) => img['isThumbnail'] == true,
+      orElse: () => sorted.first,
+    );
+    return thumb['imageUrl'] as String? ?? '';
   }
 }
