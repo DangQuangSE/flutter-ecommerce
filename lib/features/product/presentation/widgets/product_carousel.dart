@@ -1,18 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 
 class ProductCarousel extends StatefulWidget {
-  final String imageUrl;
-  const ProductCarousel({super.key, required this.imageUrl});
+  final List<String> imageUrls;
+  const ProductCarousel({super.key, required this.imageUrls});
 
   @override
   State<ProductCarousel> createState() => _ProductCarouselState();
 }
 
 class _ProductCarouselState extends State<ProductCarousel> {
-  int _currentCarouselIndex = 0;
+  int _currentIndex = 0;
   final PageController _pageController = PageController();
 
   @override
@@ -23,97 +22,67 @@ class _ProductCarouselState extends State<ProductCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    final urls = widget.imageUrls;
+    if (urls.isEmpty) {
+      return AspectRatio(
+        aspectRatio: 0.8,
+        child: Container(
+          color: const Color(0xFFF3F3F8),
+          child: const Icon(
+            Icons.image_not_supported_outlined,
+            size: 48,
+            color: AppColors.textSecondary,
+          ),
+        ),
+      );
+    }
+
     return AspectRatio(
-      aspectRatio: 0.8, // 4:5 mobile crop
+      aspectRatio: 0.8,
       child: Stack(
         children: [
-          PageView(
+          PageView.builder(
             controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentCarouselIndex = index;
-              });
-            },
-            children: [
-              // Slide 1: Main Product Image
-              Container(
-                color: const Color(0xFFF3F3F8),
-                child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => const ColoredBox(color: Color(0xFFF3F3F8)),
-                  errorWidget: (_, __, ___) => const Icon(
-                    Icons.image_not_supported_outlined,
-                    size: 48,
-                    color: AppColors.textSecondary,
-                  ),
+            itemCount: urls.length,
+            onPageChanged: (i) => setState(() => _currentIndex = i),
+            itemBuilder: (_, i) => CachedNetworkImage(
+              imageUrl: urls[i],
+              fit: BoxFit.cover,
+              placeholder: (_, __) => const ColoredBox(color: Color(0xFFF3F3F8)),
+              errorWidget: (_, __, ___) => const ColoredBox(
+                color: Color(0xFFF3F3F8),
+                child: Icon(
+                  Icons.image_not_supported_outlined,
+                  size: 48,
+                  color: AppColors.textSecondary,
                 ),
               ),
-              // Slide 2: Zoomed Outsole Details
-              Container(
-                color: const Color(0xFFE8E8ED),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: widget.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => const ColoredBox(color: Color(0xFFE8E8ED)),
-                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                    Container(
-                      color: Colors.black.withValues(alpha: 0.05),
-                    ),
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'CHI TIẾT ĐẾ GIÀY',
-                          style: GoogleFonts.inter(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          // Carousel Dot Indicators
-          Positioned(
-            bottom: 16,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(2, (index) {
-                final isCurrent = _currentCarouselIndex == index;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: isCurrent ? 24 : 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: isCurrent
-                        ? AppColors.primary
-                        : const Color(0xFFC1C6D7).withValues(alpha: 0.5),
-                  ),
-                );
-              }),
             ),
           ),
+          if (urls.length > 1)
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(urls.length, (i) {
+                  final isCurrent = _currentIndex == i;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: isCurrent ? 24 : 8,
+                    height: 8,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: isCurrent
+                          ? AppColors.primary
+                          : const Color(0xFFC1C6D7).withValues(alpha: 0.5),
+                    ),
+                  );
+                }),
+              ),
+            ),
         ],
       ),
     );

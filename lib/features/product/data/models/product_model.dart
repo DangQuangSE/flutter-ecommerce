@@ -29,6 +29,7 @@ class ProductModel extends ProductEntity {
           json['thumbnailUrl'] as String? ??
           json['image_url'] as String? ??
           _extractThumbnail(json['images'] as List<dynamic>?),
+      imageUrls: _extractAllImageUrls(json['images'] as List<dynamic>?),
       categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
       stockQuantity: (json['totalStock'] ??
           json['stockQuantity'] ??
@@ -40,15 +41,27 @@ class ProductModel extends ProductEntity {
     );
   }
 
-  static String _extractThumbnail(List<dynamic>? images) {
-    if (images == null || images.isEmpty) return '';
-    final sorted = List<Map<String, dynamic>>.from(
+  static List<Map<String, dynamic>> _sortedImages(List<dynamic>? images) {
+    if (images == null || images.isEmpty) return [];
+    return (List<Map<String, dynamic>>.from(
       images.map((e) => e as Map<String, dynamic>),
-    )..sort((a, b) => ((a['sortOrder'] as int?) ?? 0).compareTo((b['sortOrder'] as int?) ?? 0));
+    )..sort((a, b) => ((a['sortOrder'] as int?) ?? 0).compareTo((b['sortOrder'] as int?) ?? 0)));
+  }
+
+  static String _extractThumbnail(List<dynamic>? images) {
+    final sorted = _sortedImages(images);
+    if (sorted.isEmpty) return '';
     final thumb = sorted.firstWhere(
       (img) => img['isThumbnail'] == true,
       orElse: () => sorted.first,
     );
     return thumb['imageUrl'] as String? ?? '';
+  }
+
+  static List<String> _extractAllImageUrls(List<dynamic>? images) {
+    return _sortedImages(images)
+        .map((img) => img['imageUrl'] as String? ?? '')
+        .where((url) => url.isNotEmpty)
+        .toList();
   }
 }
