@@ -442,10 +442,16 @@ class AppRouter {
       GoRoute(
         path: '/customizer/:productId',
         name: AppRoutes.productCustomizer,
-        builder: (context, state) => ProductCustomizerPage(
-          productId: state.pathParameters['productId'] ?? '',
-          productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
-        ),
+        builder: (context, state) {
+          final variantIdStr = state.uri.queryParameters['variantId'];
+          final quantityStr = state.uri.queryParameters['quantity'];
+          return ProductCustomizerPage(
+            productId: state.pathParameters['productId'] ?? '',
+            productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
+            variantId: variantIdStr != null ? int.tryParse(variantIdStr) : null,
+            cartQuantity: int.tryParse(quantityStr ?? '') ?? 1,
+          );
+        },
       ),
 
       // ── Admin Product ──────────────────────────────────────────────────────

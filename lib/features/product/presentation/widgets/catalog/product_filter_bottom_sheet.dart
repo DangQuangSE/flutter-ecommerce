@@ -28,7 +28,6 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
   int? _brandId;
   String? _brandName;
   String? _gender;
-  String? _productSize;
   String? _color;
   final _minPriceController = TextEditingController();
   final _maxPriceController = TextEditingController();
@@ -51,7 +50,6 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
     _brandId = s.brandId;
     _brandName = s.brandName;
     _gender = s.gender;
-    _productSize = s.productSize;
     _color = s.color;
     if (s.minPrice != null) {
       _minPriceController.text = s.minPrice!.toInt().toString();
@@ -95,7 +93,6 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
       _brandId = null;
       _brandName = null;
       _gender = null;
-      _productSize = null;
       _color = null;
       _minPriceController.clear();
       _maxPriceController.clear();
@@ -111,7 +108,6 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
           brandId: _brandId,
           brandName: _brandName,
           gender: _gender,
-          productSize: _productSize,
           color: _color,
           minPrice: minText.isNotEmpty ? double.tryParse(minText) : null,
           maxPrice: maxText.isNotEmpty ? double.tryParse(maxText) : null,
@@ -200,10 +196,6 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
                 _GenderSection(
                   selected: _gender,
                   onSelect: (g) => setState(() => _gender = g),
-                ),
-                _SizeSection(
-                  selected: _productSize,
-                  onSelect: (s) => setState(() => _productSize = s),
                 ),
                 _ColorSection(
                   selected: _color,
@@ -550,67 +542,6 @@ class _GenderSection extends StatelessWidget {
           }).toList(),
         ),
         const SizedBox(height: 8),
-        const Divider(),
-      ],
-    );
-  }
-}
-
-class _SizeSection extends StatelessWidget {
-  final String? selected;
-  final void Function(String? size) onSelect;
-
-  const _SizeSection({required this.selected, required this.onSelect});
-
-  @override
-  Widget build(BuildContext context) {
-    final sizes = [
-      ...productApparelSizeOrder,
-      '38', '39', '40', '41', '42', '43', '44',
-    ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _SectionTitle('Kích thước'),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 2.2,
-          ),
-          itemCount: sizes.length,
-          itemBuilder: (_, i) {
-            final size = sizes[i];
-            final isSelected = selected == size;
-            return GestureDetector(
-              onTap: () => onSelect(selected == size ? null : size),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : AppColors.background,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color:
-                        isSelected ? AppColors.primary : AppColors.divider,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    size,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
         const Divider(),
       ],
     );

@@ -15,6 +15,8 @@ import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/customization_entity.dart';
 import 'package:flutter_ecommerce/features/product/domain/repositories/custom_design_repository.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
 
 enum LayerType { text, logo }
@@ -92,11 +94,15 @@ class DesignLayer {
 class ProductCustomizerPage extends StatefulWidget {
   final String productId;
   final String productName;
+  final int? variantId;
+  final int cartQuantity;
 
   const ProductCustomizerPage({
     super.key,
     required this.productId,
     required this.productName,
+    this.variantId,
+    this.cartQuantity = 1,
   });
 
   @override
@@ -405,6 +411,34 @@ class _ProductCustomizerPageState extends State<ProductCustomizerPage> {
         );
 
         await context.read<CustomizerCubit>().saveCustomization(widget.productId, customization);
+
+        // Link design to cart item so backend includes printingPrice in itemTotal
+        if (widget.variantId != null) {
+          // Capture old item ID (same variant, no design) before adding new one
+          int? oldItemId;
+          final cartState = sl<CartCubit>().state;
+          if (cartState is CartLoaded) {
+            final candidates = cartState.items.where(
+              (item) => item.variantId == widget.variantId! && item.customDesignId == null,
+            );
+            if (candidates.isNotEmpty) oldItemId = candidates.first.itemId;
+          }
+
+          // Add new item with design (backend calculates itemTotal + printingPrice)
+          await sl<CartCubit>().addItem(
+            variantId: widget.variantId!,
+            quantity: widget.cartQuantity,
+            isReplace: true,
+            customDesignId: customDesignId,
+          );
+          if (!mounted) return;
+
+          // Remove old item without design to avoid duplicates
+          if (oldItemId != null) {
+            await sl<CartCubit>().removeItem(oldItemId);
+            if (!mounted) return;
+          }
+        }
 
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
