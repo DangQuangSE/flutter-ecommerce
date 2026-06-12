@@ -74,23 +74,38 @@ class _SkeletonCard extends StatelessWidget {
               child: Container(color: color),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(height: 10, width: 80, color: color,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4))),
-                const SizedBox(height: 6),
-                Container(height: 13, width: double.infinity, color: color,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4))),
-                const SizedBox(height: 6),
-                Container(height: 10, width: 60, color: color,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4))),
-                const SizedBox(height: 6),
-                Container(height: 16, width: 80, color: color,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4))),
-              ],
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      height: 10,
+                      width: 80,
+                      decoration: BoxDecoration(
+                          color: color, borderRadius: BorderRadius.circular(4))),
+                  const SizedBox(height: 6),
+                  Container(
+                      height: 13,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: color, borderRadius: BorderRadius.circular(4))),
+                  const SizedBox(height: 6),
+                  Container(
+                      height: 10,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: color, borderRadius: BorderRadius.circular(4))),
+                  const SizedBox(height: 6),
+                  Container(
+                      height: 16,
+                      width: 80,
+                      decoration: BoxDecoration(
+                          color: color, borderRadius: BorderRadius.circular(4))),
+                ],
+              ),
             ),
           ),
         ],
