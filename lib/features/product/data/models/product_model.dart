@@ -8,6 +8,7 @@ class ProductModel extends ProductEntity {
     required super.description,
     required super.price,
     required super.imageUrl,
+    super.imageUrls = const [],
     required super.categoryId,
     required super.stockQuantity,
     super.variants,
