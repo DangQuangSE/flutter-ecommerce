@@ -78,56 +78,58 @@ class ProductCard extends StatelessWidget {
               ),
             ),
             // Details
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Brand + category row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          product.brandName.toUpperCase(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Brand + category row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            product.brandName.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textSecondary,
+                              letterSpacing: 0.5,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          product.categoryName.toUpperCase(),
                           style: const TextStyle(
                             fontSize: 9,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.textSecondary,
-                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      Text(
-                        product.categoryName.toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  // Product name
-                  Text(
-                    product.name,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      ],
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  // Star rating
-                  _StarRating(rating: product.averageRating),
-                  const SizedBox(height: 6),
-                  // Price row
-                  _PriceRow(product: product),
-                ],
+                    const SizedBox(height: 4),
+                    // Product name
+                    Text(
+                      product.name,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    // Star rating
+                    _StarRating(rating: product.averageRating),
+                    const SizedBox(height: 6),
+                    // Price row
+                    _PriceRow(product: product),
+                  ],
+                ),
               ),
             ),
           ],

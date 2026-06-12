@@ -42,7 +42,7 @@ class _ProductSkeletonGridState extends State<ProductSkeletonGrid>
           crossAxisCount: 2,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 0.55,
+          childAspectRatio: 0.50,
         ),
         itemCount: 6,
         itemBuilder: (_, __) => _SkeletonCard(opacity: _animation.value),
