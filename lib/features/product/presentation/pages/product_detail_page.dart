@@ -140,7 +140,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ProductCarousel(imageUrl: product.imageUrl),
+                  ProductCarousel(
+                    imageUrls: product.imageUrls.isNotEmpty
+                        ? product.imageUrls
+                        : (product.imageUrl.isNotEmpty ? [product.imageUrl] : []),
+                  ),
                   _buildProductInfo(product, categoryLabel, priceToDisplay),
                   _buildDivider(),
                   Padding(

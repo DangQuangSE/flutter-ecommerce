@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -34,6 +35,8 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dar
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_list_page.dart';
+import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
+import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
@@ -103,7 +106,7 @@ RegisterPasswordExtra? _resolveRegisterPasswordExtra(GoRouterState state) {
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/splash',
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     // Wired to the AuthBloc singleton — router re-evaluates on every auth state change
     refreshListenable: GoRouterRefreshStream(sl<AuthBloc>().stream),
     redirect: (BuildContext context, GoRouterState state) {
@@ -325,13 +328,12 @@ class AppRouter {
         ),
       ),
 
-      // ProductBloc is registerFactory — wrap each route in its own BlocProvider
       GoRoute(
         path: '/products',
         name: AppRoutes.productList,
         builder: (context, state) => BlocProvider(
-          create: (_) => sl<ProductBloc>(),
-          child: const ProductListPage(),
+          create: (_) => sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
+          child: const ProductCatalogPage(),
         ),
         routes: [
           GoRoute(
@@ -440,10 +442,16 @@ class AppRouter {
       GoRoute(
         path: '/customizer/:productId',
         name: AppRoutes.productCustomizer,
-        builder: (context, state) => ProductCustomizerPage(
-          productId: state.pathParameters['productId'] ?? '',
-          productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
-        ),
+        builder: (context, state) {
+          final variantIdStr = state.uri.queryParameters['variantId'];
+          final quantityStr = state.uri.queryParameters['quantity'];
+          return ProductCustomizerPage(
+            productId: state.pathParameters['productId'] ?? '',
+            productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
+            variantId: variantIdStr != null ? int.tryParse(variantIdStr) : null,
+            cartQuantity: int.tryParse(quantityStr ?? '') ?? 1,
+          );
+        },
       ),
 
       // ── Admin Product ──────────────────────────────────────────────────────

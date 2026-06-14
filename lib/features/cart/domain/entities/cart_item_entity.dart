@@ -48,7 +48,7 @@ class CartItemEntity extends Equatable {
         originalPrice: originalPrice,
         salePrice: salePrice,
         quantity: quantity ?? this.quantity,
-        itemTotal: (salePrice > 0 ? salePrice : originalPrice) * (quantity ?? this.quantity),
+        itemTotal: (salePrice > 0 ? salePrice : originalPrice) * (quantity ?? this.quantity) + printingPrice,
         imageUrl: imageUrl,
         customDesignId: customDesignId,
         designImageUrl: designImageUrl,

@@ -22,13 +22,13 @@ class PagedResponse<T> {
     T Function(Map<String, dynamic>) fromJsonT,
   ) {
     return PagedResponse(
-      content: (json['content'] as List)
+      content: (json['content'] as List? ?? [])
           .map((e) => fromJsonT(e as Map<String, dynamic>))
           .toList(),
-      totalPages: json['totalPages'] as int,
-      totalElements: json['totalElements'] as int,
-      number: json['number'] as int,
-      size: json['size'] as int,
+      totalPages: (json['totalPages'] as num?)?.toInt() ?? 0,
+      totalElements: (json['totalElements'] as num?)?.toInt() ?? 0,
+      number: (json['number'] as num?)?.toInt() ?? 0,
+      size: (json['size'] as num?)?.toInt() ?? 0,
     );
   }
 }
