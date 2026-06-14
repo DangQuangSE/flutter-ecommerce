@@ -7,7 +7,7 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
-import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});

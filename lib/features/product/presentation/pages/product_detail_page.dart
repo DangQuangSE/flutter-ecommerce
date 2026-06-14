@@ -17,7 +17,7 @@ import 'package:flutter_ecommerce/features/product/presentation/widgets/collapsi
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
-import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String productId;

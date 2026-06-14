@@ -62,6 +62,23 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
+  Future<void> replaceWithCustomDesign({
+    required int variantId,
+    required int quantity,
+    required int customDesignId,
+  }) async {
+    int? oldItemId;
+    final current = state;
+    if (current is CartLoaded) {
+      final candidates = current.items.where(
+        (item) => item.variantId == variantId && item.customDesignId == null,
+      );
+      if (candidates.isNotEmpty) oldItemId = candidates.first.itemId;
+    }
+    await addItem(variantId: variantId, quantity: quantity, isReplace: true, customDesignId: customDesignId);
+    if (oldItemId != null) await removeItem(oldItemId);
+  }
+
   void clearCart() {
     emit(const CartLoaded([]));
   }
