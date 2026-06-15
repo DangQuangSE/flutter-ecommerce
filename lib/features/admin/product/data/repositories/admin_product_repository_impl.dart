@@ -82,6 +82,7 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
         gender: params.gender.toJson(),
         isFeatured: params.isFeatured,
         status: params.status.toJson(),
+        sizeGroupId: params.sizeGroupId,
       );
       final model = await _productDs.createProduct(request);
       return Success(model.toEntity());
@@ -102,6 +103,7 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
         gender: params.gender.toJson(),
         status: params.status.toJson(),
         isFeatured: params.isFeatured,
+        sizeGroupId: params.sizeGroupId,
       );
       final model = await _productDs.updateProduct(id, request);
       return Success(model.toEntity());
@@ -135,6 +137,28 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
       );
       final model = await _variantDs.createVariant(productId, request);
       return Success(model.toEntity());
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Result<List<ProductVariantEntity>>> createVariantsBatch(
+      int productId, List<CreateVariantParams> params) async {
+    try {
+      final requests = params
+          .map((p) => ProductVariantRequestModel(
+                sku: p.sku,
+                size: p.size,
+                colorId: p.colorId,
+                originalPrice: p.originalPrice,
+                salePrice: p.salePrice,
+                stockQuantity: p.stockQuantity,
+                status: p.status.toJson(),
+              ))
+          .toList();
+      final models = await _variantDs.createVariantsBatch(productId, requests);
+      return Success(models.map((m) => m.toEntity()).toList());
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     }

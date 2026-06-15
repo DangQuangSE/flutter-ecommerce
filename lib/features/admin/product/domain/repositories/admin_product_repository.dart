@@ -34,6 +34,9 @@ abstract interface class AdminProductRepository {
   Future<Result<ProductVariantEntity>> createVariant(
       int productId, CreateVariantParams params);
 
+  Future<Result<List<ProductVariantEntity>>> createVariantsBatch(
+      int productId, List<CreateVariantParams> params);
+
   Future<Result<ProductVariantEntity>> updateVariant(
       int variantId, CreateVariantParams params);
 

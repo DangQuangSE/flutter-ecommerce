@@ -23,6 +23,7 @@ import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variant_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variants_batch_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/add_product_image_usecase.dart';
@@ -100,6 +101,17 @@ import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.da
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
+
+// Size Group
+import 'package:flutter_ecommerce/features/size/data/datasources/size_group_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/size/data/datasources/size_group_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/size/data/repositories/size_group_repository_impl.dart';
+import 'package:flutter_ecommerce/features/size/domain/repositories/size_group_repository.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/get_size_groups_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/create_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/update_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/delete_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
 
 // Brand
 import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource.dart';
@@ -356,6 +368,34 @@ Future<void> configureDependencies() async {
     ),
   );
 
+  // Size Group Management
+  sl.registerLazySingleton<SizeGroupRemoteDatasource>(
+    () => SizeGroupRemoteDatasourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<SizeGroupRepository>(
+    () => SizeGroupRepositoryImpl(sl<SizeGroupRemoteDatasource>()),
+  );
+  sl.registerFactory<GetSizeGroupsUseCase>(
+    () => GetSizeGroupsUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<CreateSizeGroupUseCase>(
+    () => CreateSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<UpdateSizeGroupUseCase>(
+    () => UpdateSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<DeleteSizeGroupUseCase>(
+    () => DeleteSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<SizeGroupCubit>(
+    () => SizeGroupCubit(
+      getSizeGroupsUseCase: sl<GetSizeGroupsUseCase>(),
+      createSizeGroupUseCase: sl<CreateSizeGroupUseCase>(),
+      updateSizeGroupUseCase: sl<UpdateSizeGroupUseCase>(),
+      deleteSizeGroupUseCase: sl<DeleteSizeGroupUseCase>(),
+    ),
+  );
+
   // Brand Management
   sl.registerLazySingleton<BrandRemoteDataSource>(
     () => BrandRemoteDataSourceImpl(sl<DioClient>()),
@@ -524,6 +564,9 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<CreateVariantUseCase>(
     () => CreateVariantUseCase(sl<AdminProductRepository>()),
   );
+  sl.registerLazySingleton<CreateVariantsBatchUseCase>(
+    () => CreateVariantsBatchUseCase(sl<AdminProductRepository>()),
+  );
   sl.registerLazySingleton<UpdateVariantUseCase>(
     () => UpdateVariantUseCase(sl<AdminProductRepository>()),
   );
@@ -552,11 +595,13 @@ Future<void> configureDependencies() async {
       sl<DeleteAdminProductUseCase>(),
       sl<CategoryRepository>(),
       sl<BrandRepository>(),
+      sl<GetSizeGroupsUseCase>(),
     ),
   );
   sl.registerFactory<AdminProductVariantCubit>(
     () => AdminProductVariantCubit(
       sl<CreateVariantUseCase>(),
+      sl<CreateVariantsBatchUseCase>(),
       sl<UpdateVariantUseCase>(),
       sl<DeleteVariantUseCase>(),
     ),

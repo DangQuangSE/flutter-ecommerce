@@ -11,6 +11,11 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
 
   AdminProductVariantDatasourceImpl(this._dioClient);
 
+  Never _throwNetworkException(DioException e) => throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
+        statusCode: e.response?.statusCode,
+      );
+
   @override
   Future<ProductVariantModel> createVariant(
       int productId, ProductVariantRequestModel request) async {
@@ -22,10 +27,26 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
       final responseMap = response.data as Map<String, dynamic>;
       return ProductVariantModel.fromJson(responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
-      throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
-        statusCode: e.response?.statusCode,
+      _throwNetworkException(e);
+    }
+  }
+
+  @override
+  Future<List<ProductVariantModel>> createVariantsBatch(
+      int productId, List<ProductVariantRequestModel> requests) async {
+    try {
+      final response = await _dioClient.dio.post(
+        ApiConstants.adminProductVariantsBatch(productId),
+        data: requests.map((r) => r.toJson()).toList(),
       );
+      final responseMap = response.data as Map<String, dynamic>;
+      final data = responseMap['data'] as List<dynamic>;
+      return data
+          .map((item) =>
+              ProductVariantModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      _throwNetworkException(e);
     }
   }
 
@@ -40,10 +61,7 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
       final responseMap = response.data as Map<String, dynamic>;
       return ProductVariantModel.fromJson(responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
-      throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
-        statusCode: e.response?.statusCode,
-      );
+      _throwNetworkException(e);
     }
   }
 
@@ -52,10 +70,7 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
     try {
       await _dioClient.dio.delete(ApiConstants.adminVariantById(variantId));
     } on DioException catch (e) {
-      throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
-        statusCode: e.response?.statusCode,
-      );
+      _throwNetworkException(e);
     }
   }
 }

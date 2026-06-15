@@ -45,4 +45,7 @@ abstract final class AppRoutes {
   static const String adminCoupons = 'admin-coupons';
   static const String adminOrders = 'admin-orders';
   static const String adminOrderDetail = 'admin-order-detail';
+  static const String adminSizeGroups = 'admin-size-groups';
+  static const String adminSizeGroupCreate = 'admin-size-group-create';
+  static const String adminSizeGroupEdit = 'admin-size-group-edit';
 }

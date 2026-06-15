@@ -42,6 +42,8 @@ class AdminManagementTab extends StatelessWidget {
                 const Divider(height: 1),
                 _item(context, icon: Icons.local_offer_rounded, label: 'Quản lý Mã giảm giá', onTap: () => context.pushNamed(AppRoutes.adminCoupons)),
                 const Divider(height: 1),
+                _item(context, icon: Icons.straighten_rounded, label: 'Quản lý Kích thước', onTap: () => context.pushNamed(AppRoutes.adminSizeGroups)),
+                const Divider(height: 1),
                 _item(context, icon: Icons.support_agent_rounded, label: 'Tin nhắn hỗ trợ', onTap: () => context.pushNamed(AppRoutes.chatList)),
               ],
             ),

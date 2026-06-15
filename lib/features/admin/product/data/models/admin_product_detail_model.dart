@@ -18,6 +18,7 @@ class AdminProductDetailModel {
   final bool isFeatured;
   final List<ProductImageModel> images;
   final List<ProductVariantModel> variants;
+  final int? sizeGroupId;
 
   const AdminProductDetailModel({
     required this.id,
@@ -33,6 +34,7 @@ class AdminProductDetailModel {
     required this.isFeatured,
     required this.images,
     required this.variants,
+    this.sizeGroupId,
   });
 
   factory AdminProductDetailModel.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,7 @@ class AdminProductDetailModel {
       gender: json['gender'] as String? ?? 'UNISEX',
       status: json['status'] as String? ?? 'ACTIVE',
       isFeatured: json['isFeatured'] as bool? ?? false,
+      sizeGroupId: (json['sizeGroupId'] as num?)?.toInt(),
       images: (json['images'] as List?)
               ?.map((e) => ProductImageModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -73,5 +76,6 @@ class AdminProductDetailModel {
         isFeatured: isFeatured,
         variants: variants.map((v) => v.toEntity()).toList(),
         images: images.map((i) => i.toEntity()).toList(),
+        sizeGroupId: sizeGroupId,
       );
 }

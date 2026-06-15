@@ -157,6 +157,10 @@ class _ProductFormStep1BasicInfoState
             ),
             const SizedBox(height: 16),
 
+            // Size group dropdown (optional)
+            _SizeGroupDropdown(state: state, cubit: cubit),
+            const SizedBox(height: 16),
+
             // Gender dropdown
             DropdownButtonFormField<Gender>(
               initialValue: state.gender,
@@ -234,6 +238,41 @@ class _ProductFormStep1BasicInfoState
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SizeGroupDropdown extends StatelessWidget {
+  final AdminProductFormState state;
+  final AdminProductFormCubit cubit;
+
+  const _SizeGroupDropdown({required this.state, required this.cubit});
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = state.sizeGroups;
+    return DropdownButtonFormField<int?>(
+      initialValue: (state.sizeGroupId != null && groups.any((g) => g.id == state.sizeGroupId))
+          ? state.sizeGroupId
+          : null,
+      decoration: const InputDecoration(
+        labelText: 'Nhóm kích thước',
+        border: OutlineInputBorder(),
+      ),
+      isExpanded: true,
+      items: [
+        const DropdownMenuItem<int?>(
+          value: null,
+          child: Text('Không có nhóm kích thước'),
+        ),
+        ...groups.map(
+          (g) => DropdownMenuItem<int?>(
+            value: g.id,
+            child: Text(g.name, overflow: TextOverflow.ellipsis),
+          ),
+        ),
+      ],
+      onChanged: cubit.sizeGroupChanged,
     );
   }
 }
