@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/payment_qr_card.dart';
@@ -15,7 +16,8 @@ import 'package:flutter_ecommerce/features/payment/domain/entities/vnpay_payment
 import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
 
 class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({super.key});
+  final List<int>? cartItemIds;
+  const CheckoutPage({super.key, this.cartItemIds});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -253,6 +255,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _buildCheckoutContent(BuildContext context, CartLoaded state) {
+    final checkoutItems = widget.cartItemIds != null
+        ? state.items.where((e) => widget.cartItemIds!.contains(e.itemId)).toList()
+        : state.items;
+
+    final checkoutTotalPrice = checkoutItems.fold(0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
+
     return Form(
       key: _formKey,
       child: Column(
@@ -273,17 +281,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   // Payment Section
                   _buildSectionHeader('PHƯƠNG THỨC THANH TOÁN', Icons.qr_code_scanner_rounded),
                   const SizedBox(height: 12),
-                  PaymentQrCard(formattedTotal: _formatPrice(state.totalPrice)),
+                  PaymentQrCard(formattedTotal: _formatPrice(checkoutTotalPrice)),
                   const SizedBox(height: 28),
 
                   // Summary Section
-                  _buildOrderSummary(state),
+                  _buildOrderSummary(checkoutItems),
                   const SizedBox(height: 32),
                 ],
               ),
             ),
           ),
-          _buildStickyFooter(context, state),
+          _buildStickyFooter(context, checkoutItems),
         ],
       ),
     );
@@ -404,7 +412,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildOrderSummary(CartLoaded state) {
+  Widget _buildOrderSummary(List<CartItemEntity> checkoutItems) {
+    final checkoutTotalItems = checkoutItems.fold(0, (sum, e) => sum + e.quantity);
+    final checkoutTotalPrice = checkoutItems.fold(0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -427,7 +438,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tạm tính (${state.totalItems} sản phẩm)',
+                'Tạm tính ($checkoutTotalItems sản phẩm)',
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -435,7 +446,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
               ),
               Text(
-                _formatPrice(state.totalPrice),
+                _formatPrice(checkoutTotalPrice),
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -488,7 +499,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               Transform(
                 transform: Matrix4.skewX(-0.12),
                 child: Text(
-                  _formatPrice(state.totalPrice),
+                  _formatPrice(checkoutTotalPrice),
                   style: GoogleFonts.lexend(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
@@ -505,7 +516,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildStickyFooter(BuildContext context, CartLoaded state) {
+  Widget _buildStickyFooter(BuildContext context, List<CartItemEntity> checkoutItems) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -532,7 +543,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 final cartItemIds =
-                    state.items.map((item) => item.itemId).toList();
+                    checkoutItems.map((item) => item.itemId).toList();
                 context.read<CheckoutBloc>().add(
                       CheckoutSubmitted(
                         OrderRequestEntity(

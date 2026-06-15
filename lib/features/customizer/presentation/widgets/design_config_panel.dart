@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/widgets/material_card.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/widgets/layer_editor.dart';
@@ -25,6 +26,7 @@ class DesignConfigPanel extends StatelessWidget {
   final String? activeLayerId;
   final ValueChanged<DesignLayer> onLayerActivated;
   final void Function(int index, String id) onLayerDeleted;
+  final List<PrintingMaterialEntity>? materials;
 
   const DesignConfigPanel({
     super.key,
@@ -46,6 +48,7 @@ class DesignConfigPanel extends StatelessWidget {
     required this.activeLayerId,
     required this.onLayerActivated,
     required this.onLayerDeleted,
+    this.materials,
   });
 
   @override
@@ -107,6 +110,33 @@ class DesignConfigPanel extends StatelessWidget {
   }
 
   Widget _buildMaterialSection() {
+    final list = materials;
+    if (list == null || list.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'CHẤT LIỆU IN ẤN',
+            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+          ),
+          const SizedBox(height: 10),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -115,23 +145,35 @@ class DesignConfigPanel extends StatelessWidget {
           style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
         ),
         const SizedBox(height: 10),
-        MaterialCard(
-          title: 'In chuyển nhiệt',
-          priceAdd: '+30.000 ₫',
-          desc: 'Bền màu, phẳng mịn, phù hợp thiết kế nhiều màu sắc phức tạp.',
-          isSelected: printMethod == 'In chuyển nhiệt',
-          onTap: () => onPrintMethodChanged('In chuyển nhiệt'),
-        ),
-        const SizedBox(height: 10),
-        MaterialCard(
-          title: 'Decal phản quang',
-          priceAdd: '+50.000 ₫',
-          desc: 'Màu sắc nổi bật, độ bền cao, phù hợp in tên và số áo phát sáng.',
-          isSelected: printMethod == 'Decal phản quang',
-          onTap: () => onPrintMethodChanged('Decal phản quang'),
-        ),
+        ...list.map((m) {
+          final isSelected = printMethod.toLowerCase() == m.name.toLowerCase() ||
+              m.name.toLowerCase().contains(printMethod.toLowerCase()) ||
+              printMethod.toLowerCase().contains(m.name.toLowerCase());
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: MaterialCard(
+              title: m.name,
+              priceAdd: '+${_formatPrice(m.basePrice)}',
+              desc: m.description,
+              isSelected: isSelected,
+              onTap: () => onPrintMethodChanged(m.name),
+            ),
+          );
+        }),
       ],
     );
+  }
+
+  String _formatPrice(double price) {
+    final formatStr = price.toInt().toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < formatStr.length; i++) {
+      buffer.write(formatStr[i]);
+      if ((formatStr.length - 1 - i) % 3 == 0 && i != formatStr.length - 1) {
+        buffer.write('.');
+      }
+    }
+    return '${buffer.toString()}đ';
   }
 
   Widget _buildLogoUploadSection() {

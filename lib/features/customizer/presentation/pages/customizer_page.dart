@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_ecommerce/core/constants/printing_constants.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/customization_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/repositories/custom_design_repository.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
@@ -26,6 +29,8 @@ class CustomizerPage extends StatefulWidget {
   final String productName;
   final int? variantId;
   final int cartQuantity;
+  final double? basePrice;
+  final int? customDesignId;
   final Future<void> Function(int customDesignId)? onConfirm;
 
   const CustomizerPage({
@@ -34,6 +39,8 @@ class CustomizerPage extends StatefulWidget {
     required this.productName,
     this.variantId,
     this.cartQuantity = 1,
+    this.basePrice,
+    this.customDesignId,
     this.onConfirm,
   });
 
@@ -45,6 +52,11 @@ class _CustomizerPageState extends State<CustomizerPage> {
   final GlobalKey _canvasKey = GlobalKey();
   bool _isSaving = false;
   bool _isInitialized = false;
+
+  // Loading state for configs
+  PrintingConfigEntity? _printingConfigs;
+  bool _isLoadingConfigs = true;
+  String? _configsError;
 
   // Canvas state
   bool _isFrontView = true;
@@ -76,6 +88,112 @@ class _CustomizerPageState extends State<CustomizerPage> {
   void initState() {
     super.initState();
     _textController = TextEditingController();
+    _loadPrintingConfigs();
+  }
+
+  Future<void> _loadPrintingConfigs() async {
+    try {
+      final customDesignRepo = sl<CustomDesignRepository>();
+      final dioClient = sl<DioClient>();
+
+      final List<Future<dynamic>> futures = [
+        customDesignRepo.getPrintingConfigs(),
+      ];
+      if (widget.customDesignId != null) {
+        futures.add(dioClient.dio.get('/api/custom-designs/${widget.customDesignId}'));
+      }
+
+      final results = await Future.wait(futures);
+
+      final configResult = results[0] as Result<PrintingConfigEntity>;
+      Response? designResponse;
+      if (widget.customDesignId != null) {
+        designResponse = results[1] as Response;
+      }
+
+      if (mounted) {
+        setState(() {
+          _isLoadingConfigs = false;
+          switch (configResult) {
+            case Success(:final data):
+              _printingConfigs = data;
+            case ResultFailure(:final failure):
+              _configsError = failure.message;
+          }
+
+          if (designResponse != null) {
+            try {
+              final body = designResponse.data as Map<String, dynamic>;
+              final designData = body['data'] as Map<String, dynamic>;
+              final metadata = designData['designMetadata'] as String?;
+              final matName = designData['printingMaterialName'] as String?;
+
+              if (matName != null && matName.isNotEmpty) {
+                _printMethod = matName;
+              }
+
+              if (metadata != null && metadata.isNotEmpty) {
+                final double maxHOffset = MediaQuery.of(context).size.width * 0.85 * 0.35;
+                final double maxVOffset = MediaQuery.of(context).size.height * 0.42 * 0.25;
+
+                final List<dynamic> decoded = jsonDecode(metadata);
+                final restored = decoded.map((e) {
+                  var layer = DesignLayer.fromJson(e as Map<String, dynamic>);
+                  if (layer.x.abs() <= 1.0 && layer.y.abs() <= 1.0 && (layer.x != 0.0 || layer.y != 0.0)) {
+                    layer = layer.copyWith(x: layer.x * maxHOffset, y: layer.y * maxVOffset);
+                  }
+                  return layer;
+                }).toList();
+
+                _layers.clear();
+                _layers.addAll(restored);
+                if (_layers.isNotEmpty) {
+                  _activeLayer = _layers.last;
+                  if (_activeLayer!.type == LayerType.text) {
+                    _textController.text = _activeLayer!.text;
+                  }
+                }
+              }
+            } catch (e) {
+              debugPrint('Error restoring edited custom design layers: $e');
+            }
+          }
+
+          if (_printingConfigs != null && _printingConfigs!.materials.isNotEmpty) {
+            final hasMatch = _printingConfigs!.materials.any((m) =>
+                m.name.toLowerCase() == _printMethod.toLowerCase() ||
+                m.name.toLowerCase().contains(_printMethod.toLowerCase()) ||
+                _printMethod.toLowerCase().contains(m.name.toLowerCase()));
+            if (!hasMatch) {
+              _printMethod = _printingConfigs!.materials.first.name;
+            }
+          }
+
+          if (_layers.isEmpty) {
+            final double maxVOffset = MediaQuery.of(context).size.height * 0.42 * 0.25;
+            final defaultLayer = DesignLayer(
+              id: 'layer-default',
+              type: LayerType.text,
+              text: 'SPORT PRO',
+              color: const Color(0xFF0058BC),
+              fontSize: 22.0,
+              y: -0.1 * maxVOffset,
+            );
+            _layers.add(defaultLayer);
+            _activeLayer = defaultLayer;
+            _textController.text = defaultLayer.text;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Error in _loadPrintingConfigs: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingConfigs = false;
+          _configsError = e.toString();
+        });
+      }
+    }
   }
 
   @override
@@ -94,6 +212,9 @@ class _CustomizerPageState extends State<CustomizerPage> {
   }
 
   void _initializeCustomizer() {
+    if (widget.customDesignId != null) {
+      return;
+    }
     final cubit = context.read<CustomizerCubit>();
     final saved = cubit.getCustomizationOrDefault(widget.productId);
     _printMethod = saved.printMethod;
@@ -148,13 +269,79 @@ class _CustomizerPageState extends State<CustomizerPage> {
     }
   }
 
-  double get _printingMethodCost => _printMethod == 'In chuyển nhiệt'
-      ? PrintingConstants.heatTransferCost
-      : PrintingConstants.reflectiveDecalCost;
+  PrintingMaterialEntity? get _selectedMaterial {
+    if (_printingConfigs != null) {
+      for (final m in _printingConfigs!.materials) {
+        if (m.name.toLowerCase() == _printMethod.toLowerCase() ||
+            m.name.toLowerCase().contains(_printMethod.toLowerCase()) ||
+            _printMethod.toLowerCase().contains(m.name.toLowerCase())) {
+          return m;
+        }
+      }
+      if (_printingConfigs!.materials.isNotEmpty) {
+        return _printingConfigs!.materials.first;
+      }
+    }
+    return null;
+  }
 
-  double get _extraLayersCost => _layers.length * PrintingConstants.extraLayerCost;
-  double get _totalPrintingPrice => _printingMethodCost + _extraLayersCost;
-  double get _totalPrice => PrintingConstants.baseProductPrice + _totalPrintingPrice;
+  double get _printingMethodCost {
+    return _selectedMaterial?.basePrice ?? (_printMethod == 'In chuyển nhiệt'
+        ? PrintingConstants.heatTransferCost
+        : PrintingConstants.reflectiveDecalCost);
+  }
+
+  double get _textUnitPrice {
+    if (_printingConfigs != null) {
+      try {
+        final config = _printingConfigs!.priceConfigs.firstWhere(
+          (c) => c.type == 'TEXT',
+        );
+        return config.unitPrice;
+      } catch (_) {}
+    }
+    return 10000.0;
+  }
+
+  double get _imageUnitPrice {
+    if (_printingConfigs != null) {
+      try {
+        final config = _printingConfigs!.priceConfigs.firstWhere(
+          (c) => c.type == 'IMAGE',
+        );
+        return config.unitPrice;
+      } catch (_) {}
+    }
+    return 25000.0;
+  }
+
+  double get _totalPrintingPrice {
+    if (_layers.isEmpty) return 0.0;
+    final numTextLines = _layers.where((l) => l.type == LayerType.text).length;
+    final numImages = _layers.where((l) => l.type == LayerType.logo).length;
+    return _printingMethodCost + (numTextLines * _textUnitPrice) + (numImages * _imageUnitPrice);
+  }
+
+  double get _totalPrice => (widget.basePrice ?? PrintingConstants.baseProductPrice) + _totalPrintingPrice;
+
+  Color _parseHexColor(String hex) {
+    var hexStr = hex.replaceAll('#', '');
+    if (hexStr.length == 6) {
+      hexStr = 'FF$hexStr';
+    }
+    return Color(int.parse(hexStr, radix: 16));
+  }
+
+  List<Color> get _effectiveColors {
+    if (_printingConfigs != null && _printingConfigs!.colors.isNotEmpty) {
+      try {
+        return _printingConfigs!.colors.map((c) => _parseHexColor(c.hexCode)).toList();
+      } catch (e) {
+        debugPrint('Error parsing printing colors: $e');
+      }
+    }
+    return _presetColors;
+  }
 
   void _addNewTextLayer() {
     setState(() {
@@ -266,7 +453,7 @@ class _CustomizerPageState extends State<CustomizerPage> {
 
     final hasLogo = _layers.any((l) => l.type == LayerType.logo);
     final layersJsonStr = jsonEncode(_layers.map((l) => l.toJson()).toList());
-    final int materialId = _printMethod == 'In chuyển nhiệt' ? PrintingConstants.heatTransferId : PrintingConstants.reflectiveDecalId;
+    final int materialId = _selectedMaterial?.id ?? (_printMethod == 'In chuyển nhiệt' ? PrintingConstants.heatTransferId : PrintingConstants.reflectiveDecalId);
 
     final result = await sl<CustomDesignRepository>().saveDesign(
       materialId: materialId,
@@ -312,11 +499,7 @@ class _CustomizerPageState extends State<CustomizerPage> {
           duration: const Duration(seconds: 2),
         ));
         if (!mounted) return;
-        if (context.canPop()) {
-          context.pop();
-        } else {
-          context.goNamed(AppRoutes.cart);
-        }
+        context.goNamed(AppRoutes.cart);
       case ResultFailure(:final failure):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Không thể đồng bộ với server: ${failure.message}'),
@@ -440,6 +623,86 @@ class _CustomizerPageState extends State<CustomizerPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingConfigs) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF3F3F8),
+        appBar: _buildAppBar(context),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Đang tải cấu hình in ấn...',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_configsError != null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF3F3F8),
+        appBar: _buildAppBar(context),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+                const SizedBox(height: 16),
+                Text(
+                  'Không thể tải cấu hình in ấn.',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _configsError!,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isLoadingConfigs = true;
+                      _configsError = null;
+                    });
+                    _loadPrintingConfigs();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Thử lại'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Stack(
       children: [
         Scaffold(
@@ -457,7 +720,7 @@ class _CustomizerPageState extends State<CustomizerPage> {
                     activeLayer: _activeLayer,
                     textController: _textController,
                     fontsList: _fontsList,
-                    presetColors: _presetColors,
+                    presetColors: _effectiveColors,
                     getFontFamily: _getFontFamily,
                     onTextChanged: (val) => _onActiveLayerPropChanged((l) => l.copyWith(text: val)),
                     onFontChanged: (val) => _onActiveLayerPropChanged((l) => l.copyWith(font: val)),
@@ -470,6 +733,7 @@ class _CustomizerPageState extends State<CustomizerPage> {
                     activeLayerId: _activeLayer?.id,
                     onLayerActivated: _onPanelLayerActivated,
                     onLayerDeleted: _onPanelLayerDeleted,
+                    materials: _printingConfigs?.materials,
                   ),
                 ),
                 PricingFooter(

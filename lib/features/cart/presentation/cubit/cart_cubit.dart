@@ -43,11 +43,13 @@ class CartCubit extends Cubit<CartState> {
   Future<void> updateQuantity({
     required int variantId,
     required int quantity,
+    int? customDesignId,
   }) async {
     await addItem(
       variantId: variantId,
       quantity: quantity,
       isReplace: true,
+      customDesignId: customDesignId,
     );
   }
 
@@ -77,6 +79,60 @@ class CartCubit extends Cubit<CartState> {
     }
     await addItem(variantId: variantId, quantity: quantity, isReplace: true, customDesignId: customDesignId);
     if (oldItemId != null) await removeItem(oldItemId);
+  }
+
+  Future<void> replaceCartItemDesign({
+    required int itemId,
+    required int variantId,
+    required int quantity,
+    required int newCustomDesignId,
+  }) async {
+    emit(const CartLoading());
+    final removeResult = await _repository.removeItem(itemId);
+    switch (removeResult) {
+      case Success():
+        final addResult = await _repository.addOrUpdateItem(
+          variantId: variantId,
+          quantity: quantity,
+          isReplace: true,
+          customDesignId: newCustomDesignId,
+        );
+        switch (addResult) {
+          case Success(:final data):
+            emit(CartLoaded(data));
+          case ResultFailure(:final failure):
+            emit(CartError(failure.message));
+        }
+      case ResultFailure(:final failure):
+        emit(CartError(failure.message));
+    }
+  }
+
+
+  Future<void> removeDesignFromItem({
+    required int itemId,
+    required int variantId,
+    required int quantity,
+  }) async {
+    emit(const CartLoading());
+    final removeResult = await _repository.removeItem(itemId);
+    switch (removeResult) {
+      case Success():
+        final addResult = await _repository.addOrUpdateItem(
+          variantId: variantId,
+          quantity: quantity,
+          isReplace: false,
+          customDesignId: null,
+        );
+        switch (addResult) {
+          case Success(:final data):
+            emit(CartLoaded(data));
+          case ResultFailure(:final failure):
+            emit(CartError(failure.message));
+        }
+      case ResultFailure(:final failure):
+        emit(CartError(failure.message));
+    }
   }
 
   void clearCart() {

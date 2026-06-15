@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 
 abstract interface class CustomDesignRepository {
   Future<Result<int>> saveDesign({
@@ -9,4 +10,6 @@ abstract interface class CustomDesignRepository {
     required String metadata,
     required Uint8List imageBytes,
   });
+
+  Future<Result<PrintingConfigEntity>> getPrintingConfigs();
 }

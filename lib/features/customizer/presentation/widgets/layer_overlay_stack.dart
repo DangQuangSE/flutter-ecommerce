@@ -78,8 +78,20 @@ class LayerOverlayStack extends StatelessWidget {
                     height: 48,
                     decoration: const BoxDecoration(shape: BoxShape.circle),
                     clipBehavior: Clip.antiAlias,
-                    child: !kIsWeb && layer.logoPath != null
-                        ? Image.file(File(layer.logoPath!), fit: BoxFit.cover)
+                    child: layer.logoPath != null
+                        ? (kIsWeb
+                            ? Image.network(
+                                layer.logoPath!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.sports_soccer_rounded, size: 28),
+                              )
+                            : Image.file(
+                                File(layer.logoPath!),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.sports_soccer_rounded, size: 28),
+                              ))
                         : const Icon(Icons.sports_soccer_rounded, size: 28),
                   ),
                 if (isActive) _buildDeleteHandle(layer.id),

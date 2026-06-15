@@ -33,6 +33,7 @@ abstract final class ApiConstants {
   static const String adminColors = '/api/admin/colors';
   
   static const String printingColors = '/api/public/printing/colors';
+  static const String printingAll = '/api/public/printing/all';
   static const String adminPrintingColors = '/api/admin/printing/colors';
 
   // Categories — public reads + admin writes
