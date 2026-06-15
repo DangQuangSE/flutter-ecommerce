@@ -67,6 +67,10 @@ import 'package:flutter_ecommerce/features/category/presentation/cubit/category_
 import 'package:flutter_ecommerce/features/category/presentation/pages/category_management_page.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_management_page.dart';
+import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
+import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
+import 'package:flutter_ecommerce/features/size/presentation/pages/admin_size_group_list_page.dart';
+import 'package:flutter_ecommerce/features/size/presentation/pages/admin_size_group_form_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -313,6 +317,36 @@ class AppRouter {
                 create: (_) => sl<AdminOrderCubit>()
                   ..loadOrderDetail(int.tryParse(orderId) ?? 0),
                 child: AdminOrderDetailPage(orderId: orderId),
+              );
+            },
+          ),
+        ],
+      ),
+
+      GoRoute(
+        path: '/admin/size-groups',
+        name: AppRoutes.adminSizeGroups,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<SizeGroupCubit>()..loadSizeGroups(),
+          child: const AdminSizeGroupListPage(),
+        ),
+        routes: [
+          GoRoute(
+            path: 'create',
+            name: AppRoutes.adminSizeGroupCreate,
+            builder: (context, state) => BlocProvider(
+              create: (_) => sl<SizeGroupCubit>(),
+              child: const AdminSizeGroupFormPage(),
+            ),
+          ),
+          GoRoute(
+            path: ':id/edit',
+            name: AppRoutes.adminSizeGroupEdit,
+            builder: (context, state) {
+              final group = state.extra as SizeGroupEntity?;
+              return BlocProvider(
+                create: (_) => sl<SizeGroupCubit>(),
+                child: AdminSizeGroupFormPage(initialGroup: group),
               );
             },
           ),

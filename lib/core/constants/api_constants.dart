@@ -57,6 +57,11 @@ abstract final class ApiConstants {
 
   static const String customDesigns = '/api/custom-designs';
 
+  // Size Groups
+  static const String sizeGroups = '/api/size-groups';
+  static const String adminSizeGroups = '/api/admin/size-groups';
+  static String adminSizeGroupById(int id) => '/api/admin/size-groups/$id';
+
   // Admin Product
   static const String adminProducts = '/api/admin/products';
   static String adminProductById(int id) => '/api/admin/products/$id';
