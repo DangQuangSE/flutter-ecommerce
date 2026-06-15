@@ -3,6 +3,7 @@ import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/customizer/data/datasources/custom_design_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/existing_design_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/repositories/custom_design_repository.dart';
 
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
@@ -29,6 +30,19 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
         imageBytes: imageBytes,
       );
       return Success(id);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Result<ExistingDesignEntity>> getExistingDesign(int id) async {
+    try {
+      final result = await _dataSource.getExistingDesign(id);
+      return Success(ExistingDesignEntity(
+        designMetadata: result.designMetadata,
+        printingMaterialName: result.printingMaterialName,
+      ));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 
 class PrintingColorPicker extends StatelessWidget {
   final List<Color> presetColors;
@@ -18,7 +19,7 @@ class PrintingColorPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 38,
+      height: AppSizes.colorSwatchSize + 2,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: presetColors.length + 1,
@@ -27,9 +28,9 @@ class PrintingColorPicker extends StatelessWidget {
             return GestureDetector(
               onTap: onCustomColorTap,
               child: Container(
-                margin: const EdgeInsets.only(right: 10),
-                width: 36,
-                height: 36,
+                margin: const EdgeInsets.only(right: AppSizes.paddingSm + 2),
+                width: AppSizes.colorSwatchSize,
+                height: AppSizes.colorSwatchSize,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
@@ -44,7 +45,8 @@ class PrintingColorPicker extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: const Icon(Icons.colorize_rounded, size: 16, color: Colors.white),
+                child: const Icon(Icons.colorize_rounded,
+                    size: 16, color: Colors.white),
               ),
             );
           }
@@ -55,21 +57,24 @@ class PrintingColorPicker extends StatelessWidget {
           return GestureDetector(
             onTap: () => onColorSelected(color),
             child: Container(
-              margin: const EdgeInsets.only(right: 10),
-              width: 36,
-              height: 36,
+              margin: const EdgeInsets.only(right: AppSizes.paddingSm + 2),
+              width: AppSizes.colorSwatchSize,
+              height: AppSizes.colorSwatchSize,
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.primary : const Color(0xFFC1C6D7).withValues(alpha: 0.5),
+                  color: isSelected
+                      ? AppColors.primary
+                      : const Color(0xFFC1C6D7).withValues(alpha: 0.5),
                   width: isSelected ? 3.0 : 1.0,
                 ),
               ),
               child: isSelected
                   ? Icon(
                       Icons.check_rounded,
-                      color: color == Colors.white ? Colors.black : Colors.white,
+                      color:
+                          color == Colors.white ? Colors.black : Colors.white,
                       size: 18,
                     )
                   : null,

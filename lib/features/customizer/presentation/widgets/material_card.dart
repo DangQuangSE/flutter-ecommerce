@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 
 class MaterialCard extends StatelessWidget {
   final String title;
@@ -23,12 +24,16 @@ class MaterialCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: AppSizes.cardPadding,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.02) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.02)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(AppSizes.radiusXl),
           border: Border.all(
-            color: isSelected ? AppColors.primary : const Color(0xFFC1C6D7).withValues(alpha: 0.5),
+            color: isSelected
+                ? AppColors.primary
+                : AppColors.borderGray.withValues(alpha: 0.5),
             width: isSelected ? 2.0 : 1.0,
           ),
         ),
@@ -37,17 +42,18 @@ class MaterialCard extends StatelessWidget {
           children: [
             Container(
               margin: const EdgeInsets.only(top: 2),
-              width: 16,
-              height: 16,
+              width: AppSizes.iconSm,
+              height: AppSizes.iconSm,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                  color:
+                      isSelected ? AppColors.primary : AppColors.textSecondary,
                   width: isSelected ? 5.0 : 1.5,
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            AppSizes.spacingSm,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,12 +61,24 @@ class MaterialCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                      Text(priceAdd, style: GoogleFonts.lexend(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.primary)),
+                      Text(title,
+                          style: GoogleFonts.inter(
+                              fontSize: AppSizes.fontLg - 1,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary)),
+                      Text(priceAdd,
+                          style: GoogleFonts.lexend(
+                              fontSize: AppSizes.fontMd,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.primary)),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(desc, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary, height: 1.4)),
+                  AppSizes.spacingXs,
+                  Text(desc,
+                      style: GoogleFonts.inter(
+                          fontSize: AppSizes.fontSm,
+                          color: AppColors.textSecondary,
+                          height: 1.4)),
                 ],
               ),
             ),

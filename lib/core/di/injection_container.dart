@@ -73,6 +73,9 @@ import 'package:flutter_ecommerce/features/customizer/data/datasources/custom_de
 import 'package:flutter_ecommerce/features/customizer/data/datasources/custom_design_remote_datasource_impl.dart';
 import 'package:flutter_ecommerce/features/customizer/data/repositories/custom_design_repository_impl.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/repositories/custom_design_repository.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_existing_design_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_printing_configs_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/save_custom_design_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_product_catalog_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/add_product_usecase.dart';
@@ -287,12 +290,27 @@ Future<void> configureDependencies() async {
   sl.registerFactory<ProductCatalogBloc>(
     () => ProductCatalogBloc(sl<GetProductCatalogUseCase>()),
   );
-  sl.registerLazySingleton<CustomizerCubit>(() => CustomizerCubit());
   sl.registerLazySingleton<CustomDesignRemoteDataSource>(
     () => CustomDesignRemoteDataSourceImpl(sl<DioClient>()),
   );
   sl.registerLazySingleton<CustomDesignRepository>(
     () => CustomDesignRepositoryImpl(sl<CustomDesignRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<SaveCustomDesignUseCase>(
+    () => SaveCustomDesignUseCase(sl<CustomDesignRepository>()),
+  );
+  sl.registerLazySingleton<GetPrintingConfigsUseCase>(
+    () => GetPrintingConfigsUseCase(sl<CustomDesignRepository>()),
+  );
+  sl.registerLazySingleton<GetExistingDesignUseCase>(
+    () => GetExistingDesignUseCase(sl<CustomDesignRepository>()),
+  );
+  sl.registerFactory<CustomizerCubit>(
+    () => CustomizerCubit(
+      getPrintingConfigs: sl<GetPrintingConfigsUseCase>(),
+      saveCustomDesign: sl<SaveCustomDesignUseCase>(),
+      getExistingDesign: sl<GetExistingDesignUseCase>(),
+    ),
   );
 
   // ── Admin ───────────────────────────────────────────────────────────────────
@@ -409,7 +427,8 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<ProfileCubit>(() => ProfileCubit());
 
   // ── Notification ────────────────────────────────────────────────────────────
-  sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl());
+  sl.registerLazySingleton<NotificationRepository>(
+      () => NotificationRepositoryImpl());
   sl.registerLazySingleton<GetNotificationsUseCase>(
     () => GetNotificationsUseCase(sl<NotificationRepository>()),
   );
@@ -428,11 +447,15 @@ Future<void> configureDependencies() async {
     () => ChatSocketClient(sl<AuthTokenStorage>()),
   );
   sl.registerLazySingleton<ChatRepository>(
-    () => ChatRepositoryImpl(sl<ChatRemoteDataSource>(), sl<ChatSocketClient>()),
+    () =>
+        ChatRepositoryImpl(sl<ChatRemoteDataSource>(), sl<ChatSocketClient>()),
   );
-  sl.registerLazySingleton<GetChatsUseCase>(() => GetChatsUseCase(sl<ChatRepository>()));
-  sl.registerLazySingleton<GetMessagesUseCase>(() => GetMessagesUseCase(sl<ChatRepository>()));
-  sl.registerLazySingleton<SendMessageUseCase>(() => SendMessageUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton<GetChatsUseCase>(
+      () => GetChatsUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton<GetMessagesUseCase>(
+      () => GetMessagesUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton<SendMessageUseCase>(
+      () => SendMessageUseCase(sl<ChatRepository>()));
   sl.registerLazySingleton<ChatCubit>(
     () => ChatCubit(
       getChatsUseCase: sl<GetChatsUseCase>(),

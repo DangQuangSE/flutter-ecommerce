@@ -97,7 +97,8 @@ class PrintingConfigEntity extends Equatable {
         .map((e) => PrintingMaterialEntity.fromJson(e as Map<String, dynamic>))
         .toList();
     final priceConfigsList = (json['priceConfigs'] as List? ?? [])
-        .map((e) => PrintingPriceConfigEntity.fromJson(e as Map<String, dynamic>))
+        .map((e) =>
+            PrintingPriceConfigEntity.fromJson(e as Map<String, dynamic>))
         .toList();
     final colorsList = (json['colors'] as List? ?? [])
         .map((e) => PrintingColorEntity.fromJson(e as Map<String, dynamic>))

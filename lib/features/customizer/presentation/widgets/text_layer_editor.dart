@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/widgets/printing_color_picker.dart';
 
@@ -42,65 +43,109 @@ class TextLayerEditor extends StatelessWidget {
           children: [
             Text(
               'CHỈNH SỬA CHỮ / SỐ',
-              style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+              style: GoogleFonts.inter(
+                  fontSize: AppSizes.fontSm,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary),
             ),
             TextButton.icon(
               onPressed: onAddLayer,
-              icon: const Icon(Icons.add_rounded, size: 16),
-              label: Text('THÊM LỚP MỚI', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w800)),
-              style: TextButton.styleFrom(foregroundColor: AppColors.primary, padding: EdgeInsets.zero),
+              icon: const Icon(Icons.add_rounded, size: AppSizes.iconSm),
+              label: Text('THÊM LỚP MỚI',
+                  style: GoogleFonts.inter(
+                      fontSize: AppSizes.fontXs + 1,
+                      fontWeight: FontWeight.w800)),
+              style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary, padding: EdgeInsets.zero),
             ),
           ],
         ),
         const SizedBox(height: 10),
         if (activeLayer != null && activeLayer!.type == LayerType.text) ...[
-          Text('NỘI DUNG LỚP CHỮ', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-          const SizedBox(height: 6),
+          Text('NỘI DUNG LỚP CHỮ',
+              style: GoogleFonts.inter(
+                  fontSize: AppSizes.fontXs + 1,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary)),
+          const SizedBox(height: AppSizes.paddingXs + 2),
           TextField(
             controller: textController,
             onChanged: onTextChanged,
             decoration: InputDecoration(
               filled: true,
-              fillColor: const Color(0xFFF3F3F8),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              fillColor: AppColors.canvasLight,
+              contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.paddingMd,
+                  vertical: AppSizes.paddingMd - 4),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                  borderSide: BorderSide.none),
             ),
-            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+            style: GoogleFonts.inter(
+                fontSize: AppSizes.fontLg - 1,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
-          Text('FONT CHỮ', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSizes.paddingMd),
+          Text('FONT CHỮ',
+              style: GoogleFonts.inter(
+                  fontSize: AppSizes.fontXs + 1,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary)),
+          const SizedBox(height: AppSizes.paddingXs + 2),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(color: const Color(0xFFF3F3F8), borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
+            decoration: BoxDecoration(
+                color: AppColors.canvasLight,
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: activeLayer!.font,
                 isExpanded: true,
-                icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textSecondary),
-                items: fontsList.map((font) => DropdownMenuItem<String>(
-                  value: font,
-                  child: Text('$font (Thể thao)', style: getFontFamily(font).copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
-                )).toList(),
-                onChanged: (val) { if (val != null) onFontChanged(val); },
+                icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                    color: AppColors.textSecondary),
+                items: fontsList
+                    .map((font) => DropdownMenuItem<String>(
+                          value: font,
+                          child: Text('$font (Thể thao)',
+                              style: getFontFamily(font).copyWith(
+                                  fontSize: AppSizes.fontLg,
+                                  fontWeight: FontWeight.bold)),
+                        ))
+                    .toList(),
+                onChanged: (val) {
+                  if (val != null) onFontChanged(val);
+                },
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text('MÀU SẮC IN', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSizes.paddingMd),
+          Text('MÀU SẮC IN',
+              style: GoogleFonts.inter(
+                  fontSize: AppSizes.fontXs + 1,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary)),
+          const SizedBox(height: AppSizes.paddingXs + 6),
           PrintingColorPicker(
             presetColors: presetColors,
             selectedColor: activeLayer?.color,
             onColorSelected: onColorSelected,
             onCustomColorTap: onCustomColorTap,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSizes.paddingMd),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('CỠ CHỮ', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-              Text('${activeLayer!.fontSize.toInt()}px', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+              Text('CỠ CHỮ',
+                  style: GoogleFonts.inter(
+                      fontSize: AppSizes.fontXs + 1,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary)),
+              Text('${activeLayer!.fontSize.toInt()}px',
+                  style: GoogleFonts.inter(
+                      fontSize: AppSizes.fontSm,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary)),
             ],
           ),
           Slider(
@@ -108,16 +153,19 @@ class TextLayerEditor extends StatelessWidget {
             min: 12,
             max: 60,
             activeColor: AppColors.primary,
-            inactiveColor: const Color(0xFFF3F3F8),
+            inactiveColor: AppColors.canvasLight,
             onChanged: onFontSizeChanged,
           ),
         ] else ...[
           Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFFF3F3F8), borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.all(AppSizes.paddingMd - 4),
+            decoration: BoxDecoration(
+                color: AppColors.canvasLight,
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
             child: Text(
               'Chọn hoặc thêm một lớp chữ để bắt đầu chỉnh sửa.',
-              style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+              style: GoogleFonts.inter(
+                  fontSize: AppSizes.fontMd, color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
           ),
