@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
 
 class AdminProductListPage extends StatefulWidget {
@@ -43,8 +45,8 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
               onPressed: () => ctx.pop(false), child: const Text('Hủy')),
           TextButton(
               onPressed: () => ctx.pop(true),
-              child:
-                  const Text('Xóa', style: TextStyle(color: Colors.red))),
+              child: const Text('Xóa',
+                  style: TextStyle(color: AppColors.error))),
         ],
       ),
     );
@@ -75,7 +77,7 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
         listener: (context, state) {
           if (state is AdminProductListFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+              SnackBar(content: Text(state.message), backgroundColor: AppColors.error),
             );
           }
         },
@@ -123,9 +125,24 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
                   final product = state.products[index];
                   return ListTile(
                     leading: product.thumbnailUrl != null
-                        ? Image.network(product.thumbnailUrl!,
-                            width: 48, height: 48, fit: BoxFit.cover)
-                        : const Icon(Icons.image_not_supported),
+                        ? CachedNetworkImage(
+                            imageUrl: product.thumbnailUrl!,
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => const SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2)),
+                            ),
+                            errorWidget: (_, __, ___) => const Icon(
+                                Icons.broken_image_outlined,
+                                color: AppColors.textHint),
+                          )
+                        : const Icon(Icons.image_not_supported_outlined,
+                            color: AppColors.textHint),
                     title: Text(product.name),
                     subtitle: Text(
                         '${product.brandName} • ${product.status.name.toUpperCase()}'),
@@ -134,19 +151,31 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit_outlined),
-                          onPressed: () =>
-                              context.push('/admin/products/${product.id}/edit'),
+                          onPressed: () async {
+                            final bloc =
+                                context.read<AdminProductListBloc>();
+                            await context
+                                .push('/admin/products/${product.id}/edit');
+                            if (context.mounted) {
+                              bloc.add(AdminProductListRefreshed());
+                            }
+                          },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete_outline,
-                              color: Colors.red),
+                              color: AppColors.error),
                           onPressed: () =>
                               _confirmDelete(context, product.id, product.name),
                         ),
                       ],
                     ),
-                    onTap: () =>
-                        context.push('/admin/products/${product.id}'),
+                    onTap: () async {
+                      final bloc = context.read<AdminProductListBloc>();
+                      await context.push('/admin/products/${product.id}');
+                      if (context.mounted) {
+                        bloc.add(AdminProductListRefreshed());
+                      }
+                    },
                   );
                 },
               ),

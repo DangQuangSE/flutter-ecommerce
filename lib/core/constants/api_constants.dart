@@ -69,6 +69,8 @@ abstract final class ApiConstants {
   static String adminProductById(int id) => '/api/admin/products/$id';
   static String adminProductVariants(int productId) =>
       '/api/admin/products/$productId/variants';
+  static String adminProductVariantsBatch(int productId) =>
+      '/api/admin/products/$productId/variants/batch';
   static String adminProductImages(int productId) =>
       '/api/admin/products/$productId/images';
 

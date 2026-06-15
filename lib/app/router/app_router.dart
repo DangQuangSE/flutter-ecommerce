@@ -567,6 +567,10 @@ class AppRouter {
                   ),
                   BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
                   BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
+                  BlocProvider(
+                      create: (_) => sl<SizeGroupCubit>()..loadSizeGroups()),
+                  BlocProvider(
+                      create: (_) => sl<ProductColorCubit>()..loadColors()),
                 ],
                 child: AdminProductDetailPage(productId: id),
               );

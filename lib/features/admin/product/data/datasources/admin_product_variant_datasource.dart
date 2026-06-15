@@ -4,6 +4,8 @@ import 'package:flutter_ecommerce/features/admin/product/data/models/product_var
 abstract interface class AdminProductVariantDatasource {
   Future<ProductVariantModel> createVariant(
       int productId, ProductVariantRequestModel request);
+  Future<List<ProductVariantModel>> createVariantsBatch(
+      int productId, List<ProductVariantRequestModel> requests);
   Future<ProductVariantModel> updateVariant(
       int variantId, ProductVariantRequestModel request);
   Future<void> deleteVariant(int variantId);

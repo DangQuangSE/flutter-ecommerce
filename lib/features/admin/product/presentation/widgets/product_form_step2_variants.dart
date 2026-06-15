@@ -6,6 +6,8 @@ import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_st
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_sheet.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/variant_edit_dialog.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_state.dart';
@@ -118,21 +120,16 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                               },
                             ),
                           if (!_showAddForm && productId != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: OutlinedButton.icon(
-                                onPressed: () =>
-                                    setState(() => _showAddForm = true),
-                                icon: const Icon(Icons.add_rounded),
-                                label: const Text('Thêm biến thể'),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.primary,
-                                  side: const BorderSide(
-                                      color: AppColors.primary),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12),
-                                ),
-                              ),
+                            BlocBuilder<ProductColorCubit, ProductColorState>(
+                              builder: (context, colorState) {
+                                final colors = colorState is ProductColorLoaded
+                                    ? colorState.colors
+                                        .where((c) => c.id != null)
+                                        .toList()
+                                    : <ProductColorEntity>[];
+                                return _buildVariantActionButtons(
+                                    context, variantCubit, colors, productId);
+                              },
                             ),
                           if (productId == null)
                             Container(
@@ -211,7 +208,12 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
               style:
                   const TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
-            const SizedBox(width: 4),
+            IconButton(
+              icon:
+                  const Icon(Icons.edit_outlined, color: AppColors.primary),
+              onPressed: () =>
+                  _onEditVariant(context, variantCubit, variant),
+            ),
             IconButton(
               icon: const Icon(Icons.delete_outline_rounded,
                   color: AppColors.error),
@@ -221,6 +223,35 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
         ),
       ),
     );
+  }
+
+  Future<void> _onEditVariant(
+    BuildContext context,
+    AdminProductVariantCubit variantCubit,
+    ProductVariantEntity variant,
+  ) async {
+    final result = await showVariantEditDialog(
+      context,
+      title: 'Sửa: ${variant.sku}',
+      initialPrice: variant.originalPrice,
+      initialSalePrice: variant.salePrice,
+      initialStock: variant.stockQuantity,
+      initialStatus: variant.status,
+    );
+    if (result != null && context.mounted) {
+      variantCubit.updateVariant(
+        variant.id,
+        CreateVariantParams(
+          sku: variant.sku,
+          size: variant.size,
+          colorId: variant.colorId,
+          originalPrice: result.originalPrice,
+          salePrice: result.salePrice,
+          stockQuantity: result.stockQuantity,
+          status: result.status,
+        ),
+      );
+    }
   }
 
   Widget _buildAddForm(
@@ -468,6 +499,84 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
         ),
       ),
     );
+  }
+
+  Widget _buildVariantActionButtons(
+    BuildContext context,
+    AdminProductVariantCubit variantCubit,
+    List<ProductColorEntity> colors,
+    int productId,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => _showBulkSheet(context, variantCubit, colors, productId),
+              icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+              label: const Text('Tạo hàng loạt'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: const BorderSide(color: AppColors.primary),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => setState(() => _showAddForm = true),
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text('Thêm 1 biến thể'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textSecondary,
+                side: const BorderSide(color: AppColors.divider),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showBulkSheet(
+    BuildContext context,
+    AdminProductVariantCubit variantCubit,
+    List<ProductColorEntity> colors,
+    int productId,
+  ) async {
+    final drafts = await showModalBottomSheet<List<CreateVariantParams>>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.92,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (_, __) => BulkVariantSheet(
+          sizeGroups: widget.formState.sizeGroups,
+          preSelectedSizeGroupId: widget.formState.sizeGroupId,
+          colors: colors,
+          productName: widget.formState.name,
+          brandName: widget.formState.brands
+                  .where((b) => b.id == widget.formState.brandId)
+                  .firstOrNull
+                  ?.name ??
+              '',
+        ),
+      ),
+    );
+
+    if (drafts != null && drafts.isNotEmpty && context.mounted) {
+      variantCubit.createVariantsBatch(productId, drafts);
+    }
   }
 
   Widget _buildNavButtons() {

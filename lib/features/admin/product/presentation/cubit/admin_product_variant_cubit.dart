@@ -3,6 +3,7 @@ import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variant_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variants_batch_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_variant_usecase.dart';
 
@@ -10,11 +11,12 @@ part 'admin_product_variant_state.dart';
 
 class AdminProductVariantCubit extends Cubit<AdminProductVariantState> {
   final CreateVariantUseCase _createVariant;
+  final CreateVariantsBatchUseCase _createVariantsBatch;
   final UpdateVariantUseCase _updateVariant;
   final DeleteVariantUseCase _deleteVariant;
 
-  AdminProductVariantCubit(
-      this._createVariant, this._updateVariant, this._deleteVariant)
+  AdminProductVariantCubit(this._createVariant, this._createVariantsBatch,
+      this._updateVariant, this._deleteVariant)
       : super(AdminProductVariantInitial());
 
   void loadFromDetail(List<ProductVariantEntity> variants) {
@@ -28,6 +30,20 @@ class AdminProductVariantCubit extends Cubit<AdminProductVariantState> {
     switch (result) {
       case Success(:final data):
         emit(AdminProductVariantSuccess([...current, data]));
+      case ResultFailure(:final failure):
+        emit(AdminProductVariantSuccess(current));
+        emit(AdminProductVariantFailure(failure.message));
+    }
+  }
+
+  Future<void> createVariantsBatch(
+      int productId, List<CreateVariantParams> params) async {
+    final current = _currentVariants;
+    emit(AdminProductVariantLoading());
+    final result = await _createVariantsBatch(productId, params);
+    switch (result) {
+      case Success(:final data):
+        emit(AdminProductVariantSuccess([...current, ...data]));
       case ResultFailure(:final failure):
         emit(AdminProductVariantSuccess(current));
         emit(AdminProductVariantFailure(failure.message));

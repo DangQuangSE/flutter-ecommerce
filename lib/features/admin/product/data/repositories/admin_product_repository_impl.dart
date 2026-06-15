@@ -143,6 +143,28 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
   }
 
   @override
+  Future<Result<List<ProductVariantEntity>>> createVariantsBatch(
+      int productId, List<CreateVariantParams> params) async {
+    try {
+      final requests = params
+          .map((p) => ProductVariantRequestModel(
+                sku: p.sku,
+                size: p.size,
+                colorId: p.colorId,
+                originalPrice: p.originalPrice,
+                salePrice: p.salePrice,
+                stockQuantity: p.stockQuantity,
+                status: p.status.toJson(),
+              ))
+          .toList();
+      final models = await _variantDs.createVariantsBatch(productId, requests);
+      return Success(models.map((m) => m.toEntity()).toList());
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    }
+  }
+
+  @override
   Future<Result<ProductVariantEntity>> updateVariant(
       int variantId, CreateVariantParams params) async {
     try {

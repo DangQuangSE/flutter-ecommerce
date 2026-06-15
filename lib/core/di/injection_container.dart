@@ -23,6 +23,7 @@ import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variant_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variants_batch_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/add_product_image_usecase.dart';
@@ -563,6 +564,9 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<CreateVariantUseCase>(
     () => CreateVariantUseCase(sl<AdminProductRepository>()),
   );
+  sl.registerLazySingleton<CreateVariantsBatchUseCase>(
+    () => CreateVariantsBatchUseCase(sl<AdminProductRepository>()),
+  );
   sl.registerLazySingleton<UpdateVariantUseCase>(
     () => UpdateVariantUseCase(sl<AdminProductRepository>()),
   );
@@ -597,6 +601,7 @@ Future<void> configureDependencies() async {
   sl.registerFactory<AdminProductVariantCubit>(
     () => AdminProductVariantCubit(
       sl<CreateVariantUseCase>(),
+      sl<CreateVariantsBatchUseCase>(),
       sl<UpdateVariantUseCase>(),
       sl<DeleteVariantUseCase>(),
     ),
