@@ -18,6 +18,7 @@ class AdminProductDetailEntity extends Equatable {
   final bool isFeatured;
   final List<ProductVariantEntity> variants;
   final List<ProductImageEntity> images;
+  final int? sizeGroupId;
 
   const AdminProductDetailEntity({
     required this.id,
@@ -33,6 +34,7 @@ class AdminProductDetailEntity extends Equatable {
     required this.isFeatured,
     required this.variants,
     required this.images,
+    this.sizeGroupId,
   });
 
   @override
@@ -50,5 +52,6 @@ class AdminProductDetailEntity extends Equatable {
         isFeatured,
         variants,
         images,
+        sizeGroupId,
       ];
 }

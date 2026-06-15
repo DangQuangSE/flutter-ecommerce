@@ -98,6 +98,17 @@ import 'package:flutter_ecommerce/features/product/presentation/bloc/product_blo
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
+// Size Group
+import 'package:flutter_ecommerce/features/size/data/datasources/size_group_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/size/data/datasources/size_group_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/size/data/repositories/size_group_repository_impl.dart';
+import 'package:flutter_ecommerce/features/size/domain/repositories/size_group_repository.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/get_size_groups_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/create_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/update_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/delete_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
+
 // Brand
 import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource_impl.dart';
@@ -338,6 +349,34 @@ Future<void> configureDependencies() async {
     ),
   );
 
+  // Size Group Management
+  sl.registerLazySingleton<SizeGroupRemoteDatasource>(
+    () => SizeGroupRemoteDatasourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<SizeGroupRepository>(
+    () => SizeGroupRepositoryImpl(sl<SizeGroupRemoteDatasource>()),
+  );
+  sl.registerFactory<GetSizeGroupsUseCase>(
+    () => GetSizeGroupsUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<CreateSizeGroupUseCase>(
+    () => CreateSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<UpdateSizeGroupUseCase>(
+    () => UpdateSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<DeleteSizeGroupUseCase>(
+    () => DeleteSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<SizeGroupCubit>(
+    () => SizeGroupCubit(
+      getSizeGroupsUseCase: sl<GetSizeGroupsUseCase>(),
+      createSizeGroupUseCase: sl<CreateSizeGroupUseCase>(),
+      updateSizeGroupUseCase: sl<UpdateSizeGroupUseCase>(),
+      deleteSizeGroupUseCase: sl<DeleteSizeGroupUseCase>(),
+    ),
+  );
+
   // Brand Management
   sl.registerLazySingleton<BrandRemoteDataSource>(
     () => BrandRemoteDataSourceImpl(sl<DioClient>()),
@@ -529,6 +568,7 @@ Future<void> configureDependencies() async {
       sl<DeleteAdminProductUseCase>(),
       sl<CategoryRepository>(),
       sl<BrandRepository>(),
+      sl<GetSizeGroupsUseCase>(),
     ),
   );
   sl.registerFactory<AdminProductVariantCubit>(

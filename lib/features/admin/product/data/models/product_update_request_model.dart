@@ -6,6 +6,7 @@ class ProductUpdateRequestModel {
   final String gender;
   final String status;
   final bool isFeatured;
+  final int? sizeGroupId;
 
   const ProductUpdateRequestModel({
     required this.name,
@@ -15,6 +16,7 @@ class ProductUpdateRequestModel {
     required this.gender,
     required this.status,
     required this.isFeatured,
+    this.sizeGroupId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -25,5 +27,6 @@ class ProductUpdateRequestModel {
         'gender': gender,
         'status': status,
         'isFeatured': isFeatured,
+        if (sizeGroupId != null) 'sizeGroupId': sizeGroupId,
       };
 }

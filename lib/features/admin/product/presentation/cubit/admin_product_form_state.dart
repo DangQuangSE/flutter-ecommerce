@@ -20,7 +20,9 @@ class AdminProductFormState extends Equatable {
   final DropdownStatus dropdownStatus;
   final List<CategoryTreeNode> categories;
   final List<BrandEntity> brands;
+  final List<SizeGroupEntity> sizeGroups;
   final int? createdProductId;
+  final int? sizeGroupId;
   final String? dropdownErrorMessage;
 
   const AdminProductFormState({
@@ -40,7 +42,9 @@ class AdminProductFormState extends Equatable {
     this.dropdownStatus = DropdownStatus.idle,
     this.categories = const [],
     this.brands = const [],
+    this.sizeGroups = const [],
     this.createdProductId,
+    this.sizeGroupId,
     this.dropdownErrorMessage,
   });
 
@@ -62,8 +66,11 @@ class AdminProductFormState extends Equatable {
     DropdownStatus? dropdownStatus,
     List<CategoryTreeNode>? categories,
     List<BrandEntity>? brands,
+    List<SizeGroupEntity>? sizeGroups,
     int? createdProductId,
     bool clearCreatedProductId = false,
+    int? sizeGroupId,
+    bool clearSizeGroupId = false,
     String? dropdownErrorMessage,
     bool clearDropdownError = false,
   }) {
@@ -84,7 +91,9 @@ class AdminProductFormState extends Equatable {
       dropdownStatus: dropdownStatus ?? this.dropdownStatus,
       categories: categories ?? this.categories,
       brands: brands ?? this.brands,
+      sizeGroups: sizeGroups ?? this.sizeGroups,
       createdProductId: clearCreatedProductId ? null : createdProductId ?? this.createdProductId,
+      sizeGroupId: clearSizeGroupId ? null : sizeGroupId ?? this.sizeGroupId,
       dropdownErrorMessage: clearDropdownError ? null : dropdownErrorMessage ?? this.dropdownErrorMessage,
     );
   }
@@ -109,7 +118,9 @@ class AdminProductFormState extends Equatable {
         dropdownStatus,
         categories,
         brands,
+        sizeGroups,
         createdProductId,
+        sizeGroupId,
         dropdownErrorMessage,
       ];
 }

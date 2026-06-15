@@ -82,6 +82,7 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
         gender: params.gender.toJson(),
         isFeatured: params.isFeatured,
         status: params.status.toJson(),
+        sizeGroupId: params.sizeGroupId,
       );
       final model = await _productDs.createProduct(request);
       return Success(model.toEntity());
@@ -102,6 +103,7 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
         gender: params.gender.toJson(),
         status: params.status.toJson(),
         isFeatured: params.isFeatured,
+        sizeGroupId: params.sizeGroupId,
       );
       final model = await _productDs.updateProduct(id, request);
       return Success(model.toEntity());
