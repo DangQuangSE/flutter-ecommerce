@@ -33,6 +33,9 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Opencode project configuration
+.opencode/
+
 # Symbolication related
 app.*.symbols
 
