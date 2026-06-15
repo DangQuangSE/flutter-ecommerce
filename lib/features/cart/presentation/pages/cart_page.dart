@@ -7,8 +7,7 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
-import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_cubit.dart';
-import 'package:flutter_ecommerce/features/product/presentation/cubit/customizer_state.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -258,8 +257,8 @@ class _CartPageState extends State<CartPage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                item.imageUrl ?? '',
-                fit: BoxFit.cover,
+                item.designImageUrl ?? item.imageUrl ?? '',
+                fit: item.designImageUrl != null ? BoxFit.contain : BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => const Center(
                   child: Icon(Icons.image_not_supported_outlined, color: AppColors.textSecondary),
                 ),
@@ -313,53 +312,13 @@ class _CartPageState extends State<CartPage> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                if (category == 'APPAREL') ...[
-                  Builder(
-                    builder: (context) {
-                      final customization = context.select((CustomizerCubit c) => c.getCustomizationOrDefault(item.productSlug));
-                      final bool isCustomized = context.select((CustomizerCubit c) {
-                        final state = c.state;
-                        if (state is CustomizerActive) {
-                          return state.customizations.containsKey(item.productSlug);
-                        }
-                        return false;
-                      });
-
-                      if (!isCustomized) return const SizedBox.shrink();
-
-                      return Container(
-                        margin: const EdgeInsets.only(top: 6),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: const Color(0xFF2ECC71).withValues(alpha: 0.3)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.check_circle_rounded, color: Color(0xFF2ECC71), size: 12),
-                            const SizedBox(width: 4),
-                            Text(
-                              "Đã thiết kế: '${customization.customText}' - ${customization.textColor}",
-                              style: GoogleFonts.inter(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF27AE60),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
                 const SizedBox(height: 10),
+                // Price + quantity row
                 Row(
                   children: [
                     Flexible(
                       child: Text(
-                        _formatPrice(item.price),
+                        _formatPrice(item.price + item.printingPrice),
                         style: GoogleFonts.lexend(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -368,14 +327,19 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    if (category == 'APPAREL') ...[
+                    // CUSTOM button only for non-designed APPAREL
+                    if (category == 'APPAREL' && item.customDesignId == null) ...[
+                      const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () {
                           context.pushNamed(
                             AppRoutes.productCustomizer,
                             pathParameters: {'productId': item.productSlug},
-                            queryParameters: {'name': item.productName},
+                            queryParameters: {
+                              'name': item.productName,
+                              'variantId': item.variantId.toString(),
+                              'quantity': item.quantity.toString(),
+                            },
                           );
                         },
                         child: Container(
@@ -402,16 +366,14 @@ class _CartPageState extends State<CartPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
                     ],
+                    const SizedBox(width: 8),
                     Container(
                       height: 28,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: const Color(0xFFC1C6D7),
-                        ),
+                        border: Border.all(color: const Color(0xFFC1C6D7)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -427,19 +389,11 @@ class _CartPageState extends State<CartPage> {
                                 _showRemoveConfirmation(context, item);
                               }
                             },
-                            child: const SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: Icon(Icons.remove, size: 12),
-                            ),
+                            child: const SizedBox(width: 28, height: 28, child: Icon(Icons.remove, size: 12)),
                           ),
                           Text(
                             '${item.quantity}',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -448,17 +402,92 @@ class _CartPageState extends State<CartPage> {
                                     quantity: item.quantity + 1,
                                   );
                             },
-                            child: const SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: Icon(Icons.add, size: 12),
-                            ),
+                            child: const SizedBox(width: 28, height: 28, child: Icon(Icons.add, size: 12)),
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
+                // Design sub-card (APPAREL with linked design)
+                if (category == 'APPAREL' && item.customDesignId != null)
+                  Builder(
+                    builder: (context) {
+                      final customization = context.select(
+                        (CustomizerCubit c) => c.getCustomizationOrDefault(item.productSlug),
+                      );
+                      return Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F5E9),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFF2ECC71).withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.check_circle_rounded, color: Color(0xFF2ECC71), size: 14),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Đã thiết kế: '${customization.customText}'",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF27AE60),
+                                    ),
+                                  ),
+                                  if (item.printingPrice > 0)
+                                    Text(
+                                      '+ ${_formatPrice(item.printingPrice)} phí in ấn',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () => context.pushNamed(
+                                AppRoutes.productCustomizer,
+                                pathParameters: {'productId': item.productSlug},
+                                queryParameters: {
+                                  'name': item.productName,
+                                  'variantId': item.variantId.toString(),
+                                  'quantity': item.quantity.toString(),
+                                },
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: AppColors.primary, width: 1.2),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.brush_rounded, size: 11, color: AppColors.primary),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      'CUSTOM',
+                                      style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.primary),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
               ],
             ),
           ),

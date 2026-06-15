@@ -1,16 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
+import 'package:flutter_ecommerce/core/models/paged_response.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/features/product/data/datasources/product_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/product/data/models/product_catalog_model.dart';
 import 'package:flutter_ecommerce/features/product/data/models/product_model.dart';
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   final DioClient _dioClient;
-  
-  static final List<ProductModel> _inMemoryProducts = [];
+  final List<ProductModel> _inMemoryProducts = [];
 
-  const ProductRemoteDataSourceImpl(this._dioClient);
+  ProductRemoteDataSourceImpl(this._dioClient);
 
   @override
   Future<List<ProductModel>> getProducts({int page = 1, int limit = 20}) async {
@@ -75,5 +76,47 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final countBefore = _inMemoryProducts.length;
     _inMemoryProducts.removeWhere((p) => p.id == id);
     return _inMemoryProducts.length < countBefore;
+  }
+
+  @override
+  Future<PagedResponse<ProductCatalogModel>> getCatalogProducts({
+    int page = 0,
+    int size = 12,
+    String? keyword,
+    int? categoryId,
+    int? brandId,
+    String? gender,
+    String? productSize,
+    String? color,
+    double? minPrice,
+    double? maxPrice,
+    String sort = 'id,desc',
+  }) async {
+    try {
+      final params = <String, dynamic>{'page': page, 'size': size, 'sort': sort};
+      if (keyword != null && keyword.isNotEmpty) params['keyword'] = keyword;
+      if (categoryId != null) params['categoryId'] = categoryId;
+      if (brandId != null) params['brandId'] = brandId;
+      if (gender != null) params['gender'] = gender;
+      if (productSize != null) params['productSize'] = productSize;
+      if (color != null) params['color'] = color;
+      if (minPrice != null) params['minPrice'] = minPrice;
+      if (maxPrice != null) params['maxPrice'] = maxPrice;
+
+      final response = await _dioClient.dio.get(
+        ApiConstants.products,
+        queryParameters: params,
+      );
+      final dataMap = response.data['data'] as Map<String, dynamic>;
+      return PagedResponse.fromJson(
+        dataMap,
+        ProductCatalogModel.fromJson,
+      );
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi kết nối mạng',
+        statusCode: e.response?.statusCode,
+      );
+    }
   }
 }

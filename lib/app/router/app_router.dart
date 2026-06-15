@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/pages/register_pass
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_password_extra.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/splash_page.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/pages/notification_page.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
@@ -34,12 +36,14 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dar
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_list_page.dart';
+import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
+import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
-import 'package:flutter_ecommerce/features/product/presentation/pages/product_customizer_page.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
@@ -103,7 +107,7 @@ RegisterPasswordExtra? _resolveRegisterPasswordExtra(GoRouterState state) {
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/splash',
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     // Wired to the AuthBloc singleton — router re-evaluates on every auth state change
     refreshListenable: GoRouterRefreshStream(sl<AuthBloc>().stream),
     redirect: (BuildContext context, GoRouterState state) {
@@ -325,13 +329,12 @@ class AppRouter {
         ),
       ),
 
-      // ProductBloc is registerFactory — wrap each route in its own BlocProvider
       GoRoute(
         path: '/products',
         name: AppRoutes.productList,
         builder: (context, state) => BlocProvider(
-          create: (_) => sl<ProductBloc>(),
-          child: const ProductListPage(),
+          create: (_) => sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
+          child: const ProductCatalogPage(),
         ),
         routes: [
           GoRoute(
@@ -440,10 +443,25 @@ class AppRouter {
       GoRoute(
         path: '/customizer/:productId',
         name: AppRoutes.productCustomizer,
-        builder: (context, state) => ProductCustomizerPage(
-          productId: state.pathParameters['productId'] ?? '',
-          productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
-        ),
+        builder: (context, state) {
+          final variantIdStr = state.uri.queryParameters['variantId'];
+          final quantityStr = state.uri.queryParameters['quantity'];
+          final variantId = variantIdStr != null ? int.tryParse(variantIdStr) : null;
+          final cartQuantity = int.tryParse(quantityStr ?? '') ?? 1;
+          return CustomizerPage(
+            productId: state.pathParameters['productId'] ?? '',
+            productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
+            variantId: variantId,
+            cartQuantity: cartQuantity,
+            onConfirm: variantId == null
+                ? null
+                : (customDesignId) => sl<CartCubit>().replaceWithCustomDesign(
+                    variantId: variantId,
+                    quantity: cartQuantity,
+                    customDesignId: customDesignId,
+                  ),
+          );
+        },
       ),
 
       // ── Admin Product ──────────────────────────────────────────────────────
