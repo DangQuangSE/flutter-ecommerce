@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -299,6 +300,7 @@ class _CustomizerPageState extends State<CustomizerPage> {
           await widget.onConfirm?.call(customDesignId);
           if (!mounted) return;
         }
+        if (!mounted) return;
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: [
@@ -309,7 +311,12 @@ class _CustomizerPageState extends State<CustomizerPage> {
           backgroundColor: AppColors.success,
           duration: const Duration(seconds: 2),
         ));
-        if (context.canPop()) context.pop(); else context.goNamed(AppRoutes.cart);
+        if (!mounted) return;
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.goNamed(AppRoutes.cart);
+        }
       case ResultFailure(:final failure):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Không thể đồng bộ với server: ${failure.message}'),
@@ -508,7 +515,13 @@ class _CustomizerPageState extends State<CustomizerPage> {
         child: Container(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3), height: 1),
       ),
       leading: IconButton(
-        onPressed: () { if (context.canPop()) context.pop(); else context.goNamed(AppRoutes.cart); },
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoutes.cart);
+          }
+        },
         icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary, size: 24),
       ),
       title: Column(

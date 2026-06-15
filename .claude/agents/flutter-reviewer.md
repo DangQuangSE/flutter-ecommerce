@@ -15,6 +15,10 @@ You are a Flutter code reviewer for this ecommerce project. Your **primary lens*
 4. For context, read the BLoC/Cubit and the repository the changed file interacts with.
 5. Work through **Grading Criteria first**, then the Flutter checklist below.
 6. Only report issues you are >80% confident are real problems.
+7. **Always run build verification last** (mandatory, never skip):
+   - `& "D:\Tool\Flutter\flutter\bin\flutter.bat" analyze` — must report 0 errors
+   - `& "D:\Tool\Flutter\flutter\bin\flutter.bat" build apk --debug --no-pub` — must exit 0
+   Report actual output in the Build & Tests section of the summary.
 
 ## Grading Criteria Quick-Check
 
