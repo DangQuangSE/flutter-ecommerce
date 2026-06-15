@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/widgets/layer_overlay_stack.dart';
 
@@ -38,8 +38,10 @@ class CanvasWorkspace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canvasWidth = MediaQuery.of(context).size.width * 0.85;
-    final canvasHeight = MediaQuery.of(context).size.height * 0.42;
+    final canvasWidth =
+        MediaQuery.of(context).size.width * AppSizes.canvasWidthRatio;
+    final canvasHeight =
+        MediaQuery.of(context).size.height * AppSizes.canvasHeightRatio;
 
     return Stack(
       fit: StackFit.expand,
@@ -49,22 +51,25 @@ class CanvasWorkspace extends StatelessWidget {
             gradient: RadialGradient(
               center: Alignment.center,
               radius: 0.85,
-              colors: [Color(0xFFFFFFFF), Color(0xFFE8E8EE)],
+              colors: [
+                AppColors.canvasGradientStart,
+                AppColors.canvasGradientEnd
+              ],
             ),
           ),
         ),
         Center(
           child: Transform(
             alignment: Alignment.center,
-            transform: Matrix4.identity()
-              ..scale(zoomScale)
+            transform: Matrix4.diagonal3Values(zoomScale, zoomScale, 1.0)
               ..rotateZ(rotationAngle),
             child: RepaintBoundary(
               key: canvasKey,
               child: Container(
                 width: canvasWidth,
                 height: canvasHeight,
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusXl)),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -72,23 +77,26 @@ class CanvasWorkspace extends StatelessWidget {
                       turns: isFrontView ? 0.0 : 0.5,
                       duration: const Duration(milliseconds: 300),
                       child: CachedNetworkImage(
-                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAg16llodl6Hl8MPqH6DvSysphHsH9azINDafCIQFp9rqCHyIEj5IyNuBfAVIK7-s1m70zLJYYuRDn7ps4e9BkxeY1wfIJ58BidKV1GgULrOntZ7svsuNpwj8nvPhazvHISS-5OqI81qGvWmbwLlQlDr7PaeNVO1DpmYgljTca2s33rrrPqLBq7MLlaEkQdj7fqz_fN5K-XrOluv8Ux-V0w9V8-aE1C5t5BlJtTl7b0-7Tot4btl19oWsO5WWVz6wdqu1TcpvcIJ6k',
+                        imageUrl:
+                            'https://lh3.googleusercontent.com/aida-public/AB6AXuAg16llodl6Hl8MPqH6DvSysphHsH9azINDafCIQFp9rqCHyIEj5IyNuBfAVIK7-s1m70zLJYYuRDn7ps4e9BkxeY1wfIJ58BidKV1GgULrOntZ7svsuNpwj8nvPhazvHISS-5OqI81qGvWmbwLlQlDr7PaeNVO1DpmYgljTca2s33rrrPqLBq7MLlaEkQdj7fqz_fN5K-XrOluv8Ux-V0w9V8-aE1C5t5BlJtTl7b0-7Tot4btl19oWsO5WWVz6wdqu1TcpvcIJ6k',
                         fit: BoxFit.contain,
                       ),
                     ),
                     if (!isFrontView)
                       Positioned(
-                        top: 12,
+                        top: AppSizes.paddingMd - 4,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: AppSizes.paddingXs),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.6),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radiusLg),
                           ),
                           child: Text(
                             'MẶT SAU (BACK VIEW)',
                             style: GoogleFonts.inter(
-                              fontSize: 9,
+                              fontSize: AppSizes.fontXs,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                             ),
@@ -119,28 +127,39 @@ class CanvasWorkspace extends StatelessWidget {
 
   Widget _buildZoomPanel() {
     return Positioned(
-      top: 16,
-      right: 16,
+      top: AppSizes.paddingMd,
+      right: AppSizes.paddingMd,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))],
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          boxShadow: const [
+            BoxShadow(
+                color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))
+          ],
         ),
         child: Column(
           children: [
             IconButton(
               icon: const Icon(Icons.zoom_in_rounded),
               color: AppColors.textPrimary,
-              onPressed: () { if (zoomScale < 1.6) onZoomChanged(zoomScale + 0.1); },
+              onPressed: () {
+                if (zoomScale < AppSizes.canvasMaxZoom) {
+                  onZoomChanged(zoomScale + AppSizes.canvasZoomStep);
+                }
+              },
             ),
-            Container(width: 20, height: 1, color: const Color(0xFFEDEDF2)),
+            Container(width: 20, height: 1, color: AppColors.selectedBg),
             IconButton(
               icon: const Icon(Icons.zoom_out_rounded),
               color: AppColors.textPrimary,
-              onPressed: () { if (zoomScale > 0.7) onZoomChanged(zoomScale - 0.1); },
+              onPressed: () {
+                if (zoomScale > AppSizes.canvasMinZoom) {
+                  onZoomChanged(zoomScale - AppSizes.canvasZoomStep);
+                }
+              },
             ),
-            Container(width: 20, height: 1, color: const Color(0xFFEDEDF2)),
+            Container(width: 20, height: 1, color: AppColors.selectedBg),
             IconButton(
               icon: const Icon(Icons.restart_alt_rounded),
               color: AppColors.textPrimary,
@@ -154,22 +173,28 @@ class CanvasWorkspace extends StatelessWidget {
 
   Widget _buildFrontBackSwitch() {
     return Positioned(
-      bottom: 16,
+      bottom: AppSizes.paddingMd,
       left: 0,
       right: 0,
       child: Center(
         child: Container(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(AppSizes.paddingXs),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))],
+            borderRadius: BorderRadius.circular(AppSizes.radiusRound),
+            boxShadow: const [
+              BoxShadow(
+                  color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildViewButton('MẶT TRƯỚC', isFrontView, () => onFrontViewChanged(true)),
-              _buildViewButton('MẶT SAU', !isFrontView, () => onFrontViewChanged(false)),
+              _buildViewButton(
+                  'MẶT TRƯỚC', isFrontView, () => onFrontViewChanged(true)),
+              const SizedBox(width: AppSizes.paddingXs),
+              _buildViewButton(
+                  'MẶT SAU', !isFrontView, () => onFrontViewChanged(false)),
             ],
           ),
         ),
@@ -181,15 +206,16 @@ class CanvasWorkspace extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+            horizontal: 14, vertical: AppSizes.paddingSm - 2),
         decoration: BoxDecoration(
           color: isActive ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusXl),
         ),
         child: Text(
           label,
           style: GoogleFonts.inter(
-            fontSize: 10,
+            fontSize: AppSizes.fontXs + 1,
             fontWeight: FontWeight.w800,
             color: isActive ? Colors.white : AppColors.textSecondary,
           ),

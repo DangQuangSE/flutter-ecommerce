@@ -1,74 +1,146 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/features/customizer/data/models/customization_model.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/customization_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/existing_design_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_existing_design_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_printing_configs_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/save_custom_design_usecase.dart';
 import 'customizer_state.dart';
 
 class CustomizerCubit extends Cubit<CustomizerState> {
+  final GetPrintingConfigsUseCase _getPrintingConfigs;
+  final SaveCustomDesignUseCase _saveCustomDesign;
+  final GetExistingDesignUseCase _getExistingDesign;
   final Map<String, CustomizationEntity> _customizations = {};
 
-  CustomizerCubit() : super(const CustomizerInitial()) {
-    _load();
+  CustomizerCubit({
+    required GetPrintingConfigsUseCase getPrintingConfigs,
+    required SaveCustomDesignUseCase saveCustomDesign,
+    required GetExistingDesignUseCase getExistingDesign,
+  })  : _getPrintingConfigs = getPrintingConfigs,
+        _saveCustomDesign = saveCustomDesign,
+        _getExistingDesign = getExistingDesign,
+        super(const CustomizerInitial()) {
+    _loadPersistedCustomizations();
   }
 
-  Future<void> _load() async {
+  Future<void> _loadPersistedCustomizations() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString('customizations');
     if (raw == null) return;
     try {
-      final Map<String, dynamic> decoded = jsonDecode(raw) as Map<String, dynamic>;
+      final Map<String, dynamic> decoded =
+          jsonDecode(raw) as Map<String, dynamic>;
       for (final entry in decoded.entries) {
         final map = entry.value as Map<String, dynamic>;
-        _customizations[entry.key] = CustomizationEntity(
-          productId: map['productId'] as String? ?? entry.key,
-          customText: map['customText'] as String? ?? '',
-          textColor: map['textColor'] as String? ?? '',
-          colorHex: map['colorHex'] as int? ?? 0xFF1A1C1F,
-          printMethod: map['printMethod'] as String? ?? 'In chuyển nhiệt',
-          logoEnabled: map['logoEnabled'] as bool? ?? false,
-          textScale: (map['textScale'] as num?)?.toDouble() ?? 1.0,
-          layersJson: map['layersJson'] as String? ?? '',
-          customDesignId: map['customDesignId'] as int?,
-        );
-      }
-      if (_customizations.isNotEmpty) {
-        emit(CustomizerActive(Map.from(_customizations)));
+        _customizations[entry.key] =
+            CustomizationModel.fromJson(map).toEntity();
       }
     } catch (_) {}
   }
 
-  Future<void> saveCustomization(String productId, CustomizationEntity customization) async {
-    _customizations[productId] = customization;
-    emit(CustomizerActive(Map.from(_customizations)));
-    await _persist();
-  }
+  Future<void> loadPrintingConfigs({int? existingDesignId}) async {
+    emit(const CustomizerLoading());
 
-  Future<void> updateCustomDesignId(String productId, int customDesignId) async {
-    final existing = _customizations[productId];
-    if (existing != null) {
-      _customizations[productId] = existing.copyWith(customDesignId: customDesignId);
-      emit(CustomizerActive(Map.from(_customizations)));
-      await _persist();
+    ExistingDesignEntity? existingDesign;
+    if (existingDesignId != null) {
+      final existingResult = await _getExistingDesign(existingDesignId);
+      switch (existingResult) {
+        case Success(:final data):
+          existingDesign = data;
+        case ResultFailure():
+          // non-fatal — editing continues with blank canvas
+          break;
+      }
+    }
+
+    final result = await _getPrintingConfigs();
+    switch (result) {
+      case Success(:final data):
+        emit(CustomizerLoaded(
+          printingConfigs: data,
+          savedCustomizations: Map.from(_customizations),
+          existingDesign: existingDesign,
+        ));
+      case ResultFailure(:final failure):
+        emit(CustomizerError(failure.message));
     }
   }
 
-  Future<void> _persist() async {
-    final prefs = await SharedPreferences.getInstance();
-    final Map<String, Map<String, dynamic>> toSave = {};
-    for (final e in _customizations.entries) {
-      toSave[e.key] = {
-        'productId': e.value.productId,
-        'customText': e.value.customText,
-        'textColor': e.value.textColor,
-        'colorHex': e.value.colorHex,
-        'printMethod': e.value.printMethod,
-        'logoEnabled': e.value.logoEnabled,
-        'textScale': e.value.textScale,
-        'layersJson': e.value.layersJson,
-        if (e.value.customDesignId != null) 'customDesignId': e.value.customDesignId,
-      };
+  Future<void> saveCustomization({
+    required String productId,
+    required int materialId,
+    required int numTextLines,
+    required int numImages,
+    required String metadata,
+    required Uint8List imageBytes,
+    required String activeText,
+    required int activeColor,
+    required double activeFontSize,
+    required bool hasLogo,
+    required String printMethod,
+    required String layersJson,
+  }) async {
+    if (state
+        case CustomizerLoaded(
+          :final printingConfigs,
+          :final savedCustomizations,
+          :final existingDesign
+        )) {
+      emit(CustomizerSaving(
+          printingConfigs: printingConfigs,
+          savedCustomizations: savedCustomizations,
+          existingDesign: existingDesign));
+    } else {
+      return;
     }
-    await prefs.setString('customizations', jsonEncode(toSave));
+
+    final result = await _saveCustomDesign(
+      materialId: materialId,
+      numTextLines: numTextLines,
+      numImages: numImages,
+      metadata: metadata,
+      imageBytes: imageBytes,
+    );
+
+    final loadedState = state;
+    final configs =
+        (loadedState is CustomizerSaving) ? loadedState.printingConfigs : null;
+    final existingDesign =
+        (loadedState is CustomizerSaving) ? loadedState.existingDesign : null;
+    if (configs == null) return;
+
+    switch (result) {
+      case Success(:final data):
+        final customDesignId = data;
+        _customizations[productId] = CustomizationEntity(
+          productId: productId,
+          customText: activeText,
+          textColor: 'Selected Color',
+          colorHex: activeColor,
+          printMethod: printMethod,
+          logoEnabled: hasLogo,
+          textScale: activeFontSize / 22.0,
+          layersJson: layersJson,
+          customDesignId: customDesignId,
+        );
+        await _persistCustomizations();
+        emit(CustomizerLoaded(
+          printingConfigs: configs,
+          savedCustomizations: Map.from(_customizations),
+          existingDesign: existingDesign,
+        ));
+      case ResultFailure():
+        emit(CustomizerLoaded(
+          printingConfigs: configs,
+          savedCustomizations: Map.from(_customizations),
+          existingDesign: existingDesign,
+        ));
+    }
   }
 
   CustomizationEntity getCustomizationOrDefault(String productId) {
@@ -84,5 +156,14 @@ class CustomizerCubit extends Cubit<CustomizerState> {
       logoEnabled: true,
       textScale: 1.0,
     );
+  }
+
+  Future<void> _persistCustomizations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final Map<String, Map<String, dynamic>> toSave = {};
+    for (final e in _customizations.entries) {
+      toSave[e.key] = CustomizationModel.fromEntity(e.value).toJson();
+    }
+    await prefs.setString('customizations', jsonEncode(toSave));
   }
 }

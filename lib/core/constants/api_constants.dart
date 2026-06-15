@@ -28,11 +28,12 @@ abstract final class ApiConstants {
   static const String forgotPasswordReset = '/api/forgot-password/reset';
   static const String brands = '/api/brands';
   static const String adminBrands = '/api/admin/brands';
-  
+
   static const String colors = '/api/colors';
   static const String adminColors = '/api/admin/colors';
-  
+
   static const String printingColors = '/api/public/printing/colors';
+  static const String printingAll = '/api/public/printing/all';
   static const String adminPrintingColors = '/api/admin/printing/colors';
 
   // Categories — public reads + admin writes
@@ -56,6 +57,7 @@ abstract final class ApiConstants {
   static const String profile = '/profile';
 
   static const String customDesigns = '/api/custom-designs';
+  static String customDesignById(int id) => '/api/custom-designs/$id';
 
   // Admin Product
   static const String adminProducts = '/api/admin/products';

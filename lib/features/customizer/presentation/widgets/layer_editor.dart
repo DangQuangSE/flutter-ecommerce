@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
 
 class LayerEditor extends StatelessWidget {
@@ -25,16 +26,17 @@ class LayerEditor extends StatelessWidget {
         Text(
           'LỚP THIẾT KẾ HOẠT ĐỘNG',
           style: GoogleFonts.inter(
-            fontSize: 11,
+            fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 10),
+        AppSizes.spacingSm,
         if (layers.isEmpty)
           Text(
             'Chưa có lớp thiết kế nào được tạo.',
-            style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+            style: GoogleFonts.inter(
+                fontSize: AppSizes.fontMd, color: AppColors.textSecondary),
           )
         else
           ListView.separated(
@@ -48,10 +50,14 @@ class LayerEditor extends StatelessWidget {
               return GestureDetector(
                 onTap: () => onLayerActivated(layer),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.paddingMd,
+                      vertical: AppSizes.paddingXs * 2 + 2),
                   decoration: BoxDecoration(
-                    color: isActive ? AppColors.primary.withValues(alpha: 0.05) : const Color(0xFFF3F3F8),
-                    borderRadius: BorderRadius.circular(12),
+                    color: isActive
+                        ? AppColors.primary.withValues(alpha: 0.05)
+                        : AppColors.canvasLight,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                     border: Border.all(
                       color: isActive ? AppColors.primary : Colors.transparent,
                       width: 1.5,
@@ -60,8 +66,12 @@ class LayerEditor extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(
-                        layer.type == LayerType.text ? Icons.text_fields_rounded : Icons.image_rounded,
-                        color: isActive ? AppColors.primary : AppColors.textSecondary,
+                        layer.type == LayerType.text
+                            ? Icons.text_fields_rounded
+                            : Icons.image_rounded,
+                        color: isActive
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
                         size: 18,
                       ),
                       const SizedBox(width: 12),
@@ -70,7 +80,9 @@ class LayerEditor extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              layer.type == LayerType.text ? layer.text : 'Logo của bạn',
+                              layer.type == LayerType.text
+                                  ? layer.text
+                                  : 'Logo của bạn',
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -84,13 +96,15 @@ class LayerEditor extends StatelessWidget {
                               layer.type == LayerType.text
                                   ? '${layer.font} | ${layer.fontSize.toInt()}px'
                                   : 'Ảnh Tải Lên',
-                              style: GoogleFonts.inter(fontSize: 10, color: AppColors.textSecondary),
+                              style: GoogleFonts.inter(
+                                  fontSize: 10, color: AppColors.textSecondary),
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 20),
+                        icon: const Icon(Icons.delete_outline_rounded,
+                            color: AppColors.error, size: 20),
                         onPressed: () => onLayerDeleted(index, layer.id),
                       ),
                     ],
