@@ -401,7 +401,7 @@ class AppRouter {
         name: AppRoutes.checkout,
         builder: (context, state) => BlocProvider(
           create: (_) => sl<CheckoutBloc>(),
-          child: const CheckoutPage(),
+          child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),
         routes: [
           GoRoute(
@@ -480,23 +480,47 @@ class AppRouter {
         builder: (context, state) {
           final variantIdStr = state.uri.queryParameters['variantId'];
           final quantityStr = state.uri.queryParameters['quantity'];
+          final priceStr = state.uri.queryParameters['price'];
+          final itemIdStr = state.uri.queryParameters['itemId'];
+          final customDesignIdStr = state.uri.queryParameters['customDesignId'];
+
           final variantId = variantIdStr != null ? int.tryParse(variantIdStr) : null;
           final cartQuantity = int.tryParse(quantityStr ?? '') ?? 1;
+          final basePrice = priceStr != null ? double.tryParse(priceStr) : null;
+          final itemId = itemIdStr != null ? int.tryParse(itemIdStr) : null;
+          final customDesignId = (customDesignIdStr != null && customDesignIdStr.isNotEmpty)
+              ? int.tryParse(customDesignIdStr)
+              : null;
+
           return CustomizerPage(
             productId: state.pathParameters['productId'] ?? '',
             productName: state.uri.queryParameters['name'] ?? 'AeroTech Tee',
             variantId: variantId,
             cartQuantity: cartQuantity,
+            basePrice: basePrice,
+            customDesignId: customDesignId,
             onConfirm: variantId == null
                 ? null
-                : (customDesignId) => sl<CartCubit>().replaceWithCustomDesign(
-                    variantId: variantId,
-                    quantity: cartQuantity,
-                    customDesignId: customDesignId,
-                  ),
+                : (newCustomDesignId) {
+                    if (itemId != null) {
+                      return sl<CartCubit>().replaceCartItemDesign(
+                        itemId: itemId,
+                        variantId: variantId,
+                        quantity: cartQuantity,
+                        newCustomDesignId: newCustomDesignId,
+                      );
+                    } else {
+                      return sl<CartCubit>().replaceWithCustomDesign(
+                        variantId: variantId,
+                        quantity: cartQuantity,
+                        customDesignId: newCustomDesignId,
+                      );
+                    }
+                  },
           );
         },
       ),
+
 
       // ── Admin Product ──────────────────────────────────────────────────────
       GoRoute(

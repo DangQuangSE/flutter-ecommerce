@@ -78,8 +78,22 @@ class LayerOverlayStack extends StatelessWidget {
                     height: 48,
                     decoration: const BoxDecoration(shape: BoxShape.circle),
                     clipBehavior: Clip.antiAlias,
-                    child: !kIsWeb && layer.logoPath != null
-                        ? Image.file(File(layer.logoPath!), fit: BoxFit.cover)
+                    child: layer.logoPath != null
+                        ? (kIsWeb
+                            ? Image.network(
+                                layer.logoPath!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.sports_soccer_rounded,
+                                        size: 28),
+                              )
+                            : Image.file(
+                                File(layer.logoPath!),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.sports_soccer_rounded,
+                                        size: 28),
+                              ))
                         : const Icon(Icons.sports_soccer_rounded, size: 28),
                   ),
                 if (isActive) _buildDeleteHandle(layer.id),
@@ -93,29 +107,32 @@ class LayerOverlayStack extends StatelessWidget {
   }
 
   Widget _buildDeleteHandle(String layerId) => Positioned(
-    top: -16,
-    right: -16,
-    child: GestureDetector(
-      onTap: () => onLayerDeleted(layerId),
-      child: Container(
-        padding: const EdgeInsets.all(2),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        top: -16,
+        right: -16,
+        child: GestureDetector(
+          onTap: () => onLayerDeleted(layerId),
+          child: Container(
+            padding: const EdgeInsets.all(2),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+            ),
+            child: const Icon(Icons.close_rounded,
+                size: 12, color: AppColors.error),
+          ),
         ),
-        child: const Icon(Icons.close_rounded, size: 12, color: AppColors.error),
-      ),
-    ),
-  );
+      );
 
   Widget _buildResizeHandle() => Positioned(
-    bottom: -16,
-    right: -16,
-    child: Container(
-      padding: const EdgeInsets.all(2),
-      decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-      child: const Icon(Icons.open_in_full_rounded, size: 10, color: Colors.white),
-    ),
-  );
+        bottom: -16,
+        right: -16,
+        child: Container(
+          padding: const EdgeInsets.all(2),
+          decoration: const BoxDecoration(
+              color: AppColors.primary, shape: BoxShape.circle),
+          child: const Icon(Icons.open_in_full_rounded,
+              size: 10, color: Colors.white),
+        ),
+      );
 }

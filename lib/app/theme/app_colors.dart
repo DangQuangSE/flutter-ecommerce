@@ -22,4 +22,17 @@ abstract final class AppColors {
   static const Color warning = Color(0xFFF39C12);
   static const Color error = Color(0xFFE74C3C);
   static const Color info = Color(0xFF3498DB);
+
+  // Customizer
+  static const Color canvasLight = Color(0xFFF3F3F8);
+  static const Color borderGray = Color(0xFFC1C6D7);
+  static const Color canvasGradientStart = Color(0xFFFFFFFF);
+  static const Color canvasGradientEnd = Color(0xFFE8E8EE);
+  static const Color accentOrange = Color(0xFFFE9400);
+  static const Color accentPink = Color(0xFFEC407A);
+  static const Color accentYellow = Color(0xFFFFEB3B);
+  static const Color accentBlue = Color(0xFF0058BC);
+  static const Color accentRed = Color(0xFFBA1A1A);
+  static const Color darkText = Color(0xFF1A1C1F);
+  static const Color selectedBg = Color(0xFFEDEDF2);
 }
