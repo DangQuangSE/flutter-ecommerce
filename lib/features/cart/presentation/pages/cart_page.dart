@@ -392,7 +392,7 @@ class _CartPageState extends State<CartPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            _formatPrice(item.price),
+                            _formatPrice(item.price + item.printingPrice),
                             style: GoogleFonts.lexend(
                               fontSize: 14,
                               fontWeight: FontWeight.w900,

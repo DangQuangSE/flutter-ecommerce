@@ -73,7 +73,7 @@ class CartCubit extends Cubit<CartState> {
     final current = state;
     if (current is CartLoaded) {
       final candidates = current.items.where(
-        (item) => item.variantId == variantId && item.customDesignId == null,
+        (item) => item.variantId == variantId,
       );
       if (candidates.isNotEmpty) oldItemId = candidates.first.itemId;
     }
