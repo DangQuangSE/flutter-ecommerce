@@ -112,7 +112,7 @@ class CheckoutSuccessPage extends StatelessWidget {
                     const SizedBox(height: 12),
                     _buildInvoiceRow('Thời gian giao dự kiến', 'Hôm nay (Trong 2-4 giờ)', isSuccessColor: true),
                     const SizedBox(height: 12),
-                    _buildInvoiceRow('Hình thức thanh toán', 'Vietcombank Pay'),
+                    _buildInvoiceRow('Hình thức thanh toán', 'Thanh toán đã ghi nhận'),
                     const SizedBox(height: 12),
                     _buildInvoiceRow('Trạng thái đơn hàng', 'Đang chuẩn bị hàng'),
                   ],

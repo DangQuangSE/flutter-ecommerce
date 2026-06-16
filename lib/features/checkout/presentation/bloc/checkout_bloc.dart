@@ -37,6 +37,18 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     switch (placeResult) {
       case Success(:final data):
         final orderId = data;
+        final method = event.request.paymentMethod.toUpperCase();
+
+        if (method == 'COD') {
+          emit(CheckoutSuccess(orderId));
+          return;
+        }
+
+        if (method != 'BANK_TRANSFER') {
+          emit(const CheckoutFailure('Phương thức thanh toán không hợp lệ.'));
+          return;
+        }
+
         final paymentResult = await _createVnpayPaymentUseCase(orderId);
         switch (paymentResult) {
           case Success(:final data):

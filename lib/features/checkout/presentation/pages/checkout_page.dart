@@ -7,7 +7,8 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
-import 'package:flutter_ecommerce/features/cart/presentation/widgets/payment_qr_card.dart';
+import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/widgets/payment_method_selector.dart';
 import 'package:flutter_ecommerce/features/checkout/domain/entities/order_request_entity.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_event.dart';
@@ -28,6 +29,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
+  CheckoutPaymentOption _selectedPayment = CheckoutPaymentOption.cod;
 
   @override
   void initState() {
@@ -259,8 +261,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ? state.items.where((e) => widget.cartItemIds!.contains(e.itemId)).toList()
         : state.items;
 
-    final checkoutTotalPrice = checkoutItems.fold(0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
-
     return Form(
       key: _formKey,
       child: Column(
@@ -279,9 +279,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   const SizedBox(height: 28),
 
                   // Payment Section
-                  _buildSectionHeader('PHƯƠNG THỨC THANH TOÁN', Icons.qr_code_scanner_rounded),
+                  _buildSectionHeader('PHƯƠNG THỨC THANH TOÁN', Icons.payments_outlined),
                   const SizedBox(height: 12),
-                  PaymentQrCard(formattedTotal: _formatPrice(checkoutTotalPrice)),
+                  PaymentMethodSelector(
+                    selected: _selectedPayment,
+                    onChanged: (option) {
+                      setState(() => _selectedPayment = option);
+                    },
+                  ),
                   const SizedBox(height: 28),
 
                   // Summary Section
@@ -549,6 +554,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         OrderRequestEntity(
                           shippingAddress: _addressController.text.trim(),
                           phoneNumber: _normalizePhone(_phoneController.text),
+                          customerName: _nameController.text.trim(),
+                          paymentMethod: _selectedPayment.apiValue,
                           cartItemIds: cartItemIds,
                         ),
                       ),
