@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
-import 'package:flutter_ecommerce/features/admin/domain/entities/admin_order_entity.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_order_card.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_state.dart';
 
@@ -209,13 +209,18 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
             }
 
             final order = state.orders[index];
-            return _OrderCard(
+            return AdminOrderCard(
               order: order,
               currencyFormat: currencyFormat,
-              onTap: () => context.pushNamed(
-                AppRoutes.adminOrderDetail,
-                pathParameters: {'orderId': order.id.toString()},
-              ),
+              onTap: () async {
+                await context.pushNamed(
+                  AppRoutes.adminOrderDetail,
+                  pathParameters: {'orderId': order.id.toString()},
+                );
+                if (context.mounted) {
+                  context.read<AdminOrderCubit>().refreshList();
+                }
+              },
             );
           },
         ),
@@ -251,117 +256,6 @@ class _StatusChip extends StatelessWidget {
           fontSize: 12,
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           color: isSelected ? AppColors.primary : AppColors.textSecondary,
-        ),
-      ),
-    );
-  }
-}
-
-class _OrderCard extends StatelessWidget {
-  final AdminOrderEntity order;
-  final NumberFormat currencyFormat;
-  final VoidCallback onTap;
-
-  const _OrderCard({
-    required this.order,
-    required this.currencyFormat,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final (badgeBg, badgeText) = OrderStatusLabel.badgeColors(order.status);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.inventory_2_rounded,
-                size: 20,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    order.displayCode,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    order.primaryProductName,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    order.phoneNumber,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  currencyFormat.format(order.totalAmount),
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: badgeBg,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    OrderStatusLabel.vi(order.status),
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: badgeText,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );
