@@ -1,14 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
-import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
+import 'package:flutter_ecommerce/core/utils/customer_order_filter.dart';
+import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
+import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_state.dart';
+import 'package:intl/intl.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
@@ -18,52 +24,29 @@ class OrderListPage extends StatefulWidget {
 }
 
 class _OrderListPageState extends State<OrderListPage> {
-  String _selectedFilter = 'Tất cả';
+  final ScrollController _scrollController = ScrollController();
 
-  final List<String> _filters = ['Tất cả', 'Đang giao', 'Đã giao', 'Đã hủy'];
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
 
-  final List<Map<String, dynamic>> _mockOrders = [
-    {
-      'id': 'ORD-001',
-      'status': 'Đang giao',
-      'statusColor': AppColors.primary,
-      'productName': 'Nike Air Max 2025',
-      'size': 'EU 42',
-      'price': 2450000.0,
-      'imageUrl':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c',
-      'date': '12/05/2026',
-      'quantity': 1,
-    },
-    {
-      'id': 'ORD-002',
-      'status': 'Đã giao',
-      'statusColor': AppColors.success,
-      'productName': 'Adidas Ultraboost Running',
-      'size': 'EU 41',
-      'price': 3120000.0,
-      'imageUrl':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c',
-      'date': '08/05/2026',
-      'quantity': 2,
-    },
-    {
-      'id': 'ORD-003',
-      'status': 'Đã hủy',
-      'statusColor': AppColors.error,
-      'productName': 'Puma RS-X Reinvention',
-      'size': 'EU 43',
-      'price': 1890000.0,
-      'imageUrl':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c',
-      'date': '05/05/2026',
-      'quantity': 1,
-    },
-  ];
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
 
-  List<Map<String, dynamic>> get _filteredOrders {
-    if (_selectedFilter == 'Tất cả') return _mockOrders;
-    return _mockOrders.where((o) => o['status'] == _selectedFilter).toList();
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    if (currentScroll >= maxScroll - 200) {
+      context.read<OrderBloc>().add(const OrderListLoadMoreRequested());
+    }
   }
 
   @override
@@ -76,7 +59,7 @@ class _OrderListPageState extends State<OrderListPage> {
       extendBody: true,
       body: PopScope(
         canPop: false,
-        onPopInvoked: (bool didPop) {
+        onPopInvokedWithResult: (bool didPop, Object? result) {
           if (didPop) return;
           if (context.canPop()) {
             context.pop();
@@ -89,15 +72,24 @@ class _OrderListPageState extends State<OrderListPage> {
         },
         child: Stack(
           children: [
-            // 1. Core scrollable list contents
-            _buildScrollView(statusBarHeight),
-
-            // 2. Reusable Glassmorphic Top App Bar
-            Positioned(
+            BlocBuilder<OrderBloc, OrderState>(
+              builder: (context, state) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<OrderBloc>().add(const OrderListRequested());
+                    await context.read<OrderBloc>().stream.firstWhere(
+                          (s) => s is OrderListLoaded || s is OrderListError,
+                        );
+                  },
+                  child: _buildScrollView(statusBarHeight, state),
+                );
+              },
+            ),
+            const Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: const GlassAppBar(
+              child: GlassAppBar(
                 showBackButton: false,
                 customTitle: 'Sport Pro',
               ),
@@ -109,16 +101,16 @@ class _OrderListPageState extends State<OrderListPage> {
     );
   }
 
-  Widget _buildScrollView(double statusBarHeight) {
-    final orders = _filteredOrders;
-
+  Widget _buildScrollView(double statusBarHeight, OrderState state) {
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       padding: EdgeInsets.fromLTRB(16, statusBarHeight + 92, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Elegant category header label
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
@@ -143,85 +135,54 @@ class _OrderListPageState extends State<OrderListPage> {
               ),
             ),
           ),
-
-          // 2. Interactive category pills row
-          _buildFilterPillsRow(),
+          _buildFilterPillsRow(state),
           const SizedBox(height: 24),
-
-          if (orders.isEmpty) ...[
-            _buildEmptyState()
-          ] else ...[
-            // 3. High density spacing structural elements instead of boxed cards
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.01),
-                    blurRadius: 16,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: ListView.separated(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: orders.length,
-                separatorBuilder: (context, index) => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Divider(color: Color(0xFFF1F5F9), height: 1, thickness: 1),
-                ),
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return _buildOrderListItem(context, order);
-                },
-              ),
-            ),
-          ],
+          _buildBodyContent(state),
         ],
       ),
     );
   }
 
-  Widget _buildFilterPillsRow() {
+  Widget _buildFilterPillsRow(OrderState state) {
+    final selectedFilter = state is OrderListLoaded
+        ? state.selectedFilter
+        : CustomerOrderFilter.defaultPill;
+
     return SizedBox(
       height: 38,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.zero,
-        itemCount: _filters.length,
+        itemCount: CustomerOrderFilter.pills.length,
         itemBuilder: (context, index) {
-          final filter = _filters[index];
-          final isSelected = filter == _selectedFilter;
+          final filter = CustomerOrderFilter.pills[index];
+          final isSelected = filter == selectedFilter;
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  _selectedFilter = filter;
-                });
+                context.read<OrderBloc>().add(OrderFilterChanged(filter));
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeOutCubic,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.textPrimary : Colors.white,
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: isSelected ? AppColors.textPrimary : const Color(0xFFE2E8F0),
+                    color: isSelected
+                        ? AppColors.textPrimary
+                        : const Color(0xFFE2E8F0),
                     width: 1,
                   ),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
+                            color: Colors.black.withValues(alpha: 0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           )
@@ -233,8 +194,10 @@ class _OrderListPageState extends State<OrderListPage> {
                     filter,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      fontWeight:
+                          isSelected ? FontWeight.w800 : FontWeight.w600,
+                      color:
+                          isSelected ? Colors.white : AppColors.textSecondary,
                       letterSpacing: 0.2,
                     ),
                   ),
@@ -243,6 +206,85 @@ class _OrderListPageState extends State<OrderListPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildBodyContent(OrderState state) {
+    return switch (state) {
+      OrderListLoading() => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 48),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      OrderListError(:final message) => _buildErrorState(message),
+      OrderListLoaded(:final orders, :final isLoadingMore, :final message) =>
+        Column(
+          children: [
+            if (message != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  message,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    color: AppColors.error,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+            if (orders.isEmpty)
+              _buildEmptyState()
+            else
+              _buildOrdersList(orders),
+            if (isLoadingMore)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      _ => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 48),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+    };
+  }
+
+  Widget _buildErrorState(String message) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              context.read<OrderBloc>().add(const OrderListRequested());
+            },
+            child: const Text('Thử lại'),
+          ),
+        ],
       ),
     );
   }
@@ -286,17 +328,52 @@ class _OrderListPageState extends State<OrderListPage> {
     );
   }
 
-  Widget _buildOrderListItem(BuildContext context, Map<String, dynamic> order) {
+  Widget _buildOrdersList(List<OrderEntity> orders) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: orders.length,
+        separatorBuilder: (context, index) => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: Divider(color: Color(0xFFF1F5F9), height: 1, thickness: 1),
+        ),
+        itemBuilder: (context, index) {
+          return _buildOrderListItem(context, orders[index]);
+        },
+      ),
+    );
+  }
+
+  Widget _buildOrderListItem(BuildContext context, OrderEntity order) {
+    final item = order.primaryItem;
+    final statusLabel = OrderStatusLabel.vi(order.status);
+    final (_, statusColor) = OrderStatusLabel.badgeColors(order.status);
+    final dateStr = DateFormat('dd/MM/yyyy').format(order.createdAt);
+
     return GestureDetector(
       onTap: () => context.goNamed(
         AppRoutes.orderDetail,
-        pathParameters: {'orderId': order['id']},
+        pathParameters: {'orderId': order.id.toString()},
       ),
       behavior: HitTestBehavior.opaque,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Dynamic Concentric double-bezel image thumbnail
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -312,22 +389,28 @@ class _OrderListPageState extends State<OrderListPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               clipBehavior: Clip.antiAlias,
-              child: Image.network(
-                order['imageUrl'],
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Center(
-                  child: Icon(
-                    Icons.image_not_supported_outlined,
-                    color: AppColors.textSecondary,
-                    size: 20,
-                  ),
-                ),
-              ),
+              child: item?.imageUrl != null && item!.imageUrl!.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: item.imageUrl!,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(
+                          Icons.image_not_supported_outlined,
+                          color: AppColors.textSecondary,
+                          size: 20,
+                        ),
+                      ),
+                    )
+                  : const Center(
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: AppColors.textSecondary,
+                        size: 20,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(width: 14),
-
-          // Core Info details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,9 +418,8 @@ class _OrderListPageState extends State<OrderListPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Monospace transaction ID
                     Text(
-                      order['id'],
+                      order.displayCode,
                       style: GoogleFonts.spaceMono(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
@@ -345,19 +427,17 @@ class _OrderListPageState extends State<OrderListPage> {
                         letterSpacing: 0.5,
                       ),
                     ),
-
-                    // Breathing Status with animated aura dot
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        BreathingPulseDot(color: order['statusColor'] as Color),
+                        BreathingPulseDot(color: statusColor),
                         const SizedBox(width: 6),
                         Text(
-                          order['status'],
+                          statusLabel,
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
-                            color: order['statusColor'],
+                            color: statusColor,
                           ),
                         ),
                       ],
@@ -366,7 +446,7 @@ class _OrderListPageState extends State<OrderListPage> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  order['productName'],
+                  item?.productName ?? 'Không có sản phẩm',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.lexend(
@@ -377,7 +457,7 @@ class _OrderListPageState extends State<OrderListPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Size: EU ${order['size']}  ·  Số lượng: ${order['quantity']}',
+                  'Size: ${item?.size ?? '—'}  ·  Số lượng: ${item?.quantity ?? 0}',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -388,18 +468,16 @@ class _OrderListPageState extends State<OrderListPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Monospace priced label
                     Text(
-                      _formatPrice(order['price']),
+                      _formatPrice(order.totalAmount),
                       style: GoogleFonts.spaceMono(
                         fontSize: 13,
                         fontWeight: FontWeight.w900,
                         color: AppColors.accent,
                       ),
                     ),
-                    // Monospace transaction Date
                     Text(
-                      order['date'],
+                      dateStr,
                       style: GoogleFonts.spaceMono(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -429,7 +507,6 @@ class _OrderListPageState extends State<OrderListPage> {
   }
 }
 
-// Elegant animated breathing status aura dot
 class BreathingPulseDot extends StatefulWidget {
   final Color color;
   const BreathingPulseDot({super.key, required this.color});
@@ -465,16 +542,15 @@ class _BreathingPulseDotState extends State<BreathingPulseDot>
         return Stack(
           alignment: Alignment.center,
           children: [
-            // Expanding outer breathing aura glow rings
             Container(
               width: 10 + (8 * _controller.value),
               height: 10 + (8 * _controller.value),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: widget.color.withOpacity(0.5 * (1.0 - _controller.value)),
+                color: widget.color
+                    .withValues(alpha: 0.5 * (1.0 - _controller.value)),
               ),
             ),
-            // Solid center core dot
             Container(
               width: 6,
               height: 6,
