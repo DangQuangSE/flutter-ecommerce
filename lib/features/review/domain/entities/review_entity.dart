@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 
 class ReviewEntity extends Equatable {
   final int id;
+  final int productId;
+  final String productName;
   final String userName;
   final String? userAvatar;
   final int rating;
@@ -12,6 +14,8 @@ class ReviewEntity extends Equatable {
 
   const ReviewEntity({
     required this.id,
+    this.productId = 0,
+    this.productName = '',
     required this.userName,
     this.userAvatar,
     required this.rating,
@@ -22,6 +26,16 @@ class ReviewEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [id, userName, userAvatar, rating, comment, images, replyComment, createdAt];
+  List<Object?> get props => [
+        id,
+        productId,
+        productName,
+        userName,
+        userAvatar,
+        rating,
+        comment,
+        images,
+        replyComment,
+        createdAt,
+      ];
 }

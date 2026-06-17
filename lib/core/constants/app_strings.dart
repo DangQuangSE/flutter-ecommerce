@@ -37,4 +37,23 @@ abstract final class AppStrings {
       'Đã xảy ra lỗi khi tải chi tiết sản phẩm.';
   static String addedToCartMessage(String productName, String size) =>
       'Đã thêm $productName (Size $size) vào giỏ hàng!';
+
+  // Admin review management — view + reply only (no hide/delete by design)
+  static const String adminReviewsTitle = 'Quản lý đánh giá';
+  static const String adminReviewsManagementLabel = 'Quản lý đánh giá';
+  static const String adminReviewsEmptyTitle = 'Chưa có đánh giá nào';
+  static const String adminReviewsEmptySubtitle =
+      'Đánh giá của khách hàng sẽ hiển thị ở đây.';
+  static const String adminReviewsLoadError = 'Không tải được đánh giá';
+  static String adminReviewsCount(int count) => '$count đánh giá';
+  static const String adminReviewReplyLabel = 'Phản hồi của shop';
+  static const String adminReviewReplyAction = 'Trả lời';
+  static const String adminReviewEditReplyAction = 'Sửa phản hồi';
+  static const String adminReviewReplySheetTitle = 'Trả lời đánh giá';
+  static const String adminReviewReplyHint = 'Nhập phản hồi cho khách hàng...';
+  static const String adminReviewReplySubmit = 'Gửi phản hồi';
+  static const String adminReviewReplySuccess = 'Đã gửi phản hồi';
+  static const String adminReviewReplyRequired =
+      'Vui lòng nhập nội dung phản hồi';
+  static const String cancel = 'Huỷ';
 }

@@ -87,4 +87,9 @@ abstract final class ApiConstants {
   // Reviews
   static String productReviews(int productId) =>
       '/api/public/reviews/product/$productId';
+
+  // Admin Reviews — view all + reply only (no hide/delete)
+  static const String adminReviews = '/api/admin/reviews';
+  static String adminReviewReply(int reviewId) =>
+      '/api/admin/reviews/$reviewId/reply';
 }

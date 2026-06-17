@@ -70,6 +70,8 @@ import 'package:flutter_ecommerce/features/category/presentation/cubit/category_
 import 'package:flutter_ecommerce/features/category/presentation/pages/category_management_page.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_management_page.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/admin_review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/pages/admin_review_list_page.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
 import 'package:flutter_ecommerce/features/size/presentation/pages/admin_size_group_list_page.dart';
@@ -312,6 +314,14 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/admin/reviews',
+        name: AppRoutes.adminReviews,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<AdminReviewCubit>(),
+          child: const AdminReviewListPage(),
+        ),
+      ),
+      GoRoute(
         path: '/admin/orders',
         name: AppRoutes.adminOrders,
         builder: (context, state) => BlocProvider(
@@ -499,13 +509,15 @@ class AppRouter {
           final itemIdStr = state.uri.queryParameters['itemId'];
           final customDesignIdStr = state.uri.queryParameters['customDesignId'];
 
-          final variantId = variantIdStr != null ? int.tryParse(variantIdStr) : null;
+          final variantId =
+              variantIdStr != null ? int.tryParse(variantIdStr) : null;
           final cartQuantity = int.tryParse(quantityStr ?? '') ?? 1;
           final basePrice = priceStr != null ? double.tryParse(priceStr) : null;
           final itemId = itemIdStr != null ? int.tryParse(itemIdStr) : null;
-          final customDesignId = (customDesignIdStr != null && customDesignIdStr.isNotEmpty)
-              ? int.tryParse(customDesignIdStr)
-              : null;
+          final customDesignId =
+              (customDesignIdStr != null && customDesignIdStr.isNotEmpty)
+                  ? int.tryParse(customDesignIdStr)
+                  : null;
 
           return CustomizerPage(
             productId: state.pathParameters['productId'] ?? '',
@@ -536,7 +548,6 @@ class AppRouter {
         },
       ),
 
-
       // ── Admin Product ──────────────────────────────────────────────────────
       GoRoute(
         path: '/admin/products',
@@ -548,7 +559,8 @@ class AppRouter {
           return null;
         },
         builder: (context, state) => BlocProvider(
-          create: (_) => sl<AdminProductListBloc>()..add(AdminProductListLoaded()),
+          create: (_) =>
+              sl<AdminProductListBloc>()..add(AdminProductListLoaded()),
           child: const AdminProductListPage(),
         ),
         routes: [
@@ -557,10 +569,13 @@ class AppRouter {
             name: AppRoutes.adminProductCreate,
             builder: (context, state) => MultiBlocProvider(
               providers: [
-                BlocProvider(create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()),
+                BlocProvider(
+                    create: (_) =>
+                        sl<AdminProductFormCubit>()..loadDropdowns()),
                 BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
                 BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
-                BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
+                BlocProvider(
+                    create: (_) => sl<ProductColorCubit>()..loadColors()),
               ],
               child: const AdminProductFormPage(),
             ),
@@ -607,10 +622,14 @@ class AppRouter {
                             sl<AdminProductDetailCubit>()..loadDetail(id),
                       ),
                       BlocProvider(
-                          create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()..beginEditMode()),
-                      BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
+                          create: (_) => sl<AdminProductFormCubit>()
+                            ..loadDropdowns()
+                            ..beginEditMode()),
+                      BlocProvider(
+                          create: (_) => sl<AdminProductVariantCubit>()),
                       BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
-                      BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
+                      BlocProvider(
+                          create: (_) => sl<ProductColorCubit>()..loadColors()),
                     ],
                     child: AdminProductFormPage(productId: id),
                   );

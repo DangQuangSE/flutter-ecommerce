@@ -133,6 +133,7 @@ import 'package:flutter_ecommerce/features/review/data/datasources/review_remote
 import 'package:flutter_ecommerce/features/review/data/repositories/review_repository_impl.dart';
 import 'package:flutter_ecommerce/features/review/domain/repositories/review_repository.dart';
 import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/admin_review_cubit.dart';
 
 // Color
 import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource.dart';
@@ -441,6 +442,9 @@ Future<void> configureDependencies() async {
   );
   sl.registerFactory<ReviewCubit>(
     () => ReviewCubit(sl<ReviewRepository>()),
+  );
+  sl.registerFactory<AdminReviewCubit>(
+    () => AdminReviewCubit(sl<ReviewRepository>()),
   );
 
   // Product Color Management
