@@ -481,7 +481,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             color: AppColors.textSecondary,
-                            height: 1.4,
+                            height: 1.4, d
                           ),
                           children: [
                             const TextSpan(text: 'Bằng việc đăng nhập, bạn đồng ý với '),

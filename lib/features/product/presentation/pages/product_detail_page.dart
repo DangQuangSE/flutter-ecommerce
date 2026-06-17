@@ -89,7 +89,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     for (final variant in variants) {
       if (variant.colorName.isNotEmpty) {
-        colorMap[variant.colorName] = variant.colorHex.isNotEmpty ? variant.colorHex : '#000000';
+        colorMap[variant.colorName] =
+            variant.colorHex.isNotEmpty ? variant.colorHex : '#000000';
       }
       if (variant.size.isNotEmpty && !sizeList.contains(variant.size)) {
         sizeList.add(variant.size);
@@ -102,8 +103,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     final List<String> sizes = sizeList.isNotEmpty ? sizeList : _sizes;
 
-    final selectedColorIndex = _selectedColorIndex.clamp(0, colors.isEmpty ? 0 : colors.length - 1);
-    final selectedColor = colors.isNotEmpty ? colors[selectedColorIndex]['name'] : null;
+    final selectedColorIndex =
+        _selectedColorIndex.clamp(0, colors.isEmpty ? 0 : colors.length - 1);
+    final selectedColor =
+        colors.isNotEmpty ? colors[selectedColorIndex]['name'] : null;
 
     final String selectedSize = sizes.contains(_selectedSize)
         ? _selectedSize
@@ -146,7 +149,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ProductCarousel(
                     imageUrls: product.imageUrls.isNotEmpty
                         ? product.imageUrls
-                        : (product.imageUrl.isNotEmpty ? [product.imageUrl] : []),
+                        : (product.imageUrl.isNotEmpty
+                            ? [product.imageUrl]
+                            : []),
                   ),
                   _buildProductInfo(product, categoryLabel, priceToDisplay),
                   _buildDivider(),
@@ -220,7 +225,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             context.goNamed(AppRoutes.productList);
           }
         },
-        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary, size: 24),
+        icon: const Icon(Icons.arrow_back_rounded,
+            color: AppColors.textPrimary, size: 24),
       ),
       title: Align(
         alignment: Alignment.centerLeft,
@@ -252,7 +258,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               children: [
                 IconButton(
                   onPressed: () => context.pushNamed(AppRoutes.cart),
-                  icon: const Icon(Icons.shopping_cart_outlined, color: AppColors.primary, size: 24),
+                  icon: const Icon(Icons.shopping_cart_outlined,
+                      color: AppColors.primary, size: 24),
                 ),
                 if (cartCount > 0)
                   Positioned(
@@ -333,7 +340,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildProductInfo(ProductEntity product, String categoryLabel, double priceToDisplay) {
+  Widget _buildProductInfo(
+      ProductEntity product, String categoryLabel, double priceToDisplay) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: Column(
@@ -381,7 +389,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   Row(
                     children: List.generate(5, (index) {
                       return Icon(
-                        index < 4 ? Icons.star_rounded : Icons.star_half_rounded,
+                        index < 4
+                            ? Icons.star_rounded
+                            : Icons.star_half_rounded,
                         color: AppColors.accent,
                         size: 18,
                       );
@@ -447,9 +457,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             title: 'CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH',
             child: BlocBuilder<SiteSettingCubit, SiteSettingState>(
               builder: (context, state) {
-                final content = state is SiteSettingLoaded
-                    ? state.settings.returnPolicy
-                    : 'Đang tải nội dung chính sách...';
+                final content = switch (state) {
+                  SiteSettingLoaded(:final settings)
+                      when settings.returnPolicy.isEmpty =>
+                    'Chưa có nội dung chính sách.',
+                  SiteSettingLoaded() => state.settings.returnPolicy,
+                  SiteSettingError() =>
+                    'Không thể tải nội dung chính sách. Vui lòng thử lại sau.',
+                  _ => 'Đang tải nội dung chính sách...',
+                };
                 return Text(
                   content,
                   style: GoogleFonts.inter(
@@ -483,11 +499,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
             Row(
-              children: List.generate(5, (index) => Icon(
-                Icons.star_rounded,
-                color: index < rating ? AppColors.accent : const Color(0xFFC1C6D7),
-                size: 14,
-              )),
+              children: List.generate(
+                  5,
+                  (index) => Icon(
+                        Icons.star_rounded,
+                        color: index < rating
+                            ? AppColors.accent
+                            : const Color(0xFFC1C6D7),
+                        size: 14,
+                      )),
             ),
           ],
         ),
@@ -564,7 +584,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                 ),
                 child: Icon(
-                  _isFavorited ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  _isFavorited
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
                   color: _isFavorited ? Colors.red : AppColors.textSecondary,
                   size: 24,
                 ),
@@ -577,8 +599,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ? null
                     : () {
                         final targetVariantId = matchingVariant?.id ??
-                            (product.variants?.isNotEmpty == true ? product.variants!.first.id : 1);
-                        final custId = context.read<CustomizerCubit>()
+                            (product.variants?.isNotEmpty == true
+                                ? product.variants!.first.id
+                                : 1);
+                        final custId = context
+                            .read<CustomizerCubit>()
                             .getCustomizationOrDefault(product.id)
                             .customDesignId;
                         context.read<CartCubit>().addItem(
@@ -594,7 +619,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             behavior: SnackBarBehavior.floating,
                             content: Row(
                               children: [
-                                const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                                const Icon(Icons.check_circle_outline_rounded,
+                                    color: Colors.white),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
@@ -610,13 +636,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             action: SnackBarAction(
                               label: 'XEM GIỎ',
                               textColor: Colors.white,
-                              onPressed: () => context.pushNamed(AppRoutes.cart),
+                              onPressed: () =>
+                                  context.pushNamed(AppRoutes.cart),
                             ),
                           ),
                         );
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isInStock ? AppColors.accent : Colors.grey[400],
+                  backgroundColor:
+                      isInStock ? AppColors.accent : Colors.grey[400],
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[300],
                   disabledForegroundColor: Colors.grey[600],
@@ -630,7 +658,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      isInStock ? Icons.shopping_bag_outlined : Icons.remove_shopping_cart_outlined,
+                      isInStock
+                          ? Icons.shopping_bag_outlined
+                          : Icons.remove_shopping_cart_outlined,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -666,7 +696,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded,
+              color: AppColors.textPrimary),
           onPressed: () => context.pop(),
         ),
       ),
@@ -676,7 +707,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+              const Icon(Icons.error_outline_rounded,
+                  size: 48, color: AppColors.error),
               const SizedBox(height: 16),
               Text(
                 'Đã xảy ra lỗi khi tải chi tiết sản phẩm.',
@@ -698,7 +730,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  context.read<ProductBloc>().add(ProductDetailRequested(widget.productId));
+                  context
+                      .read<ProductBloc>()
+                      .add(ProductDetailRequested(widget.productId));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,

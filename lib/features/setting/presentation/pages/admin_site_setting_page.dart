@@ -14,6 +14,7 @@ class AdminSiteSettingPage extends StatefulWidget {
 
 class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
   final TextEditingController _returnPolicyController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isInitialized = false;
 
   @override
@@ -40,100 +41,118 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
         ),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
-      body: BlocConsumer<SiteSettingCubit, SiteSettingState>(
-        listener: (context, state) {
-          if (state is SiteSettingLoaded && state.message != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message!),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          } else if (state is SiteSettingError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is SiteSettingLoading || state is SiteSettingInitial) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            );
-          }
-
-          if (state is SiteSettingLoaded) {
-            if (!_isInitialized) {
-              _returnPolicyController.text = state.settings.returnPolicy;
-              _isInitialized = true;
+      body: SafeArea(
+        child: BlocConsumer<SiteSettingCubit, SiteSettingState>(
+          listener: (context, state) {
+            if (state is SiteSettingLoaded && state.message != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message!),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            } else if (state is SiteSettingError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.error,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
             }
-            return _buildForm(context, state.isSubmitting);
-          }
+          },
+          builder: (context, state) {
+            if (state is SiteSettingLoading || state is SiteSettingInitial) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                ),
+              );
+            }
 
-          return _buildErrorState(context);
-        },
+            if (state is SiteSettingLoaded) {
+              if (!_isInitialized) {
+                _returnPolicyController.text = state.settings.returnPolicy;
+                _isInitialized = true;
+              }
+              return _buildForm(context, state.isSubmitting);
+            }
+
+            return _buildErrorState(context);
+          },
+        ),
       ),
     );
   }
 
   Widget _buildForm(BuildContext context, bool isSubmitting) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Nội dung này sẽ hiển thị cho khách hàng ở trang chi tiết sản phẩm.',
-            style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: TextField(
-              controller: _returnPolicyController,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
-              decoration: InputDecoration(
-                hintText: 'Nhập nội dung chính sách đổi trả & bảo hành...',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Nội dung này sẽ hiển thị cho khách hàng ở trang chi tiết sản phẩm.',
+              style: GoogleFonts.inter(
+                  fontSize: 12, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: TextFormField(
+                controller: _returnPolicyController,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                style: GoogleFonts.inter(
+                    fontSize: 13, color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'Nhập nội dung chính sách đổi trả & bảo hành...',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Nội dung chính sách không được để trống'
+                    : null,
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: isSubmitting
-                ? null
-                : () => context.read<SiteSettingCubit>().updateReturnPolicy(
-                      _returnPolicyController.text.trim(),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: isSubmitting ? null : () => _submit(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+              child: isSubmitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : Text(
+                      'Lưu thay đổi',
+                      style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w700, fontSize: 14),
                     ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
-            child: isSubmitting
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : Text(
-                    'Lưu thay đổi',
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
-                  ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  void _submit(BuildContext context) {
+    if (_formKey.currentState?.validate() ?? false) {
+      context
+          .read<SiteSettingCubit>()
+          .updateReturnPolicy(_returnPolicyController.text.trim());
+    }
   }
 
   Widget _buildErrorState(BuildContext context) {
@@ -143,11 +162,13 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 48, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Đã xảy ra lỗi khi tải dữ liệu.',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+              style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -155,7 +176,8 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
               child: const Text('Thử lại'),
             ),
