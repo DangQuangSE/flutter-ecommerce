@@ -18,6 +18,8 @@ import 'package:flutter_ecommerce/features/notification/presentation/widgets/not
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_state.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String productId;
@@ -47,6 +49,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       if (!mounted) return;
       context.read<ProductBloc>().add(ProductDetailRequested(widget.productId));
       context.read<CartCubit>().loadCart();
+      context.read<SiteSettingCubit>().loadSettings();
     });
   }
 
@@ -178,7 +181,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     child: DeliveryBanner(),
                   ),
                   _buildDivider(),
-                  _buildCollapsiblePanels(),
+                  _buildCollapsiblePanels(product),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -402,22 +405,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildCollapsiblePanels() {
+  Widget _buildCollapsiblePanels(ProductEntity product) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
         children: [
           CollapsiblePanel(
             title: 'THÔNG SỐ KỸ THUẬT',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildSpecRow('Trọng lượng', '245g (Size 42)'),
-                _buildSpecRow('Độ dốc gót-mũi (Drop)', '8 mm'),
-                _buildSpecRow('Đệm đế', 'Bọt AeroPulse siêu nhẹ'),
-                _buildSpecRow('Mặt giày (Upper)', 'Vải mesh thoáng khí cao cấp'),
-                _buildSpecRow('Công dụng', 'Chạy bộ hàng ngày, thi đấu cự ly ngắn & vừa'),
-              ],
+            child: Text(
+              product.description.isNotEmpty
+                  ? product.description
+                  : 'Sản phẩm chưa có mô tả.',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
             ),
           ),
           CollapsiblePanel(
@@ -441,41 +445,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
           CollapsiblePanel(
             title: 'CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH',
-            child: Text(
-              'Miễn phí đổi size trong vòng 7 ngày kể từ khi nhận hàng. Bảo hành chính hãng keo chỉ 3 tháng đối với các lỗi sản xuất. Dịch vụ chăm sóc vận động viên tận tình.',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSpecRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+            child: BlocBuilder<SiteSettingCubit, SiteSettingState>(
+              builder: (context, state) {
+                final content = state is SiteSettingLoaded
+                    ? state.settings.returnPolicy
+                    : 'Đang tải nội dung chính sách...';
+                return Text(
+                  content,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                );
+              },
             ),
           ),
         ],

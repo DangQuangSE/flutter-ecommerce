@@ -79,4 +79,8 @@ abstract final class ApiConstants {
       '/api/admin/product-variants/$variantId';
   static String adminImageById(int imageId) =>
       '/api/admin/product-images/$imageId';
+
+  // Site Settings
+  static const String settings = '/api/settings';
+  static const String adminSettings = '/api/admin/settings';
 }

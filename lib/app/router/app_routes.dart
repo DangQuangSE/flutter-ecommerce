@@ -48,4 +48,5 @@ abstract final class AppRoutes {
   static const String adminSizeGroups = 'admin-size-groups';
   static const String adminSizeGroupCreate = 'admin-size-group-create';
   static const String adminSizeGroupEdit = 'admin-size-group-edit';
+  static const String adminSiteSettings = 'admin-site-settings';
 }

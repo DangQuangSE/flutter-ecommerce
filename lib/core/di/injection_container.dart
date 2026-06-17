@@ -120,6 +120,13 @@ import 'package:flutter_ecommerce/features/brand/data/repositories/brand_reposit
 import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
 
+// Site Setting
+import 'package:flutter_ecommerce/features/setting/data/datasources/site_setting_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/setting/data/datasources/site_setting_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/setting/data/repositories/site_setting_repository_impl.dart';
+import 'package:flutter_ecommerce/features/setting/domain/repositories/site_setting_repository.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
+
 // Color
 import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource_impl.dart';
@@ -405,6 +412,17 @@ Future<void> configureDependencies() async {
   );
   sl.registerFactory<BrandCubit>(
     () => BrandCubit(sl<BrandRepository>()),
+  );
+
+  // Site Setting
+  sl.registerLazySingleton<SiteSettingRemoteDataSource>(
+    () => SiteSettingRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<SiteSettingRepository>(
+    () => SiteSettingRepositoryImpl(sl<SiteSettingRemoteDataSource>()),
+  );
+  sl.registerFactory<SiteSettingCubit>(
+    () => SiteSettingCubit(sl<SiteSettingRepository>()),
   );
 
   // Product Color Management

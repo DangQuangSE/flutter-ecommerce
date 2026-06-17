@@ -60,6 +60,8 @@ import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_order_
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/pages/brand_management_page.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/pages/admin_site_setting_page.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
@@ -274,6 +276,14 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/admin/settings',
+        name: AppRoutes.adminSiteSettings,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<SiteSettingCubit>()..loadSettings(),
+          child: const AdminSiteSettingPage(),
+        ),
+      ),
+      GoRoute(
         path: '/admin/colors',
         name: AppRoutes.adminColors,
         builder: (context, state) => MultiBlocProvider(
@@ -374,8 +384,11 @@ class AppRouter {
           GoRoute(
             path: ':productId',
             name: AppRoutes.productDetail,
-            builder: (context, state) => BlocProvider(
-              create: (_) => sl<ProductBloc>(),
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<ProductBloc>()),
+                BlocProvider(create: (_) => sl<SiteSettingCubit>()),
+              ],
               child: ProductDetailPage(
                 productId: state.pathParameters['productId'] ?? '',
               ),
