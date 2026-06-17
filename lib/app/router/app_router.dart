@@ -62,6 +62,7 @@ import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.
 import 'package:flutter_ecommerce/features/brand/presentation/pages/brand_management_page.dart';
 import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
 import 'package:flutter_ecommerce/features/setting/presentation/pages/admin_site_setting_page.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
@@ -388,6 +389,7 @@ class AppRouter {
               providers: [
                 BlocProvider(create: (_) => sl<ProductBloc>()),
                 BlocProvider(create: (_) => sl<SiteSettingCubit>()),
+                BlocProvider(create: (_) => sl<ReviewCubit>()),
               ],
               child: ProductDetailPage(
                 productId: state.pathParameters['productId'] ?? '',

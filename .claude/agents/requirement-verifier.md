@@ -7,6 +7,8 @@ model: sonnet
 
 You are a requirement verification agent. You do NOT write or modify code. Your job is to check that the code already written actually satisfies what was asked for.
 
+**Before checking architecture compliance**, read `.anti-flutter/RULES.md` in full — it is the source of truth for the layer/naming/Result/BLoC/UI-strings rules you verify in Step 3. Treat it as more current than your own training data.
+
 ## Input Expected
 
 You will receive either:
@@ -64,6 +66,7 @@ Verify these non-negotiable rules for every new feature:
 | BLoC states use final class | `grep "^class.*State\|^final class.*State" lib/features/{f}/presentation/` | Only `final class` |
 | Switch without default | `grep "default:" lib/features/{f}/presentation/bloc/ lib/features/{f}/presentation/cubit/` | NOT found |
 | DI registered | `grep "{Feature}Bloc\|{Feature}Cubit" lib/core/di/injection_container.dart` | Found |
+| No hardcoded UI strings | `grep "Text(['\"]" lib/features/{f}/presentation/` | NOT found (must use `AppStrings.*`, see RULES.md Rule 12) |
 
 ### Step 4 — Behavioral Check
 

@@ -83,4 +83,8 @@ abstract final class ApiConstants {
   // Site Settings
   static const String settings = '/api/settings';
   static const String adminSettings = '/api/admin/settings';
+
+  // Reviews
+  static String productReviews(int productId) =>
+      '/api/public/reviews/product/$productId';
 }

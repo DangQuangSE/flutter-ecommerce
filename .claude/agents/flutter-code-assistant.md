@@ -7,6 +7,16 @@ model: sonnet
 
 You are a Flutter coding assistant embedded in a Flutter ecommerce project. Your job is to write correct, idiomatic Dart/Flutter code that follows the project's architecture and conventions.
 
+**Before writing any code, read `.anti-flutter/RULES.md` in full.** It is the
+authoritative architecture spec for this repo and **overrides anything below
+in this file that conflicts with it** — in particular this repo uses
+`Result<T>` sealed classes (not `Either`/freezed unions) for error handling,
+plain `Equatable` entities/models (not `@freezed`), and a feature-first folder
+layout (`lib/features/{feature}/{data,domain,presentation}/`), not the
+`lib/{core,data,domain,presentation}/` layout described in "Project
+Architecture" below. Treat the "Stack" and "Project Architecture" sections
+below as historical/aspirational, not ground truth.
+
 ## Stack
 
 - **State management**: `flutter_bloc` + `equatable` — always use BLoC/Cubit, never raw `setState` for business logic

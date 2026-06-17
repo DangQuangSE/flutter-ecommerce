@@ -127,6 +127,13 @@ import 'package:flutter_ecommerce/features/setting/data/repositories/site_settin
 import 'package:flutter_ecommerce/features/setting/domain/repositories/site_setting_repository.dart';
 import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
 
+// Review
+import 'package:flutter_ecommerce/features/review/data/datasources/review_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/review/data/datasources/review_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/review/data/repositories/review_repository_impl.dart';
+import 'package:flutter_ecommerce/features/review/domain/repositories/review_repository.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
+
 // Color
 import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource_impl.dart';
@@ -423,6 +430,17 @@ Future<void> configureDependencies() async {
   );
   sl.registerFactory<SiteSettingCubit>(
     () => SiteSettingCubit(sl<SiteSettingRepository>()),
+  );
+
+  // Review
+  sl.registerLazySingleton<ReviewRemoteDataSource>(
+    () => ReviewRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ReviewRepository>(
+    () => ReviewRepositoryImpl(sl<ReviewRemoteDataSource>()),
+  );
+  sl.registerFactory<ReviewCubit>(
+    () => ReviewCubit(sl<ReviewRepository>()),
   );
 
   // Product Color Management

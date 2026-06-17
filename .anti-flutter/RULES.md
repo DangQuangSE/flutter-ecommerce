@@ -226,3 +226,29 @@ context.go('/products');
 - ❌ Cross-feature direct imports
 - ❌ `default:` arm in switch on a sealed class
 - ❌ `registerLazySingleton<ProductBloc>` — must be `registerFactory`
+- ❌ Hardcoded UI string literal — must be a constant in `core/constants/app_strings.dart` (see Rule 12)
+
+---
+
+## 12. UI Strings — Constants Only (i18n-ready)
+
+Every user-facing string (`Text`, `SnackBar` content, dialog text, error/empty
+state messages, button labels) must be a constant in
+`lib/core/constants/app_strings.dart` — never an inline literal.
+
+```dart
+// ✅ CORRECT
+Text(AppStrings.retry)
+SnackBar(content: Text(AppStrings.addedToWishlist))
+static String addedToCartMessage(String name, String size) =>
+    'Đã thêm $name (Size $size) vào giỏ hàng!'; // dynamic text → static method in AppStrings
+
+// ❌ WRONG — inline literal, can't be swapped for a localization key later
+Text('Thử lại')
+```
+
+**Why:** when this project moves to multi-language support, only
+`app_strings.dart` should need to change — not every page.
+
+Exceptions: debug-only strings, log messages, and non-UI internal identifiers
+(route names, asset paths, API endpoints) are not subject to this rule.

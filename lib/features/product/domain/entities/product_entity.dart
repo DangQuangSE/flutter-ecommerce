@@ -11,6 +11,9 @@ class ProductEntity extends Equatable {
   final String categoryId;
   final int stockQuantity;
   final List<ProductVariantEntity>? variants;
+  final int? numericId;
+  final double averageRating;
+  final int reviewCount;
 
   const ProductEntity({
     required this.id,
@@ -22,11 +25,26 @@ class ProductEntity extends Equatable {
     required this.categoryId,
     required this.stockQuantity,
     this.variants,
+    this.numericId,
+    this.averageRating = 0.0,
+    this.reviewCount = 0,
   });
 
   bool get isInStock => stockQuantity > 0;
 
   @override
-  List<Object?> get props =>
-      [id, name, description, price, imageUrl, imageUrls, categoryId, stockQuantity, variants];
+  List<Object?> get props => [
+        id,
+        name,
+        description,
+        price,
+        imageUrl,
+        imageUrls,
+        categoryId,
+        stockQuantity,
+        variants,
+        numericId,
+        averageRating,
+        reviewCount,
+      ];
 }

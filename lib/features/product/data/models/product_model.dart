@@ -12,6 +12,9 @@ class ProductModel extends ProductEntity {
     required super.categoryId,
     required super.stockQuantity,
     super.variants,
+    super.numericId,
+    super.averageRating = 0.0,
+    super.reviewCount = 0,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +42,9 @@ class ProductModel extends ProductEntity {
       variants: rawVariants
           .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>).toEntity())
           .toList(),
+      numericId: int.tryParse((json['id'] ?? '').toString()),
+      averageRating: ((json['averageRating'] ?? 0.0) as num).toDouble(),
+      reviewCount: (json['reviewCount'] ?? 0) as int,
     );
   }
 

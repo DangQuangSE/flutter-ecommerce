@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
@@ -12,8 +13,10 @@ import 'package:flutter_ecommerce/features/admin/product/domain/entities/product
 import 'package:flutter_ecommerce/features/product/presentation/widgets/product_carousel.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/color_selector.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/size_selector.dart';
-import 'package:flutter_ecommerce/features/product/presentation/widgets/delivery_banner.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/collapsible_panel.dart';
+import 'package:flutter_ecommerce/features/review/domain/entities/review_entity.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_state.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
@@ -33,6 +36,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   int _selectedColorIndex = 0;
   String _selectedSize = '42';
   bool _isFavorited = false;
+  bool _reviewsRequested = false;
 
   final List<Map<String, String>> _colors = [
     {'name': 'Xanh Điện / Cam', 'hex': '#0058bc'},
@@ -57,7 +61,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<ProductBloc, ProductState>(
+      body: BlocConsumer<ProductBloc, ProductState>(
+        listener: (context, state) {
+          if (state is ProductDetailLoaded &&
+              !_reviewsRequested &&
+              state.product.numericId != null) {
+            _reviewsRequested = true;
+            context.read<ReviewCubit>().loadReviews(state.product.numericId!);
+          }
+        },
         builder: (context, state) {
           if (state is ProductLoading) {
             return const Scaffold(
@@ -181,11 +193,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                   ),
                   _buildDivider(),
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: DeliveryBanner(),
-                  ),
-                  _buildDivider(),
                   _buildCollapsiblePanels(product),
                   const SizedBox(height: 32),
                 ],
@@ -233,7 +240,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Transform(
           transform: Matrix4.skewX(-0.15),
           child: Text(
-            'Sport Pro',
+            AppStrings.brandName,
             style: GoogleFonts.lexend(
               fontSize: 24,
               fontWeight: FontWeight.w900,
@@ -384,30 +391,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                 ),
               ),
-              Row(
-                children: [
-                  Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index < 4
-                            ? Icons.star_rounded
-                            : Icons.star_half_rounded,
-                        color: AppColors.accent,
-                        size: 18,
-                      );
-                    }),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '(128)',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
+              if (product.reviewCount > 0)
+                Row(
+                  children: [
+                    Row(
+                      children: _buildRatingStars(product.averageRating),
                     ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '(${product.reviewCount})',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  AppStrings.noRatingYet,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
                   ),
-                ],
-              ),
+                ),
             ],
           ),
         ],
@@ -421,11 +430,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       child: Column(
         children: [
           CollapsiblePanel(
-            title: 'THÔNG SỐ KỸ THUẬT',
+            title: AppStrings.specsTitle,
             child: Text(
               product.description.isNotEmpty
                   ? product.description
-                  : 'Sản phẩm chưa có mô tả.',
+                  : AppStrings.noProductDescription,
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
@@ -435,36 +444,63 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
           ),
           CollapsiblePanel(
-            title: 'ĐÁNH GIÁ KHÁCH HÀNG (128)',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildReviewRow(
-                  'Nguyễn Minh T.',
-                  5,
-                  'Giày cực kỳ êm và bám đường tốt. Trọng lượng nhẹ giúp nâng cao tốc độ chạy rõ rệt. Rất đáng tiền!',
-                ),
-                const Divider(height: 16, color: Color(0xFFE8E8ED)),
-                _buildReviewRow(
-                  'Hoàng Anh D.',
-                  4,
-                  'Giao hàng nhanh hỏa tốc đúng trong ngày. Thiết kế cam xanh nổi bật. Ôm chân vừa vặn.',
-                ),
-              ],
+            title: AppStrings.reviewsTitle(product.reviewCount),
+            child: BlocBuilder<ReviewCubit, ReviewState>(
+              builder: (context, state) {
+                if (state is ReviewLoading || state is ReviewInitial) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
+                if (state is ReviewError) {
+                  return Text(
+                    AppStrings.reviewsLoadError,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  );
+                }
+                if (state is ReviewLoaded) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (int i = 0; i < state.reviews.length; i++) ...[
+                        if (i > 0)
+                          const Divider(height: 16, color: Color(0xFFE8E8ED)),
+                        _buildReviewRow(state.reviews[i]),
+                      ],
+                    ],
+                  );
+                }
+                return Text(
+                  AppStrings.noReviewsYet,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                );
+              },
             ),
           ),
           CollapsiblePanel(
-            title: 'CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH',
+            title: AppStrings.returnPolicyTitle,
             child: BlocBuilder<SiteSettingCubit, SiteSettingState>(
               builder: (context, state) {
                 final content = switch (state) {
                   SiteSettingLoaded(:final settings)
                       when settings.returnPolicy.isEmpty =>
-                    'Chưa có nội dung chính sách.',
+                    AppStrings.returnPolicyEmpty,
                   SiteSettingLoaded() => state.settings.returnPolicy,
-                  SiteSettingError() =>
-                    'Không thể tải nội dung chính sách. Vui lòng thử lại sau.',
-                  _ => 'Đang tải nội dung chính sách...',
+                  SiteSettingError() => AppStrings.returnPolicyLoadError,
+                  _ => AppStrings.returnPolicyLoading,
                 };
                 return Text(
                   content,
@@ -483,7 +519,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildReviewRow(String reviewer, int rating, String content) {
+  Widget _buildReviewRow(ReviewEntity review) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -491,7 +527,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              reviewer,
+              review.userName,
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -503,7 +539,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   5,
                   (index) => Icon(
                         Icons.star_rounded,
-                        color: index < rating
+                        color: index < review.rating
                             ? AppColors.accent
                             : const Color(0xFFC1C6D7),
                         size: 14,
@@ -513,7 +549,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
         const SizedBox(height: 4),
         Text(
-          content,
+          review.comment,
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w500,
@@ -523,6 +559,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
       ],
     );
+  }
+
+  List<Widget> _buildRatingStars(double rating) {
+    return List.generate(5, (index) {
+      final remainder = rating - index;
+      final icon = remainder >= 1
+          ? Icons.star_rounded
+          : remainder >= 0.5
+              ? Icons.star_half_rounded
+              : Icons.star_outline_rounded;
+      return Icon(icon, color: AppColors.accent, size: 18);
+    });
   }
 
   Widget _buildBottomActionBar(
@@ -565,8 +613,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   SnackBar(
                     content: Text(
                       _isFavorited
-                          ? 'Đã thêm vào danh sách yêu thích!'
-                          : 'Đã xóa khỏi danh sách yêu thích.',
+                          ? AppStrings.addedToWishlist
+                          : AppStrings.removedFromWishlist,
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -624,7 +672,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    'Đã thêm ${product.name} (Size $selectedSize) vào giỏ hàng!',
+                                    AppStrings.addedToCartMessage(
+                                        product.name, selectedSize),
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 12,
@@ -634,7 +683,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               ],
                             ),
                             action: SnackBarAction(
-                              label: 'XEM GIỎ',
+                              label: AppStrings.viewCart,
                               textColor: Colors.white,
                               onPressed: () =>
                                   context.pushNamed(AppRoutes.cart),
@@ -665,7 +714,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      isInStock ? 'ADD TO CART' : 'HẾT HÀNG',
+                      isInStock ? AppStrings.addToCart : AppStrings.outOfStock,
                       style: GoogleFonts.lexend(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -711,7 +760,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   size: 48, color: AppColors.error),
               const SizedBox(height: 16),
               Text(
-                'Đã xảy ra lỗi khi tải chi tiết sản phẩm.',
+                AppStrings.productDetailLoadError,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -741,7 +790,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Thử lại'),
+                child: const Text(AppStrings.retry),
               ),
             ],
           ),
