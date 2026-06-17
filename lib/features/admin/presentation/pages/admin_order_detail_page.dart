@@ -173,6 +173,10 @@ class _OrderDetailBody extends StatelessWidget {
                   value: order.displayCode,
                 ),
                 _DetailRow(
+                  label: 'Tên người đặt',
+                  value: order.displayCustomerName,
+                ),
+                _DetailRow(
                   label: 'Số điện thoại',
                   value: order.phoneNumber,
                 ),
