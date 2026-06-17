@@ -7,8 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
-import 'package:flutter_ecommerce/features/admin/domain/entities/recent_order_entity.dart';
-import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_order_card.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 
@@ -21,7 +22,6 @@ class AdminDashboardTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final stats = state.stats;
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
-    final shortCurrencyFormat = NumberFormat.compact(locale: 'vi_VN');
 
     return SafeArea(
       child: ListView(
@@ -273,9 +273,42 @@ class AdminDashboardTab extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          ...stats.recentOrders.map(
-            (order) => _recentOrderCard(context, order, shortCurrencyFormat),
-          ),
+          if (state.recentOrders.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Text(
+                'Chưa có đơn hàng',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            )
+          else
+            ...state.recentOrders.map(
+              (order) => AdminOrderCard(
+                order: order,
+                currencyFormat: currencyFormat,
+                onTap: () async {
+                  await context.pushNamed(
+                    AppRoutes.adminOrderDetail,
+                    pathParameters: {'orderId': order.id.toString()},
+                  );
+                  if (context.mounted) {
+                    context
+                        .read<AdminBloc>()
+                        .add(const AdminRecentOrdersRefreshRequested());
+                  }
+                },
+              ),
+            ),
         ],
       ),
     );
@@ -399,59 +432,6 @@ class AdminDashboardTab extends StatelessWidget {
           }),
         ),
       ],
-    );
-  }
-
-  Widget _recentOrderCard(BuildContext context, RecentOrderEntity order, NumberFormat format) {
-    final (badgeBg, badgeText) = OrderStatusLabel.badgeColors(order.rawStatus);
-
-    return GestureDetector(
-      onTap: () => context.pushNamed(
-        AppRoutes.adminOrderDetail,
-        pathParameters: {'orderId': order.id},
-      ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(8)),
-              child: const Icon(Icons.inventory_2_rounded, size: 20, color: AppColors.textSecondary),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(order.orderCode, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
-                  const SizedBox(height: 2),
-                  Text(order.productName, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(format.format(order.price), style: GoogleFonts.lexend(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(color: badgeBg, borderRadius: BorderRadius.circular(6)),
-                  child: Text(order.status, style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w700, color: badgeText)),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

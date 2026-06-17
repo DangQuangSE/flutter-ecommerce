@@ -31,6 +31,8 @@ import 'package:flutter_ecommerce/features/payment/presentation/pages/payment_re
 import 'package:flutter_ecommerce/features/payment/presentation/pages/vnpay_payment_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_detail_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_list_page.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
@@ -461,14 +463,22 @@ class AppRouter {
       GoRoute(
         path: '/orders',
         name: AppRoutes.orderList,
-        builder: (context, state) => const OrderListPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<OrderBloc>()..add(const OrderListRequested()),
+          child: const OrderListPage(),
+        ),
         routes: [
           GoRoute(
             path: ':orderId',
             name: AppRoutes.orderDetail,
-            builder: (context, state) => OrderDetailPage(
-              orderId: state.pathParameters['orderId'] ?? '',
-            ),
+            builder: (context, state) {
+              final orderId = state.pathParameters['orderId'] ?? '';
+              return BlocProvider(
+                create: (_) => sl<OrderBloc>()
+                  ..add(OrderDetailRequested(int.tryParse(orderId) ?? 0)),
+                child: OrderDetailPage(orderId: orderId),
+              );
+            },
           ),
         ],
       ),
