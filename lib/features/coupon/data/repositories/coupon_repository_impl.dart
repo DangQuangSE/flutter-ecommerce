@@ -34,6 +34,14 @@ class CouponRepositoryImpl implements CouponRepository {
     return _guard(() => _remoteDataSource.delete(id));
   }
 
+  @override
+  Future<Result<List<CouponEntity>>> getUserAvailableCoupons() {
+    return _guard(() async {
+      final models = await _remoteDataSource.getUserAvailableCoupons();
+      return models;
+    });
+  }
+
   /// Runs [action], mapping known exceptions to the corresponding [Failure].
   Future<Result<T>> _guard<T>(Future<T> Function() action) async {
     try {

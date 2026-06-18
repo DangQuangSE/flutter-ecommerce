@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_catalog_entity.dart';
-import 'package:flutter_ecommerce/features/product/presentation/widgets/catalog/product_card.dart';
+import 'package:flutter_ecommerce/core/widgets/product_tactile_card.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<ProductCatalogEntity> products;
@@ -28,7 +28,7 @@ class ProductGrid extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 0.50,
+        childAspectRatio: 0.53,
       ),
       itemCount: products.length + (isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
@@ -40,7 +40,7 @@ class ProductGrid extends StatelessWidget {
             ),
           );
         }
-        return ProductCard(product: products[index]);
+        return ProductTactileCard.fromCatalog(product: products[index]);
       },
     );
   }

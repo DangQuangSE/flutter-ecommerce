@@ -94,7 +94,10 @@ class _PreviewItemCard extends StatelessWidget {
           _SizeBadge(size: item.size),
           const SizedBox(width: AppSizes.paddingSm),
           Expanded(child: _VariantInfo(colorName: color.name, sku: item.sku)),
-          _PriceDisplay(originalPrice: item.originalPrice),
+          _PriceDisplay(
+            originalPrice: item.originalPrice,
+            salePrice: item.salePrice,
+          ),
           _CardAction(
               icon: Icons.edit_outlined,
               color: AppColors.primary,
@@ -167,7 +170,8 @@ class _VariantInfo extends StatelessWidget {
 
 class _PriceDisplay extends StatelessWidget {
   final double originalPrice;
-  const _PriceDisplay({required this.originalPrice});
+  final double? salePrice;
+  const _PriceDisplay({required this.originalPrice, this.salePrice});
 
   static String _fmt(double price) {
     if (price >= 1000000) return '${(price / 1000000).toStringAsFixed(1)}M₫';
@@ -176,11 +180,40 @@ class _PriceDisplay extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Text(_fmt(originalPrice),
+  Widget build(BuildContext context) {
+    if (salePrice != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _fmt(originalPrice),
+            style: const TextStyle(
+              fontSize: AppSizes.fontSm,
+              color: AppColors.textSecondary,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          Text(
+            _fmt(salePrice!),
+            style: const TextStyle(
+              fontSize: AppSizes.fontMd,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primary,
+            ),
+          ),
+        ],
+      );
+    }
+    return Text(
+      _fmt(originalPrice),
       style: const TextStyle(
-          fontSize: AppSizes.fontMd,
-          fontWeight: FontWeight.w500,
-          color: AppColors.primary));
+        fontSize: AppSizes.fontMd,
+        fontWeight: FontWeight.w500,
+        color: AppColors.primary,
+      ),
+    );
+  }
 }
 
 class _CardAction extends StatelessWidget {

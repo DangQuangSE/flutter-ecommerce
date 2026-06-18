@@ -9,6 +9,7 @@ abstract interface class CouponRemoteDataSource {
   Future<CouponModel> create(CouponModel coupon);
   Future<CouponModel> update(int id, CouponModel coupon);
   Future<void> delete(int id);
+  Future<List<CouponModel>> getUserAvailableCoupons();
 }
 
 /// Talks to the admin coupon API (`/api/v1/admin/coupons`) over the shared
@@ -62,6 +63,20 @@ class CouponRemoteDataSourceImpl implements CouponRemoteDataSource {
   @override
   Future<void> delete(int id) async {
     await _dioClient.dio.delete<void>('${ApiConstants.adminCoupons}/$id');
+  }
+
+  @override
+  Future<List<CouponModel>> getUserAvailableCoupons() async {
+    final response = await _dioClient.dio.get<Map<String, dynamic>>(
+      ApiConstants.publicCoupons,
+    );
+    final data = response.data?['data'];
+    if (data is! List<dynamic>) {
+      throw const ParseException('Phản hồi danh sách mã giảm giá khả dụng không hợp lệ');
+    }
+    return data
+        .map((e) => CouponModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   CouponModel _parseSingle(Map<String, dynamic>? body) {

@@ -428,8 +428,11 @@ class AppRouter {
       GoRoute(
         path: '/checkout',
         name: AppRoutes.checkout,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<CheckoutBloc>(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<CheckoutBloc>()),
+            BlocProvider(create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
+          ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),
         routes: [

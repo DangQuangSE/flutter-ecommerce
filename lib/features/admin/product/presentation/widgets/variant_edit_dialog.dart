@@ -134,6 +134,11 @@ class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
               _PriceField(
                   controller: _priceCtrl, label: 'Giá gốc *', required: true),
               const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
+              _PriceField(
+                  controller: _salePriceCtrl,
+                  label: 'Giá khuyến mãi',
+                  required: false),
+              const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
               _StockField(controller: _stockCtrl),
               if (widget.showStatus) ...[
                 const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),

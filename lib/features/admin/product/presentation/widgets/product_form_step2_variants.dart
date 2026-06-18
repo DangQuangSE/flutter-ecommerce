@@ -197,8 +197,9 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
       child: ListTile(
         title: Text(variant.sku,
             style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(
-            '${variant.size} · ${variant.colorName} · ${_formatPrice(variant.salePrice ?? variant.originalPrice)}'),
+        subtitle: Text(variant.salePrice != null
+            ? '${variant.size} · ${variant.colorName} · ${_formatPrice(variant.originalPrice)} (Sale: ${_formatPrice(variant.salePrice!)})'
+            : '${variant.size} · ${variant.colorName} · ${_formatPrice(variant.originalPrice)}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

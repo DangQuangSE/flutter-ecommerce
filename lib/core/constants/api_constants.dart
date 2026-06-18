@@ -42,6 +42,7 @@ abstract final class ApiConstants {
 
   // Coupons — admin only (requires ADMIN role)
   static const String adminCoupons = '/api/v1/admin/coupons';
+  static const String publicCoupons = '/api/v1/coupons';
 
   // Chat — any authenticated user (USER: own conversations, ADMIN: support inbox)
   static const String chatConversations = '/api/chat/conversations';

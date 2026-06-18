@@ -4,16 +4,26 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
+import 'package:flutter_ecommerce/features/product/domain/entities/product_catalog_entity.dart';
 
 class ProductTactileCard extends StatefulWidget {
-  final ProductEntity product;
+  final ProductEntity? product;
+  final ProductCatalogEntity? catalogProduct;
   final String? badge;
 
   const ProductTactileCard({
     super.key,
-    required this.product,
+    required ProductEntity product,
     this.badge,
-  });
+  })  : product = product,
+        catalogProduct = null;
+
+  const ProductTactileCard.fromCatalog({
+    super.key,
+    required ProductCatalogEntity product,
+    this.badge,
+  })  : product = null,
+        catalogProduct = product;
 
   @override
   State<ProductTactileCard> createState() => _ProductTactileCardState();
@@ -21,6 +31,24 @@ class ProductTactileCard extends StatefulWidget {
 
 class _ProductTactileCardState extends State<ProductTactileCard> {
   double _scale = 1.0;
+
+  String get _id => widget.product?.id ?? widget.catalogProduct?.slug ?? '';
+  String get _name => widget.product?.name ?? widget.catalogProduct?.name ?? '';
+  String get _imageUrl => widget.product?.imageUrl ?? widget.catalogProduct?.imageUrl ?? '';
+  String get _brandName => widget.product?.brandName ?? widget.catalogProduct?.brandName ?? '';
+  String get _categoryName => widget.product?.categoryName ?? widget.catalogProduct?.categoryName ?? '';
+  
+  double get _price => widget.product != null
+      ? widget.product!.price
+      : (widget.catalogProduct?.salePrice ?? widget.catalogProduct?.originalPrice ?? 0.0);
+
+  double get _originalPrice => widget.product?.originalPrice ?? widget.catalogProduct?.originalPrice ?? 0.0;
+
+  double get _averageRating => widget.product?.averageRating ?? widget.catalogProduct?.averageRating ?? 0.0;
+
+  bool get _hasDiscount => widget.product != null
+      ? widget.product!.hasDiscount
+      : (widget.catalogProduct?.hasDiscount ?? false);
 
   void _onTapDown(TapDownDetails details) {
     setState(() {
@@ -34,7 +62,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
     });
     context.pushNamed(
       AppRoutes.productDetail,
-      pathParameters: {'productId': widget.product.id},
+      pathParameters: {'productId': _id},
     );
   }
 
@@ -46,17 +74,10 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Symmetrical concentric double-bezel card structure
-    final double? originalPrice =
-        widget.product.hasDiscount ? widget.product.originalPrice : null;
-    final int? discountPercent = widget.product.hasDiscount
-        ? (((widget.product.originalPrice - widget.product.price) /
-                    widget.product.originalPrice) *
-                100)
-            .round()
+    final double? originalPrice = _hasDiscount ? _originalPrice : null;
+    final int? discountPercent = _hasDiscount
+        ? (((_originalPrice - _price) / _originalPrice) * 100).round()
         : null;
-
-    final String categoryName = widget.product.categoryName;
 
     return GestureDetector(
       onTapDown: _onTapDown,
@@ -66,7 +87,6 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
         scale: _scale,
         duration: const Duration(milliseconds: 150),
         curve: Curves.fastLinearToSlowEaseIn,
-        // Concentric outer bezel shell
         child: Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
@@ -81,11 +101,9 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
               ),
             ],
           ),
-          // Core detail box
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Image area inside with corner clips - Symmetrical 0.84 aspect ratio for all cards
               AspectRatio(
                 aspectRatio: 0.84,
                 child: Container(
@@ -97,19 +115,26 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(
-                        widget.product.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                          child: Icon(
-                            Icons.image_not_supported_outlined,
-                            size: 28,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                      // Badges overlay
+                      _imageUrl.isNotEmpty
+                          ? Image.network(
+                              _imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  size: 28,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            )
+                          : const Center(
+                              child: Icon(
+                                Icons.image_not_supported_outlined,
+                                size: 28,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
                       Positioned(
                         top: 8,
                         left: 8,
@@ -159,8 +184,6 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                 ),
               ),
               const SizedBox(height: 8),
-
-              // Product Info Block
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 child: Column(
@@ -171,7 +194,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                       children: [
                         Flexible(
                           child: Text(
-                            widget.product.brandName.toUpperCase(),
+                            _brandName.toUpperCase(),
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 9,
@@ -182,7 +205,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                           ),
                         ),
                         Text(
-                          categoryName.toUpperCase(),
+                          _categoryName.toUpperCase(),
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
@@ -193,7 +216,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.product.name,
+                      _name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.lexend(
@@ -203,16 +226,16 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                         height: 1.3,
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    _StarRating(rating: _averageRating),
                     const SizedBox(height: 8),
-
-                    // Price Block with Monospace fonts - fixed height to guarantee identical card sizes
                     SizedBox(
                       height: 40,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _formatPrice(widget.product.price),
+                            _formatPrice(_price),
                             style: GoogleFonts.spaceMono(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
@@ -256,3 +279,23 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
     return '${buffer.toString()}đ';
   }
 }
+
+class _StarRating extends StatelessWidget {
+  final double rating;
+  const _StarRating({required this.rating});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(5, (i) {
+        if (i < rating.floor()) {
+          return const Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
+        } else if (i < rating && rating - i >= 0.5) {
+          return const Icon(Icons.star_half, size: 12, color: Color(0xFFFFC107));
+        }
+        return const Icon(Icons.star_border, size: 12, color: Color(0xFFFFC107));
+      }),
+    );
+  }
+}
+

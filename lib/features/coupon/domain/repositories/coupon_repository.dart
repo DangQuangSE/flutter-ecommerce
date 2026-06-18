@@ -13,4 +13,6 @@ abstract interface class CouponRepository {
   Future<Result<CouponEntity>> update(int id, CouponEntity coupon);
 
   Future<Result<void>> delete(int id);
+
+  Future<Result<List<CouponEntity>>> getUserAvailableCoupons();
 }

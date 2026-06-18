@@ -34,17 +34,9 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int _selectedColorIndex = 0;
-  String _selectedSize = '42';
+  String _selectedSize = '';
   bool _isFavorited = false;
   bool _reviewsRequested = false;
-
-  final List<Map<String, String>> _colors = [
-    {'name': 'Xanh Điện / Cam', 'hex': '#0058bc'},
-    {'name': 'Đen Bóng Đêm', 'hex': '#1a1c1f'},
-    {'name': 'Xám Cổ Điển', 'hex': '#717786'},
-  ];
-
-  final List<String> _sizes = ['40', '41', '42', '43', '44', '45'];
 
   @override
   void initState() {
@@ -63,11 +55,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       backgroundColor: AppColors.background,
       body: BlocConsumer<ProductBloc, ProductState>(
         listener: (context, state) {
-          if (state is ProductDetailLoaded &&
-              !_reviewsRequested &&
-              state.product.numericId != null) {
-            _reviewsRequested = true;
-            context.read<ReviewCubit>().loadReviews(state.product.numericId!);
+          if (state is ProductDetailLoaded) {
+            if (!_reviewsRequested && state.product.numericId != null) {
+              _reviewsRequested = true;
+              context.read<ReviewCubit>().loadReviews(state.product.numericId!);
+            }
+            final variants = state.product.variants ?? [];
+            if (variants.isNotEmpty) {
+              final firstVariant = variants.first;
+              setState(() {
+                _selectedSize = firstVariant.size;
+                
+                final colorMap = <String, String>{};
+                for (final v in variants) {
+                  if (v.colorName.isNotEmpty) {
+                    colorMap[v.colorName] = v.colorHex.isNotEmpty ? v.colorHex : '#000000';
+                  }
+                }
+                final colorsList = colorMap.entries.map((e) => {'name': e.key, 'hex': e.value}).toList();
+                final idx = colorsList.indexWhere((c) => c['name'] == firstVariant.colorName);
+                if (idx != -1) {
+                  _selectedColorIndex = idx;
+                }
+              });
+            }
           }
         },
         builder: (context, state) {
@@ -107,11 +118,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       }
     }
 
-    final List<Map<String, String>> colors = colorMap.isNotEmpty
-        ? colorMap.entries.map((e) => {'name': e.key, 'hex': e.value}).toList()
-        : _colors;
+    final List<Map<String, String>> colors =
+        colorMap.entries.map((e) => {'name': e.key, 'hex': e.value}).toList();
 
-    final List<String> sizes = sizeList.isNotEmpty ? sizeList : _sizes;
+    final List<String> sizes = sizeList;
 
     final selectedColorIndex =
         _selectedColorIndex.clamp(0, colors.isEmpty ? 0 : colors.length - 1);
@@ -176,32 +186,36 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     priceToDisplay,
                     originalPriceToDisplay,
                   ),
-                  _buildDivider(),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ColorSelector(
-                      selectedColorIndex: selectedColorIndex,
-                      colors: colors,
-                      onColorSelected: (index) {
-                        setState(() {
-                          _selectedColorIndex = index;
-                        });
-                      },
+                  if (colors.isNotEmpty) ...[
+                    _buildDivider(),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: ColorSelector(
+                        selectedColorIndex: selectedColorIndex,
+                        colors: colors,
+                        onColorSelected: (index) {
+                          setState(() {
+                            _selectedColorIndex = index;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  _buildDivider(),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: SizeSelector(
-                      selectedSize: selectedSize,
-                      sizes: sizes,
-                      onSizeSelected: (size) {
-                        setState(() {
-                          _selectedSize = size;
-                        });
-                      },
+                  ],
+                  if (sizes.isNotEmpty) ...[
+                    _buildDivider(),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SizeSelector(
+                        selectedSize: selectedSize,
+                        sizes: sizes,
+                        onSizeSelected: (size) {
+                          setState(() {
+                            _selectedSize = size;
+                          });
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                   _buildDivider(),
                   _buildCollapsiblePanels(product),
                   const SizedBox(height: 32),
@@ -409,32 +423,57 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (originalPriceToDisplay != null)
-                    Text(
-                      _formatPrice(originalPriceToDisplay),
-                      style: GoogleFonts.lexend(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                        decoration: TextDecoration.lineThrough,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (originalPriceToDisplay != null)
+                        Text(
+                          _formatPrice(originalPriceToDisplay),
+                          style: GoogleFonts.lexend(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      Transform(
+                        transform: Matrix4.skewX(-0.12),
+                        child: Text(
+                          _formatPrice(priceToDisplay),
+                          style: GoogleFonts.lexend(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primary,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
                       ),
-                    ),
-                  Transform(
-                    transform: Matrix4.skewX(-0.12),
-                    child: Text(
-                      _formatPrice(priceToDisplay),
-                      style: GoogleFonts.lexend(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.primary,
-                        fontStyle: FontStyle.italic,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
+                    ],
                   ),
+                  if (originalPriceToDisplay != null &&
+                      originalPriceToDisplay > priceToDisplay) ...[
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.error,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'Giảm ${(((originalPriceToDisplay - priceToDisplay) / originalPriceToDisplay) * 100).round()}%',
+                        style: GoogleFonts.spaceMono(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
               if (product.reviewCount > 0)

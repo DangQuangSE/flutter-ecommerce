@@ -241,8 +241,9 @@ class _VariantsSection extends StatelessWidget {
                 children: state.variants
                     .map((v) => ListTile(
                           title: Text('${v.size} — ${v.colorName}'),
-                          subtitle: Text(
-                              'SKU: ${v.sku} • Tồn: ${v.stockQuantity} • ${v.originalPrice.toStringAsFixed(0)}đ'),
+                          subtitle: Text(v.salePrice != null
+                              ? 'SKU: ${v.sku} • Tồn: ${v.stockQuantity} • ${v.originalPrice.toStringAsFixed(0)}đ (Sale: ${v.salePrice!.toStringAsFixed(0)}đ)'
+                              : 'SKU: ${v.sku} • Tồn: ${v.stockQuantity} • ${v.originalPrice.toStringAsFixed(0)}đ'),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
