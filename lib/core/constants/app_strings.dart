@@ -96,4 +96,43 @@ abstract final class AppStrings {
   static const String writeReviewSubmitSuccess = 'Đã gửi đánh giá. Cảm ơn bạn!';
   static String writeReviewMaxImages(int max) =>
       'Chỉ được chọn tối đa $max ảnh';
+
+  // Address management
+  static const String addressListTitle = 'Địa chỉ của tôi';
+  static const String addressEmptyTitle = 'Chưa có địa chỉ nào';
+  static const String addressEmptySubtitle =
+      'Thêm địa chỉ để thuận tiện khi đặt hàng.';
+  static const String addressAdd = 'Thêm địa chỉ';
+  static const String addressEdit = 'Sửa địa chỉ';
+  static const String addressDelete = 'Xóa địa chỉ';
+  static const String addressDeleteConfirm =
+      'Bạn có chắc muốn xóa địa chỉ này?';
+  static const String addressSetDefault = 'Đặt mặc định';
+  static const String addressDefaultLabel = 'Mặc định';
+  static const String addressSave = 'Lưu địa chỉ';
+  static const String addressUpdate = 'Cập nhật';
+  static const String addressCancel = 'Hủy';
+  static const String addressFormTitle = 'Địa chỉ mới';
+  static const String addressFormEditTitle = 'Sửa địa chỉ';
+  static const String addressFullNameHint = 'Họ và tên';
+  static const String addressPhoneHint = 'Số điện thoại';
+  static const String addressLineHint = 'Số nhà, đường';
+  static const String addressWardHint = 'Phường / Xã';
+  static const String addressDistrictHint = 'Quận / Huyện';
+  static const String addressCityHint = 'Tỉnh / Thành phố';
+  static const String addressLabelHint = 'Nhãn (Ví dụ: Nhà, Công ty)';
+  static const String addressIsDefaultHint = 'Đặt làm địa chỉ mặc định';
+  static const String addressFullNameRequired = 'Vui lòng nhập họ và tên';
+  static const String addressPhoneRequired = 'Vui lòng nhập số điện thoại';
+  static const String addressLineRequired = 'Vui lòng nhập địa chỉ';
+  static const String addressWardRequired = 'Vui lòng nhập phường / xã';
+  static const String addressDistrictRequired = 'Vui lòng nhập quận / huyện';
+  static const String addressCityRequired = 'Vui lòng nhập tỉnh / thành phố';
+  static const String addressCreated = 'Đã thêm địa chỉ thành công!';
+  static const String addressUpdated = 'Đã cập nhật địa chỉ thành công!';
+  static const String addressDeleted = 'Đã xóa địa chỉ thành công!';
+  static const String addressSetDefaultSuccess =
+      'Đã đặt địa chỉ mặc định thành công!';
+  static const String addressLoadError =
+      'Không thể tải địa chỉ. Vui lòng thử lại sau.';
 }

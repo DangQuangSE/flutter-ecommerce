@@ -198,6 +198,13 @@ import 'package:flutter_ecommerce/features/chat/domain/usecases/get_messages_use
 import 'package:flutter_ecommerce/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 
+// Address
+import 'package:flutter_ecommerce/features/address/data/datasources/address_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/address/data/datasources/address_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/address/data/repositories/address_repository_impl.dart';
+import 'package:flutter_ecommerce/features/address/domain/repositories/address_repository.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+
 final GetIt sl = GetIt.instance;
 
 Future<void> configureDependencies() async {
@@ -601,6 +608,17 @@ Future<void> configureDependencies() async {
       getOrdersUseCase: sl<GetOrdersUseCase>(),
       getOrderByIdUseCase: sl<GetOrderByIdUseCase>(),
     ),
+  );
+
+  // ── Address ──────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<AddressRemoteDataSource>(
+    () => AddressRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AddressRepository>(
+    () => AddressRepositoryImpl(sl<AddressRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<AddressCubit>(
+    () => AddressCubit(sl<AddressRepository>()),
   );
 
   // ── Admin Product ────────────────────────────────────────────────────────────
