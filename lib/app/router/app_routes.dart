@@ -25,6 +25,7 @@ abstract final class AppRoutes {
 
   static const String orderList = 'order-list';
   static const String orderDetail = 'order-detail';
+  static const String writeReview = 'write-review';
 
   static const String profile = 'profile';
   static const String editProfile = 'edit-profile';

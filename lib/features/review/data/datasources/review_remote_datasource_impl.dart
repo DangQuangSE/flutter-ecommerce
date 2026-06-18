@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
@@ -88,6 +89,48 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         e.response?.data?['message'] as String? ??
             e.message ??
             'Lỗi kết nối mạng',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
+  @override
+  Future<ReviewModel> createReview({
+    required int orderItemId,
+    required int rating,
+    required String comment,
+    List<String> imagePaths = const [],
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'review': MultipartFile.fromString(
+          jsonEncode({
+            'orderItemId': orderItemId,
+            'rating': rating,
+            'comment': comment,
+          }),
+          contentType: MediaType('application', 'json'),
+        ),
+        if (imagePaths.isNotEmpty)
+          'images': await Future.wait(imagePaths.map(
+            (path) => MultipartFile.fromFile(path, filename: path.split('/').last),
+          )),
+      });
+
+      final response = await _dioClient.dio.post<Map<String, dynamic>>(
+        ApiConstants.userReviews,
+        data: formData,
+      );
+      final data = response.data?['data'];
+      if (data is! Map<String, dynamic>) {
+        throw const ParseException('Phản hồi gửi đánh giá không hợp lệ');
+      }
+      return ReviewModel.fromJson(data);
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi gửi đánh giá',
         statusCode: e.response?.statusCode,
       );
     }

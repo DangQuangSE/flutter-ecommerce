@@ -8,6 +8,7 @@ class OrderItemEntity extends Equatable {
   final int quantity;
   final double price;
   final String? imageUrl;
+  final bool isReviewed;
 
   const OrderItemEntity({
     required this.id,
@@ -17,6 +18,7 @@ class OrderItemEntity extends Equatable {
     required this.quantity,
     required this.price,
     this.imageUrl,
+    this.isReviewed = false,
   });
 
   double get lineTotal => price * quantity;
@@ -30,5 +32,6 @@ class OrderItemEntity extends Equatable {
         quantity,
         price,
         imageUrl,
+        isReviewed,
       ];
 }

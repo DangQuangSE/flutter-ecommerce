@@ -88,6 +88,9 @@ abstract final class ApiConstants {
   static String productReviews(int productId) =>
       '/api/public/reviews/product/$productId';
 
+  // User Reviews — create/update a review for a delivered order item
+  static const String userReviews = '/api/user/reviews';
+
   // Admin Reviews — view all + reply only (no hide/delete)
   static const String adminReviews = '/api/admin/reviews';
   static String adminReviewReply(int reviewId) =>

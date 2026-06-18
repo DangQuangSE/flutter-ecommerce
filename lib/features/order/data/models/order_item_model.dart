@@ -9,6 +9,7 @@ class OrderItemModel extends OrderItemEntity {
     required super.quantity,
     required super.price,
     super.imageUrl,
+    super.isReviewed,
   });
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +21,7 @@ class OrderItemModel extends OrderItemEntity {
       quantity: json['quantity'] as int? ?? 0,
       price: (json['price'] as num).toDouble(),
       imageUrl: json['designImageUrl'] as String?,
+      isReviewed: json['isReviewed'] as bool? ?? false,
     );
   }
 }

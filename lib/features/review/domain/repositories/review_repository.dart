@@ -15,4 +15,12 @@ abstract interface class ReviewRepository {
 
   /// Admin: attach/replace the seller reply on a review.
   Future<Result<ReviewEntity>> replyToReview(int reviewId, String reply);
+
+  /// Customer: submit a review for a delivered order item.
+  Future<Result<ReviewEntity>> createReview({
+    required int orderItemId,
+    required int rating,
+    required String comment,
+    List<String> imagePaths = const [],
+  });
 }

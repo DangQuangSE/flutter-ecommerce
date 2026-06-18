@@ -56,4 +56,42 @@ abstract final class AppStrings {
   static const String adminReviewReplyRequired =
       'Vui lòng nhập nội dung phản hồi';
   static const String cancel = 'Huỷ';
+
+  // Order list / detail (customer-facing)
+  static const String orderListSectionLabel = 'QUẢN LÝ GIAO DỊCH';
+  static const String orderListTitle = 'Đơn Hàng Của Tôi';
+  static const String orderFilterAll = 'Tất cả';
+  static const String orderEmptyTitle = 'Không có đơn hàng nào';
+  static const String orderEmptySubtitle =
+      'Các giao dịch thuộc danh mục này sẽ xuất hiện tại đây.';
+  static const String orderListLoadError =
+      'Không thể tải đơn hàng. Vui lòng thử lại sau.';
+  static const String orderQuantityLabel = 'Số lượng';
+  static const String orderDetailLoadError =
+      'Không thể tải chi tiết đơn hàng. Vui lòng thử lại sau.';
+  static const String orderInfoSectionTitle = 'THÔNG TIN ĐƠN HÀNG';
+  static const String orderCodeLabel = 'Mã đơn hàng';
+  static const String orderDateLabel = 'Ngày đặt';
+  static const String orderPaymentMethodLabel = 'Phương thức thanh toán';
+  static const String orderShippingAddressSectionTitle = 'ĐỊA CHỈ GIAO HÀNG';
+  static const String orderShippingAddressLabel = 'Địa chỉ';
+  static String orderProductsSectionTitle(int count) => 'SẢN PHẨM ($count)';
+  static const String orderSizeLabel = 'Size';
+  static const String orderTotalLabel = 'TỔNG THANH TOÁN';
+  static const String orderContinueShopping = 'TIẾP TỤC MUA SẮM';
+  static const String orderWriteReviewAction = 'Đánh giá';
+  static const String orderReviewedLabel = 'Đã đánh giá';
+
+  // Write review
+  static const String writeReviewTitle = 'Đánh giá sản phẩm';
+  static const String writeReviewRatingLabel = 'Bạn đánh giá sản phẩm này bao nhiêu sao?';
+  static const String writeReviewCommentLabel = 'Nhận xét của bạn';
+  static const String writeReviewCommentHint =
+      'Chia sẻ cảm nhận của bạn về sản phẩm...';
+  static const String writeReviewAddImage = 'Thêm ảnh';
+  static const String writeReviewSubmit = 'Gửi đánh giá';
+  static const String writeReviewRatingRequired = 'Vui lòng chọn số sao';
+  static const String writeReviewCommentRequired = 'Vui lòng nhập nhận xét';
+  static const String writeReviewSubmitSuccess = 'Đã gửi đánh giá. Cảm ơn bạn!';
+  static String writeReviewMaxImages(int max) => 'Chỉ được chọn tối đa $max ảnh';
 }

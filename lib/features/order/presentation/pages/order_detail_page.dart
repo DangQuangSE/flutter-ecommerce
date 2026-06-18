@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_ecommerce/features/order/domain/entities/order_item_enti
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_state.dart';
+import 'package:flutter_ecommerce/features/review/presentation/pages/write_review_page.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final String orderId;
@@ -67,6 +69,20 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
+  Future<void> _openWriteReview(
+    BuildContext context,
+    OrderEntity order,
+    OrderItemEntity item,
+  ) async {
+    final reviewed = await context.pushNamed<bool>(
+      AppRoutes.writeReview,
+      extra: WriteReviewArgs(orderItemId: item.id, productName: item.productName),
+    );
+    if (reviewed == true && context.mounted) {
+      context.read<OrderBloc>().add(OrderDetailRequested(order.id));
+    }
+  }
+
   Widget _buildContent(BuildContext context, OrderEntity order) {
     final (_, statusColor) = OrderStatusLabel.badgeColors(order.status);
     final statusLabel = OrderStatusLabel.vi(order.status);
@@ -109,7 +125,9 @@ class OrderDetailPage extends StatelessWidget {
                 _buildSection(
                   'SẢN PHẨM (${order.items.length})',
                   Icons.shopping_bag_outlined,
-                  order.items.map((item) => _buildOrderItemCard(item)).toList(),
+                  order.items
+                      .map((item) => _buildOrderItemCard(context, order, item))
+                      .toList(),
                 ),
                 const SizedBox(height: 16),
                 _buildOrderSummary(order),
@@ -345,10 +363,17 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderItemCard(OrderItemEntity item) {
+  Widget _buildOrderItemCard(
+    BuildContext context,
+    OrderEntity order,
+    OrderItemEntity item,
+  ) {
+    final canReview = order.status.toUpperCase() == 'DELIVERED' && !item.isReviewed;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 60,
@@ -405,19 +430,55 @@ class OrderDetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  _formatPrice(item.lineTotal),
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                    fontStyle: FontStyle.italic,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _formatPrice(item.lineTotal),
+                      style: GoogleFonts.lexend(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    if (canReview)
+                      _buildWriteReviewButton(context, order, item)
+                    else if (item.isReviewed)
+                      Text(
+                        AppStrings.orderReviewedLabel,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success,
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildWriteReviewButton(
+    BuildContext context,
+    OrderEntity order,
+    OrderItemEntity item,
+  ) {
+    return OutlinedButton(
+      onPressed: () => _openWriteReview(context, order, item),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        side: const BorderSide(color: AppColors.primary),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        minimumSize: Size.zero,
+      ),
+      child: Text(
+        AppStrings.orderWriteReviewAction,
+        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700),
       ),
     );
   }

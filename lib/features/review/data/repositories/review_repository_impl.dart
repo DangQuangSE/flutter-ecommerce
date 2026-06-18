@@ -56,4 +56,26 @@ class ReviewRepositoryImpl implements ReviewRepository {
       return ResultFailure(DomainFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Result<ReviewEntity>> createReview({
+    required int orderItemId,
+    required int rating,
+    required String comment,
+    List<String> imagePaths = const [],
+  }) async {
+    try {
+      final result = await _remoteDataSource.createReview(
+        orderItemId: orderItemId,
+        rating: rating,
+        comment: comment,
+        imagePaths: imagePaths,
+      );
+      return Success(result);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    } catch (e) {
+      return ResultFailure(DomainFailure(e.toString()));
+    }
+  }
 }

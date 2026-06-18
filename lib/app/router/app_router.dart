@@ -33,6 +33,8 @@ import 'package:flutter_ecommerce/features/order/presentation/pages/order_detail
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_list_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/write_review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/pages/write_review_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
@@ -479,6 +481,19 @@ class AppRouter {
                 child: OrderDetailPage(orderId: orderId),
               );
             },
+            routes: [
+              GoRoute(
+                path: 'write-review',
+                name: AppRoutes.writeReview,
+                builder: (context, state) {
+                  final args = state.extra! as WriteReviewArgs;
+                  return BlocProvider(
+                    create: (_) => sl<WriteReviewCubit>(),
+                    child: WriteReviewPage(args: args),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
