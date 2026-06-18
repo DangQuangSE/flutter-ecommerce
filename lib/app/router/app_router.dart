@@ -39,6 +39,10 @@ import 'package:flutter_ecommerce/features/product/presentation/pages/product_li
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
+import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+import 'package:flutter_ecommerce/features/address/presentation/pages/address_form_page.dart';
+import 'package:flutter_ecommerce/features/address/presentation/pages/address_list_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
@@ -423,6 +427,28 @@ class AppRouter {
             path: 'edit',
             name: AppRoutes.editProfile,
             builder: (context, state) => const EditProfilePage(),
+          ),
+          GoRoute(
+            path: 'addresses',
+            name: AppRoutes.addressList,
+            builder: (context, state) => BlocProvider(
+              create: (_) => sl<AddressCubit>()..loadAddresses(),
+              child: const AddressListPage(),
+            ),
+            routes: [
+              GoRoute(
+                path: 'form',
+                name: AppRoutes.addressForm,
+                builder: (context, state) => BlocProvider(
+                  create: (_) => sl<AddressCubit>()..loadAddresses(),
+                  child: AddressFormPage(
+                    initial: state.extra is AddressEntity
+                        ? state.extra as AddressEntity
+                        : null,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

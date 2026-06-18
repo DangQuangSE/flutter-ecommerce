@@ -229,7 +229,7 @@ class ProfilePage extends StatelessWidget {
         ProfileMenuRow(
           icon: Icons.location_on_outlined,
           label: 'Địa chỉ giao hàng',
-          onTap: () => context.goNamed(AppRoutes.orderList),
+          onTap: () => context.pushNamed(AppRoutes.addressList),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(

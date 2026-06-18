@@ -59,6 +59,11 @@ abstract final class ApiConstants {
   static const String customDesigns = '/api/custom-designs';
   static String customDesignById(int id) => '/api/custom-designs/$id';
 
+  // Shipping addresses (authenticated user)
+  static const String addresses = '/api/v1/addresses';
+  static String addressById(int id) => '/api/v1/addresses/$id';
+  static String addressSetDefault(int id) => '/api/v1/addresses/$id/default';
+
   // Admin Product
   static const String adminProducts = '/api/admin/products';
   static String adminProductById(int id) => '/api/admin/products/$id';

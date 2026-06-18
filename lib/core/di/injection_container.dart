@@ -141,6 +141,18 @@ import 'package:flutter_ecommerce/features/cart/data/repositories/cart_repositor
 import 'package:flutter_ecommerce/features/cart/domain/repositories/cart_repository.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 
+// Address
+import 'package:flutter_ecommerce/features/address/data/datasources/address_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/address/data/datasources/address_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/address/data/repositories/address_repository_impl.dart';
+import 'package:flutter_ecommerce/features/address/domain/repositories/address_repository.dart';
+import 'package:flutter_ecommerce/features/address/domain/usecases/add_address_usecase.dart';
+import 'package:flutter_ecommerce/features/address/domain/usecases/delete_address_usecase.dart';
+import 'package:flutter_ecommerce/features/address/domain/usecases/get_addresses_usecase.dart';
+import 'package:flutter_ecommerce/features/address/domain/usecases/set_default_address_usecase.dart';
+import 'package:flutter_ecommerce/features/address/domain/usecases/update_address_usecase.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+
 // Profile
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 
@@ -422,6 +434,38 @@ Future<void> configureDependencies() async {
     () => CartRepositoryImpl(sl<CartRemoteDataSource>()),
   );
   sl.registerLazySingleton<CartCubit>(() => CartCubit(sl<CartRepository>()));
+
+  // ── Address ─────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<AddressRemoteDataSource>(
+    () => AddressRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AddressRepository>(
+    () => AddressRepositoryImpl(sl<AddressRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<GetAddressesUseCase>(
+    () => GetAddressesUseCase(sl<AddressRepository>()),
+  );
+  sl.registerLazySingleton<AddAddressUseCase>(
+    () => AddAddressUseCase(sl<AddressRepository>()),
+  );
+  sl.registerLazySingleton<UpdateAddressUseCase>(
+    () => UpdateAddressUseCase(sl<AddressRepository>()),
+  );
+  sl.registerLazySingleton<DeleteAddressUseCase>(
+    () => DeleteAddressUseCase(sl<AddressRepository>()),
+  );
+  sl.registerLazySingleton<SetDefaultAddressUseCase>(
+    () => SetDefaultAddressUseCase(sl<AddressRepository>()),
+  );
+  sl.registerFactory<AddressCubit>(
+    () => AddressCubit(
+      getAddressesUseCase: sl<GetAddressesUseCase>(),
+      addAddressUseCase: sl<AddAddressUseCase>(),
+      updateAddressUseCase: sl<UpdateAddressUseCase>(),
+      deleteAddressUseCase: sl<DeleteAddressUseCase>(),
+      setDefaultAddressUseCase: sl<SetDefaultAddressUseCase>(),
+    ),
+  );
 
   // ── Profile ─────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<ProfileCubit>(() => ProfileCubit());

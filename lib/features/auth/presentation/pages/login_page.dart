@@ -20,7 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _hideBlocLoginError = false;
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'admin@sportpro.com');
+  final _emailController = TextEditingController(text: 'user@sportpro.com');
   final _passwordController = TextEditingController(text: 'Password123');
   bool _obscurePassword = true;
 

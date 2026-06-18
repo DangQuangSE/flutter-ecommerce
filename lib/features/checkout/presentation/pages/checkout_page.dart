@@ -1,9 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_ecommerce/core/utils/url_helper/url_helper.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/di/injection_container.dart';
+import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
+import 'package:flutter_ecommerce/features/address/presentation/pages/address_list_page.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
@@ -24,26 +31,35 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
-  late TextEditingController _phoneController;
-  late TextEditingController _addressController;
+  AddressEntity? _selectedAddress;
+  late final AddressCubit _addressCubit;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'Alex Mercer');
-    _phoneController = TextEditingController(text: '0987654321');
-    _addressController = TextEditingController(
-      text: '123 Lê Lợi, Quận 1, TP. Hồ Chí Minh, Việt Nam',
-    );
+
+    _addressCubit = sl<AddressCubit>();
+    _addressCubit.stream.listen((state) {
+      if (!mounted) return;
+      final address = switch (state) {
+        AddressLoaded(:final addresses) =>
+          addresses.where((a) => a.isDefault).firstOrNull ?? addresses.firstOrNull,
+        AddressActionSuccess(:final addresses) =>
+          addresses.where((a) => a.isDefault).firstOrNull ?? addresses.firstOrNull,
+        _ => null,
+      };
+      if (address != null) _applyAddress(address);
+    });
+    _addressCubit.loadAddresses();
+  }
+
+  void _applyAddress(AddressEntity address) {
+    setState(() => _selectedAddress = address);
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
+    _addressCubit.close();
     super.dispose();
   }
 
@@ -53,6 +69,119 @@ class _CheckoutPageState extends State<CheckoutPage> {
     BuildContext context,
     CheckoutAwaitingPayment state,
   ) async {
+    if (kIsWeb) {
+      try {
+        launchWebUrl(state.session.paymentUrl);
+      } catch (e) {
+        debugPrint('Auto launch blocked/failed: $e');
+      }
+
+      if (!context.mounted) return;
+
+      final result = await showDialog<VnpayPaymentResult?>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogCtx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Thanh toán VNPay',
+            style: GoogleFonts.lexend(
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Vui lòng nhấn nút bên dưới để mở trang thanh toán VNPay (nếu trang chưa được mở tự động):',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: AppColors.textPrimary,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    try {
+                      launchWebUrl(state.session.paymentUrl);
+                    } catch (e) {
+                      debugPrint('Manual launch failed: $e');
+                    }
+                  },
+                  icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                  label: Text(
+                    'Đến trang thanh toán VNPay',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.primary),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Sau khi hoàn tất quá trình thanh toán trên VNPay, vui lòng quay lại đây và nhấn nút "Xác nhận đã thanh toán".',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(null),
+              child: Text(
+                'Hủy thanh toán',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.error,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(const VnpayPaymentResult(responseCode: '00')),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              child: Text(
+                'Xác nhận đã thanh toán',
+                style: GoogleFonts.lexend(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (!context.mounted) return;
+      context.read<CheckoutBloc>().add(
+            CheckoutPaymentReturned(
+              orderId: state.session.orderId,
+              result: result,
+            ),
+          );
+      return;
+    }
+
     final result = await context.pushNamed<VnpayPaymentResult?>(
       AppRoutes.vnpayPayment,
       extra: VnpayPaymentExtra(
@@ -261,39 +390,36 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     final checkoutTotalPrice = checkoutItems.fold(0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Shipping Section
-                  _buildSectionHeader('THÔNG TIN GIAO HÀNG', Icons.local_shipping_outlined),
-                  const SizedBox(height: 12),
-                  _buildShippingForm(),
-                  const SizedBox(height: 28),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Shipping Section
+                _buildSectionHeader('THÔNG TIN GIAO HÀNG', Icons.local_shipping_outlined),
+                const SizedBox(height: 12),
+                _buildShippingForm(),
+                const SizedBox(height: 28),
 
-                  // Payment Section
-                  _buildSectionHeader('PHƯƠNG THỨC THANH TOÁN', Icons.qr_code_scanner_rounded),
-                  const SizedBox(height: 12),
-                  PaymentQrCard(formattedTotal: _formatPrice(checkoutTotalPrice)),
-                  const SizedBox(height: 28),
+                // Payment Section
+                _buildSectionHeader('PHƯƠNG THỨC THANH TOÁN', Icons.qr_code_scanner_rounded),
+                const SizedBox(height: 12),
+                PaymentQrCard(formattedTotal: _formatPrice(checkoutTotalPrice)),
+                const SizedBox(height: 28),
 
-                  // Summary Section
-                  _buildOrderSummary(checkoutItems),
-                  const SizedBox(height: 32),
-                ],
-              ),
+                // Summary Section
+                _buildOrderSummary(checkoutItems),
+                const SizedBox(height: 32),
+              ],
             ),
           ),
-          _buildStickyFooter(context, checkoutItems),
-        ],
-      ),
+        ),
+        _buildStickyFooter(context, checkoutItems),
+      ],
     );
   }
 
@@ -316,8 +442,72 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _buildShippingForm() {
+    if (_selectedAddress == null) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          ),
+        ),
+        child: InkWell(
+          onTap: _openAddressPicker,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.location_on_outlined,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Địa chỉ giao hàng',
+                        style: GoogleFonts.lexend(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Chưa chọn địa chỉ giao hàng. Nhấn để chọn.',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.textSecondary,
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final address = _selectedAddress!;
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -326,90 +516,155 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTextField(
-            label: 'HỌ VÀ TÊN',
-            controller: _nameController,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập họ và tên' : null,
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            label: 'SỐ ĐIỆN THOẠI',
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập số điện thoại' : null,
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            label: 'ĐỊA CHỈ GIAO HÀNG',
-            controller: _addressController,
-            maxLines: 2,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập địa chỉ giao hàng' : null,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.location_on_rounded,
+                            color: AppColors.primary,
+                            size: 12,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            address.label?.toUpperCase() ?? 'ĐỊA CHỈ',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (address.isDefault) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE2F8EE),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'MẶC ĐỊNH',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF107C41),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                TextButton(
+                  onPressed: _openAddressPicker,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    'Thay đổi',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              address.fullName,
+              style: GoogleFonts.lexend(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Icon(
+                  Icons.phone_enabled_outlined,
+                  color: AppColors.textSecondary,
+                  size: 14,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  address.phoneNumber,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 2.0),
+                  child: Icon(
+                    Icons.map_outlined,
+                    color: AppColors.textSecondary,
+                    size: 14,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    address.fullAddress,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    int maxLines = 1,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.5,
-          ),
+  Future<void> _openAddressPicker() async {
+    final picked = await Navigator.of(context).push<AddressEntity?>(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: _addressCubit,
+          child: const AddressListPage(pickerMode: true),
         ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          maxLines: maxLines,
-          keyboardType: keyboardType,
-          validator: validator,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: const Color(0xFFF3F3F8),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-            ),
-            errorStyle: GoogleFonts.inter(fontSize: 11, color: AppColors.error),
-          ),
-        ),
-      ],
+      ),
     );
+    if (picked != null && mounted) _applyAddress(picked);
   }
 
   Widget _buildOrderSummary(List<CartItemEntity> checkoutItems) {
@@ -541,14 +796,30 @@ class _CheckoutPageState extends State<CheckoutPage> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              if (_formKey.currentState!.validate()) {
+              if (_selectedAddress != null) {
+                final cleanPhone = _normalizePhone(_selectedAddress!.phoneNumber);
+                final phoneRegex = RegExp(r'^(0|\+84)[0-9]{9,10}$');
+                if (!phoneRegex.hasMatch(cleanPhone)) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: AppColors.error,
+                      content: Text(
+                        'Số điện thoại của địa chỉ đã chọn không hợp lệ. Vui lòng Thay đổi -> Sửa để cập nhật!',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
                 final cartItemIds =
                     checkoutItems.map((item) => item.itemId).toList();
                 context.read<CheckoutBloc>().add(
                       CheckoutSubmitted(
                         OrderRequestEntity(
-                          shippingAddress: _addressController.text.trim(),
-                          phoneNumber: _normalizePhone(_phoneController.text),
+                          shippingAddress: _selectedAddress!.fullAddress,
+                          phoneNumber: cleanPhone,
                           cartItemIds: cartItemIds,
                         ),
                       ),
@@ -559,7 +830,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   SnackBar(
                     backgroundColor: AppColors.error,
                     content: Text(
-                      'Vui lòng điền đầy đủ thông tin giao hàng!',
+                      'Vui lòng chọn địa chỉ giao hàng!',
                       style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                     ),
                   ),
