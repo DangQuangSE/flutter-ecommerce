@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/admin_product_list_entity.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_status.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/get_admin_products_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/restore_product_usecase.dart';
 
 part 'admin_product_list_event.dart';
 part 'admin_product_list_state.dart';
@@ -11,14 +13,19 @@ class AdminProductListBloc
     extends Bloc<AdminProductListEvent, AdminProductListState> {
   final GetAdminProductsUseCase _getProducts;
   final DeleteAdminProductUseCase _deleteProduct;
+  final RestoreAdminProductUseCase _restoreProduct;
 
-  AdminProductListBloc(this._getProducts, this._deleteProduct)
-      : super(AdminProductListInitial()) {
+  AdminProductListBloc(
+    this._getProducts,
+    this._deleteProduct,
+    this._restoreProduct,
+  ) : super(AdminProductListInitial()) {
     on<AdminProductListLoaded>(_onLoaded);
     on<AdminProductListRefreshed>(_onRefreshed);
     on<AdminProductListLoadedMore>(_onLoadedMore);
     on<AdminProductListFiltered>(_onFiltered);
     on<AdminProductDeleted>(_onDeleted);
+    on<AdminProductRestored>(_onRestored);
   }
 
   Future<void> _onLoaded(
@@ -151,11 +158,37 @@ class AdminProductListBloc
     final result = await _deleteProduct(event.id);
     switch (result) {
       case Success():
-        final updated =
-            current.products.where((p) => p.id != event.id).toList();
+        final updated = current.products.map((p) {
+          if (p.id == event.id) {
+            return p.copyWith(status: ProductStatus.deleted);
+          }
+          return p;
+        }).toList();
         emit(current.copyWith(
           products: updated,
-          totalElements: current.totalElements - 1,
+        ));
+      case ResultFailure(:final failure):
+        emit(AdminProductListFailure(failure.message));
+    }
+  }
+
+  Future<void> _onRestored(
+    AdminProductRestored event,
+    Emitter<AdminProductListState> emit,
+  ) async {
+    if (state is! AdminProductListSuccess) return;
+    final current = state as AdminProductListSuccess;
+    final result = await _restoreProduct(event.id);
+    switch (result) {
+      case Success():
+        final updated = current.products.map((p) {
+          if (p.id == event.id) {
+            return p.copyWith(status: ProductStatus.active);
+          }
+          return p;
+        }).toList();
+        emit(current.copyWith(
+          products: updated,
         ));
       case ResultFailure(:final failure):
         emit(AdminProductListFailure(failure.message));

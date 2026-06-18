@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_status.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
 
 class AdminProductListPage extends StatefulWidget {
@@ -148,35 +149,48 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
                     title: Text(product.name),
                     subtitle: Text(
                         '${product.brandName} • ${product.status.name.toUpperCase()}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined),
-                          onPressed: () async {
+                    trailing: product.status == ProductStatus.deleted
+                        ? IconButton(
+                            icon: const Icon(Icons.restore,
+                                color: AppColors.primary),
+                            onPressed: () {
+                              context
+                                  .read<AdminProductListBloc>()
+                                  .add(AdminProductRestored(product.id));
+                            },
+                          )
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                onPressed: () async {
+                                  final bloc =
+                                      context.read<AdminProductListBloc>();
+                                  await context.push(
+                                      '/admin/products/${product.id}/edit');
+                                  if (context.mounted) {
+                                    bloc.add(AdminProductListRefreshed());
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline,
+                                    color: AppColors.error),
+                                onPressed: () => _confirmDelete(
+                                    context, product.id, product.name),
+                              ),
+                            ],
+                          ),
+                    onTap: product.status == ProductStatus.deleted
+                        ? null
+                        : () async {
                             final bloc = context.read<AdminProductListBloc>();
-                            await context
-                                .push('/admin/products/${product.id}/edit');
+                            await context.push('/admin/products/${product.id}');
                             if (context.mounted) {
                               bloc.add(AdminProductListRefreshed());
                             }
                           },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline,
-                              color: AppColors.error),
-                          onPressed: () =>
-                              _confirmDelete(context, product.id, product.name),
-                        ),
-                      ],
-                    ),
-                    onTap: () async {
-                      final bloc = context.read<AdminProductListBloc>();
-                      await context.push('/admin/products/${product.id}');
-                      if (context.mounted) {
-                        bloc.add(AdminProductListRefreshed());
-                      }
-                    },
                   );
                 },
               ),

@@ -117,4 +117,16 @@ class AdminProductDatasourceImpl implements AdminProductDatasource {
       );
     }
   }
+
+  @override
+  Future<void> restoreProduct(int id) async {
+    try {
+      await _dioClient.dio.patch(ApiConstants.adminProductRestore(id));
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
 }

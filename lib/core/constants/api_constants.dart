@@ -68,6 +68,7 @@ abstract final class ApiConstants {
   // Admin Product
   static const String adminProducts = '/api/admin/products';
   static String adminProductById(int id) => '/api/admin/products/$id';
+  static String adminProductRestore(int id) => '/api/admin/products/$id/restore';
   static String adminProductVariants(int productId) =>
       '/api/admin/products/$productId/variants';
   static String adminProductVariantsBatch(int productId) =>

@@ -21,4 +21,5 @@ abstract interface class AdminProductDatasource {
   Future<AdminProductDetailModel> updateProduct(
       int id, ProductUpdateRequestModel request);
   Future<void> deleteProduct(int id);
+  Future<void> restoreProduct(int id);
 }

@@ -123,6 +123,16 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
   }
 
   @override
+  Future<Result<void>> restoreProduct(int id) async {
+    try {
+      await _productDs.restoreProduct(id);
+      return const Success(null);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    }
+  }
+
+  @override
   Future<Result<ProductVariantEntity>> createVariant(
       int productId, CreateVariantParams params) async {
     try {
