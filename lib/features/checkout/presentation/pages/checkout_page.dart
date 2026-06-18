@@ -755,6 +755,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   void _openCouponBottomSheet(BuildContext context, double subtotal) {
+    final couponCubit = BlocProvider.of<CouponCubit>(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -763,15 +764,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (modalContext) {
-        return _CouponSelectionSheet(
-          subtotal: subtotal,
-          selectedCoupon: _selectedCoupon,
-          onCouponSelected: (coupon) {
-            setState(() {
-              _selectedCoupon = coupon;
-            });
-            Navigator.pop(modalContext);
-          },
+        return BlocProvider.value(
+          value: couponCubit,
+          child: _CouponSelectionSheet(
+            subtotal: subtotal,
+            selectedCoupon: _selectedCoupon,
+            onCouponSelected: (coupon) {
+              setState(() {
+                _selectedCoupon = coupon;
+              });
+              Navigator.pop(modalContext);
+            },
+          ),
         );
       },
     );
