@@ -76,7 +76,8 @@ class OrderDetailPage extends StatelessWidget {
   ) async {
     final reviewed = await context.pushNamed<bool>(
       AppRoutes.writeReview,
-      extra: WriteReviewArgs(orderItemId: item.id, productName: item.productName),
+      extra:
+          WriteReviewArgs(orderItemId: item.id, productName: item.productName),
     );
     if (reviewed == true && context.mounted) {
       context.read<OrderBloc>().add(OrderDetailRequested(order.id));
@@ -368,7 +369,8 @@ class OrderDetailPage extends StatelessWidget {
     OrderEntity order,
     OrderItemEntity item,
   ) {
-    final canReview = order.status.toUpperCase() == 'DELIVERED' && !item.isReviewed;
+    final canReview =
+        order.status.toUpperCase() == 'DELIVERED' && !item.isReviewed;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
