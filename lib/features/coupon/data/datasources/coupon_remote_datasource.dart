@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
@@ -22,61 +23,96 @@ class CouponRemoteDataSourceImpl implements CouponRemoteDataSource {
 
   @override
   Future<CouponPage> getCoupons({int page = 0, int size = 100}) async {
-    final response = await _dioClient.dio.get<Map<String, dynamic>>(
-      ApiConstants.adminCoupons,
-      queryParameters: {'page': page, 'size': size},
-    );
-    final data = response.data?['data'];
-    if (data is! Map<String, dynamic>) {
-      throw const ParseException('Phản hồi danh sách mã giảm giá không hợp lệ');
+    try {
+      final response = await _dioClient.dio.get<Map<String, dynamic>>(
+        ApiConstants.adminCoupons,
+        queryParameters: {'page': page, 'size': size},
+      );
+      final data = response.data?['data'];
+      if (data is! Map<String, dynamic>) {
+        throw const ParseException('Phản hồi danh sách mã giảm giá không hợp lệ');
+      }
+      final content = (data['content'] as List<dynamic>? ?? [])
+          .map((e) => CouponModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+      return CouponPage(
+        items: content,
+        page: (data['number'] as num?)?.toInt() ?? page,
+        totalPages: (data['totalPages'] as num?)?.toInt() ?? 1,
+        totalElements: (data['totalElements'] as num?)?.toInt() ?? content.length,
+        isLast: data['last'] as bool? ?? true,
+      );
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
+        statusCode: e.response?.statusCode,
+      );
     }
-    final content = (data['content'] as List<dynamic>? ?? [])
-        .map((e) => CouponModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-    return CouponPage(
-      items: content,
-      page: (data['number'] as num?)?.toInt() ?? page,
-      totalPages: (data['totalPages'] as num?)?.toInt() ?? 1,
-      totalElements: (data['totalElements'] as num?)?.toInt() ?? content.length,
-      isLast: data['last'] as bool? ?? true,
-    );
   }
 
   @override
   Future<CouponModel> create(CouponModel coupon) async {
-    final response = await _dioClient.dio.post<Map<String, dynamic>>(
-      ApiConstants.adminCoupons,
-      data: coupon.toRequestJson(),
-    );
-    return _parseSingle(response.data);
+    try {
+      final response = await _dioClient.dio.post<Map<String, dynamic>>(
+        ApiConstants.adminCoupons,
+        data: coupon.toRequestJson(),
+      );
+      return _parseSingle(response.data);
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
+        statusCode: e.response?.statusCode,
+      );
+    }
   }
 
   @override
   Future<CouponModel> update(int id, CouponModel coupon) async {
-    final response = await _dioClient.dio.put<Map<String, dynamic>>(
-      '${ApiConstants.adminCoupons}/$id',
-      data: coupon.toRequestJson(),
-    );
-    return _parseSingle(response.data);
+    try {
+      final response = await _dioClient.dio.put<Map<String, dynamic>>(
+        '${ApiConstants.adminCoupons}/$id',
+        data: coupon.toRequestJson(),
+      );
+      return _parseSingle(response.data);
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
+        statusCode: e.response?.statusCode,
+      );
+    }
   }
 
   @override
   Future<void> delete(int id) async {
-    await _dioClient.dio.delete<void>('${ApiConstants.adminCoupons}/$id');
+    try {
+      await _dioClient.dio.delete<void>('${ApiConstants.adminCoupons}/$id');
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
+        statusCode: e.response?.statusCode,
+      );
+    }
   }
 
   @override
   Future<List<CouponModel>> getUserAvailableCoupons() async {
-    final response = await _dioClient.dio.get<Map<String, dynamic>>(
-      ApiConstants.publicCoupons,
-    );
-    final data = response.data?['data'];
-    if (data is! List<dynamic>) {
-      throw const ParseException('Phản hồi danh sách mã giảm giá khả dụng không hợp lệ');
+    try {
+      final response = await _dioClient.dio.get<Map<String, dynamic>>(
+        ApiConstants.publicCoupons,
+      );
+      final data = response.data?['data'];
+      if (data is! List<dynamic>) {
+        throw const ParseException('Phản hồi danh sách mã giảm giá khả dụng không hợp lệ');
+      }
+      return data
+          .map((e) => CouponModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Network error',
+        statusCode: e.response?.statusCode,
+      );
     }
-    return data
-        .map((e) => CouponModel.fromJson(e as Map<String, dynamic>))
-        .toList();
   }
 
   CouponModel _parseSingle(Map<String, dynamic>? body) {
