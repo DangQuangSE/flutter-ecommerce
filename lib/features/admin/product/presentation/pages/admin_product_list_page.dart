@@ -70,7 +70,13 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/admin/products/create'),
+        onPressed: () async {
+          final bloc = context.read<AdminProductListBloc>();
+          await context.push('/admin/products/create');
+          if (context.mounted) {
+            bloc.add(AdminProductListRefreshed());
+          }
+        },
         child: const Icon(Icons.add),
       ),
       body: BlocConsumer<AdminProductListBloc, AdminProductListState>(
