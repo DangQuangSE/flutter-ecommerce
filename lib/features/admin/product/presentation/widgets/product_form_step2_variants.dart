@@ -551,6 +551,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
         maxChildSize: 0.95,
         expand: false,
         builder: (_, __) => BulkVariantSheet(
+          productId: productId,
           sizeGroups: widget.formState.sizeGroups,
           preSelectedSizeGroupId: widget.formState.sizeGroupId,
           colors: colors,

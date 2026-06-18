@@ -40,6 +40,7 @@ class BulkVariantSheet extends StatefulWidget {
   final List<ProductColorEntity> colors;
   final String productName;
   final String brandName;
+  final int? productId;
 
   const BulkVariantSheet({
     super.key,
@@ -48,6 +49,7 @@ class BulkVariantSheet extends StatefulWidget {
     required this.colors,
     this.productName = '',
     this.brandName = '',
+    this.productId,
   });
 
   @override
@@ -134,7 +136,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
       final color = widget.colors.firstWhere((c) => c.id == colorId);
       for (final size in orderedSizes) {
         drafts.add(CreateVariantParams(
-          sku: _autoSku(widget.brandName, widget.productName, color.name, size),
+          sku: _autoSku(widget.brandName, widget.productName, color.name, size, widget.productId),
           size: size,
           colorId: colorId,
           originalPrice: price,
@@ -148,13 +150,15 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   }
 
   static String _autoSku(
-      String brandName, String productName, String colorName, String size) {
+      String brandName, String productName, String colorName, String size, int? productId) {
     final brand = _slugCode(brandName, 3);
     final prod = _slugCode(productName, null);
     final color = _slugCode(colorName, 3);
     final colorPart = color.isEmpty ? 'CLR' : color;
     final sizePart = size.toUpperCase();
-    final prefix = [brand, prod].where((s) => s.isNotEmpty).join('-');
+    final idPart = productId != null ? '$productId' : '';
+    final prefixList = [brand, prod, idPart].where((s) => s.isNotEmpty).toList();
+    final prefix = prefixList.join('-');
     return prefix.isEmpty
         ? '$colorPart-$sizePart'
         : '$prefix-$colorPart-$sizePart';
@@ -223,7 +227,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
         .split('')
         .map((c) => vi[c] ?? c)
         .join();
-    final letters = ascii.replaceAll(RegExp(r'[^a-z]'), '');
+    final letters = ascii.replaceAll(RegExp(r'[^a-z0-9]'), '');
     final len = maxLen == null ? letters.length : min(maxLen, letters.length);
     return letters.substring(0, len).toUpperCase();
   }
