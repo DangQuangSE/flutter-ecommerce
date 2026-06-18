@@ -21,7 +21,9 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       return cartResponse.items;
     } on DioException catch (e) {
       throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi kết nối mạng',
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi kết nối mạng',
         statusCode: e.response?.statusCode,
       );
     }
@@ -50,7 +52,9 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       return cartResponse.items;
     } on DioException catch (e) {
       throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi kết nối mạng',
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi kết nối mạng',
         statusCode: e.response?.statusCode,
       );
     }
@@ -63,7 +67,9 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       return await getCart();
     } on DioException catch (e) {
       throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi kết nối mạng',
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi kết nối mạng',
         statusCode: e.response?.statusCode,
       );
     }

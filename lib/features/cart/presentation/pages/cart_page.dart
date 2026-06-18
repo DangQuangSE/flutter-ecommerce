@@ -180,9 +180,12 @@ class _CartPageState extends State<CartPage> {
       _hasInitializedSelection = true;
     }
 
-    final selectedItems = state.items.where((e) => _selectedItemIds.contains(e.itemId)).toList();
-    final selectedTotalItems = selectedItems.fold(0, (sum, e) => sum + e.quantity);
-    final selectedTotalPrice = selectedItems.fold(0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
+    final selectedItems =
+        state.items.where((e) => _selectedItemIds.contains(e.itemId)).toList();
+    final selectedTotalItems =
+        selectedItems.fold(0, (sum, e) => sum + e.quantity);
+    final selectedTotalPrice = selectedItems.fold(
+        0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
 
     return Column(
       children: [
@@ -195,7 +198,8 @@ class _CartPageState extends State<CartPage> {
               children: [
                 // Select All Header Card
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -209,13 +213,16 @@ class _CartPageState extends State<CartPage> {
                         width: 20,
                         height: 20,
                         child: Checkbox(
-                          value: state.items.isNotEmpty && _selectedItemIds.length == state.items.length,
+                          value: state.items.isNotEmpty &&
+                              _selectedItemIds.length == state.items.length,
                           activeColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
                           onChanged: (val) {
                             setState(() {
                               if (val == true) {
-                                _selectedItemIds.addAll(state.items.map((e) => e.itemId));
+                                _selectedItemIds
+                                    .addAll(state.items.map((e) => e.itemId));
                               } else {
                                 _selectedItemIds.clear();
                               }
@@ -238,13 +245,15 @@ class _CartPageState extends State<CartPage> {
                 const SizedBox(height: 20),
 
                 // Cart Items Section
-                _buildSectionHeader('DANH SÁCH GIỎ HÀNG', Icons.shopping_bag_outlined),
+                _buildSectionHeader(
+                    'DANH SÁCH GIỎ HÀNG', Icons.shopping_bag_outlined),
                 const SizedBox(height: 12),
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: state.items.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final item = state.items[index];
                     return _buildCartItemCard(context, item);
@@ -283,7 +292,8 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildCartItemCard(BuildContext context, CartItemEntity item) {
-    final String category = item.isCustomizable ? 'TRANG BỊ HIỆU NĂNG' : 'THỜI TRANG THỂ THAO';
+    final String category =
+        item.isCustomizable ? 'TRANG BỊ HIỆU NĂNG' : 'THỜI TRANG THỂ THAO';
 
     return Container(
       decoration: BoxDecoration(
@@ -316,7 +326,8 @@ class _CartPageState extends State<CartPage> {
                     child: Checkbox(
                       value: _selectedItemIds.contains(item.itemId),
                       activeColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4)),
                       onChanged: (val) {
                         setState(() {
                           if (val == true) {
@@ -346,8 +357,10 @@ class _CartPageState extends State<CartPage> {
                     child: Image.network(
                       item.imageUrl ?? '',
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Center(
-                        child: Icon(Icons.image_not_supported_outlined, color: AppColors.textSecondary),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                        child: Icon(Icons.image_not_supported_outlined,
+                            color: AppColors.textSecondary),
                       ),
                     ),
                   ),
@@ -415,7 +428,8 @@ class _CartPageState extends State<CartPage> {
                       if (item.customDesignId != null) ...[
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE8F0FE),
                             borderRadius: BorderRadius.circular(6),
@@ -424,7 +438,8 @@ class _CartPageState extends State<CartPage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.build_outlined, size: 10, color: Color(0xFF0058BC)),
+                              const Icon(Icons.build_outlined,
+                                  size: 10, color: Color(0xFF0058BC)),
                               const SizedBox(width: 4),
                               Text(
                                 'IN TÙY CHỌN: +${_formatPrice(item.printingPrice)}',
@@ -449,7 +464,8 @@ class _CartPageState extends State<CartPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: const Color(0xFFC1C6D7)),
+                              border:
+                                  Border.all(color: const Color(0xFFC1C6D7)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -466,11 +482,17 @@ class _CartPageState extends State<CartPage> {
                                       _showRemoveConfirmation(context, item);
                                     }
                                   },
-                                  child: const SizedBox(width: 28, height: 28, child: Icon(Icons.remove, size: 12)),
+                                  child: const SizedBox(
+                                      width: 28,
+                                      height: 28,
+                                      child: Icon(Icons.remove, size: 12)),
                                 ),
                                 Text(
                                   '${item.quantity}',
-                                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary),
                                 ),
                                 GestureDetector(
                                   onTap: () {
@@ -480,18 +502,24 @@ class _CartPageState extends State<CartPage> {
                                           customDesignId: item.customDesignId,
                                         );
                                   },
-                                  child: const SizedBox(width: 28, height: 28, child: Icon(Icons.add, size: 12)),
+                                  child: const SizedBox(
+                                      width: 28,
+                                      height: 28,
+                                      child: Icon(Icons.add, size: 12)),
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(width: 8),
-                          if (category == 'TRANG BỊ HIỆU NĂNG' && item.customDesignId == null) ...[
+                          if (category == 'TRANG BỊ HIỆU NĂNG' &&
+                              item.customDesignId == null) ...[
                             GestureDetector(
                               onTap: () {
                                 context.pushNamed(
                                   AppRoutes.productCustomizer,
-                                  pathParameters: {'productId': item.productSlug},
+                                  pathParameters: {
+                                    'productId': item.productSlug
+                                  },
                                   queryParameters: {
                                     'name': item.productName,
                                     'variantId': item.variantId.toString(),
@@ -501,16 +529,19 @@ class _CartPageState extends State<CartPage> {
                                 );
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppColors.primary, width: 1.2),
+                                  border: Border.all(
+                                      color: AppColors.primary, width: 1.2),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.brush_rounded, size: 12, color: AppColors.primary),
+                                    const Icon(Icons.brush_rounded,
+                                        size: 12, color: AppColors.primary),
                                     const SizedBox(width: 4),
                                     Text(
                                       'CUSTOM',
@@ -530,7 +561,8 @@ class _CartPageState extends State<CartPage> {
                             onTap: () => _showRemoveConfirmation(context, item),
                             child: Row(
                               children: [
-                                const Icon(Icons.delete_outline_rounded, size: 14, color: AppColors.textSecondary),
+                                const Icon(Icons.delete_outline_rounded,
+                                    size: 14, color: AppColors.textSecondary),
                                 const SizedBox(width: 4),
                                 Text(
                                   'XÓA',
@@ -568,7 +600,8 @@ class _CartPageState extends State<CartPage> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.build_outlined, size: 12, color: Color(0xFF0058BC)),
+                            const Icon(Icons.build_outlined,
+                                size: 12, color: Color(0xFF0058BC)),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
@@ -596,7 +629,8 @@ class _CartPageState extends State<CartPage> {
                               'quantity': item.quantity.toString(),
                               'price': item.price.toString(),
                               'itemId': item.itemId.toString(),
-                              'customDesignId': item.customDesignId?.toString() ?? '',
+                              'customDesignId':
+                                  item.customDesignId?.toString() ?? '',
                             },
                           );
                         },
@@ -611,10 +645,12 @@ class _CartPageState extends State<CartPage> {
                       ),
                       Text(
                         '  |  ',
-                        style: GoogleFonts.inter(fontSize: 9, color: AppColors.textSecondary),
+                        style: GoogleFonts.inter(
+                            fontSize: 9, color: AppColors.textSecondary),
                       ),
                       GestureDetector(
-                        onTap: () => _showRemoveDesignConfirmation(context, item),
+                        onTap: () =>
+                            _showRemoveDesignConfirmation(context, item),
                         child: Text(
                           'XÓA THIẾT KẾ',
                           style: GoogleFonts.inter(
@@ -646,7 +682,8 @@ class _CartPageState extends State<CartPage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
+                              color: const Color(0xFFC1C6D7)
+                                  .withValues(alpha: 0.2),
                             ),
                           ),
                           child: ClipRRect(
@@ -654,8 +691,10 @@ class _CartPageState extends State<CartPage> {
                             child: Image.network(
                               item.designImageUrl ?? '',
                               fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) => const Center(
-                                child: Icon(Icons.broken_image_outlined, size: 14, color: AppColors.textSecondary),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                child: Icon(Icons.broken_image_outlined,
+                                    size: 14, color: AppColors.textSecondary),
                               ),
                             ),
                           ),
@@ -719,8 +758,6 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
-
-
 
   Widget _buildOrderSummary(int selectedTotalItems, double selectedTotalPrice) {
     return Container(
@@ -893,7 +930,8 @@ class _CartPageState extends State<CartPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 48, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Không thể tải thông tin giỏ hàng.',
@@ -932,7 +970,8 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void _showRemoveDesignConfirmation(BuildContext context, CartItemEntity item) {
+  void _showRemoveDesignConfirmation(
+      BuildContext context, CartItemEntity item) {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
@@ -1024,7 +1063,7 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
     try {
       final dioClient = sl<DioClient>();
       final customDesignRepo = sl<CustomDesignRepository>();
-      
+
       final results = await Future.wait([
         dioClient.dio.get('/api/custom-designs/${widget.customDesignId}'),
         customDesignRepo.getPrintingConfigs(),
@@ -1040,7 +1079,8 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
       final materialName = data['printingMaterialName'] as String?;
       final numTextLines = (data['numTextLines'] as num? ?? 0).toInt();
       final numImages = (data['numImages'] as num? ?? 0).toInt();
-      final totalPrintingPrice = (data['totalPrintingPrice'] as num? ?? 0.0).toDouble();
+      final totalPrintingPrice =
+          (data['totalPrintingPrice'] as num? ?? 0.0).toDouble();
 
       double materialBasePrice = 0.0;
       double textUnitPrice = 0.0;
@@ -1053,14 +1093,19 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
             (m) => m.id == materialId,
             orElse: () => config.materials.firstWhere(
               (m) => m.name.toLowerCase() == materialName?.toLowerCase(),
-              orElse: () => const PrintingMaterialEntity(id: -1, name: '', description: '', basePrice: 0.0, isActive: false),
+              orElse: () => const PrintingMaterialEntity(
+                  id: -1,
+                  name: '',
+                  description: '',
+                  basePrice: 0.0,
+                  isActive: false),
             ),
           );
           if (matchedMat.id != -1) {
             materialBasePrice = matchedMat.basePrice;
           }
         }
-        
+
         for (final pc in config.priceConfigs) {
           if (pc.type == 'TEXT') {
             textUnitPrice = pc.unitPrice;
@@ -1101,7 +1146,9 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
           child: SizedBox(
             width: 14,
             height: 14,
-            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0058BC))),
+            child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0058BC))),
           ),
         ),
       );
@@ -1110,7 +1157,9 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
     final materialText = _materialName ?? 'N/A';
     final textLines = _numTextLines;
     final images = _numImages;
-    final printingPrice = _totalPrintingPrice > 0 ? _totalPrintingPrice : widget.fallbackPrintingPrice;
+    final printingPrice = _totalPrintingPrice > 0
+        ? _totalPrintingPrice
+        : widget.fallbackPrintingPrice;
 
     final textCost = textLines * _textUnitPrice;
     final imageCost = images * _imageUnitPrice;
@@ -1127,13 +1176,15 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
 
     return Column(
       children: [
-        _buildSpecRow('Chất liệu tuyển chọn:', materialValueText, isBoldValue: true),
+        _buildSpecRow('Chất liệu tuyển chọn:', materialValueText,
+            isBoldValue: true),
         const SizedBox(height: 4),
         _buildSpecRow('Số lớp chữ in thêm:', textValueText),
         const SizedBox(height: 4),
         _buildSpecRow('Số logo tải lên:', imageValueText),
         const SizedBox(height: 4),
-        Container(height: 1, color: const Color(0xFFC1C6D7).withValues(alpha: 0.15)),
+        Container(
+            height: 1, color: const Color(0xFFC1C6D7).withValues(alpha: 0.15)),
         const SizedBox(height: 4),
         _buildSpecRow(
           'Tổng cộng chi phí in:',
@@ -1152,7 +1203,8 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline_rounded, size: 12, color: Color(0xFF0058BC)),
+                const Icon(Icons.info_outline_rounded,
+                    size: 12, color: Color(0xFF0058BC)),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -1173,7 +1225,8 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
     );
   }
 
-  Widget _buildSpecRow(String label, String value, {bool isBoldValue = false, bool isBlueValue = false}) {
+  Widget _buildSpecRow(String label, String value,
+      {bool isBoldValue = false, bool isBlueValue = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1193,7 +1246,8 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
             style: GoogleFonts.inter(
               fontSize: 10,
               fontWeight: isBoldValue ? FontWeight.w800 : FontWeight.w600,
-              color: isBlueValue ? const Color(0xFF0058BC) : AppColors.textPrimary,
+              color:
+                  isBlueValue ? const Color(0xFF0058BC) : AppColors.textPrimary,
             ),
           ),
         ),

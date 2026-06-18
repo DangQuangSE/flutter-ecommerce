@@ -81,7 +81,8 @@ class _LoginPageState extends State<LoginPage> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -141,7 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                                     topLeft: Radius.circular(16),
                                   ),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     decoration: const BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
@@ -166,12 +168,14 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               Expanded(
                                 child: InkWell(
-                                  onTap: () => context.goNamed(AppRoutes.register),
+                                  onTap: () =>
+                                      context.goNamed(AppRoutes.register),
                                   borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(16),
                                   ),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     decoration: const BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
@@ -215,7 +219,8 @@ class _LoginPageState extends State<LoginPage> {
                                 final loginError = _hideBlocLoginError
                                     ? null
                                     : switch (state) {
-                                        AuthLoginFailed(:final message) => message,
+                                        AuthLoginFailed(:final message) =>
+                                          message,
                                         _ => null,
                                       };
                                 final hasCredentialError = loginError != null;
@@ -223,7 +228,8 @@ class _LoginPageState extends State<LoginPage> {
                                 return Form(
                                   key: _formKey,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: [
                                       // Email field
                                       Text(
@@ -238,7 +244,8 @@ class _LoginPageState extends State<LoginPage> {
                                       const SizedBox(height: 8),
                                       TextFormField(
                                         controller: _emailController,
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
                                         onChanged: (_) {
@@ -256,7 +263,8 @@ class _LoginPageState extends State<LoginPage> {
                                             color: AppColors.textSecondary,
                                           ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: BorderSide(
                                               color: hasCredentialError
                                                   ? AppColors.error
@@ -264,7 +272,8 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: BorderSide(
                                               color: hasCredentialError
                                                   ? AppColors.error
@@ -273,13 +282,16 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                           ),
                                           errorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: const BorderSide(
                                               color: AppColors.error,
                                             ),
                                           ),
-                                          focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: const BorderSide(
                                               color: AppColors.error,
                                               width: 1.5,
@@ -332,19 +344,22 @@ class _LoginPageState extends State<LoginPage> {
                                           suffixIcon: IconButton(
                                             onPressed: () {
                                               setState(() {
-                                                _obscurePassword = !_obscurePassword;
+                                                _obscurePassword =
+                                                    !_obscurePassword;
                                               });
                                             },
                                             icon: Icon(
                                               _obscurePassword
-                                                  ? Icons.visibility_off_outlined
+                                                  ? Icons
+                                                      .visibility_off_outlined
                                                   : Icons.visibility_outlined,
                                               size: 20,
                                               color: AppColors.textSecondary,
                                             ),
                                           ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: BorderSide(
                                               color: hasCredentialError
                                                   ? AppColors.error
@@ -352,7 +367,8 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: BorderSide(
                                               color: hasCredentialError
                                                   ? AppColors.error
@@ -361,13 +377,16 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                           ),
                                           errorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: const BorderSide(
                                               color: AppColors.error,
                                             ),
                                           ),
-                                          focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: const BorderSide(
                                               color: AppColors.error,
                                               width: 1.5,
@@ -401,17 +420,17 @@ class _LoginPageState extends State<LoginPage> {
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: GestureDetector(
-                                          onTap: () =>
-                                              context.pushNamed(
-                                                AppRoutes.forgotPassword,
-                                              ),
+                                          onTap: () => context.pushNamed(
+                                            AppRoutes.forgotPassword,
+                                          ),
                                           child: Text(
                                             'Quên mật khẩu?',
                                             style: GoogleFonts.inter(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w600,
                                               color: AppColors.primary,
-                                              decoration: TextDecoration.underline,
+                                              decoration:
+                                                  TextDecoration.underline,
                                             ),
                                           ),
                                         ),
@@ -425,20 +444,23 @@ class _LoginPageState extends State<LoginPage> {
                                           backgroundColor: AppColors.accent,
                                           foregroundColor: Colors.white,
                                           elevation: 2,
-                                          padding: const EdgeInsets.symmetric(vertical: 16),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
                                         ),
                                         child: isLoading
                                             ? const SizedBox(
                                                 height: 20,
                                                 width: 20,
-                                                child: CircularProgressIndicator(
+                                                child:
+                                                    CircularProgressIndicator(
                                                   strokeWidth: 2,
                                                   valueColor:
-                                                      AlwaysStoppedAnimation<Color>(
-                                                          Colors.white),
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(Colors.white),
                                                 ),
                                               )
                                             : Row(
@@ -449,7 +471,8 @@ class _LoginPageState extends State<LoginPage> {
                                                     'Đăng nhập',
                                                     style: GoogleFonts.lexend(
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight:
+                                                          FontWeight.w700,
                                                       letterSpacing: 1.0,
                                                     ),
                                                   ),
@@ -465,12 +488,12 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 );
                               },
-                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 32),
+                    ),
+                    const SizedBox(height: 32),
 
                     // Footer terms and policy
                     Padding(
@@ -484,7 +507,8 @@ class _LoginPageState extends State<LoginPage> {
                             height: 1.4,
                           ),
                           children: [
-                            const TextSpan(text: 'Bằng việc đăng nhập, bạn đồng ý với '),
+                            const TextSpan(
+                                text: 'Bằng việc đăng nhập, bạn đồng ý với '),
                             TextSpan(
                               text: 'Điều khoản dịch vụ',
                               style: const TextStyle(

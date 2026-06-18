@@ -74,7 +74,7 @@ void main() {
       expect(model.sku, isNull);
       expect(model.basePrice, 0.0);
       expect(model.originalPrice, 0.0);
-      expect(model.salePrice, 0.0);
+      expect(model.salePrice, isNull);
       expect(model.imageUrl, isNull);
       expect(model.categoryName, '');
       expect(model.brandName, '');

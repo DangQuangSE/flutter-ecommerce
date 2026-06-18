@@ -56,7 +56,8 @@ class _ChatListPageState extends State<ChatListPage> {
                 return switch (state) {
                   ChatLoading() => const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.primary),
                       ),
                     ),
                   ChatsLoaded(:final chats) => _buildChatList(chats),
@@ -155,7 +156,8 @@ class _ChatListPageState extends State<ChatListPage> {
             color: AppColors.textHint,
             fontWeight: FontWeight.w500,
           ),
-          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textSecondary, size: 20),
+          prefixIcon: const Icon(Icons.search_rounded,
+              color: AppColors.textSecondary, size: 20),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
                   onPressed: () {
@@ -164,12 +166,14 @@ class _ChatListPageState extends State<ChatListPage> {
                       _searchQuery = '';
                     });
                   },
-                  icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary, size: 18),
+                  icon: const Icon(Icons.close_rounded,
+                      color: AppColors.textSecondary, size: 18),
                 )
               : null,
           filled: true,
           fillColor: const Color(0xFFF3F3F8),
-          contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -199,7 +203,8 @@ class _ChatListPageState extends State<ChatListPage> {
     );
   }
 
-  Widget _buildFilterChip({required String label, required String filterValue}) {
+  Widget _buildFilterChip(
+      {required String label, required String filterValue}) {
     final bool isActive = _selectedFilter == filterValue;
     return GestureDetector(
       onTap: () {
@@ -232,9 +237,10 @@ class _ChatListPageState extends State<ChatListPage> {
   Widget _buildChatList(List<ChatEntity> chats) {
     // 1. Filter chats by search and selected tab
     final filtered = chats.where((chat) {
-      final matchesSearch = chat.senderName.toLowerCase().contains(_searchQuery) ||
-          chat.lastMessage.toLowerCase().contains(_searchQuery);
-      
+      final matchesSearch =
+          chat.senderName.toLowerCase().contains(_searchQuery) ||
+              chat.lastMessage.toLowerCase().contains(_searchQuery);
+
       final matchesTab = switch (_selectedFilter) {
         'unread' => chat.unreadCount > 0,
         'support' => chat.tag == 'Hỗ trợ',
@@ -251,7 +257,9 @@ class _ChatListPageState extends State<ChatListPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.forum_outlined, size: 56, color: AppColors.textSecondary.withValues(alpha: 0.5)),
+              Icon(Icons.forum_outlined,
+                  size: 56,
+                  color: AppColors.textSecondary.withValues(alpha: 0.5)),
               const SizedBox(height: 16),
               Text(
                 'Không tìm thấy cuộc hội thoại nào.',
@@ -322,7 +330,8 @@ class _ChatListPageState extends State<ChatListPage> {
                         child: Image.network(
                           chat.senderAvatar,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 24),
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.person, size: 24),
                         ),
                       ),
                       if (chat.isOnline)
@@ -354,18 +363,22 @@ class _ChatListPageState extends State<ChatListPage> {
                               chat.senderName,
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
-                                fontWeight: hasUnread ? FontWeight.w800 : FontWeight.w700,
+                                fontWeight: hasUnread
+                                    ? FontWeight.w800
+                                    : FontWeight.w700,
                                 color: AppColors.textPrimary,
                               ),
                             ),
                             if (chat.tag != null) ...[
                               const SizedBox(width: 6),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: chat.tag == 'Shop'
                                       ? AppColors.accent.withValues(alpha: 0.12)
-                                      : AppColors.primary.withValues(alpha: 0.1),
+                                      : AppColors.primary
+                                          .withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -373,7 +386,9 @@ class _ChatListPageState extends State<ChatListPage> {
                                   style: GoogleFonts.inter(
                                     fontSize: 9,
                                     fontWeight: FontWeight.w800,
-                                    color: chat.tag == 'Shop' ? AppColors.accent : AppColors.primary,
+                                    color: chat.tag == 'Shop'
+                                        ? AppColors.accent
+                                        : AppColors.primary,
                                   ),
                                 ),
                               ),
@@ -387,8 +402,11 @@ class _ChatListPageState extends State<ChatListPage> {
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
-                            color: hasUnread ? AppColors.textPrimary : AppColors.textSecondary,
+                            fontWeight:
+                                hasUnread ? FontWeight.w600 : FontWeight.w400,
+                            color: hasUnread
+                                ? AppColors.textPrimary
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -406,7 +424,9 @@ class _ChatListPageState extends State<ChatListPage> {
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
-                          color: hasUnread ? AppColors.primary : AppColors.textSecondary,
+                          color: hasUnread
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -418,7 +438,9 @@ class _ChatListPageState extends State<ChatListPage> {
                               height: 24,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.4)),
+                                border: Border.all(
+                                    color: const Color(0xFFC1C6D7)
+                                        .withValues(alpha: 0.4)),
                               ),
                               clipBehavior: Clip.antiAlias,
                               child: Image.network(
@@ -470,7 +492,8 @@ class _ChatListPageState extends State<ChatListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 48, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Không thể tải danh sách chat.',

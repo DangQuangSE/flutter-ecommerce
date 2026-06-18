@@ -13,7 +13,8 @@ class AdminStatsModel extends AdminStatsEntity {
     required super.recentOrders,
   });
 
-  factory AdminStatsModel.fromJson(Map<String, dynamic> json) => AdminStatsModel(
+  factory AdminStatsModel.fromJson(Map<String, dynamic> json) =>
+      AdminStatsModel(
         totalRevenue: (json['total_revenue'] as num).toDouble(),
         revenueGrowth: (json['revenue_growth'] as num).toDouble(),
         totalOrders: json['total_orders'] as int,
@@ -30,12 +31,20 @@ class AdminStatsModel extends AdminStatsEntity {
 
   static AdminStatsModel get mockStats => AdminStatsModel(
         totalRevenue: 24500000.0, // 24.5M
-        revenueGrowth: 12.8,       // +12.8%
-        totalOrders: 142,          // 142 orders
-        ordersGrowth: 8.0,         // +8%
-        newCustomers: 38,          // 38 new customers
-        customersGrowth: 2.4,      // +2.4%
-        weeklyTraffic: const [30, 45, 80, 50, 60, 40, 70], // Sunday to Saturday or similar
+        revenueGrowth: 12.8, // +12.8%
+        totalOrders: 142, // 142 orders
+        ordersGrowth: 8.0, // +8%
+        newCustomers: 38, // 38 new customers
+        customersGrowth: 2.4, // +2.4%
+        weeklyTraffic: const [
+          30,
+          45,
+          80,
+          50,
+          60,
+          40,
+          70
+        ], // Sunday to Saturday or similar
         recentOrders: [
           RecentOrderModel(
             id: 'o-001',

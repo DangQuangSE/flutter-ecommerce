@@ -34,6 +34,23 @@ class CouponCubit extends Cubit<CouponState> {
     }
   }
 
+  Future<void> loadUserAvailableCoupons() async {
+    emit(const CouponLoading());
+    final result = await _repository.getUserAvailableCoupons();
+    switch (result) {
+      case Success(:final data):
+        emit(CouponLoaded(
+          coupons: data,
+          page: 0,
+          totalPages: 1,
+          totalElements: data.length,
+          isLast: true,
+        ));
+      case ResultFailure(:final failure):
+        emit(CouponError(failure.message));
+    }
+  }
+
   Future<void> refresh() => load(page: _page);
 
   /// Creates a coupon. Returns `null` on success, or an error message.

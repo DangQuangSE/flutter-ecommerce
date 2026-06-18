@@ -4,6 +4,7 @@ import 'package:flutter_ecommerce/features/color/domain/entities/product_color_e
 abstract interface class ProductColorRepository {
   Future<Result<List<ProductColorEntity>>> getColors();
   Future<Result<ProductColorEntity>> createColor(ProductColorEntity color);
-  Future<Result<ProductColorEntity>> updateColor(int id, ProductColorEntity color);
+  Future<Result<ProductColorEntity>> updateColor(
+      int id, ProductColorEntity color);
   Future<Result<void>> deleteColor(int id);
 }

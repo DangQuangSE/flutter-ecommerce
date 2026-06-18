@@ -411,6 +411,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 PaymentQrCard(formattedTotal: _formatPrice(checkoutTotalPrice)),
                 const SizedBox(height: 28),
 
+                // Coupon Section
+                _buildSectionHeader('MAGIAMGIA (COUPON)', Icons.local_offer_outlined),
+                const SizedBox(height: 12),
+                _buildCouponSelector(checkoutTotalPrice),
+                const SizedBox(height: 28),
+
                 // Summary Section
                 _buildOrderSummary(checkoutItems),
                 const SizedBox(height: 32),

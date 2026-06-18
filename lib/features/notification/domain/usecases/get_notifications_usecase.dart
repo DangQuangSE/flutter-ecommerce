@@ -7,5 +7,6 @@ class GetNotificationsUseCase {
 
   const GetNotificationsUseCase(this._repository);
 
-  Future<Result<List<NotificationEntity>>> call() => _repository.getNotifications();
+  Future<Result<List<NotificationEntity>>> call() =>
+      _repository.getNotifications();
 }

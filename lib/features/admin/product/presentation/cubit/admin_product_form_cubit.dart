@@ -13,6 +13,8 @@ import 'package:flutter_ecommerce/features/brand/domain/entities/brand_entity.da
 import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_tree_node.dart';
 import 'package:flutter_ecommerce/features/category/domain/repositories/category_repository.dart';
+import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/get_size_groups_usecase.dart';
 
 part 'admin_product_form_state.dart';
 
@@ -22,6 +24,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
   final DeleteAdminProductUseCase _deleteProduct;
   final CategoryRepository _categoryRepository;
   final BrandRepository _brandRepository;
+  final GetSizeGroupsUseCase _getSizeGroupsUseCase;
 
   AdminProductFormCubit(
     this._createProduct,
@@ -29,6 +32,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
     this._deleteProduct,
     this._categoryRepository,
     this._brandRepository,
+    this._getSizeGroupsUseCase,
   ) : super(const AdminProductFormState());
 
   void nameChanged(String v) => emit(state.copyWith(name: v, clearError: true));
@@ -38,9 +42,9 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
   void genderChanged(Gender g) => emit(state.copyWith(gender: g));
   void statusChanged(ProductStatus s) => emit(state.copyWith(status: s));
   void featuredToggled() => emit(state.copyWith(isFeatured: !state.isFeatured));
-
-  void beginEditMode() =>
-      emit(state.copyWith(isLoadingDetail: true));
+  void sizeGroupChanged(int? id) =>
+      emit(state.copyWith(sizeGroupId: id, clearSizeGroupId: id == null));
+  void beginEditMode() => emit(state.copyWith(isLoadingDetail: true));
 
   void goBack() {
     if (state.currentStep > 0) {
@@ -58,26 +62,35 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
       clearDropdownError: true,
     ));
     try {
-      // Launch both requests in parallel, then await each result.
       final catFuture = _categoryRepository.getTree();
       final brandFuture = _brandRepository.getBrands(size: 100);
+      final sizeGroupFuture = _getSizeGroupsUseCase();
       final catResult = await catFuture;
       final brandResult = await brandFuture;
+      final sizeGroupResult = await sizeGroupFuture;
 
       if (catResult is Success<List<CategoryTreeNode>> &&
-          brandResult is Success<List<BrandEntity>>) {
+          brandResult is Success<List<BrandEntity>> &&
+          sizeGroupResult is Success<List<SizeGroupEntity>>) {
         emit(state.copyWith(
           dropdownStatus: DropdownStatus.loaded,
           categories: catResult.data,
           brands: brandResult.data.where((b) => b.id != null).toList(),
+          sizeGroups: sizeGroupResult.data,
         ));
       } else {
-        final msg = catResult is ResultFailure<List<CategoryTreeNode>>
-            ? catResult.failure.message
-            : (brandResult as ResultFailure<List<BrandEntity>>).failure.message;
+        String? msg;
+        if (catResult case ResultFailure(:final failure)) {
+          msg = failure.message;
+        } else if (brandResult case ResultFailure(:final failure)) {
+          msg = failure.message;
+        } else if (sizeGroupResult case ResultFailure(:final failure)) {
+          msg = failure.message;
+        }
         emit(state.copyWith(
           dropdownStatus: DropdownStatus.error,
-          dropdownErrorMessage: msg,
+          dropdownErrorMessage:
+              msg ?? 'Không thể tải danh sách. Vui lòng thử lại.',
         ));
       }
     } catch (_) {
@@ -112,10 +125,10 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
         gender: state.gender!,
         isFeatured: state.isFeatured,
         status: state.status,
+        sizeGroupId: state.sizeGroupId,
       ));
       switch (result) {
         case Success(:final data):
-          // CRITICAL: do NOT emit isSuccess:true — reserved for completeForm() in Step 3.
           emit(state.copyWith(
             isSubmitting: false,
             createdProductId: data.id,
@@ -138,11 +151,11 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
           gender: state.gender!,
           status: state.status,
           isFeatured: state.isFeatured,
+          sizeGroupId: state.sizeGroupId,
         ),
       );
       switch (result) {
         case Success():
-          // CRITICAL: do NOT emit isSuccess:true here.
           emit(state.copyWith(isSubmitting: false, currentStep: 1));
         case ResultFailure(:final failure):
           emit(state.copyWith(
@@ -156,7 +169,8 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
     if (id == null) return;
     final result = await _deleteProduct(id);
     if (result case ResultFailure(:final failure)) {
-      emit(state.copyWith(errorMessage: 'Không thể xóa sản phẩm: ${failure.message}'));
+      emit(state.copyWith(
+          errorMessage: 'Không thể xóa sản phẩm: ${failure.message}'));
     }
   }
 
@@ -170,11 +184,12 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
       status: entity.status,
       isFeatured: entity.isFeatured,
       editingId: entity.id,
+      sizeGroupId: entity.sizeGroupId,
+      clearSizeGroupId: entity.sizeGroupId == null,
       isLoadingDetail: false,
       clearError: true,
     ));
   }
 
   void reset() => emit(const AdminProductFormState());
-
 }

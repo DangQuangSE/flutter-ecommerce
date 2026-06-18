@@ -257,7 +257,8 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                       color: AppColors.textPrimary)),
             ),
             if (n.isCustomizable)
-              const Icon(Icons.brush_rounded, size: 13, color: AppColors.accent),
+              const Icon(Icons.brush_rounded,
+                  size: 13, color: AppColors.accent),
           ],
         ),
       ));
@@ -305,7 +306,8 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
         foregroundColor: Colors.white,
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add_rounded),
-        label: Text('Thêm', style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
+        label: Text('Thêm',
+            style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
       ),
       body: Column(
         children: [
@@ -424,89 +426,93 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
     return GestureDetector(
       onTap: () => _showDetail(category),
       child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border:
+              Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child:
+                  (category.imageUrl != null && category.imageUrl!.isNotEmpty)
+                      ? Image.network(
+                          category.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Icon(
+                              Icons.category_rounded,
+                              color: AppColors.primary),
+                        )
+                      : const Icon(Icons.category_rounded,
+                          color: AppColors.primary),
             ),
-            clipBehavior: Clip.antiAlias,
-            child: (category.imageUrl != null && category.imageUrl!.isNotEmpty)
-                ? Image.network(
-                    category.imageUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Icon(
-                        Icons.category_rounded, color: AppColors.primary),
-                  )
-                : const Icon(Icons.category_rounded, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        category.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.lexend(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          category.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.lexend(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                       ),
-                    ),
-                    if (category.isCustomizable) ...[
-                      const SizedBox(width: 6),
-                      const Icon(Icons.brush_rounded,
-                          size: 14, color: AppColors.accent),
+                      if (category.isCustomizable) ...[
+                        const SizedBox(width: 6),
+                        const Icon(Icons.brush_rounded,
+                            size: 14, color: AppColors.accent),
+                      ],
                     ],
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  category.slug ?? '—',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
                   ),
-                ),
+                  const SizedBox(height: 2),
+                  Text(
+                    category.slug ?? '—',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch.adaptive(
+              value: category.isActive,
+              activeThumbColor: AppColors.success,
+              onChanged: (_) => _toggle(category),
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert_rounded,
+                  color: AppColors.textSecondary),
+              onSelected: (value) {
+                if (value == 'edit') _openForm(category: category);
+                if (value == 'delete') _confirmDelete(category);
+              },
+              itemBuilder: (_) => [
+                const PopupMenuItem(value: 'edit', child: Text('Sửa')),
+                const PopupMenuItem(value: 'delete', child: Text('Xoá')),
               ],
             ),
-          ),
-          Switch.adaptive(
-            value: category.isActive,
-            activeThumbColor: AppColors.success,
-            onChanged: (_) => _toggle(category),
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert_rounded,
-                color: AppColors.textSecondary),
-            onSelected: (value) {
-              if (value == 'edit') _openForm(category: category);
-              if (value == 'delete') _confirmDelete(category);
-            },
-            itemBuilder: (_) => [
-              const PopupMenuItem(value: 'edit', child: Text('Sửa')),
-              const PopupMenuItem(value: 'delete', child: Text('Xoá')),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

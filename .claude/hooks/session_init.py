@@ -26,7 +26,11 @@ from project_detector import detect_project_type, get_package_manager
 from session_utils import ensure_dir
 from config_counter import get_summary as get_config_summary
 
-DEV_RULES = "YAGNI · KISS · DRY · Brutal honesty · Challenge assumptions"
+DEV_RULES = (
+    "YAGNI · KISS · DRY · Brutal honesty · Challenge assumptions · "
+    "Before any .dart edit, read .anti-flutter/RULES.md and "
+    ".claude/rules/flutter-grading-standards.md"
+)
 _log = HookLogger("session-init")
 
 

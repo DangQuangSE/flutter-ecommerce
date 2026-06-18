@@ -28,6 +28,34 @@ class AdminProductListEntity extends Equatable {
     required this.isFeatured,
   });
 
+  AdminProductListEntity copyWith({
+    int? id,
+    String? name,
+    String? slug,
+    String? thumbnailUrl,
+    String? brandName,
+    String? categoryName,
+    double? minPrice,
+    double? maxPrice,
+    int? totalStock,
+    ProductStatus? status,
+    bool? isFeatured,
+  }) {
+    return AdminProductListEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      slug: slug ?? this.slug,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      brandName: brandName ?? this.brandName,
+      categoryName: categoryName ?? this.categoryName,
+      minPrice: minPrice ?? this.minPrice,
+      maxPrice: maxPrice ?? this.maxPrice,
+      totalStock: totalStock ?? this.totalStock,
+      status: status ?? this.status,
+      isFeatured: isFeatured ?? this.isFeatured,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

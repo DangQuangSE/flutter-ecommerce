@@ -20,5 +20,6 @@ class RecentOrderEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, orderCode, productName, rawStatus, status, price, date];
+  List<Object?> get props =>
+      [id, orderCode, productName, rawStatus, status, price, date];
 }

@@ -66,8 +66,8 @@ class _CatalogToolbarState extends State<CatalogToolbar> {
             onChanged: _onSearchChanged,
             decoration: InputDecoration(
               hintText: 'Tìm kiếm sản phẩm...',
-              hintStyle: const TextStyle(
-                  fontSize: 14, color: AppColors.textHint),
+              hintStyle:
+                  const TextStyle(fontSize: 14, color: AppColors.textHint),
               prefixIcon: const Icon(Icons.search, color: AppColors.textHint),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
@@ -156,8 +156,7 @@ class _SortDropdown extends StatelessWidget {
                 fontWeight: FontWeight.w500),
             borderRadius: BorderRadius.circular(10),
             items: const [
-              DropdownMenuItem(
-                  value: 'id,desc', child: Text('Mới nhất')),
+              DropdownMenuItem(value: 'id,desc', child: Text('Mới nhất')),
               DropdownMenuItem(
                   value: 'salePrice,asc', child: Text('Giá tăng dần')),
               DropdownMenuItem(

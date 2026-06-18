@@ -16,7 +16,10 @@ abstract interface class AdminProductDatasource {
     int size = 20,
   });
   Future<AdminProductDetailModel> getProductById(int id);
-  Future<AdminProductDetailModel> createProduct(ProductCreateRequestModel request);
-  Future<AdminProductDetailModel> updateProduct(int id, ProductUpdateRequestModel request);
+  Future<AdminProductDetailModel> createProduct(
+      ProductCreateRequestModel request);
+  Future<AdminProductDetailModel> updateProduct(
+      int id, ProductUpdateRequestModel request);
   Future<void> deleteProduct(int id);
+  Future<void> restoreProduct(int id);
 }

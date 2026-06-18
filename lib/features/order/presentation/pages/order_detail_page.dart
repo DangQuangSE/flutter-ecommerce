@@ -1,80 +1,144 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
+import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.dart';
+import 'package:flutter_ecommerce/features/order/domain/entities/order_item_entity.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_state.dart';
+import 'package:flutter_ecommerce/features/review/presentation/pages/write_review_page.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final String orderId;
   const OrderDetailPage({super.key, required this.orderId});
 
-  static const Map<String, dynamic> _mockOrder = {
-    'id': 'ORD-001',
-    'status': 'Đang giao',
-    'statusColor': '#1A73E8',
-    'date': '12/05/2026',
-    'estimatedDelivery': '15/05/2026',
-    'trackingNumber': 'VN123456789',
-    'shippingMethod': 'Giao hàng hỏa tốc',
-    'paymentMethod': 'QR Code / Ví điện tử',
-    'shippingAddress': '123 Lê Lợi, Quận 1, TP. Hồ Chí Minh',
-    'subtotal': 2450000.0,
-    'shippingFee': 0.0,
-    'discount': 0.0,
-    'total': 2450000.0,
-    'items': [
-      {
-        'name': 'Nike Air Max 2025',
-        'size': 'EU 42',
-        'quantity': 1,
-        'price': 2450000.0,
-        'imageUrl':
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c',
-      }
-    ],
-  };
-
   @override
   Widget build(BuildContext context) {
-    final order = _mockOrder;
-    final statusColor = Color(int.parse(order['statusColor'].replaceFirst('#', '0xFF')));
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(context),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 16),
-            _buildStatusCard(context, order, statusColor),
-            const SizedBox(height: 16),
-            _buildSection(context, 'THÔNG TIN ĐƠN HÀNG', Icons.receipt_long_outlined, [
-              _buildDetailRow('Mã đơn hàng', order['id']),
-              _buildDetailRow('Ngày đặt', order['date']),
-              _buildDetailRow('Phương thức thanh toán', order['paymentMethod']),
-              _buildDetailRow('Phương thức vận chuyển', order['shippingMethod']),
-            ]),
-            const SizedBox(height: 16),
-            _buildSection(context, 'ĐỊA CHỈ GIAO HÀNG', Icons.location_on_outlined, [
-              _buildDetailRow('Địa chỉ', order['shippingAddress']),
-            ]),
-            const SizedBox(height: 16),
-            _buildSection(context, 'SẢN PHẨM (${(order['items'] as List).length})', Icons.shopping_bag_outlined, [
-              ...(order['items'] as List).map<Widget>((item) => _buildOrderItemCard(item)).toList(),
-            ]),
-            const SizedBox(height: 16),
-            _buildOrderSummary(order),
-            const SizedBox(height: 100),
-          ],
-        ),
+      body: BlocBuilder<OrderBloc, OrderState>(
+        builder: (context, state) {
+          return switch (state) {
+            OrderDetailLoading() || OrderInitial() => const Center(
+                child: CircularProgressIndicator(),
+              ),
+            OrderDetailError(:final message) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        message,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: AppColors.textSecondary,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          final id = int.tryParse(orderId) ?? 0;
+                          context
+                              .read<OrderBloc>()
+                              .add(OrderDetailRequested(id));
+                        },
+                        child: const Text('Thử lại'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            OrderDetailLoaded(:final order) => _buildContent(context, order),
+            _ => const Center(child: CircularProgressIndicator()),
+          };
+        },
       ),
-      bottomNavigationBar: _buildBottomBar(context, order, statusColor),
+    );
+  }
+
+  Future<void> _openWriteReview(
+    BuildContext context,
+    OrderEntity order,
+    OrderItemEntity item,
+  ) async {
+    final reviewed = await context.pushNamed<bool>(
+      AppRoutes.writeReview,
+      extra:
+          WriteReviewArgs(orderItemId: item.id, productName: item.productName),
+    );
+    if (reviewed == true && context.mounted) {
+      context.read<OrderBloc>().add(OrderDetailRequested(order.id));
+    }
+  }
+
+  Widget _buildContent(BuildContext context, OrderEntity order) {
+    final (_, statusColor) = OrderStatusLabel.badgeColors(order.status);
+    final statusLabel = OrderStatusLabel.vi(order.status);
+    final dateStr = DateFormat('dd/MM/yyyy').format(order.createdAt);
+
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 16),
+                _buildStatusCard(statusLabel, statusColor),
+                const SizedBox(height: 16),
+                _buildSection(
+                  'THÔNG TIN ĐƠN HÀNG',
+                  Icons.receipt_long_outlined,
+                  [
+                    _buildDetailRow('Mã đơn hàng', order.displayCode),
+                    _buildDetailRow('Ngày đặt', dateStr),
+                    _buildDetailRow(
+                      'Phương thức thanh toán',
+                      OrderStatusLabel.paymentMethodVi(order.paymentMethod),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildSection(
+                  'ĐỊA CHỈ GIAO HÀNG',
+                  Icons.location_on_outlined,
+                  [
+                    _buildDetailRow('Địa chỉ', order.shippingAddress),
+                    if (order.phoneNumber.isNotEmpty)
+                      _buildDetailRow('Số điện thoại', order.phoneNumber),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildSection(
+                  'SẢN PHẨM (${order.items.length})',
+                  Icons.shopping_bag_outlined,
+                  order.items
+                      .map((item) => _buildOrderItemCard(context, order, item))
+                      .toList(),
+                ),
+                const SizedBox(height: 16),
+                _buildOrderSummary(order),
+                const SizedBox(height: 100),
+              ],
+            ),
+          ),
+        ),
+        _buildBottomBar(context, order, statusColor),
+      ],
     );
   }
 
@@ -98,7 +162,8 @@ class OrderDetailPage extends StatelessWidget {
             context.goNamed(AppRoutes.orderList);
           }
         },
-        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary, size: 24),
+        icon: const Icon(Icons.arrow_back_rounded,
+            color: AppColors.textPrimary, size: 24),
       ),
       title: Align(
         alignment: Alignment.centerLeft,
@@ -168,7 +233,7 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusCard(BuildContext context, Map<String, dynamic> order, Color statusColor) {
+  Widget _buildStatusCard(String statusLabel, Color statusColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -202,27 +267,13 @@ class OrderDetailPage extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    order['status'],
-                    style: GoogleFonts.lexend(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: statusColor,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Dự kiến giao: ${order['estimatedDelivery']}',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+              child: Text(
+                statusLabel,
+                style: GoogleFonts.lexend(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: statusColor,
+                ),
               ),
             ),
           ],
@@ -231,14 +282,19 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(BuildContext context, String title, IconData icon, List<Widget> children) {
+  Widget _buildSection(
+    String title,
+    IconData icon,
+    List<Widget> children,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+          border:
+              Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -308,10 +364,18 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderItemCard(Map<String, dynamic> item) {
+  Widget _buildOrderItemCard(
+    BuildContext context,
+    OrderEntity order,
+    OrderItemEntity item,
+  ) {
+    final canReview =
+        order.status.toUpperCase() == 'DELIVERED' && !item.isReviewed;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 60,
@@ -319,16 +383,29 @@ class OrderDetailPage extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFFF3F3F8),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.2)),
+              border: Border.all(
+                  color: const Color(0xFFC1C6D7).withValues(alpha: 0.2)),
             ),
             clipBehavior: Clip.antiAlias,
-            child: Image.network(
-              item['imageUrl'],
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Center(
-                child: Icon(Icons.image_not_supported_outlined, color: AppColors.textSecondary, size: 20),
-              ),
-            ),
+            child: item.imageUrl != null && item.imageUrl!.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: item.imageUrl!,
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => const Center(
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: AppColors.textSecondary,
+                        size: 20,
+                      ),
+                    ),
+                  )
+                : const Center(
+                    child: Icon(
+                      Icons.image_not_supported_outlined,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
+                  ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -336,7 +413,7 @@ class OrderDetailPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item['name'],
+                  item.productName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.lexend(
@@ -347,7 +424,7 @@ class OrderDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Size: EU ${item['size']} · SL: ${item['quantity']}',
+                  'Size: ${item.size} · SL: ${item.quantity}',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -355,14 +432,30 @@ class OrderDetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  _formatPrice(item['price']),
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                    fontStyle: FontStyle.italic,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _formatPrice(item.lineTotal),
+                      style: GoogleFonts.lexend(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    if (canReview)
+                      _buildWriteReviewButton(context, order, item)
+                    else if (item.isReviewed)
+                      Text(
+                        AppStrings.orderReviewedLabel,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success,
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
@@ -372,7 +465,27 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderSummary(Map<String, dynamic> order) {
+  Widget _buildWriteReviewButton(
+    BuildContext context,
+    OrderEntity order,
+    OrderItemEntity item,
+  ) {
+    return OutlinedButton(
+      onPressed: () => _openWriteReview(context, order, item),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        side: const BorderSide(color: AppColors.primary),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        minimumSize: Size.zero,
+      ),
+      child: Text(
+        AppStrings.orderWriteReviewAction,
+        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+
+  Widget _buildOrderSummary(OrderEntity order) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -380,7 +493,8 @@ class OrderDetailPage extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+          border:
+              Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -396,50 +510,26 @@ class OrderDetailPage extends StatelessWidget {
               children: [
                 Text(
                   'Tạm tính',
-                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.textSecondary),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 Text(
-                  _formatPrice(order['subtotal']),
-                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Phí vận chuyển',
-                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.textSecondary),
-                ),
-                Text(
-                  order['shippingFee'] == 0.0 ? 'Miễn phí' : _formatPrice(order['shippingFee']),
+                  _formatPrice(order.subtotal),
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: order['shippingFee'] == 0.0 ? AppColors.success : AppColors.textPrimary,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
             ),
-            if (order['discount'] != null && order['discount'] > 0) ...[
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Giảm giá',
-                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.textSecondary),
-                  ),
-                  Text(
-                    '-${_formatPrice(order['discount'])}',
-                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.error),
-                  ),
-                ],
-              ),
-            ],
             const SizedBox(height: 12),
-            Container(height: 1, color: const Color(0xFFC1C6D7).withValues(alpha: 0.2)),
+            Container(
+                height: 1,
+                color: const Color(0xFFC1C6D7).withValues(alpha: 0.2)),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -447,12 +537,17 @@ class OrderDetailPage extends StatelessWidget {
               children: [
                 Text(
                   'TỔNG THANH TOÁN',
-                  style: GoogleFonts.lexend(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: 0.5),
+                  style: GoogleFonts.lexend(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                    letterSpacing: 0.5,
+                  ),
                 ),
                 Transform(
                   transform: Matrix4.skewX(-0.12),
                   child: Text(
-                    _formatPrice(order['total']),
+                    _formatPrice(order.totalAmount),
                     style: GoogleFonts.lexend(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
@@ -470,7 +565,11 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, Map<String, dynamic> order, Color statusColor) {
+  Widget _buildBottomBar(
+    BuildContext context,
+    OrderEntity order,
+    Color statusColor,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -515,8 +614,8 @@ class OrderDetailPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
-            if (order['status'] == 'Đang giao')
+            if (order.status.toUpperCase() == 'SHIPPED') ...[
+              const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {},
@@ -539,6 +638,7 @@ class OrderDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
+            ],
           ],
         ),
       ),

@@ -52,6 +52,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/hooks/flutter_rules_gate.py",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -67,6 +77,11 @@
             "type": "command",
             "command": "python .claude/hooks/simplify_gate.py",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python .claude/hooks/dart_string_constants_check.py",
+            "timeout": 5
           }
         ]
       },
@@ -76,6 +91,11 @@
           {
             "type": "command",
             "command": "python .claude/hooks/artifact_fold.py",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python .claude/hooks/rules_read_tracker.py",
             "timeout": 5
           }
         ]

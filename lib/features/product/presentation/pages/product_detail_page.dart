@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
@@ -12,12 +13,16 @@ import 'package:flutter_ecommerce/features/admin/product/domain/entities/product
 import 'package:flutter_ecommerce/features/product/presentation/widgets/product_carousel.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/color_selector.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/size_selector.dart';
-import 'package:flutter_ecommerce/features/product/presentation/widgets/delivery_banner.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/collapsible_panel.dart';
+import 'package:flutter_ecommerce/features/review/domain/entities/review_entity.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_state.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_state.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String productId;
@@ -29,16 +34,9 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int _selectedColorIndex = 0;
-  String _selectedSize = '42';
+  String _selectedSize = '';
   bool _isFavorited = false;
-
-  final List<Map<String, String>> _colors = [
-    {'name': 'Xanh Điện / Cam', 'hex': '#0058bc'},
-    {'name': 'Đen Bóng Đêm', 'hex': '#1a1c1f'},
-    {'name': 'Xám Cổ Điển', 'hex': '#717786'},
-  ];
-
-  final List<String> _sizes = ['40', '41', '42', '43', '44', '45'];
+  bool _reviewsRequested = false;
 
   @override
   void initState() {
@@ -47,6 +45,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       if (!mounted) return;
       context.read<ProductBloc>().add(ProductDetailRequested(widget.productId));
       context.read<CartCubit>().loadCart();
+      context.read<SiteSettingCubit>().loadSettings();
     });
   }
 
@@ -54,7 +53,34 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<ProductBloc, ProductState>(
+      body: BlocConsumer<ProductBloc, ProductState>(
+        listener: (context, state) {
+          if (state is ProductDetailLoaded) {
+            if (!_reviewsRequested && state.product.numericId != null) {
+              _reviewsRequested = true;
+              context.read<ReviewCubit>().loadReviews(state.product.numericId!);
+            }
+            final variants = state.product.variants ?? [];
+            if (variants.isNotEmpty) {
+              final firstVariant = variants.first;
+              setState(() {
+                _selectedSize = firstVariant.size;
+                
+                final colorMap = <String, String>{};
+                for (final v in variants) {
+                  if (v.colorName.isNotEmpty) {
+                    colorMap[v.colorName] = v.colorHex.isNotEmpty ? v.colorHex : '#000000';
+                  }
+                }
+                final colorsList = colorMap.entries.map((e) => {'name': e.key, 'hex': e.value}).toList();
+                final idx = colorsList.indexWhere((c) => c['name'] == firstVariant.colorName);
+                if (idx != -1) {
+                  _selectedColorIndex = idx;
+                }
+              });
+            }
+          }
+        },
         builder: (context, state) {
           if (state is ProductLoading) {
             return const Scaffold(
@@ -76,9 +102,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildContent(BuildContext context, ProductEntity product) {
-    final String categoryLabel = product.categoryId == 'cat-training'
-        ? "MEN'S ELITE TRAINING"
-        : "MEN'S ELITE RUNNING";
+    final String categoryLabel = product.categoryName.toUpperCase();
 
     final variants = product.variants ?? [];
     final colorMap = <String, String>{};
@@ -86,21 +110,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     for (final variant in variants) {
       if (variant.colorName.isNotEmpty) {
-        colorMap[variant.colorName] = variant.colorHex.isNotEmpty ? variant.colorHex : '#000000';
+        colorMap[variant.colorName] =
+            variant.colorHex.isNotEmpty ? variant.colorHex : '#000000';
       }
       if (variant.size.isNotEmpty && !sizeList.contains(variant.size)) {
         sizeList.add(variant.size);
       }
     }
 
-    final List<Map<String, String>> colors = colorMap.isNotEmpty
-        ? colorMap.entries.map((e) => {'name': e.key, 'hex': e.value}).toList()
-        : _colors;
+    final List<Map<String, String>> colors =
+        colorMap.entries.map((e) => {'name': e.key, 'hex': e.value}).toList();
 
-    final List<String> sizes = sizeList.isNotEmpty ? sizeList : _sizes;
+    final List<String> sizes = sizeList;
 
-    final selectedColorIndex = _selectedColorIndex.clamp(0, colors.isEmpty ? 0 : colors.length - 1);
-    final selectedColor = colors.isNotEmpty ? colors[selectedColorIndex]['name'] : null;
+    final selectedColorIndex =
+        _selectedColorIndex.clamp(0, colors.isEmpty ? 0 : colors.length - 1);
+    final selectedColor =
+        colors.isNotEmpty ? colors[selectedColorIndex]['name'] : null;
 
     final String selectedSize = sizes.contains(_selectedSize)
         ? _selectedSize
@@ -123,6 +149,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ? (matchingVariant.salePrice ?? matchingVariant.originalPrice)
         : product.price;
 
+    final double? originalPriceToDisplay = matchingVariant != null
+        ? (matchingVariant.salePrice != null &&
+                matchingVariant.salePrice! < matchingVariant.originalPrice
+            ? matchingVariant.originalPrice
+            : null)
+        : (product.hasDiscount ? product.originalPrice : null);
+
     final stockToDisplay = matchingVariant != null
         ? matchingVariant.stockQuantity
         : product.stockQuantity;
@@ -143,42 +176,48 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ProductCarousel(
                     imageUrls: product.imageUrls.isNotEmpty
                         ? product.imageUrls
-                        : (product.imageUrl.isNotEmpty ? [product.imageUrl] : []),
+                        : (product.imageUrl.isNotEmpty
+                            ? [product.imageUrl]
+                            : []),
                   ),
-                  _buildProductInfo(product, categoryLabel, priceToDisplay),
-                  _buildDivider(),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ColorSelector(
-                      selectedColorIndex: selectedColorIndex,
-                      colors: colors,
-                      onColorSelected: (index) {
-                        setState(() {
-                          _selectedColorIndex = index;
-                        });
-                      },
+                  _buildProductInfo(
+                    product,
+                    categoryLabel,
+                    priceToDisplay,
+                    originalPriceToDisplay,
+                  ),
+                  if (colors.isNotEmpty) ...[
+                    _buildDivider(),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: ColorSelector(
+                        selectedColorIndex: selectedColorIndex,
+                        colors: colors,
+                        onColorSelected: (index) {
+                          setState(() {
+                            _selectedColorIndex = index;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  _buildDivider(),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: SizeSelector(
-                      selectedSize: selectedSize,
-                      sizes: sizes,
-                      onSizeSelected: (size) {
-                        setState(() {
-                          _selectedSize = size;
-                        });
-                      },
+                  ],
+                  if (sizes.isNotEmpty) ...[
+                    _buildDivider(),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SizeSelector(
+                        selectedSize: selectedSize,
+                        sizes: sizes,
+                        onSizeSelected: (size) {
+                          setState(() {
+                            _selectedSize = size;
+                          });
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                   _buildDivider(),
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: DeliveryBanner(),
-                  ),
-                  _buildDivider(),
-                  _buildCollapsiblePanels(),
+                  _buildCollapsiblePanels(product),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -217,14 +256,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             context.goNamed(AppRoutes.productList);
           }
         },
-        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary, size: 24),
+        icon: const Icon(Icons.arrow_back_rounded,
+            color: AppColors.textPrimary, size: 24),
       ),
       title: Align(
         alignment: Alignment.centerLeft,
         child: Transform(
           transform: Matrix4.skewX(-0.15),
           child: Text(
-            'Sport Pro',
+            AppStrings.brandName,
             style: GoogleFonts.lexend(
               fontSize: 24,
               fontWeight: FontWeight.w900,
@@ -249,7 +289,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               children: [
                 IconButton(
                   onPressed: () => context.pushNamed(AppRoutes.cart),
-                  icon: const Icon(Icons.shopping_cart_outlined, color: AppColors.primary, size: 24),
+                  icon: const Icon(Icons.shopping_cart_outlined,
+                      color: AppColors.primary, size: 24),
                 ),
                 if (cartCount > 0)
                   Positioned(
@@ -330,20 +371,42 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildProductInfo(ProductEntity product, String categoryLabel, double priceToDisplay) {
+  Widget _buildProductInfo(
+    ProductEntity product,
+    String categoryLabel,
+    double priceToDisplay,
+    double? originalPriceToDisplay,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            categoryLabel,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 1.5,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
+                  product.brandName.toUpperCase(),
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+              Text(
+                categoryLabel,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 6),
           Text(
@@ -360,41 +423,85 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Transform(
-                transform: Matrix4.skewX(-0.12),
-                child: Text(
-                  _formatPrice(priceToDisplay),
-                  style: GoogleFonts.lexend(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
-                    fontStyle: FontStyle.italic,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-              ),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index < 4 ? Icons.star_rounded : Icons.star_half_rounded,
-                        color: AppColors.accent,
-                        size: 18,
-                      );
-                    }),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (originalPriceToDisplay != null)
+                        Text(
+                          _formatPrice(originalPriceToDisplay),
+                          style: GoogleFonts.lexend(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      Transform(
+                        transform: Matrix4.skewX(-0.12),
+                        child: Text(
+                          _formatPrice(priceToDisplay),
+                          style: GoogleFonts.lexend(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primary,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '(128)',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
+                  if (originalPriceToDisplay != null &&
+                      originalPriceToDisplay > priceToDisplay) ...[
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.error,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'Giảm ${(((originalPriceToDisplay - priceToDisplay) / originalPriceToDisplay) * 100).round()}%',
+                        style: GoogleFonts.spaceMono(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
+              if (product.reviewCount > 0)
+                Row(
+                  children: [
+                    Row(
+                      children: _buildRatingStars(product.averageRating),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '(${product.reviewCount})',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  AppStrings.noRatingYet,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
             ],
           ),
         ],
@@ -402,47 +509,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildCollapsiblePanels() {
+  Widget _buildCollapsiblePanels(ProductEntity product) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
         children: [
           CollapsiblePanel(
-            title: 'THÔNG SỐ KỸ THUẬT',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildSpecRow('Trọng lượng', '245g (Size 42)'),
-                _buildSpecRow('Độ dốc gót-mũi (Drop)', '8 mm'),
-                _buildSpecRow('Đệm đế', 'Bọt AeroPulse siêu nhẹ'),
-                _buildSpecRow('Mặt giày (Upper)', 'Vải mesh thoáng khí cao cấp'),
-                _buildSpecRow('Công dụng', 'Chạy bộ hàng ngày, thi đấu cự ly ngắn & vừa'),
-              ],
-            ),
-          ),
-          CollapsiblePanel(
-            title: 'ĐÁNH GIÁ KHÁCH HÀNG (128)',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildReviewRow(
-                  'Nguyễn Minh T.',
-                  5,
-                  'Giày cực kỳ êm và bám đường tốt. Trọng lượng nhẹ giúp nâng cao tốc độ chạy rõ rệt. Rất đáng tiền!',
-                ),
-                const Divider(height: 16, color: Color(0xFFE8E8ED)),
-                _buildReviewRow(
-                  'Hoàng Anh D.',
-                  4,
-                  'Giao hàng nhanh hỏa tốc đúng trong ngày. Thiết kế cam xanh nổi bật. Ôm chân vừa vặn.',
-                ),
-              ],
-            ),
-          ),
-          CollapsiblePanel(
-            title: 'CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH',
+            title: AppStrings.specsTitle,
             child: Text(
-              'Miễn phí đổi size trong vòng 7 ngày kể từ khi nhận hàng. Bảo hành chính hãng keo chỉ 3 tháng đối với các lỗi sản xuất. Dịch vụ chăm sóc vận động viên tận tình.',
+              product.description.isNotEmpty
+                  ? product.description
+                  : AppStrings.noProductDescription,
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
@@ -451,39 +528,83 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           ),
+          CollapsiblePanel(
+            title: AppStrings.reviewsTitle(product.reviewCount),
+            child: BlocBuilder<ReviewCubit, ReviewState>(
+              builder: (context, state) {
+                if (state is ReviewLoading || state is ReviewInitial) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
+                if (state is ReviewError) {
+                  return Text(
+                    AppStrings.reviewsLoadError,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  );
+                }
+                if (state is ReviewLoaded) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (int i = 0; i < state.reviews.length; i++) ...[
+                        if (i > 0)
+                          const Divider(height: 16, color: Color(0xFFE8E8ED)),
+                        _buildReviewRow(state.reviews[i]),
+                      ],
+                    ],
+                  );
+                }
+                return Text(
+                  AppStrings.noReviewsYet,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                );
+              },
+            ),
+          ),
+          CollapsiblePanel(
+            title: AppStrings.returnPolicyTitle,
+            child: BlocBuilder<SiteSettingCubit, SiteSettingState>(
+              builder: (context, state) {
+                final content = switch (state) {
+                  SiteSettingLoaded(:final settings)
+                      when settings.returnPolicy.isEmpty =>
+                    AppStrings.returnPolicyEmpty,
+                  SiteSettingLoaded() => state.settings.returnPolicy,
+                  SiteSettingError() => AppStrings.returnPolicyLoadError,
+                  _ => AppStrings.returnPolicyLoading,
+                };
+                return Text(
+                  content,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSpecRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReviewRow(String reviewer, int rating, String content) {
+  Widget _buildReviewRow(ReviewEntity review) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -491,7 +612,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              reviewer,
+              review.userName,
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -499,17 +620,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
             Row(
-              children: List.generate(5, (index) => Icon(
-                Icons.star_rounded,
-                color: index < rating ? AppColors.accent : const Color(0xFFC1C6D7),
-                size: 14,
-              )),
+              children: List.generate(
+                  5,
+                  (index) => Icon(
+                        Icons.star_rounded,
+                        color: index < review.rating
+                            ? AppColors.accent
+                            : const Color(0xFFC1C6D7),
+                        size: 14,
+                      )),
             ),
           ],
         ),
         const SizedBox(height: 4),
         Text(
-          content,
+          review.comment,
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w500,
@@ -519,6 +644,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
       ],
     );
+  }
+
+  List<Widget> _buildRatingStars(double rating) {
+    return List.generate(5, (index) {
+      final remainder = rating - index;
+      final icon = remainder >= 1
+          ? Icons.star_rounded
+          : remainder >= 0.5
+              ? Icons.star_half_rounded
+              : Icons.star_outline_rounded;
+      return Icon(icon, color: AppColors.accent, size: 18);
+    });
   }
 
   Widget _buildBottomActionBar(
@@ -561,8 +698,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   SnackBar(
                     content: Text(
                       _isFavorited
-                          ? 'Đã thêm vào danh sách yêu thích!'
-                          : 'Đã xóa khỏi danh sách yêu thích.',
+                          ? AppStrings.addedToWishlist
+                          : AppStrings.removedFromWishlist,
                     ),
                     duration: const Duration(seconds: 1),
                   ),
@@ -580,7 +717,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                 ),
                 child: Icon(
-                  _isFavorited ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  _isFavorited
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
                   color: _isFavorited ? Colors.red : AppColors.textSecondary,
                   size: 24,
                 ),
@@ -593,8 +732,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ? null
                     : () {
                         final targetVariantId = matchingVariant?.id ??
-                            (product.variants?.isNotEmpty == true ? product.variants!.first.id : 1);
-                        final custId = context.read<CustomizerCubit>()
+                            (product.variants?.isNotEmpty == true
+                                ? product.variants!.first.id
+                                : 1);
+                        final custId = context
+                            .read<CustomizerCubit>()
                             .getCustomizationOrDefault(product.id)
                             .customDesignId;
                         context.read<CartCubit>().addItem(
@@ -610,11 +752,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             behavior: SnackBarBehavior.floating,
                             content: Row(
                               children: [
-                                const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                                const Icon(Icons.check_circle_outline_rounded,
+                                    color: Colors.white),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    'Đã thêm ${product.name} (Size $selectedSize) vào giỏ hàng!',
+                                    AppStrings.addedToCartMessage(
+                                        product.name, selectedSize),
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 12,
@@ -624,15 +768,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               ],
                             ),
                             action: SnackBarAction(
-                              label: 'XEM GIỎ',
+                              label: AppStrings.viewCart,
                               textColor: Colors.white,
-                              onPressed: () => context.pushNamed(AppRoutes.cart),
+                              onPressed: () =>
+                                  context.pushNamed(AppRoutes.cart),
                             ),
                           ),
                         );
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isInStock ? AppColors.accent : Colors.grey[400],
+                  backgroundColor:
+                      isInStock ? AppColors.accent : Colors.grey[400],
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[300],
                   disabledForegroundColor: Colors.grey[600],
@@ -646,12 +792,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      isInStock ? Icons.shopping_bag_outlined : Icons.remove_shopping_cart_outlined,
+                      isInStock
+                          ? Icons.shopping_bag_outlined
+                          : Icons.remove_shopping_cart_outlined,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      isInStock ? 'ADD TO CART' : 'HẾT HÀNG',
+                      isInStock ? AppStrings.addToCart : AppStrings.outOfStock,
                       style: GoogleFonts.lexend(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -682,7 +830,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded,
+              color: AppColors.textPrimary),
           onPressed: () => context.pop(),
         ),
       ),
@@ -692,10 +841,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+              const Icon(Icons.error_outline_rounded,
+                  size: 48, color: AppColors.error),
               const SizedBox(height: 16),
               Text(
-                'Đã xảy ra lỗi khi tải chi tiết sản phẩm.',
+                AppStrings.productDetailLoadError,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -714,7 +864,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  context.read<ProductBloc>().add(ProductDetailRequested(widget.productId));
+                  context
+                      .read<ProductBloc>()
+                      .add(ProductDetailRequested(widget.productId));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
@@ -723,7 +875,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Thử lại'),
+                child: const Text(AppStrings.retry),
               ),
             ],
           ),

@@ -30,9 +30,12 @@ class AdminProfileTab extends StatelessWidget {
                   CircleAvatar(
                     radius: 54,
                     backgroundColor: AppColors.primary.withOpacity(0.1),
-                    backgroundImage: user?.avatarUrl != null ? NetworkImage(user!.avatarUrl!) : null,
+                    backgroundImage: user?.avatarUrl != null
+                        ? NetworkImage(user!.avatarUrl!)
+                        : null,
                     child: user?.avatarUrl == null
-                        ? const Icon(Icons.person_rounded, size: 48, color: AppColors.primary)
+                        ? const Icon(Icons.person_rounded,
+                            size: 48, color: AppColors.primary)
                         : null,
                   ),
                   Positioned(
@@ -40,8 +43,10 @@ class AdminProfileTab extends StatelessWidget {
                     right: 0,
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                      child: const Icon(Icons.verified_user_rounded, size: 16, color: Colors.white),
+                      decoration: const BoxDecoration(
+                          color: AppColors.primary, shape: BoxShape.circle),
+                      child: const Icon(Icons.verified_user_rounded,
+                          size: 16, color: Colors.white),
                     ),
                   ),
                 ],
@@ -51,26 +56,37 @@ class AdminProfileTab extends StatelessWidget {
             Center(
               child: Text(
                 user?.name ?? 'Admin Sport Pro',
-                style: GoogleFonts.lexend(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                style: GoogleFonts.lexend(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary),
               ),
             ),
             Center(
               child: Text(
                 user?.email ?? 'admin@sportpro.com',
-                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary),
               ),
             ),
             const SizedBox(height: 12),
             Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.accent.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'QUẢN TRỊ VIÊN',
-                  style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.accent, letterSpacing: 0.5),
+                  style: GoogleFonts.inter(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.accent,
+                      letterSpacing: 0.5),
                 ),
               ),
             ),
@@ -84,17 +100,29 @@ class AdminProfileTab extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.store_mall_directory_rounded, color: AppColors.primary),
-                    title: Text('Về Cửa hàng (User View)', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                    leading: const Icon(Icons.store_mall_directory_rounded,
+                        color: AppColors.primary),
+                    title: Text('Về Cửa hàng (User View)',
+                        style: GoogleFonts.inter(
+                            fontSize: 14, fontWeight: FontWeight.w600)),
+                    trailing:
+                        const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: () => context.goNamed(AppRoutes.productList),
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.logout_rounded, color: AppColors.error),
-                    title: Text('Đăng xuất tài khoản', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.error)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.error),
-                    onTap: () => context.read<AuthBloc>().add(const AuthLogoutRequested()),
+                    leading: const Icon(Icons.logout_rounded,
+                        color: AppColors.error),
+                    title: Text('Đăng xuất tài khoản',
+                        style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.error)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                        size: 14, color: AppColors.error),
+                    onTap: () => context
+                        .read<AuthBloc>()
+                        .add(const AuthLogoutRequested()),
                   ),
                 ],
               ),

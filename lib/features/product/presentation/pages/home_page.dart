@@ -28,19 +28,23 @@ class _HomePageState extends State<HomePage> {
   final List<Map<String, String>> _categories = [
     {
       'title': 'Giày Chạy',
-      'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuATtvA9dpwpeZk45mc9bEBjeatBPszQFU0FYFVfZbFEUJ7HRwIHMRwHzAy55ziexRfDl324LqvYrMaboFgsiysd-bPLAW1MvDpMR0arf8p03vEseyN9zgQ53g8yYVuhoqBu7EDrKqcqYwegqNKBTHitNy5_cvQ4c8xL9TE2Q0r9eER1Zk0qxIVhAhNgV1_zzUT5JpdYv0ylO3P5F0jK5tF2r7MP1DrHGpsqZp_Cox8dCPrFXgbgBuprKEoar3JX7cS8IEKaBkXojMA'
+      'image':
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuATtvA9dpwpeZk45mc9bEBjeatBPszQFU0FYFVfZbFEUJ7HRwIHMRwHzAy55ziexRfDl324LqvYrMaboFgsiysd-bPLAW1MvDpMR0arf8p03vEseyN9zgQ53g8yYVuhoqBu7EDrKqcqYwegqNKBTHitNy5_cvQ4c8xL9TE2Q0r9eER1Zk0qxIVhAhNgV1_zzUT5JpdYv0ylO3P5F0jK5tF2r7MP1DrHGpsqZp_Cox8dCPrFXgbgBuprKEoar3JX7cS8IEKaBkXojMA'
     },
     {
       'title': 'Trang Phục',
-      'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuB717wQyS9AeENXDPoVWHtgsZS4I3An4etSvXGYlLQlv7KUi9-JhnR3VvdBFzpd35CYGm2yqeQADcqbXIcx_bZuMkNcb4ftRm6cv-d4zNMRKi2puai365v2sDoJTneRoT4LtNAufZpClH6mTsNQ3BOSGKcKAjxSl82R8MwKU9vlYATmJq8p_2iUVerLZLjK8CYZwIDbK_ZcBtBlFWMqvPJikuNwPySWj9CK3N5jcGysAjyUsPR5JZ-okI-Na1ctcuGdiuvpt5QT1xk'
+      'image':
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuB717wQyS9AeENXDPoVWHtgsZS4I3An4etSvXGYlLQlv7KUi9-JhnR3VvdBFzpd35CYGm2yqeQADcqbXIcx_bZuMkNcb4ftRm6cv-d4zNMRKi2puai365v2sDoJTneRoT4LtNAufZpClH6mTsNQ3BOSGKcKAjxSl82R8MwKU9vlYATmJq8p_2iUVerLZLjK8CYZwIDbK_ZcBtBlFWMqvPJikuNwPySWj9CK3N5jcGysAjyUsPR5JZ-okI-Na1ctcuGdiuvpt5QT1xk'
     },
     {
       'title': 'Phụ Kiện',
-      'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqN3fOwg4iAv0K-OFpyptPcv5kI3Iv1cGfh6c3Rzx9NckeONlTagtHJF5OHW9T3H5tYeLq4zwHCRDAQhx2GpRPpSxZ5oO-XPyY1BkNZcw1H2M5XLooFtSRUmwQOFw4AzhzWgn5dege0eP0pSyXVJtWAjWYa1EnShBUT4WiPy4EhfA7rn4CpsyurmFWbHsB948-EkN9cMIgdSCT67_JVLPqnasX_UxQbBvmlAj2dLE8V1OHBXFEmFOKqyw_JDoxodxB5EdVGZy2jVI'
+      'image':
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuAqN3fOwg4iAv0K-OFpyptPcv5kI3Iv1cGfh6c3Rzx9NckeONlTagtHJF5OHW9T3H5tYeLq4zwHCRDAQhx2GpRPpSxZ5oO-XPyY1BkNZcw1H2M5XLooFtSRUmwQOFw4AzhzWgn5dege0eP0pSyXVJtWAjWYa1EnShBUT4WiPy4EhfA7rn4CpsyurmFWbHsB948-EkN9cMIgdSCT67_JVLPqnasX_UxQbBvmlAj2dLE8V1OHBXFEmFOKqyw_JDoxodxB5EdVGZy2jVI'
     },
     {
       'title': 'Dụng Cụ',
-      'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCbXbEZkYN1PdBUeNwKfJKjjlBmd9AR-t3-OPPhAkxmS-Mgz39vRedxqhOq56wfXTGDPZbfO8HoGyJO5Qe5y34MjqP8pNlntjOGCbOz4huinr3D1M3fBM9zdSaNreqm8JVPI7GaG5s7z6Ol4nZNEt9w_BS5mLwpzD_KieykR9Jljkmk90gdb-zkjv55_oik-Ls1z_O6DBp-rgO6h81liKqVsjE71gmEQjfTU28A42cFidqRRk_MuQaKDdET5xZBolS-dRy434N85hg'
+      'image':
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuCbXbEZkYN1PdBUeNwKfJKjjlBmd9AR-t3-OPPhAkxmS-Mgz39vRedxqhOq56wfXTGDPZbfO8HoGyJO5Qe5y34MjqP8pNlntjOGCbOz4huinr3D1M3fBM9zdSaNreqm8JVPI7GaG5s7z6Ol4nZNEt9w_BS5mLwpzD_KieykR9Jljkmk90gdb-zkjv55_oik-Ls1z_O6DBp-rgO6h81liKqVsjE71gmEQjfTU28A42cFidqRRk_MuQaKDdET5xZBolS-dRy434N85hg'
     },
   ];
 
@@ -78,11 +82,13 @@ class _HomePageState extends State<HomePage> {
                 if (state is ProductLoading) {
                   return const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.primary),
                     ),
                   );
                 } else if (state is ProductLoaded) {
-                  return _buildContent(context, state.products, statusBarHeight);
+                  return _buildContent(
+                      context, state.products, statusBarHeight);
                 } else if (state is ProductError) {
                   return _buildErrorState(state.message);
                 }
@@ -107,7 +113,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildContent(BuildContext context, List<ProductEntity> products, double statusBarHeight) {
+  Widget _buildContent(BuildContext context, List<ProductEntity> products,
+      double statusBarHeight) {
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.fromLTRB(0, statusBarHeight + 92, 0, 120),
@@ -182,11 +189,13 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     // Eyebrow label
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.15)),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.15)),
                       ),
                       child: Text(
                         'DÒNG SẢN PHẨM MỚI NHẤT',
@@ -223,7 +232,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // Button-in-Button primary CTA
                     _buildTactileCTA(
                       context,
@@ -240,7 +249,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildTactileCTA(BuildContext context, {required String label, required VoidCallback onPressed}) {
+  Widget _buildTactileCTA(BuildContext context,
+      {required String label, required VoidCallback onPressed}) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 1.0, end: 1.0),
       duration: const Duration(milliseconds: 150),
@@ -332,7 +342,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 14),
-          
+
           // Category horizontal gallery
           SizedBox(
             height: 120,
@@ -402,7 +412,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildFeaturedProducts(BuildContext context, List<ProductEntity> products) {
+  Widget _buildFeaturedProducts(
+      BuildContext context, List<ProductEntity> products) {
     if (products.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -438,34 +449,28 @@ class _HomePageState extends State<HomePage> {
 
     final featuredList = products.take(4).toList();
     final List<Widget> rows = [];
-    
+
     for (int i = 0; i < featuredList.length; i += 2) {
       final item1 = featuredList[i];
       final item2 = (i + 1 < featuredList.length) ? featuredList[i + 1] : null;
-      
+
       rows.add(
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ProductTactileCard(
-                product: item1,
-                badge: i == 0 ? 'NEW' : null,
-              ),
+              child: ProductTactileCard(product: item1),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: item2 != null
-                  ? ProductTactileCard(
-                      product: item2,
-                      badge: i == 0 ? '-15%' : null,
-                    )
+                  ? ProductTactileCard(product: item2)
                   : const SizedBox(),
             ),
           ],
         ),
       );
-      
+
       if (i + 2 < featuredList.length) {
         rows.add(const SizedBox(height: 16));
       }
@@ -501,7 +506,8 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 44, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 44, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Đã xảy ra lỗi khi tải trang chủ.',

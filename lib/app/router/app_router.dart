@@ -31,6 +31,10 @@ import 'package:flutter_ecommerce/features/payment/presentation/pages/payment_re
 import 'package:flutter_ecommerce/features/payment/presentation/pages/vnpay_payment_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_detail_page.dart';
 import 'package:flutter_ecommerce/features/order/presentation/pages/order_list_page.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/write_review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/pages/write_review_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
@@ -64,6 +68,9 @@ import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_order_
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/pages/brand_management_page.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/pages/admin_site_setting_page.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
@@ -71,6 +78,12 @@ import 'package:flutter_ecommerce/features/category/presentation/cubit/category_
 import 'package:flutter_ecommerce/features/category/presentation/pages/category_management_page.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_management_page.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/admin_review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/pages/admin_review_list_page.dart';
+import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
+import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
+import 'package:flutter_ecommerce/features/size/presentation/pages/admin_size_group_list_page.dart';
+import 'package:flutter_ecommerce/features/size/presentation/pages/admin_size_group_form_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -274,6 +287,14 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/admin/settings',
+        name: AppRoutes.adminSiteSettings,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<SiteSettingCubit>()..loadSettings(),
+          child: const AdminSiteSettingPage(),
+        ),
+      ),
+      GoRoute(
         path: '/admin/colors',
         name: AppRoutes.adminColors,
         builder: (context, state) => MultiBlocProvider(
@@ -301,6 +322,14 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/admin/reviews',
+        name: AppRoutes.adminReviews,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<AdminReviewCubit>(),
+          child: const AdminReviewListPage(),
+        ),
+      ),
+      GoRoute(
         path: '/admin/orders',
         name: AppRoutes.adminOrders,
         builder: (context, state) => BlocProvider(
@@ -317,6 +346,36 @@ class AppRouter {
                 create: (_) => sl<AdminOrderCubit>()
                   ..loadOrderDetail(int.tryParse(orderId) ?? 0),
                 child: AdminOrderDetailPage(orderId: orderId),
+              );
+            },
+          ),
+        ],
+      ),
+
+      GoRoute(
+        path: '/admin/size-groups',
+        name: AppRoutes.adminSizeGroups,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<SizeGroupCubit>()..loadSizeGroups(),
+          child: const AdminSizeGroupListPage(),
+        ),
+        routes: [
+          GoRoute(
+            path: 'create',
+            name: AppRoutes.adminSizeGroupCreate,
+            builder: (context, state) => BlocProvider(
+              create: (_) => sl<SizeGroupCubit>(),
+              child: const AdminSizeGroupFormPage(),
+            ),
+          ),
+          GoRoute(
+            path: ':id/edit',
+            name: AppRoutes.adminSizeGroupEdit,
+            builder: (context, state) {
+              final group = state.extra as SizeGroupEntity?;
+              return BlocProvider(
+                create: (_) => sl<SizeGroupCubit>(),
+                child: AdminSizeGroupFormPage(initialGroup: group),
               );
             },
           ),
@@ -344,8 +403,12 @@ class AppRouter {
           GoRoute(
             path: ':productId',
             name: AppRoutes.productDetail,
-            builder: (context, state) => BlocProvider(
-              create: (_) => sl<ProductBloc>(),
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<ProductBloc>()),
+                BlocProvider(create: (_) => sl<SiteSettingCubit>()),
+                BlocProvider(create: (_) => sl<ReviewCubit>()),
+              ],
               child: ProductDetailPage(
                 productId: state.pathParameters['productId'] ?? '',
               ),
@@ -369,8 +432,11 @@ class AppRouter {
       GoRoute(
         path: '/checkout',
         name: AppRoutes.checkout,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<CheckoutBloc>(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<CheckoutBloc>()),
+            BlocProvider(create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
+          ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),
         routes: [
@@ -406,14 +472,35 @@ class AppRouter {
       GoRoute(
         path: '/orders',
         name: AppRoutes.orderList,
-        builder: (context, state) => const OrderListPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<OrderBloc>()..add(const OrderListRequested()),
+          child: const OrderListPage(),
+        ),
         routes: [
           GoRoute(
             path: ':orderId',
             name: AppRoutes.orderDetail,
-            builder: (context, state) => OrderDetailPage(
-              orderId: state.pathParameters['orderId'] ?? '',
-            ),
+            builder: (context, state) {
+              final orderId = state.pathParameters['orderId'] ?? '';
+              return BlocProvider(
+                create: (_) => sl<OrderBloc>()
+                  ..add(OrderDetailRequested(int.tryParse(orderId) ?? 0)),
+                child: OrderDetailPage(orderId: orderId),
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'write-review',
+                name: AppRoutes.writeReview,
+                builder: (context, state) {
+                  final args = state.extra! as WriteReviewArgs;
+                  return BlocProvider(
+                    create: (_) => sl<WriteReviewCubit>(),
+                    child: WriteReviewPage(args: args),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -476,13 +563,15 @@ class AppRouter {
           final itemIdStr = state.uri.queryParameters['itemId'];
           final customDesignIdStr = state.uri.queryParameters['customDesignId'];
 
-          final variantId = variantIdStr != null ? int.tryParse(variantIdStr) : null;
+          final variantId =
+              variantIdStr != null ? int.tryParse(variantIdStr) : null;
           final cartQuantity = int.tryParse(quantityStr ?? '') ?? 1;
           final basePrice = priceStr != null ? double.tryParse(priceStr) : null;
           final itemId = itemIdStr != null ? int.tryParse(itemIdStr) : null;
-          final customDesignId = (customDesignIdStr != null && customDesignIdStr.isNotEmpty)
-              ? int.tryParse(customDesignIdStr)
-              : null;
+          final customDesignId =
+              (customDesignIdStr != null && customDesignIdStr.isNotEmpty)
+                  ? int.tryParse(customDesignIdStr)
+                  : null;
 
           return CustomizerPage(
             productId: state.pathParameters['productId'] ?? '',
@@ -513,7 +602,6 @@ class AppRouter {
         },
       ),
 
-
       // ── Admin Product ──────────────────────────────────────────────────────
       GoRoute(
         path: '/admin/products',
@@ -525,7 +613,8 @@ class AppRouter {
           return null;
         },
         builder: (context, state) => BlocProvider(
-          create: (_) => sl<AdminProductListBloc>()..add(AdminProductListLoaded()),
+          create: (_) =>
+              sl<AdminProductListBloc>()..add(AdminProductListLoaded()),
           child: const AdminProductListPage(),
         ),
         routes: [
@@ -534,10 +623,13 @@ class AppRouter {
             name: AppRoutes.adminProductCreate,
             builder: (context, state) => MultiBlocProvider(
               providers: [
-                BlocProvider(create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()),
+                BlocProvider(
+                    create: (_) =>
+                        sl<AdminProductFormCubit>()..loadDropdowns()),
                 BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
                 BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
-                BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
+                BlocProvider(
+                    create: (_) => sl<ProductColorCubit>()..loadColors()),
               ],
               child: const AdminProductFormPage(),
             ),
@@ -559,6 +651,10 @@ class AppRouter {
                   ),
                   BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
                   BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
+                  BlocProvider(
+                      create: (_) => sl<SizeGroupCubit>()..loadSizeGroups()),
+                  BlocProvider(
+                      create: (_) => sl<ProductColorCubit>()..loadColors()),
                 ],
                 child: AdminProductDetailPage(productId: id),
               );
@@ -580,10 +676,14 @@ class AppRouter {
                             sl<AdminProductDetailCubit>()..loadDetail(id),
                       ),
                       BlocProvider(
-                          create: (_) => sl<AdminProductFormCubit>()..loadDropdowns()..beginEditMode()),
-                      BlocProvider(create: (_) => sl<AdminProductVariantCubit>()),
+                          create: (_) => sl<AdminProductFormCubit>()
+                            ..loadDropdowns()
+                            ..beginEditMode()),
+                      BlocProvider(
+                          create: (_) => sl<AdminProductVariantCubit>()),
                       BlocProvider(create: (_) => sl<AdminProductImageCubit>()),
-                      BlocProvider(create: (_) => sl<ProductColorCubit>()..loadColors()),
+                      BlocProvider(
+                          create: (_) => sl<ProductColorCubit>()..loadColors()),
                     ],
                     child: AdminProductFormPage(productId: id),
                   );

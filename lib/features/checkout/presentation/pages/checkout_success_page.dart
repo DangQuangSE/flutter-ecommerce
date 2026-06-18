@@ -9,8 +9,6 @@ class CheckoutSuccessPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final orderReference = '#SP-${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}';
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -87,37 +85,6 @@ class CheckoutSuccessPage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 36),
-
-              // Transaction Detail Card
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    _buildInvoiceRow('Mã đơn hàng', orderReference, isBold: true),
-                    const SizedBox(height: 12),
-                    _buildInvoiceRow('Thời gian giao dự kiến', 'Hôm nay (Trong 2-4 giờ)', isSuccessColor: true),
-                    const SizedBox(height: 12),
-                    _buildInvoiceRow('Hình thức thanh toán', 'Vietcombank Pay'),
-                    const SizedBox(height: 12),
-                    _buildInvoiceRow('Trạng thái đơn hàng', 'Đang chuẩn bị hàng'),
-                  ],
-                ),
-              ),
 
               const Spacer(flex: 2),
 
@@ -155,37 +122,6 @@ class CheckoutSuccessPage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInvoiceRow(
-    String label,
-    String value, {
-    bool isBold = false,
-    bool isSuccessColor = false,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        Text(
-          value,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
-            color: isSuccessColor
-                ? const Color(0xFF009933)
-                : AppColors.textPrimary,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -65,8 +65,10 @@ class _NotificationPageState extends State<NotificationPage> {
               ),
             );
           } else if (state is NotificationLoaded) {
-            final unreadList = state.notifications.where((n) => !n.isRead).toList();
-            final readList = state.notifications.where((n) => n.isRead).toList();
+            final unreadList =
+                state.notifications.where((n) => !n.isRead).toList();
+            final readList =
+                state.notifications.where((n) => n.isRead).toList();
 
             if (state.notifications.isEmpty) {
               return _buildEmptyNotificationsState();
@@ -369,7 +371,9 @@ class _NotificationPageState extends State<NotificationPage> {
                                   item.title,
                                   style: GoogleFonts.lexend(
                                     fontSize: 13,
-                                    fontWeight: item.isRead ? FontWeight.w700 : FontWeight.w800,
+                                    fontWeight: item.isRead
+                                        ? FontWeight.w700
+                                        : FontWeight.w800,
                                     color: AppColors.textPrimary,
                                     height: 1.3,
                                   ),
@@ -427,7 +431,8 @@ class _NotificationPageState extends State<NotificationPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 48, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Đã xảy ra lỗi khi tải danh sách thông báo.',

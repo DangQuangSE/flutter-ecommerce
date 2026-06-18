@@ -22,7 +22,9 @@ import 'package:flutter_ecommerce/features/admin/product/domain/usecases/get_adm
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_product_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/restore_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variant_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variants_batch_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/add_product_image_usecase.dart';
@@ -42,6 +44,15 @@ import 'package:flutter_ecommerce/features/checkout/domain/usecases/create_vnpay
 import 'package:flutter_ecommerce/features/checkout/domain/usecases/place_order_usecase.dart';
 import 'package:flutter_ecommerce/features/checkout/domain/usecases/verify_vnpay_payment_usecase.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
+
+// Order
+import 'package:flutter_ecommerce/features/order/data/datasources/order_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/order/data/datasources/order_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/order/data/repositories/order_repository_impl.dart';
+import 'package:flutter_ecommerce/features/order/domain/repositories/order_repository.dart';
+import 'package:flutter_ecommerce/features/order/domain/usecases/get_order_by_id_usecase.dart';
+import 'package:flutter_ecommerce/features/order/domain/usecases/get_orders_usecase.dart';
+import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
 
 // Auth
 import 'package:flutter_ecommerce/features/auth/data/datasources/auth_local_datasource.dart';
@@ -101,12 +112,39 @@ import 'package:flutter_ecommerce/features/product/presentation/bloc/product_blo
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
+// Size Group
+import 'package:flutter_ecommerce/features/size/data/datasources/size_group_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/size/data/datasources/size_group_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/size/data/repositories/size_group_repository_impl.dart';
+import 'package:flutter_ecommerce/features/size/domain/repositories/size_group_repository.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/get_size_groups_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/create_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/update_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/domain/usecases/delete_size_group_usecase.dart';
+import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
+
 // Brand
 import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_datasource_impl.dart';
 import 'package:flutter_ecommerce/features/brand/data/repositories/brand_repository_impl.dart';
 import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
+
+// Site Setting
+import 'package:flutter_ecommerce/features/setting/data/datasources/site_setting_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/setting/data/datasources/site_setting_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/setting/data/repositories/site_setting_repository_impl.dart';
+import 'package:flutter_ecommerce/features/setting/domain/repositories/site_setting_repository.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
+
+// Review
+import 'package:flutter_ecommerce/features/review/data/datasources/review_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/review/data/datasources/review_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/review/data/repositories/review_repository_impl.dart';
+import 'package:flutter_ecommerce/features/review/domain/repositories/review_repository.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/admin_review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/write_review_cubit.dart';
 
 // Color
 import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource.dart';
@@ -368,6 +406,34 @@ Future<void> configureDependencies() async {
     ),
   );
 
+  // Size Group Management
+  sl.registerLazySingleton<SizeGroupRemoteDatasource>(
+    () => SizeGroupRemoteDatasourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<SizeGroupRepository>(
+    () => SizeGroupRepositoryImpl(sl<SizeGroupRemoteDatasource>()),
+  );
+  sl.registerFactory<GetSizeGroupsUseCase>(
+    () => GetSizeGroupsUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<CreateSizeGroupUseCase>(
+    () => CreateSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<UpdateSizeGroupUseCase>(
+    () => UpdateSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<DeleteSizeGroupUseCase>(
+    () => DeleteSizeGroupUseCase(sl<SizeGroupRepository>()),
+  );
+  sl.registerFactory<SizeGroupCubit>(
+    () => SizeGroupCubit(
+      getSizeGroupsUseCase: sl<GetSizeGroupsUseCase>(),
+      createSizeGroupUseCase: sl<CreateSizeGroupUseCase>(),
+      updateSizeGroupUseCase: sl<UpdateSizeGroupUseCase>(),
+      deleteSizeGroupUseCase: sl<DeleteSizeGroupUseCase>(),
+    ),
+  );
+
   // Brand Management
   sl.registerLazySingleton<BrandRemoteDataSource>(
     () => BrandRemoteDataSourceImpl(sl<DioClient>()),
@@ -377,6 +443,34 @@ Future<void> configureDependencies() async {
   );
   sl.registerFactory<BrandCubit>(
     () => BrandCubit(sl<BrandRepository>()),
+  );
+
+  // Site Setting
+  sl.registerLazySingleton<SiteSettingRemoteDataSource>(
+    () => SiteSettingRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<SiteSettingRepository>(
+    () => SiteSettingRepositoryImpl(sl<SiteSettingRemoteDataSource>()),
+  );
+  sl.registerFactory<SiteSettingCubit>(
+    () => SiteSettingCubit(sl<SiteSettingRepository>()),
+  );
+
+  // Review
+  sl.registerLazySingleton<ReviewRemoteDataSource>(
+    () => ReviewRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ReviewRepository>(
+    () => ReviewRepositoryImpl(sl<ReviewRemoteDataSource>()),
+  );
+  sl.registerFactory<ReviewCubit>(
+    () => ReviewCubit(sl<ReviewRepository>()),
+  );
+  sl.registerFactory<AdminReviewCubit>(
+    () => AdminReviewCubit(sl<ReviewRepository>()),
+  );
+  sl.registerFactory<WriteReviewCubit>(
+    () => WriteReviewCubit(sl<ReviewRepository>()),
   );
 
   // Product Color Management
@@ -533,6 +627,26 @@ Future<void> configureDependencies() async {
     ),
   );
 
+  // ── Customer Orders ────────────────────────────────────────────────────────
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(sl<OrderRemoteDataSource>()),
+  );
+  sl.registerFactory<GetOrdersUseCase>(
+    () => GetOrdersUseCase(sl<OrderRepository>()),
+  );
+  sl.registerFactory<GetOrderByIdUseCase>(
+    () => GetOrderByIdUseCase(sl<OrderRepository>()),
+  );
+  sl.registerFactory<OrderBloc>(
+    () => OrderBloc(
+      getOrdersUseCase: sl<GetOrdersUseCase>(),
+      getOrderByIdUseCase: sl<GetOrderByIdUseCase>(),
+    ),
+  );
+
   // ── Admin Product ────────────────────────────────────────────────────────────
   sl.registerLazySingleton<AdminProductDatasource>(
     () => AdminProductDatasourceImpl(sl<DioClient>()),
@@ -565,8 +679,14 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<DeleteAdminProductUseCase>(
     () => DeleteAdminProductUseCase(sl<AdminProductRepository>()),
   );
+  sl.registerLazySingleton<RestoreAdminProductUseCase>(
+    () => RestoreAdminProductUseCase(sl<AdminProductRepository>()),
+  );
   sl.registerLazySingleton<CreateVariantUseCase>(
     () => CreateVariantUseCase(sl<AdminProductRepository>()),
+  );
+  sl.registerLazySingleton<CreateVariantsBatchUseCase>(
+    () => CreateVariantsBatchUseCase(sl<AdminProductRepository>()),
   );
   sl.registerLazySingleton<UpdateVariantUseCase>(
     () => UpdateVariantUseCase(sl<AdminProductRepository>()),
@@ -584,6 +704,7 @@ Future<void> configureDependencies() async {
     () => AdminProductListBloc(
       sl<GetAdminProductsUseCase>(),
       sl<DeleteAdminProductUseCase>(),
+      sl<RestoreAdminProductUseCase>(),
     ),
   );
   sl.registerFactory<AdminProductDetailCubit>(
@@ -596,11 +717,13 @@ Future<void> configureDependencies() async {
       sl<DeleteAdminProductUseCase>(),
       sl<CategoryRepository>(),
       sl<BrandRepository>(),
+      sl<GetSizeGroupsUseCase>(),
     ),
   );
   sl.registerFactory<AdminProductVariantCubit>(
     () => AdminProductVariantCubit(
       sl<CreateVariantUseCase>(),
+      sl<CreateVariantsBatchUseCase>(),
       sl<UpdateVariantUseCase>(),
       sl<DeleteVariantUseCase>(),
     ),

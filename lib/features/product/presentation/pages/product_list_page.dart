@@ -68,7 +68,8 @@ class _ProductListPageState extends State<ProductListPage> {
                 if (state is ProductLoading) {
                   return const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.primary),
                     ),
                   );
                 } else if (state is ProductLoaded) {
@@ -118,7 +119,8 @@ class _ProductListPageState extends State<ProductListPage> {
     );
   }
 
-  Widget _buildScrollView(double statusBarHeight, List<ProductEntity> products) {
+  Widget _buildScrollView(
+      double statusBarHeight, List<ProductEntity> products) {
     // Symmetrical column listings
     final List<ProductEntity> col1 = [];
     final List<ProductEntity> col2 = [];
@@ -153,7 +155,9 @@ class _ProductListPageState extends State<ProductListPage> {
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 16),
             child: Text(
-              _selectedCategory == 'Tất cả' ? 'Tất cả sản phẩm' : _selectedCategory,
+              _selectedCategory == 'Tất cả'
+                  ? 'Tất cả sản phẩm'
+                  : _selectedCategory,
               style: GoogleFonts.lexend(
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
@@ -225,7 +229,8 @@ class _ProductListPageState extends State<ProductListPage> {
                 }
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
@@ -254,7 +259,8 @@ class _ProductListPageState extends State<ProductListPage> {
             GestureDetector(
               onTap: () => _showFilterSheet(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
@@ -263,7 +269,9 @@ class _ProductListPageState extends State<ProductListPage> {
                 child: Row(
                   children: [
                     Text(
-                      _selectedSort == 'Không sắp xếp' ? 'Bộ lọc' : _selectedSort,
+                      _selectedSort == 'Không sắp xếp'
+                          ? 'Bộ lọc'
+                          : _selectedSort,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -307,12 +315,15 @@ class _ProductListPageState extends State<ProductListPage> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeOutCubic,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isSelected ? AppColors.textPrimary : Colors.white,
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
-                        color: isSelected ? AppColors.textPrimary : const Color(0xFFE2E8F0),
+                        color: isSelected
+                            ? AppColors.textPrimary
+                            : const Color(0xFFE2E8F0),
                         width: 1,
                       ),
                       boxShadow: isSelected
@@ -330,8 +341,11 @@ class _ProductListPageState extends State<ProductListPage> {
                         category,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                          color: isSelected ? Colors.white : AppColors.textSecondary,
+                          fontWeight:
+                              isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textSecondary,
                           letterSpacing: 0.2,
                         ),
                       ),
@@ -393,7 +407,8 @@ class _ProductListPageState extends State<ProductListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 44, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 44, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Đã xảy ra lỗi khi tải sản phẩm.',
@@ -595,7 +610,8 @@ class _ProductListPageState extends State<ProductListPage> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.accent : const Color(0xFFE2E8F0),
+                  color:
+                      isSelected ? AppColors.accent : const Color(0xFFE2E8F0),
                   width: 2,
                 ),
                 color: isSelected ? AppColors.accent : Colors.transparent,

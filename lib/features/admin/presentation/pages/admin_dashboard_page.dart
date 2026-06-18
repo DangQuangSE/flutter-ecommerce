@@ -50,7 +50,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         builder: (context, state) {
           if (state is AdminLoading) {
             return const Center(
-              child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary)),
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary)),
             );
           }
 
@@ -60,18 +61,25 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               children: [
                 AdminDashboardTab(state: state),
                 const AdminManagementTab(),
-                AdminLocationTab(onBackToDashboard: () => setState(() => _currentIndex = 0)),
+                AdminLocationTab(
+                    onBackToDashboard: () => setState(() => _currentIndex = 0)),
                 const AdminProfileTab(),
               ],
             );
           }
 
-          return const Center(child: Text('Đã xảy ra lỗi khi tải dữ liệu Admin.'));
+          return const Center(
+              child: Text('Đã xảy ra lỗi khi tải dữ liệu Admin.'));
         },
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, -2))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, -2))
+          ],
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -80,13 +88,27 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textSecondary.withOpacity(0.7),
-          selectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11),
-          unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 11),
+          selectedLabelStyle:
+              GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11),
+          unselectedLabelStyle:
+              GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 11),
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.dashboard_rounded, size: 22), activeIcon: Icon(Icons.dashboard_rounded, size: 24), label: 'Tổng quan'),
-            BottomNavigationBarItem(icon: Icon(Icons.tune_rounded, size: 22), activeIcon: Icon(Icons.tune_rounded, size: 24), label: 'Quản lý'),
-            BottomNavigationBarItem(icon: Icon(Icons.location_on_rounded, size: 22), activeIcon: Icon(Icons.location_on_rounded, size: 24), label: 'Cửa hàng'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_rounded, size: 22), activeIcon: Icon(Icons.person_rounded, size: 24), label: 'Cá nhân'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.dashboard_rounded, size: 22),
+                activeIcon: Icon(Icons.dashboard_rounded, size: 24),
+                label: 'Tổng quan'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.tune_rounded, size: 22),
+                activeIcon: Icon(Icons.tune_rounded, size: 24),
+                label: 'Quản lý'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.location_on_rounded, size: 22),
+                activeIcon: Icon(Icons.location_on_rounded, size: 24),
+                label: 'Cửa hàng'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person_rounded, size: 22),
+                activeIcon: Icon(Icons.person_rounded, size: 24),
+                label: 'Cá nhân'),
           ],
         ),
       ),

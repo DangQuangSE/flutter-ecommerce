@@ -61,7 +61,9 @@ class _CollapsiblePanelState extends State<CollapsiblePanel> {
                     ),
                   ),
                   Icon(
-                    _isExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                    _isExpanded
+                        ? Icons.expand_less_rounded
+                        : Icons.expand_more_rounded,
                     color: AppColors.textSecondary,
                     size: 20,
                   ),
@@ -75,7 +77,9 @@ class _CollapsiblePanelState extends State<CollapsiblePanel> {
               padding: const EdgeInsets.only(bottom: 16),
               child: widget.child,
             ),
-            crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: _isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 200),
           ),
         ],

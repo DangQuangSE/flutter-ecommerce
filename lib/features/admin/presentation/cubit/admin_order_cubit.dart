@@ -135,11 +135,20 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
     );
 
     switch (result) {
-      case Success(:final data):
-        emit(AdminOrderDetailLoaded(
-          order: data,
-          message: 'Đã cập nhật trạng thái đơn hàng!',
-        ));
+      case Success():
+        final detailResult = await _getAdminOrderDetailUseCase(orderId);
+        switch (detailResult) {
+          case Success(:final data):
+            emit(AdminOrderDetailLoaded(
+              order: data,
+              message: 'Đã cập nhật trạng thái đơn hàng!',
+            ));
+          case ResultFailure(:final failure):
+            emit(current.copyWith(
+              isUpdatingStatus: false,
+              message: failure.message,
+            ));
+        }
       case ResultFailure(:final failure):
         emit(current.copyWith(
           isUpdatingStatus: false,

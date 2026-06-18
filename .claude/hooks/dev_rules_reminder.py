@@ -26,7 +26,11 @@ STATUS_ACTIVE = "🟡"
 STATUS_COMPLETE = "✅"
 MAX_ACTIVE_PLANS = 3
 DEFAULT_CONTEXT = "dev"
-FALLBACK_RULES = "YAGNI · KISS · DRY · Brutal honesty · Challenge assumptions"
+FALLBACK_RULES = (
+    "YAGNI · KISS · DRY · Brutal honesty · Challenge assumptions · "
+    "Before any .dart edit, read .anti-flutter/RULES.md and "
+    ".claude/rules/flutter-grading-standards.md"
+)
 
 COMMAND_CONTEXT_MAP: dict[str, str] = {
     "/ck:cook": "dev",

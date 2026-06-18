@@ -140,9 +140,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             },
             builder: (context, state) {
               final isLoading = state is AuthLoading;
-              final inlineError = state is AuthRegisterOtpError
-                  ? state.message
-                  : null;
+              final inlineError =
+                  state is AuthRegisterOtpError ? state.message : null;
               final canVerify =
                   !isLoading && _pinController.text.trim().length == 6;
 

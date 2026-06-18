@@ -108,7 +108,8 @@ class ProductCatalogLoaded extends ProductCatalogState with EquatableMixin {
       totalElements: totalElements ?? this.totalElements,
       keyword: clearKeyword ? null : (keyword ?? this.keyword),
       categoryId: clearCategoryId ? null : (categoryId ?? this.categoryId),
-      categoryName: clearCategoryId ? null : (categoryName ?? this.categoryName),
+      categoryName:
+          clearCategoryId ? null : (categoryName ?? this.categoryName),
       brandId: clearBrandId ? null : (brandId ?? this.brandId),
       brandName: clearBrandId ? null : (brandName ?? this.brandName),
       gender: clearGender ? null : (gender ?? this.gender),

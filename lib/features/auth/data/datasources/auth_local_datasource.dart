@@ -7,7 +7,8 @@ class AuthLocalDataSource {
 
   const AuthLocalDataSource(this._tokenStorage, this._cookieJar);
 
-  Future<void> saveAccessToken(String token) => _tokenStorage.saveAccessToken(token);
+  Future<void> saveAccessToken(String token) =>
+      _tokenStorage.saveAccessToken(token);
 
   String? getAccessToken() => _tokenStorage.getAccessToken();
 

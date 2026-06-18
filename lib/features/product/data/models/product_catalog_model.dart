@@ -7,7 +7,7 @@ class ProductCatalogModel {
   final String? sku;
   final double basePrice;
   final double originalPrice;
-  final double salePrice;
+  final double? salePrice;
   final String? imageUrl;
   final String categoryName;
   final String brandName;
@@ -45,7 +45,7 @@ class ProductCatalogModel {
       sku: json['sku'] as String?,
       basePrice: (json['basePrice'] as num?)?.toDouble() ?? 0.0,
       originalPrice: (json['originalPrice'] as num?)?.toDouble() ?? 0.0,
-      salePrice: (json['salePrice'] as num?)?.toDouble() ?? 0.0,
+      salePrice: (json['salePrice'] as num?)?.toDouble(),
       imageUrl: json['imageUrl'] as String?,
       categoryName: json['categoryName'] as String? ?? '',
       brandName: json['brandName'] as String? ?? '',

@@ -37,7 +37,7 @@ class NavigationHistory {
     }
     return null;
   }
-  
+
   static void clear() {
     _tabHistory.clear();
     _currentTab = null;

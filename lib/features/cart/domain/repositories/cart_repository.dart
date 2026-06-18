@@ -17,4 +17,3 @@ abstract interface class CartRepository {
   /// Remove a cart item by its backend [itemId].
   Future<Result<List<CartItemEntity>>> removeItem(int itemId);
 }
-

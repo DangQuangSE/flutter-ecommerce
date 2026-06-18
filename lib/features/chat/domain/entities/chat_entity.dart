@@ -9,7 +9,8 @@ class ChatEntity extends Equatable {
   final int unreadCount;
   final bool isOnline;
   final String? tag; // e.g., 'Shop', 'Hỗ trợ', 'Đơn hàng'
-  final String? associatedProductImage; // associated product photo for e-commerce context
+  final String?
+      associatedProductImage; // associated product photo for e-commerce context
 
   const ChatEntity({
     required this.id,
@@ -43,7 +44,8 @@ class ChatEntity extends Equatable {
       unreadCount: unreadCount ?? this.unreadCount,
       isOnline: isOnline ?? this.isOnline,
       tag: tag ?? this.tag,
-      associatedProductImage: associatedProductImage ?? this.associatedProductImage,
+      associatedProductImage:
+          associatedProductImage ?? this.associatedProductImage,
     );
   }
 

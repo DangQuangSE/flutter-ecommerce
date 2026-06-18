@@ -55,9 +55,10 @@ abstract final class OrderStatusLabel {
     };
   }
 
-  static String paymentMethodVi(String method) => switch (method.toUpperCase()) {
+  static String paymentMethodVi(String method) =>
+      switch (method.toUpperCase()) {
         'COD' => 'Thanh toán khi nhận hàng',
-        'BANK_TRANSFER' => 'Chuyển khoản ngân hàng',
+        'BANK_TRANSFER' => 'VNPay',
         'CREDIT_CARD' => 'Thẻ tín dụng',
         _ => method,
       };

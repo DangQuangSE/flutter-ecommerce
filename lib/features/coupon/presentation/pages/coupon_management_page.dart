@@ -168,10 +168,16 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
             const SizedBox(height: 12),
             row('Loại giảm', c.discountType.label),
             row('Giá trị giảm', _discountText(c)),
-            row('Đơn tối thiểu',
-                c.minOrderAmount == null ? '—' : '${_amountFormat.format(c.minOrderAmount)}đ'),
-            row('Giảm tối đa',
-                c.maxDiscountAmount == null ? '—' : '${_amountFormat.format(c.maxDiscountAmount)}đ'),
+            row(
+                'Đơn tối thiểu',
+                c.minOrderAmount == null
+                    ? '—'
+                    : '${_amountFormat.format(c.minOrderAmount)}đ'),
+            row(
+                'Giảm tối đa',
+                c.maxDiscountAmount == null
+                    ? '—'
+                    : '${_amountFormat.format(c.maxDiscountAmount)}đ'),
             row('Hạng yêu cầu', c.requiredTier?.label ?? 'Không yêu cầu'),
             row('Bắt đầu', _dateText(c.startDate)),
             row('Kết thúc', _dateText(c.endDate)),
@@ -215,8 +221,8 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
         foregroundColor: Colors.white,
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add_rounded),
-        label:
-            Text('Thêm', style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
+        label: Text('Thêm',
+            style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
       ),
       body: Column(
         children: [
@@ -239,8 +245,9 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
                   final filtered = _query.isEmpty
                       ? state.coupons
                       : state.coupons
-                          .where((c) =>
-                              c.code.toLowerCase().contains(_query.toLowerCase()))
+                          .where((c) => c.code
+                              .toLowerCase()
+                              .contains(_query.toLowerCase()))
                           .toList();
                   if (state.coupons.isEmpty) return _buildEmpty();
                   return _buildList(state, filtered);
@@ -374,7 +381,8 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(Icons.local_offer_rounded,
-                  color: inactive ? AppColors.textSecondary : AppColors.primary),
+                  color:
+                      inactive ? AppColors.textSecondary : AppColors.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -472,7 +480,8 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
             parts.join(' · '),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
+            style:
+                GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
           ),
         ),
         if (tag.isNotEmpty) ...[
@@ -513,8 +522,8 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
             const SizedBox(height: 6),
             Text(
               'Nhấn "Thêm" để tạo mã đầu tiên.',
-              style:
-                  GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
+              style: GoogleFonts.inter(
+                  fontSize: 13, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -544,8 +553,8 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
             Text(
               message,
               textAlign: TextAlign.center,
-              style:
-                  GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+              style: GoogleFonts.inter(
+                  fontSize: 12, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

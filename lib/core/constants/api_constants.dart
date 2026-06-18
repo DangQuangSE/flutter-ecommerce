@@ -59,6 +59,10 @@ abstract final class ApiConstants {
   static const String customDesigns = '/api/custom-designs';
   static String customDesignById(int id) => '/api/custom-designs/$id';
 
+  static const String sizeGroups = '/api/size-groups';
+  static const String adminSizeGroups = '/api/admin/size-groups';
+  static String adminSizeGroupById(int id) => '/api/admin/size-groups/$id';
+
   // Shipping addresses (authenticated user)
   static const String addresses = '/api/v1/addresses';
   static String addressById(int id) => '/api/v1/addresses/$id';
