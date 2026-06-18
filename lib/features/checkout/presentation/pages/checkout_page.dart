@@ -685,77 +685,114 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final hasCoupon = _selectedCoupon != null;
     final discount = _calculateDiscount(subtotal);
 
-    return InkWell(
-      onTap: () => _openCouponBottomSheet(context, subtotal),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
+    return BlocBuilder<CouponCubit, CouponState>(
+      builder: (context, couponState) {
+        final isLoading =
+            couponState is CouponLoading || couponState is CouponInitial;
+        final coupons = couponState is CouponLoaded
+            ? couponState.coupons
+            : const <CouponEntity>[];
+        final errorMessage =
+            couponState is CouponError ? couponState.message : null;
+
+        return InkWell(
+          onTap: isLoading
+              ? null
+              : () => _openCouponBottomSheet(
+                    context,
+                    subtotal,
+                    coupons: coupons,
+                    errorMessage: errorMessage,
+                  ),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: hasCoupon
-                ? AppColors.primary.withValues(alpha: 0.5)
-                : const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-            width: hasCoupon ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.confirmation_num_outlined,
-              color: hasCoupon ? AppColors.primary : AppColors.textSecondary,
-              size: 20,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    hasCoupon
-                        ? 'Đã áp dụng mã: ${_selectedCoupon!.code}'
-                        : 'Sport Pro Voucher',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: hasCoupon ? AppColors.primary : AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    hasCoupon
-                        ? 'Tiết kiệm được ${_formatPrice(discount)}'
-                        : 'Chọn hoặc nhập mã giảm giá',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: hasCoupon ? const Color(0xFF009933) : AppColors.textHint,
-                    ),
-                  ),
-                ],
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: hasCoupon
+                    ? AppColors.primary.withValues(alpha: 0.5)
+                    : const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+                width: hasCoupon ? 1.5 : 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: AppColors.textHint.withValues(alpha: 0.7),
-              size: 14,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.confirmation_num_outlined,
+                  color:
+                      hasCoupon ? AppColors.primary : AppColors.textSecondary,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        hasCoupon
+                            ? 'Đã áp dụng mã: ${_selectedCoupon!.code}'
+                            : 'Sport Pro Voucher',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: hasCoupon
+                              ? AppColors.primary
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        hasCoupon
+                            ? 'Tiết kiệm được ${_formatPrice(discount)}'
+                            : (isLoading
+                                ? 'Đang tải mã giảm giá...'
+                                : 'Chọn hoặc nhập mã giảm giá'),
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: hasCoupon
+                              ? const Color(0xFF009933)
+                              : AppColors.textHint,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isLoading)
+                  const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: AppColors.textHint.withValues(alpha: 0.7),
+                    size: 14,
+                  ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  void _openCouponBottomSheet(BuildContext context, double subtotal) {
-    final couponCubit = BlocProvider.of<CouponCubit>(context);
+  void _openCouponBottomSheet(
+    BuildContext context,
+    double subtotal, {
+    required List<CouponEntity> coupons,
+    required String? errorMessage,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -764,18 +801,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (modalContext) {
-        return BlocProvider.value(
-          value: couponCubit,
-          child: _CouponSelectionSheet(
-            subtotal: subtotal,
-            selectedCoupon: _selectedCoupon,
-            onCouponSelected: (coupon) {
-              setState(() {
-                _selectedCoupon = coupon;
-              });
-              Navigator.pop(modalContext);
-            },
-          ),
+        return _CouponSelectionSheet(
+          subtotal: subtotal,
+          selectedCoupon: _selectedCoupon,
+          coupons: coupons,
+          errorMessage: errorMessage,
+          onCouponSelected: (coupon) {
+            setState(() {
+              _selectedCoupon = coupon;
+            });
+            Navigator.pop(modalContext);
+          },
         );
       },
     );
@@ -844,11 +880,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
 class _CouponSelectionSheet extends StatefulWidget {
   final double subtotal;
   final CouponEntity? selectedCoupon;
+  final List<CouponEntity> coupons;
+  final String? errorMessage;
   final ValueSetter<CouponEntity?> onCouponSelected;
 
   const _CouponSelectionSheet({
     required this.subtotal,
     this.selectedCoupon,
+    required this.coupons,
+    this.errorMessage,
     required this.onCouponSelected,
   });
 
@@ -873,14 +913,14 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
     super.dispose();
   }
 
-  void _applyManualCode(List<CouponEntity> coupons) {
+  void _applyManualCode() {
     setState(() {
       _errorMessage = null;
     });
     final typedCode = _codeController.text.trim().toUpperCase();
     if (typedCode.isEmpty) return;
 
-    final match = coupons.firstWhere(
+    final match = widget.coupons.firstWhere(
       (c) => c.code.toUpperCase() == typedCode,
       orElse: () => const CouponEntity(code: ''),
     );
@@ -892,7 +932,8 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
       return;
     }
 
-    if (match.minOrderAmount != null && widget.subtotal < match.minOrderAmount!) {
+    if (match.minOrderAmount != null &&
+        widget.subtotal < match.minOrderAmount!) {
       setState(() {
         _errorMessage = 'Đơn hàng chưa đạt giá trị tối thiểu';
       });
@@ -908,202 +949,156 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
+    // Keep viewInsets padding OUTSIDE the SizedBox that has a fixed height,
+    // otherwise the keyboard's resize animation fights the fixed height
+    // mid-layout.
+    return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Column(
-        children: [
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 8, bottom: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(2),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: Column(
+          children: [
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Chọn Sport Pro Voucher',
-                  style: GoogleFonts.lexend(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Chọn Sport Pro Voucher',
+                    style: GoogleFonts.lexend(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 20),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 20),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _codeController,
-                        textCapitalization: TextCapitalization.characters,
-                        decoration: InputDecoration(
-                          hintText: 'Nhập mã voucher',
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFC1C6D7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.primary),
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _codeController,
+                          textCapitalization: TextCapitalization.characters,
+                          decoration: InputDecoration(
+                            hintText: 'Nhập mã voucher',
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide:
+                                  const BorderSide(color: Color(0xFFC1C6D7)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide:
+                                  const BorderSide(color: AppColors.primary),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    BlocBuilder<CouponCubit, CouponState>(
-                      builder: (context, state) {
-                        final list = state is CouponLoaded ? state.coupons : <CouponEntity>[];
-                        return ElevatedButton(
-                          onPressed: () => _applyManualCode(list),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: _applyManualCode,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
                           ),
-                          child: Text(
-                            'Áp dụng',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                if (_errorMessage != null) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    _errorMessage!,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppColors.error,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: BlocBuilder<CouponCubit, CouponState>(
-              builder: (context, state) {
-                if (state is CouponLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is CouponLoaded) {
-                  if (state.coupons.isEmpty) {
-                    return _buildEmptyVouchers();
-                  }
-                  final eligible = <CouponEntity>[];
-                  final ineligible = <CouponEntity>[];
-                  for (final c in state.coupons) {
-                    if (c.minOrderAmount != null && widget.subtotal < c.minOrderAmount!) {
-                      ineligible.add(c);
-                    } else {
-                      eligible.add(c);
-                    }
-                  }
-                  return ListView(
-                    padding: const EdgeInsets.all(16),
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      if (eligible.isNotEmpty) ...[
-                        _buildSectionLabel('MÃ GIẢM GIÁ KHẢ DỤNG'),
-                        const SizedBox(height: 8),
-                        ...eligible.map((c) => _buildVoucherCard(c, true)),
-                      ],
-                      if (ineligible.isNotEmpty) ...[
-                        if (eligible.isNotEmpty) const SizedBox(height: 24),
-                        _buildSectionLabel('MÃ KHÔNG KHẢ DỤNG'),
-                        const SizedBox(height: 8),
-                        ...ineligible.map((c) => _buildVoucherCard(c, false)),
-                      ],
+                        ),
+                        child: Text(
+                          'Áp dụng',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
                     ],
-                  );
-                } else if (state is CouponError) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        state.message,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(color: AppColors.error),
+                  ),
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      _errorMessage!,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+                  ],
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+            const Divider(height: 1),
+            Expanded(
+              child: _buildCouponList(),
             ),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.onCouponSelected(_tempSelectedCoupon);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    widget.onCouponSelected(_tempSelectedCoupon);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'OK',
-                  style: GoogleFonts.lexend(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.lexend(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ), // Column
+      ), // SizedBox
+    ); // Padding (keyboard inset wrapper)
   }
 
   Widget _buildSectionLabel(String text) {
@@ -1142,6 +1137,52 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
     );
   }
 
+  Widget _buildCouponList() {
+    if (widget.errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            widget.errorMessage!,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(color: AppColors.error),
+          ),
+        ),
+      );
+    }
+    if (widget.coupons.isEmpty) return _buildEmptyVouchers();
+    return _buildCouponListView(widget.coupons);
+  }
+
+  Widget _buildCouponListView(List<CouponEntity> coupons) {
+    final eligible = <CouponEntity>[];
+    final ineligible = <CouponEntity>[];
+    for (final c in coupons) {
+      if (c.minOrderAmount != null && widget.subtotal < c.minOrderAmount!) {
+        ineligible.add(c);
+      } else {
+        eligible.add(c);
+      }
+    }
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      physics: const BouncingScrollPhysics(),
+      children: [
+        if (eligible.isNotEmpty) ...[
+          _buildSectionLabel('MÃ GIẢM GIÁ KHẢ DỤNG'),
+          const SizedBox(height: 8),
+          ...eligible.map((c) => _buildVoucherCard(c, true)),
+        ],
+        if (ineligible.isNotEmpty) ...[
+          if (eligible.isNotEmpty) const SizedBox(height: 24),
+          _buildSectionLabel('MÃ KHÔNG KHẢ DỤNG'),
+          const SizedBox(height: 8),
+          ...ineligible.map((c) => _buildVoucherCard(c, false)),
+        ],
+      ],
+    );
+  }
+
   Widget _buildVoucherCard(CouponEntity c, bool isEligible) {
     final isSelected = _tempSelectedCoupon?.code == c.code;
     String desc = '';
@@ -1161,7 +1202,8 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
 
     String expiryText = '';
     if (c.endDate != null) {
-      expiryText = 'Hạn dùng: ${c.endDate!.day}/${c.endDate!.month}/${c.endDate!.year}';
+      expiryText =
+          'Hạn dùng: ${c.endDate!.day}/${c.endDate!.month}/${c.endDate!.year}';
     }
 
     return Opacity(
@@ -1218,7 +1260,9 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isEligible ? AppColors.primary : AppColors.textSecondary,
+                        color: isEligible
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
                       ),
                     ),
                     if (minOrderText.isNotEmpty) ...[

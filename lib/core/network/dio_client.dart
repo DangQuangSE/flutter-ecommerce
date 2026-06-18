@@ -10,7 +10,7 @@ import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_ecommerce/core/errors/exceptions.dart';
+
 
 class _AppExceptionDio implements Dio {
   final Dio _delegate;
@@ -348,10 +348,27 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
   _AuthRefreshInterceptor({
     required Dio dio,
     required AuthTokenStorage authTokenStorage,
-  })  : _dio = dio,
-        _authTokenStorage = authTokenStorage;
+  })  : _mainDio = dio,
+        _authTokenStorage = authTokenStorage {
+    // A plain Dio used ONLY for the refresh-token round-trip.
+    // It MUST NOT share the main Dio instance or its QueuedInterceptor,
+    // otherwise the refresh call deadlocks because QueuedInterceptor blocks
+    // all queued requests while the current error handler is awaiting.
+    _refreshDio = Dio(
+      BaseOptions(
+        baseUrl: ApiConstants.baseUrl,
+        connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
+        receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+  }
 
-  final Dio _dio;
+  final Dio _mainDio;
+  late final Dio _refreshDio;
   final AuthTokenStorage _authTokenStorage;
 
   @override
@@ -379,9 +396,10 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
         path != ApiConstants.login &&
         path != ApiConstants.refreshToken) {
       try {
-        final refreshResponse = await _dio.post<Map<String, dynamic>>(
+        // Use _refreshDio (no QueuedInterceptor) to avoid deadlocking the
+        // main Dio while it is blocked inside this QueuedInterceptor handler.
+        final refreshResponse = await _refreshDio.post<Map<String, dynamic>>(
           ApiConstants.refreshToken,
-          options: Options(extra: {'_skipRefresh': true}),
         );
         final loginModel =
             LoginResponseModel.fromApiResponse(refreshResponse.data!);
@@ -392,7 +410,8 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
         retryOptions.headers['Authorization'] =
             'Bearer ${loginModel.accessToken}';
 
-        final retryResponse = await _dio.fetch(retryOptions);
+        // Re-execute the original request through the main Dio.
+        final retryResponse = await _mainDio.fetch(retryOptions);
         return handler.resolve(retryResponse);
       } catch (_) {
         await _authTokenStorage.clearAccessToken();
