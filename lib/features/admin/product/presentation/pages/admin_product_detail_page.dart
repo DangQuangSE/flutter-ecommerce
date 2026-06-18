@@ -135,6 +135,7 @@ class _VariantsSection extends StatelessWidget {
       context,
       title: 'Sửa: ${variant.sku}',
       initialPrice: variant.originalPrice,
+      initialSalePrice: variant.salePrice,
       initialStock: variant.stockQuantity,
       initialStatus: variant.status,
     );
@@ -146,6 +147,7 @@ class _VariantsSection extends StatelessWidget {
           size: variant.size,
           colorId: variant.colorId,
           originalPrice: result.originalPrice,
+          salePrice: result.salePrice,
           stockQuantity: result.stockQuantity,
           status: result.status,
         ),

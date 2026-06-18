@@ -11,7 +11,6 @@ class UpdateProductParams extends Equatable {
   final ProductStatus status;
   final bool isFeatured;
   final int? sizeGroupId;
-  final int? couponId;
 
   const UpdateProductParams({
     required this.name,
@@ -22,7 +21,6 @@ class UpdateProductParams extends Equatable {
     required this.status,
     required this.isFeatured,
     this.sizeGroupId,
-    this.couponId,
   });
 
   @override
@@ -35,6 +33,5 @@ class UpdateProductParams extends Equatable {
         status,
         isFeatured,
         sizeGroupId,
-        couponId,
       ];
 }

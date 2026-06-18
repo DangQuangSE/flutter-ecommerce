@@ -162,10 +162,6 @@ class _ProductFormStep1BasicInfoState extends State<ProductFormStep1BasicInfo> {
             _SizeGroupDropdown(state: state, cubit: cubit),
             const SizedBox(height: 16),
 
-            // Coupon dropdown (optional)
-            _CouponDropdown(state: state, cubit: cubit),
-            const SizedBox(height: 16),
-
             // Gender dropdown
             DropdownButtonFormField<Gender>(
               initialValue: state.gender,
@@ -280,42 +276,6 @@ class _SizeGroupDropdown extends StatelessWidget {
         ),
       ],
       onChanged: cubit.sizeGroupChanged,
-    );
-  }
-}
-
-class _CouponDropdown extends StatelessWidget {
-  final AdminProductFormState state;
-  final AdminProductFormCubit cubit;
-
-  const _CouponDropdown({required this.state, required this.cubit});
-
-  @override
-  Widget build(BuildContext context) {
-    final coupons = state.coupons;
-    return DropdownButtonFormField<int?>(
-      initialValue:
-          (state.couponId != null && coupons.any((c) => c.id == state.couponId))
-              ? state.couponId
-              : null,
-      decoration: const InputDecoration(
-        labelText: 'Mã giảm giá',
-        border: OutlineInputBorder(),
-      ),
-      isExpanded: true,
-      items: [
-        const DropdownMenuItem<int?>(
-          value: null,
-          child: Text('Không áp dụng mã giảm giá'),
-        ),
-        ...coupons.map(
-          (c) => DropdownMenuItem<int?>(
-            value: c.id,
-            child: Text(c.code, overflow: TextOverflow.ellipsis),
-          ),
-        ),
-      ],
-      onChanged: cubit.couponChanged,
     );
   }
 }

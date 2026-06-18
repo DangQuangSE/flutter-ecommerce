@@ -178,10 +178,12 @@ class _ColorTile extends StatelessWidget {
 
 class _DefaultValuesSection extends StatelessWidget {
   final TextEditingController originalPriceCtrl;
+  final TextEditingController salePriceCtrl;
   final TextEditingController stockCtrl;
 
   const _DefaultValuesSection({
     required this.originalPriceCtrl,
+    required this.salePriceCtrl,
     required this.stockCtrl,
   });
 
@@ -198,8 +200,12 @@ class _DefaultValuesSection extends StatelessWidget {
                     label: 'Giá gốc *',
                     required: true)),
             const SizedBox(width: AppSizes.paddingSm),
-            Expanded(child: _DefaultStockField(ctrl: stockCtrl)),
+            Expanded(
+                child: _DefaultPriceField(
+                    ctrl: salePriceCtrl, label: 'Giá sale', required: false)),
           ]),
+          const SizedBox(height: AppSizes.paddingSm),
+          _DefaultStockField(ctrl: stockCtrl),
         ],
       );
 }

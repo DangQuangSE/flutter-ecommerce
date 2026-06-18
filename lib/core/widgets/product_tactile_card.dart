@@ -47,8 +47,6 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
   @override
   Widget build(BuildContext context) {
     // Symmetrical concentric double-bezel card structure
-    final bool isBestSeller =
-        widget.product.id == 'p-001' || widget.product.id == 'p-002';
     final double? originalPrice =
         widget.product.hasDiscount ? widget.product.originalPrice : null;
     final int? discountPercent = widget.product.hasDiscount
@@ -118,24 +116,6 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (isBestSeller)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 3),
-                                margin: const EdgeInsets.only(bottom: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.accent,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'BEST',
-                                  style: GoogleFonts.spaceMono(
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
                             if (widget.badge != null)
                               Container(
                                 padding: const EdgeInsets.symmetric(

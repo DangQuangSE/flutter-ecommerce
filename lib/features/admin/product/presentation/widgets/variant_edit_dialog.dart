@@ -6,12 +6,14 @@ import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_st
 class VariantEditResult {
   final String? sku;
   final double originalPrice;
+  final double? salePrice;
   final int stockQuantity;
   final ProductStatus status;
 
   const VariantEditResult({
     this.sku,
     required this.originalPrice,
+    this.salePrice,
     required this.stockQuantity,
     required this.status,
   });
@@ -25,6 +27,7 @@ Future<VariantEditResult?> showVariantEditDialog(
   required String title,
   String? initialSku,
   required double initialPrice,
+  double? initialSalePrice,
   required int initialStock,
   required ProductStatus initialStatus,
   bool showStatus = true,
@@ -35,6 +38,7 @@ Future<VariantEditResult?> showVariantEditDialog(
       title: title,
       initialSku: initialSku,
       initialPrice: initialPrice,
+      initialSalePrice: initialSalePrice,
       initialStock: initialStock,
       initialStatus: initialStatus,
       showStatus: showStatus,
@@ -46,6 +50,7 @@ class _VariantEditDialogContent extends StatefulWidget {
   final String title;
   final String? initialSku;
   final double initialPrice;
+  final double? initialSalePrice;
   final int initialStock;
   final ProductStatus initialStatus;
   final bool showStatus;
@@ -54,6 +59,7 @@ class _VariantEditDialogContent extends StatefulWidget {
     required this.title,
     this.initialSku,
     required this.initialPrice,
+    this.initialSalePrice,
     required this.initialStock,
     required this.initialStatus,
     required this.showStatus,
@@ -67,6 +73,7 @@ class _VariantEditDialogContent extends StatefulWidget {
 class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
   TextEditingController? _skuCtrl;
   late final TextEditingController _priceCtrl;
+  late final TextEditingController _salePriceCtrl;
   late final TextEditingController _stockCtrl;
   late ProductStatus _status;
   final _formKey = GlobalKey<FormState>();
@@ -79,6 +86,8 @@ class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
     }
     _priceCtrl =
         TextEditingController(text: widget.initialPrice.toStringAsFixed(0));
+    _salePriceCtrl = TextEditingController(
+        text: widget.initialSalePrice?.toStringAsFixed(0) ?? '');
     _stockCtrl = TextEditingController(text: widget.initialStock.toString());
     _status = widget.initialStatus;
   }
@@ -87,17 +96,20 @@ class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
   void dispose() {
     _skuCtrl?.dispose();
     _priceCtrl.dispose();
+    _salePriceCtrl.dispose();
     _stockCtrl.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
+    final salePriceText = _salePriceCtrl.text.trim();
     Navigator.pop(
       context,
       VariantEditResult(
         sku: _skuCtrl?.text.trim(),
         originalPrice: double.parse(_priceCtrl.text.trim()),
+        salePrice: salePriceText.isEmpty ? null : double.parse(salePriceText),
         stockQuantity: int.parse(_stockCtrl.text.trim()),
         status: _status,
       ),

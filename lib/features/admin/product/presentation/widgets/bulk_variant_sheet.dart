@@ -61,6 +61,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   List<CreateVariantParams>? _preview;
 
   final _originalPriceCtrl = TextEditingController();
+  final _salePriceCtrl = TextEditingController();
   final _stockCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -81,6 +82,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   @override
   void dispose() {
     _originalPriceCtrl.dispose();
+    _salePriceCtrl.dispose();
     _stockCtrl.dispose();
     super.dispose();
   }
@@ -116,6 +118,8 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   void _generatePreview() {
     if (!_formKey.currentState!.validate()) return;
     final price = double.parse(_originalPriceCtrl.text.trim());
+    final salePriceText = _salePriceCtrl.text.trim();
+    final salePrice = salePriceText.isEmpty ? null : double.parse(salePriceText);
     final stock = int.parse(_stockCtrl.text.trim());
     final group = _groupById(_sizeGroupId);
     final orderedSizes = group != null
@@ -134,6 +138,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
           size: size,
           colorId: colorId,
           originalPrice: price,
+          salePrice: salePrice,
           stockQuantity: stock,
           status: ProductStatus.active,
         ));
@@ -236,6 +241,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
       title: 'Chỉnh sửa biến thể',
       initialSku: item.sku,
       initialPrice: item.originalPrice,
+      initialSalePrice: item.salePrice,
       initialStock: item.stockQuantity,
       initialStatus: item.status,
       showStatus: false,
@@ -248,6 +254,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
           size: item.size,
           colorId: item.colorId,
           originalPrice: result.originalPrice,
+          salePrice: result.salePrice,
           stockQuantity: result.stockQuantity,
           status: item.status,
         );
@@ -308,6 +315,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
               const SizedBox(height: AppSizes.paddingMd),
               _DefaultValuesSection(
                 originalPriceCtrl: _originalPriceCtrl,
+                salePriceCtrl: _salePriceCtrl,
                 stockCtrl: _stockCtrl,
               ),
               const SizedBox(height: 12),

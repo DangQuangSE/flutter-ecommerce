@@ -669,7 +669,6 @@ Future<void> configureDependencies() async {
       sl<CategoryRepository>(),
       sl<BrandRepository>(),
       sl<GetSizeGroupsUseCase>(),
-      sl<CouponRepository>(),
     ),
   );
   sl.registerFactory<AdminProductVariantCubit>(

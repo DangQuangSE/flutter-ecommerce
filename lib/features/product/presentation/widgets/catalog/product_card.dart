@@ -192,7 +192,7 @@ class _PriceRow extends StatelessWidget {
             ),
           ),
           Text(
-            _fmt(product.salePrice),
+            _fmt(product.salePrice!),
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
@@ -203,7 +203,9 @@ class _PriceRow extends StatelessWidget {
       );
     }
     return Text(
-      _fmt(product.salePrice > 0 ? product.salePrice : product.basePrice),
+      _fmt(product.originalPrice > 0
+          ? product.originalPrice
+          : product.basePrice),
       style: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w800,

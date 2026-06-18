@@ -35,6 +35,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
   final _skuController = TextEditingController();
   final _sizeController = TextEditingController();
   final _originalPriceController = TextEditingController();
+  final _salePriceController = TextEditingController();
   final _stockController = TextEditingController();
   int? _selectedColorId;
   ProductStatus _selectedStatus = ProductStatus.active;
@@ -44,6 +45,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
     _skuController.dispose();
     _sizeController.dispose();
     _originalPriceController.dispose();
+    _salePriceController.dispose();
     _stockController.dispose();
     super.dispose();
   }
@@ -52,6 +54,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
     _skuController.clear();
     _sizeController.clear();
     _originalPriceController.clear();
+    _salePriceController.clear();
     _stockController.clear();
     setState(() {
       _selectedColorId = null;
@@ -228,6 +231,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
       context,
       title: 'Sửa: ${variant.sku}',
       initialPrice: variant.originalPrice,
+      initialSalePrice: variant.salePrice,
       initialStock: variant.stockQuantity,
       initialStatus: variant.status,
     );
@@ -239,6 +243,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
           size: variant.size,
           colorId: variant.colorId,
           originalPrice: result.originalPrice,
+          salePrice: result.salePrice,
           stockQuantity: result.stockQuantity,
           status: result.status,
         ),
@@ -355,6 +360,27 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
               ),
               const SizedBox(height: 12),
 
+              TextFormField(
+                controller: _salePriceController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Giá sale',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                  suffixText: '₫',
+                ),
+                validator: (v) {
+                  if (v != null &&
+                      v.trim().isNotEmpty &&
+                      double.tryParse(v.trim()) == null) {
+                    return 'Không hợp lệ';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+
               // Stock + Status row
               Row(
                 children: [
@@ -427,6 +453,12 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                                     colorId: _selectedColorId!,
                                     originalPrice: double.parse(
                                         _originalPriceController.text.trim()),
+                                    salePrice:
+                                        _salePriceController.text.trim().isEmpty
+                                            ? null
+                                            : double.parse(
+                                                _salePriceController.text
+                                                    .trim()),
                                     stockQuantity:
                                         int.parse(_stockController.text.trim()),
                                     status: _selectedStatus,
