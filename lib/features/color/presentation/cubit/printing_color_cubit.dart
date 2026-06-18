@@ -27,7 +27,9 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
       final result = await _repository.createColor(color);
       switch (result) {
         case Success(:final data):
-          final updatedList = List<PrintingColorEntity>.from(currentState.colors)..insert(0, data);
+          final updatedList =
+              List<PrintingColorEntity>.from(currentState.colors)
+                ..insert(0, data);
           emit(PrintingColorLoaded(
             colors: updatedList,
             message: 'Đã thêm màu in ấn thành công!',
@@ -45,7 +47,8 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
       final result = await _repository.updateColor(id, color);
       switch (result) {
         case Success(:final data):
-          final updatedList = currentState.colors.map((c) => c.id == id ? data : c).toList();
+          final updatedList =
+              currentState.colors.map((c) => c.id == id ? data : c).toList();
           emit(PrintingColorLoaded(
             colors: updatedList,
             message: 'Đã cập nhật màu in ấn thành công!',
@@ -63,7 +66,8 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
       final result = await _repository.deleteColor(id);
       switch (result) {
         case Success():
-          final updatedList = currentState.colors.where((c) => c.id != id).toList();
+          final updatedList =
+              currentState.colors.where((c) => c.id != id).toList();
           emit(PrintingColorLoaded(
             colors: updatedList,
             message: 'Đã xóa màu in ấn thành công!',
@@ -87,7 +91,9 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
       // Speculatively emit the updated active status for instant response
       emit(currentState.copyWith(colors: updatedColors));
 
-      final colorToUpdate = currentState.colors.firstWhere((c) => c.id == id).copyWith(isActive: isActive);
+      final colorToUpdate = currentState.colors
+          .firstWhere((c) => c.id == id)
+          .copyWith(isActive: isActive);
       final result = await _repository.updateColor(id, colorToUpdate);
       switch (result) {
         case Success():

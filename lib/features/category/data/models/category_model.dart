@@ -27,8 +27,9 @@ class CategoryModel extends CategoryEntity {
       imageUrl: json['imageUrl'] as String?,
       displayOrder: (json['displayOrder'] as num?)?.toInt(),
       isActive: json['active'] as bool? ?? json['isActive'] as bool? ?? true,
-      isCustomizable:
-          json['customizable'] as bool? ?? json['isCustomizable'] as bool? ?? false,
+      isCustomizable: json['customizable'] as bool? ??
+          json['isCustomizable'] as bool? ??
+          false,
       createdAt: _parseDate(json['createdAt']),
       updatedAt: _parseDate(json['updatedAt']),
     );
@@ -39,7 +40,8 @@ class CategoryModel extends CategoryEntity {
   Map<String, dynamic> toRequestJson() {
     return {
       'name': name,
-      if (description != null && description!.isNotEmpty) 'description': description,
+      if (description != null && description!.isNotEmpty)
+        'description': description,
       if (parentId != null) 'parentId': parentId,
       if (imageUrl != null && imageUrl!.isNotEmpty) 'imageUrl': imageUrl,
       if (displayOrder != null) 'displayOrder': displayOrder,

@@ -52,11 +52,13 @@ class AdminProductDetailModel {
       isFeatured: json['isFeatured'] as bool? ?? false,
       sizeGroupId: (json['sizeGroupId'] as num?)?.toInt(),
       images: (json['images'] as List?)
-              ?.map((e) => ProductImageModel.fromJson(e as Map<String, dynamic>))
+              ?.map(
+                  (e) => ProductImageModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       variants: (json['variants'] as List?)
-              ?.map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>))
+              ?.map((e) =>
+                  ProductVariantModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );

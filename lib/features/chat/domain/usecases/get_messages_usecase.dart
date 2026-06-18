@@ -7,5 +7,6 @@ class GetMessagesUseCase {
 
   const GetMessagesUseCase(this._repository);
 
-  Future<Result<List<MessageEntity>>> call(String chatId) => _repository.getMessages(chatId);
+  Future<Result<List<MessageEntity>>> call(String chatId) =>
+      _repository.getMessages(chatId);
 }

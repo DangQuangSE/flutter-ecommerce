@@ -92,9 +92,13 @@ class AdminProductFormState extends Equatable {
       categories: categories ?? this.categories,
       brands: brands ?? this.brands,
       sizeGroups: sizeGroups ?? this.sizeGroups,
-      createdProductId: clearCreatedProductId ? null : createdProductId ?? this.createdProductId,
+      createdProductId: clearCreatedProductId
+          ? null
+          : createdProductId ?? this.createdProductId,
       sizeGroupId: clearSizeGroupId ? null : sizeGroupId ?? this.sizeGroupId,
-      dropdownErrorMessage: clearDropdownError ? null : dropdownErrorMessage ?? this.dropdownErrorMessage,
+      dropdownErrorMessage: clearDropdownError
+          ? null
+          : dropdownErrorMessage ?? this.dropdownErrorMessage,
     );
   }
 

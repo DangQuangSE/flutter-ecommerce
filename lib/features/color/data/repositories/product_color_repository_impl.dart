@@ -24,7 +24,8 @@ class ProductColorRepositoryImpl implements ProductColorRepository {
   }
 
   @override
-  Future<Result<ProductColorEntity>> createColor(ProductColorEntity color) async {
+  Future<Result<ProductColorEntity>> createColor(
+      ProductColorEntity color) async {
     try {
       final model = ProductColorModel.fromEntity(color);
       final result = await _remoteDataSource.createColor(model);
@@ -37,7 +38,8 @@ class ProductColorRepositoryImpl implements ProductColorRepository {
   }
 
   @override
-  Future<Result<ProductColorEntity>> updateColor(int id, ProductColorEntity color) async {
+  Future<Result<ProductColorEntity>> updateColor(
+      int id, ProductColorEntity color) async {
     try {
       final model = ProductColorModel.fromEntity(color);
       final result = await _remoteDataSource.updateColor(id, model);

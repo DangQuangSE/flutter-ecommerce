@@ -11,5 +11,6 @@ class AuthTokenStorage {
 
   String? getAccessToken() => _localStorage.getString(AppConstants.tokenKey);
 
-  Future<void> clearAccessToken() => _localStorage.remove(AppConstants.tokenKey);
+  Future<void> clearAccessToken() =>
+      _localStorage.remove(AppConstants.tokenKey);
 }

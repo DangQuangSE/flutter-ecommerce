@@ -22,6 +22,7 @@ import 'package:flutter_ecommerce/features/admin/product/domain/usecases/get_adm
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/delete_product_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/usecases/restore_product_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variant_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/create_variants_batch_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/usecases/update_variant_usecase.dart';
@@ -128,6 +129,22 @@ import 'package:flutter_ecommerce/features/brand/data/datasources/brand_remote_d
 import 'package:flutter_ecommerce/features/brand/data/repositories/brand_repository_impl.dart';
 import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
+
+// Site Setting
+import 'package:flutter_ecommerce/features/setting/data/datasources/site_setting_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/setting/data/datasources/site_setting_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/setting/data/repositories/site_setting_repository_impl.dart';
+import 'package:flutter_ecommerce/features/setting/domain/repositories/site_setting_repository.dart';
+import 'package:flutter_ecommerce/features/setting/presentation/cubit/site_setting_cubit.dart';
+
+// Review
+import 'package:flutter_ecommerce/features/review/data/datasources/review_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/review/data/datasources/review_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/review/data/repositories/review_repository_impl.dart';
+import 'package:flutter_ecommerce/features/review/domain/repositories/review_repository.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/admin_review_cubit.dart';
+import 'package:flutter_ecommerce/features/review/presentation/cubit/write_review_cubit.dart';
 
 // Color
 import 'package:flutter_ecommerce/features/color/data/datasources/product_color_remote_datasource.dart';
@@ -416,6 +433,34 @@ Future<void> configureDependencies() async {
     () => BrandCubit(sl<BrandRepository>()),
   );
 
+  // Site Setting
+  sl.registerLazySingleton<SiteSettingRemoteDataSource>(
+    () => SiteSettingRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<SiteSettingRepository>(
+    () => SiteSettingRepositoryImpl(sl<SiteSettingRemoteDataSource>()),
+  );
+  sl.registerFactory<SiteSettingCubit>(
+    () => SiteSettingCubit(sl<SiteSettingRepository>()),
+  );
+
+  // Review
+  sl.registerLazySingleton<ReviewRemoteDataSource>(
+    () => ReviewRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ReviewRepository>(
+    () => ReviewRepositoryImpl(sl<ReviewRemoteDataSource>()),
+  );
+  sl.registerFactory<ReviewCubit>(
+    () => ReviewCubit(sl<ReviewRepository>()),
+  );
+  sl.registerFactory<AdminReviewCubit>(
+    () => AdminReviewCubit(sl<ReviewRepository>()),
+  );
+  sl.registerFactory<WriteReviewCubit>(
+    () => WriteReviewCubit(sl<ReviewRepository>()),
+  );
+
   // Product Color Management
   sl.registerLazySingleton<ProductColorRemoteDataSource>(
     () => ProductColorRemoteDataSourceImpl(sl<DioClient>()),
@@ -590,6 +635,9 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<DeleteAdminProductUseCase>(
     () => DeleteAdminProductUseCase(sl<AdminProductRepository>()),
   );
+  sl.registerLazySingleton<RestoreAdminProductUseCase>(
+    () => RestoreAdminProductUseCase(sl<AdminProductRepository>()),
+  );
   sl.registerLazySingleton<CreateVariantUseCase>(
     () => CreateVariantUseCase(sl<AdminProductRepository>()),
   );
@@ -612,6 +660,7 @@ Future<void> configureDependencies() async {
     () => AdminProductListBloc(
       sl<GetAdminProductsUseCase>(),
       sl<DeleteAdminProductUseCase>(),
+      sl<RestoreAdminProductUseCase>(),
     ),
   );
   sl.registerFactory<AdminProductDetailCubit>(

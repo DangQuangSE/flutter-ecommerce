@@ -105,8 +105,8 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                         children: [
                           if (variants.isEmpty && !_showAddForm)
                             _buildEmptyPlaceholder(productId),
-                          ...variants.map(
-                              (v) => _buildVariantRow(context, variantCubit, v)),
+                          ...variants.map((v) =>
+                              _buildVariantRow(context, variantCubit, v)),
                           if (_showAddForm)
                             BlocBuilder<ProductColorCubit, ProductColorState>(
                               builder: (context, colorState) {
@@ -135,8 +135,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color:
-                                    AppColors.warning.withValues(alpha: 0.1),
+                                color: AppColors.warning.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: AppColors.warning),
                               ),
@@ -198,8 +197,9 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
       child: ListTile(
         title: Text(variant.sku,
             style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(
-            '${variant.size} · ${variant.colorName} · ${_formatPrice(variant.salePrice ?? variant.originalPrice)}'),
+        subtitle: Text(variant.salePrice != null
+            ? '${variant.size} · ${variant.colorName} · ${_formatPrice(variant.originalPrice)} (Sale: ${_formatPrice(variant.salePrice!)})'
+            : '${variant.size} · ${variant.colorName} · ${_formatPrice(variant.originalPrice)}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -209,10 +209,8 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                   const TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             IconButton(
-              icon:
-                  const Icon(Icons.edit_outlined, color: AppColors.primary),
-              onPressed: () =>
-                  _onEditVariant(context, variantCubit, variant),
+              icon: const Icon(Icons.edit_outlined, color: AppColors.primary),
+              onPressed: () => _onEditVariant(context, variantCubit, variant),
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline_rounded,
@@ -292,8 +290,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                                 margin: const EdgeInsets.only(right: 8),
                                 decoration: BoxDecoration(
                                   color: _parseHex(c.hexCode),
-                                  border:
-                                      Border.all(color: AppColors.divider),
+                                  border: Border.all(color: AppColors.divider),
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -306,8 +303,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                         ))
                     .toList(),
                 onChanged: (v) => setState(() => _selectedColorId = v),
-                validator: (v) =>
-                    v == null ? 'Vui lòng chọn màu sắc' : null,
+                validator: (v) => v == null ? 'Vui lòng chọn màu sắc' : null,
               ),
               const SizedBox(height: 12),
 
@@ -345,51 +341,44 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
               const SizedBox(height: 12),
 
               // Price row
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _originalPriceController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Giá gốc *',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        suffixText: '₫',
-                      ),
-                      validator: (v) {
-                        if (v == null || v.trim().isEmpty) return 'Bắt buộc';
-                        if (double.tryParse(v.trim()) == null) {
-                          return 'Không hợp lệ';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _salePriceController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Giá sale',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        suffixText: '₫',
-                      ),
-                      validator: (v) {
-                        if (v != null &&
-                            v.trim().isNotEmpty &&
-                            double.tryParse(v.trim()) == null) {
-                          return 'Không hợp lệ';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
+              TextFormField(
+                controller: _originalPriceController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Giá gốc *',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                  suffixText: '₫',
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Bắt buộc';
+                  if (double.tryParse(v.trim()) == null) {
+                    return 'Không hợp lệ';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+
+              TextFormField(
+                controller: _salePriceController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Giá sale',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                  suffixText: '₫',
+                ),
+                validator: (v) {
+                  if (v != null &&
+                      v.trim().isNotEmpty &&
+                      double.tryParse(v.trim()) == null) {
+                    return 'Không hợp lệ';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
 
@@ -465,14 +454,14 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
                                     colorId: _selectedColorId!,
                                     originalPrice: double.parse(
                                         _originalPriceController.text.trim()),
-                                    salePrice: _salePriceController.text
-                                            .trim()
-                                            .isEmpty
-                                        ? null
-                                        : double.tryParse(
-                                            _salePriceController.text.trim()),
-                                    stockQuantity: int.parse(
-                                        _stockController.text.trim()),
+                                    salePrice:
+                                        _salePriceController.text.trim().isEmpty
+                                            ? null
+                                            : double.parse(
+                                                _salePriceController.text
+                                                    .trim()),
+                                    stockQuantity:
+                                        int.parse(_stockController.text.trim()),
                                     status: _selectedStatus,
                                   ),
                                 );
@@ -513,7 +502,8 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () => _showBulkSheet(context, variantCubit, colors, productId),
+              onPressed: () =>
+                  _showBulkSheet(context, variantCubit, colors, productId),
               icon: const Icon(Icons.auto_awesome_rounded, size: 18),
               label: const Text('Tạo hàng loạt'),
               style: OutlinedButton.styleFrom(
@@ -561,6 +551,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
         maxChildSize: 0.95,
         expand: false,
         builder: (_, __) => BulkVariantSheet(
+          productId: productId,
           sizeGroups: widget.formState.sizeGroups,
           preSelectedSizeGroupId: widget.formState.sizeGroupId,
           colors: colors,

@@ -42,10 +42,9 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
   void genderChanged(Gender g) => emit(state.copyWith(gender: g));
   void statusChanged(ProductStatus s) => emit(state.copyWith(status: s));
   void featuredToggled() => emit(state.copyWith(isFeatured: !state.isFeatured));
-  void sizeGroupChanged(int? id) => emit(state.copyWith(sizeGroupId: id, clearSizeGroupId: id == null));
-
-  void beginEditMode() =>
-      emit(state.copyWith(isLoadingDetail: true));
+  void sizeGroupChanged(int? id) =>
+      emit(state.copyWith(sizeGroupId: id, clearSizeGroupId: id == null));
+  void beginEditMode() => emit(state.copyWith(isLoadingDetail: true));
 
   void goBack() {
     if (state.currentStep > 0) {
@@ -90,7 +89,8 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
         }
         emit(state.copyWith(
           dropdownStatus: DropdownStatus.error,
-          dropdownErrorMessage: msg ?? 'Không thể tải danh sách. Vui lòng thử lại.',
+          dropdownErrorMessage:
+              msg ?? 'Không thể tải danh sách. Vui lòng thử lại.',
         ));
       }
     } catch (_) {
@@ -169,7 +169,8 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
     if (id == null) return;
     final result = await _deleteProduct(id);
     if (result case ResultFailure(:final failure)) {
-      emit(state.copyWith(errorMessage: 'Không thể xóa sản phẩm: ${failure.message}'));
+      emit(state.copyWith(
+          errorMessage: 'Không thể xóa sản phẩm: ${failure.message}'));
     }
   }
 

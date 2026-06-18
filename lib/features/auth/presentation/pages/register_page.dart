@@ -77,7 +77,8 @@ class _RegisterPageState extends State<RegisterPage> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -133,7 +134,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                     topLeft: Radius.circular(16),
                                   ),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     decoration: const BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
@@ -163,7 +165,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                     topRight: Radius.circular(16),
                                   ),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     decoration: const BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
@@ -192,7 +195,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             padding: const EdgeInsets.all(24),
                             child: BlocConsumer<AuthBloc, AuthState>(
                               listener: (context, state) {
-                                if (state is AuthOtpSent && !_hasNavigatedToOtp) {
+                                if (state is AuthOtpSent &&
+                                    !_hasNavigatedToOtp) {
                                   _hasNavigatedToOtp = true;
                                   context.pushNamed(
                                     AppRoutes.registerOtp,
@@ -205,7 +209,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 final emailApiError = _hideBlocEmailError
                                     ? null
                                     : switch (state) {
-                                        AuthRegisterAccountExists(:final message) =>
+                                        AuthRegisterAccountExists(
+                                          :final message
+                                        ) =>
                                           message,
                                         AuthError(:final message) => message,
                                         _ => null,
@@ -214,7 +220,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 return Form(
                                   key: _formKey,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: [
                                       Text(
                                         'EMAIL',
@@ -228,7 +235,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                       const SizedBox(height: 8),
                                       TextFormField(
                                         controller: _emailController,
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
                                         onChanged: (_) {
@@ -246,7 +254,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                             color: AppColors.textSecondary,
                                           ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: BorderSide(
                                               color: emailApiError != null
                                                   ? AppColors.error
@@ -254,7 +263,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: BorderSide(
                                               color: emailApiError != null
                                                   ? AppColors.error
@@ -263,13 +273,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                             ),
                                           ),
                                           errorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: const BorderSide(
                                               color: AppColors.error,
                                             ),
                                           ),
-                                          focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             borderSide: const BorderSide(
                                               color: AppColors.error,
                                               width: 1.5,
@@ -305,20 +318,23 @@ class _RegisterPageState extends State<RegisterPage> {
                                           backgroundColor: AppColors.accent,
                                           foregroundColor: Colors.white,
                                           elevation: 2,
-                                          padding: const EdgeInsets.symmetric(vertical: 16),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
                                         ),
                                         child: isLoading
                                             ? const SizedBox(
                                                 height: 20,
                                                 width: 20,
-                                                child: CircularProgressIndicator(
+                                                child:
+                                                    CircularProgressIndicator(
                                                   strokeWidth: 2,
                                                   valueColor:
-                                                      AlwaysStoppedAnimation<Color>(
-                                                          Colors.white),
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(Colors.white),
                                                 ),
                                               )
                                             : Row(
@@ -329,7 +345,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                                     'Đăng ký',
                                                     style: GoogleFonts.lexend(
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight:
+                                                          FontWeight.w700,
                                                       letterSpacing: 1.0,
                                                     ),
                                                   ),
@@ -362,7 +379,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: 1.4,
                           ),
                           children: [
-                            const TextSpan(text: 'Bằng việc đăng nhập, bạn đồng ý với '),
+                            const TextSpan(
+                                text: 'Bằng việc đăng nhập, bạn đồng ý với '),
                             TextSpan(
                               text: 'Điều khoản dịch vụ',
                               style: const TextStyle(

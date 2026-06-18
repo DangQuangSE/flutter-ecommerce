@@ -43,7 +43,8 @@ class ColorSelector extends StatelessWidget {
           children: List.generate(colors.length, (index) {
             final isSelected = selectedColorIndex == index;
             final colorHex = colors[index]['hex']!;
-            final colorValue = int.parse(colorHex.substring(1), radix: 16) + 0xFF000000;
+            final colorValue =
+                int.parse(colorHex.substring(1), radix: 16) + 0xFF000000;
 
             return GestureDetector(
               onTap: () => onColorSelected(index),

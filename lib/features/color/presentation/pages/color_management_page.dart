@@ -71,8 +71,10 @@ class _ColorManagementPageState extends State<ColorManagementPage>
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.primary,
           indicatorWeight: 3,
-          labelStyle: GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 13),
-          unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+          labelStyle:
+              GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 13),
+          unselectedLabelStyle:
+              GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
           tabs: const [
             Tab(text: 'Màu sản phẩm'),
             Tab(text: 'Màu in ấn'),
@@ -87,7 +89,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                 _openPrintingColorForm(context);
               }
             },
-            icon: const Icon(Icons.add_rounded, color: AppColors.primary, size: 28),
+            icon: const Icon(Icons.add_rounded,
+                color: AppColors.primary, size: 28),
           ),
           const SizedBox(width: 8),
         ],
@@ -213,7 +216,9 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                 isActive: color.isActive,
                 onToggleActive: (val) {
                   if (color.id != null) {
-                    context.read<PrintingColorCubit>().toggleColorStatus(color.id!, val);
+                    context
+                        .read<PrintingColorCubit>()
+                        .toggleColorStatus(color.id!, val);
                   }
                 },
                 onEdit: () => _openPrintingColorForm(context, color: color),
@@ -238,7 +243,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     required VoidCallback onDelete,
   }) {
     final previewColor = _hexToColor(hexCode);
-    final bool isDarkColor = ThemeData.estimateBrightnessForColor(previewColor) == Brightness.dark;
+    final bool isDarkColor =
+        ThemeData.estimateBrightnessForColor(previewColor) == Brightness.dark;
 
     return Container(
       decoration: BoxDecoration(
@@ -285,10 +291,11 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                       top: 4,
                       right: 4,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: isActive 
-                              ? Colors.green.withOpacity(0.85) 
+                          color: isActive
+                              ? Colors.green.withOpacity(0.85)
                               : Colors.red.withOpacity(0.85),
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -306,12 +313,13 @@ class _ColorManagementPageState extends State<ColorManagementPage>
               ),
             ),
           ),
-          
+
           // Color Info & Actions
           Expanded(
             flex: 5,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -340,7 +348,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                               value: isActive,
                               activeColor: AppColors.primary,
                               onChanged: onToggleActive,
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                             ),
                           ),
                         )
@@ -352,14 +361,16 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                           IconButton(
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 18),
+                            icon: const Icon(Icons.edit_outlined,
+                                color: Colors.blue, size: 18),
                             onPressed: onEdit,
                           ),
                           const SizedBox(width: 12),
                           IconButton(
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 18),
+                            icon: const Icon(Icons.delete_outline_rounded,
+                                color: AppColors.error, size: 18),
                             onPressed: onDelete,
                           ),
                         ],
@@ -407,7 +418,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     {'name': 'Tím Lavender', 'hex': '#E6E6FA'},
   ];
 
-  void _openProductColorForm(BuildContext context, {ProductColorEntity? color}) {
+  void _openProductColorForm(BuildContext context,
+      {ProductColorEntity? color}) {
     final bool isEdit = color != null;
     final nameController = TextEditingController(text: color?.name ?? '');
     final hexController = TextEditingController(text: color?.hexCode ?? '#');
@@ -464,7 +476,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                       decoration: const InputDecoration(
                         hintText: 'Nhập tên màu (ví dụ: Aero Blue)',
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -477,10 +490,13 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                       decoration: InputDecoration(
                         hintText: 'Nhập mã Hex (ví dụ: #FF6D00)',
                         border: const OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.color_lens_outlined, color: AppColors.primary),
-                          onPressed: () => _openColorPickerDialog(context, hexController, setSheetState),
+                          icon: const Icon(Icons.color_lens_outlined,
+                              color: AppColors.primary),
+                          onPressed: () => _openColorPickerDialog(
+                              context, hexController, setSheetState),
                         ),
                       ),
                     ),
@@ -526,8 +542,10 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                             });
                           },
                           child: Chip(
-                            backgroundColor: parsedPresetColor.withOpacity(0.12),
-                            side: BorderSide(color: parsedPresetColor.withOpacity(0.3)),
+                            backgroundColor:
+                                parsedPresetColor.withOpacity(0.12),
+                            side: BorderSide(
+                                color: parsedPresetColor.withOpacity(0.3)),
                             avatar: CircleAvatar(
                               radius: 8,
                               backgroundColor: parsedPresetColor,
@@ -554,16 +572,20 @@ class _ColorManagementPageState extends State<ColorManagementPage>
 
                         if (name.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Vui lòng nhập tên màu!'), backgroundColor: AppColors.error),
+                            const SnackBar(
+                                content: Text('Vui lòng nhập tên màu!'),
+                                backgroundColor: AppColors.error),
                           );
                           return;
                         }
 
-                        final regex = RegExp(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
+                        final regex =
+                            RegExp(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
                         if (!regex.hasMatch(hex)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Mã HEX không hợp lệ! Vui lòng bắt đầu với # và có 3 hoặc 6 ký tự số/chữ.'),
+                              content: Text(
+                                  'Mã HEX không hợp lệ! Vui lòng bắt đầu với # và có 3 hoặc 6 ký tự số/chữ.'),
                               backgroundColor: AppColors.error,
                             ),
                           );
@@ -577,9 +599,13 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                         );
 
                         if (isEdit) {
-                          context.read<ProductColorCubit>().updateColor(color.id!, colorEntity);
+                          context
+                              .read<ProductColorCubit>()
+                              .updateColor(color.id!, colorEntity);
                         } else {
-                          context.read<ProductColorCubit>().createColor(colorEntity);
+                          context
+                              .read<ProductColorCubit>()
+                              .createColor(colorEntity);
                         }
 
                         Navigator.pop(sheetContext);
@@ -594,7 +620,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                       ),
                       child: Text(
                         isEdit ? 'LƯU THAY ĐỔI' : 'THÊM MÀU SẢN PHẨM',
-                        style: GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 13),
+                        style: GoogleFonts.lexend(
+                            fontWeight: FontWeight.w700, fontSize: 13),
                       ),
                     ),
                   ],
@@ -607,7 +634,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     );
   }
 
-  void _openPrintingColorForm(BuildContext context, {PrintingColorEntity? color}) {
+  void _openPrintingColorForm(BuildContext context,
+      {PrintingColorEntity? color}) {
     final bool isEdit = color != null;
     final nameController = TextEditingController(text: color?.name ?? '');
     final hexController = TextEditingController(text: color?.hexCode ?? '#');
@@ -665,7 +693,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                       decoration: const InputDecoration(
                         hintText: 'Nhập tên màu in (ví dụ: Gold Foil)',
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -678,10 +707,13 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                       decoration: InputDecoration(
                         hintText: 'Nhập mã Hex (ví dụ: #D4AF37)',
                         border: const OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.color_lens_outlined, color: AppColors.primary),
-                          onPressed: () => _openColorPickerDialog(context, hexController, setSheetState),
+                          icon: const Icon(Icons.color_lens_outlined,
+                              color: AppColors.primary),
+                          onPressed: () => _openColorPickerDialog(
+                              context, hexController, setSheetState),
                         ),
                       ),
                     ),
@@ -727,8 +759,10 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                             });
                           },
                           child: Chip(
-                            backgroundColor: parsedPresetColor.withOpacity(0.12),
-                            side: BorderSide(color: parsedPresetColor.withOpacity(0.3)),
+                            backgroundColor:
+                                parsedPresetColor.withOpacity(0.12),
+                            side: BorderSide(
+                                color: parsedPresetColor.withOpacity(0.3)),
                             avatar: CircleAvatar(
                               radius: 8,
                               backgroundColor: parsedPresetColor,
@@ -773,12 +807,15 @@ class _ColorManagementPageState extends State<ColorManagementPage>
 
                         if (name.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Vui lòng nhập tên màu in!'), backgroundColor: AppColors.error),
+                            const SnackBar(
+                                content: Text('Vui lòng nhập tên màu in!'),
+                                backgroundColor: AppColors.error),
                           );
                           return;
                         }
 
-                        final regex = RegExp(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
+                        final regex =
+                            RegExp(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
                         if (!regex.hasMatch(hex)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -797,9 +834,13 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                         );
 
                         if (isEdit) {
-                          context.read<PrintingColorCubit>().updateColor(color.id!, colorEntity);
+                          context
+                              .read<PrintingColorCubit>()
+                              .updateColor(color.id!, colorEntity);
                         } else {
-                          context.read<PrintingColorCubit>().createColor(colorEntity);
+                          context
+                              .read<PrintingColorCubit>()
+                              .createColor(colorEntity);
                         }
 
                         Navigator.pop(sheetContext);
@@ -814,7 +855,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                       ),
                       child: Text(
                         isEdit ? 'LƯU THAY ĐỔI' : 'THÊM MÀU IN ẤN',
-                        style: GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 13),
+                        style: GoogleFonts.lexend(
+                            fontWeight: FontWeight.w700, fontSize: 13),
                       ),
                     ),
                   ],
@@ -837,16 +879,19 @@ class _ColorManagementPageState extends State<ColorManagementPage>
       context: context,
       builder: (diagContext) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             'Chọn màu sắc',
-            style: GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 16),
+            style:
+                GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           content: SingleChildScrollView(
             child: ColorPicker(
               pickerColor: initColor,
               onColorChanged: (color) {
-                final hexStr = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+                final hexStr =
+                    '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
                 hexController.text = hexStr;
                 setSheetState(() {});
               },
@@ -859,7 +904,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
               onPressed: () => Navigator.pop(diagContext),
               child: Text(
                 'XONG',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.primary),
+                style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700, color: AppColors.primary),
               ),
             ),
           ],
@@ -882,17 +928,21 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     );
   }
 
-  void _confirmDeleteProductColor(BuildContext context, ProductColorEntity color) {
+  void _confirmDeleteProductColor(
+      BuildContext context, ProductColorEntity color) {
     showDialog(
       context: context,
       builder: (diagContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Xóa màu sản phẩm?', style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
-        content: Text('Bạn có chắc muốn xóa màu "${color.name}" khỏi sản phẩm?'),
+        title: Text('Xóa màu sản phẩm?',
+            style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
+        content:
+            Text('Bạn có chắc muốn xóa màu "${color.name}" khỏi sản phẩm?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(diagContext),
-            child: Text('HỦY', style: GoogleFonts.inter(color: AppColors.textSecondary)),
+            child: Text('HỦY',
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -901,7 +951,9 @@ class _ColorManagementPageState extends State<ColorManagementPage>
               }
               Navigator.pop(diagContext);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: Colors.white),
             child: const Text('XÓA'),
           ),
         ],
@@ -909,17 +961,20 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     );
   }
 
-  void _confirmDeletePrintingColor(BuildContext context, PrintingColorEntity color) {
+  void _confirmDeletePrintingColor(
+      BuildContext context, PrintingColorEntity color) {
     showDialog(
       context: context,
       builder: (diagContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Xóa màu in ấn?', style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
+        title: Text('Xóa màu in ấn?',
+            style: GoogleFonts.lexend(fontWeight: FontWeight.w700)),
         content: Text('Bạn có chắc muốn xóa màu in ấn "${color.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(diagContext),
-            child: Text('HỦY', style: GoogleFonts.inter(color: AppColors.textSecondary)),
+            child: Text('HỦY',
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -928,7 +983,9 @@ class _ColorManagementPageState extends State<ColorManagementPage>
               }
               Navigator.pop(diagContext);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: Colors.white),
             child: const Text('XÓA'),
           ),
         ],

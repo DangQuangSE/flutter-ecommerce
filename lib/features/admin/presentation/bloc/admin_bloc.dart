@@ -150,7 +150,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               message: 'Đã xóa sản phẩm thành công!',
             ));
           } else {
-            emit(currentState.copyWith(message: 'Không tìm thấy sản phẩm để xóa.'));
+            emit(currentState.copyWith(
+                message: 'Không tìm thấy sản phẩm để xóa.'));
           }
         case ResultFailure(:final failure):
           emit(AdminError(failure.message));

@@ -48,7 +48,8 @@ class _ProductCarouselState extends State<ProductCarousel> {
             itemBuilder: (_, i) => CachedNetworkImage(
               imageUrl: urls[i],
               fit: BoxFit.cover,
-              placeholder: (_, __) => const ColoredBox(color: Color(0xFFF3F3F8)),
+              placeholder: (_, __) =>
+                  const ColoredBox(color: Color(0xFFF3F3F8)),
               errorWidget: (_, __, ___) => const ColoredBox(
                 color: Color(0xFFF3F3F8),
                 child: Icon(

@@ -78,7 +78,8 @@ class SizeSelector extends StatelessWidget {
                   color: isSelected ? AppColors.black : Colors.white,
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: isSelected ? AppColors.black : const Color(0xFFC1C6D7),
+                    color:
+                        isSelected ? AppColors.black : const Color(0xFFC1C6D7),
                     width: isSelected ? 2 : 1,
                   ),
                   boxShadow: isSelected
@@ -96,7 +97,8 @@ class SizeSelector extends StatelessWidget {
                     size,
                     style: GoogleFonts.inter(
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w600,
                       color: isSelected ? Colors.white : AppColors.textPrimary,
                     ),
                   ),

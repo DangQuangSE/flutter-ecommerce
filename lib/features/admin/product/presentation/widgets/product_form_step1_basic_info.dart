@@ -20,8 +20,7 @@ class ProductFormStep1BasicInfo extends StatefulWidget {
       _ProductFormStep1BasicInfoState();
 }
 
-class _ProductFormStep1BasicInfoState
-    extends State<ProductFormStep1BasicInfo> {
+class _ProductFormStep1BasicInfoState extends State<ProductFormStep1BasicInfo> {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _nameController;
@@ -30,7 +29,8 @@ class _ProductFormStep1BasicInfoState
   late List<({int id, String label})> _flatCategories;
 
   List<({int id, String label})> _flattenCategories(
-      List<CategoryTreeNode> nodes, [int depth = 0]) {
+      List<CategoryTreeNode> nodes,
+      [int depth = 0]) {
     final result = <({int id, String label})>[];
     for (final node in nodes) {
       final prefix = depth > 0 ? '${'—' * depth} ' : '';
@@ -93,8 +93,9 @@ class _ProductFormStep1BasicInfoState
                 border: OutlineInputBorder(),
               ),
               onChanged: cubit.nameChanged,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên sản phẩm' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Vui lòng nhập tên sản phẩm'
+                  : null,
             ),
             const SizedBox(height: 16),
 
@@ -191,7 +192,8 @@ class _ProductFormStep1BasicInfoState
                   .where((s) => s != ProductStatus.deleted)
                   .map((s) => DropdownMenuItem(
                         value: s,
-                        child: Text(s == ProductStatus.active ? 'Đang bán' : 'Tạm ẩn'),
+                        child: Text(
+                            s == ProductStatus.active ? 'Đang bán' : 'Tạm ẩn'),
                       ))
                   .toList(),
               onChanged: (s) {
@@ -252,7 +254,8 @@ class _SizeGroupDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final groups = state.sizeGroups;
     return DropdownButtonFormField<int?>(
-      initialValue: (state.sizeGroupId != null && groups.any((g) => g.id == state.sizeGroupId))
+      initialValue: (state.sizeGroupId != null &&
+              groups.any((g) => g.id == state.sizeGroupId))
           ? state.sizeGroupId
           : null,
       decoration: const InputDecoration(

@@ -23,8 +23,11 @@ class AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 401) {
       final path = err.requestOptions.path;
-      // Failed login returns 401 — do not overwrite AuthLoginFailed with logout.
-      if (path != ApiConstants.login) {
+      // Do not dispatch logout for:
+      // - login path (would overwrite AuthLoginFailed with logout)
+      // - refresh-token path (_AuthRefreshInterceptor owns that lifecycle)
+      if (path != ApiConstants.login &&
+          path != ApiConstants.refreshToken) {
         GetIt.instance<AuthBloc>().add(const AuthLogoutRequested());
       }
     }

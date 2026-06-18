@@ -67,9 +67,7 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
     if (data is! List) {
       throw const ParseException('Phản hồi cây danh mục không hợp lệ');
     }
-    return data
-        .map((e) => _parseTreeNode(e as Map<String, dynamic>))
-        .toList();
+    return data.map((e) => _parseTreeNode(e as Map<String, dynamic>)).toList();
   }
 
   CategoryTreeNode _parseTreeNode(Map<String, dynamic> json) {

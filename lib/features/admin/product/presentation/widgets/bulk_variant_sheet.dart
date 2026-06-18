@@ -40,6 +40,7 @@ class BulkVariantSheet extends StatefulWidget {
   final List<ProductColorEntity> colors;
   final String productName;
   final String brandName;
+  final int? productId;
 
   const BulkVariantSheet({
     super.key,
@@ -48,6 +49,7 @@ class BulkVariantSheet extends StatefulWidget {
     required this.colors,
     this.productName = '',
     this.brandName = '',
+    this.productId,
   });
 
   @override
@@ -118,9 +120,8 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   void _generatePreview() {
     if (!_formKey.currentState!.validate()) return;
     final price = double.parse(_originalPriceCtrl.text.trim());
-    final salePrice = _salePriceCtrl.text.trim().isEmpty
-        ? null
-        : double.tryParse(_salePriceCtrl.text.trim());
+    final salePriceText = _salePriceCtrl.text.trim();
+    final salePrice = salePriceText.isEmpty ? null : double.parse(salePriceText);
     final stock = int.parse(_stockCtrl.text.trim());
     final group = _groupById(_sizeGroupId);
     final orderedSizes = group != null
@@ -135,7 +136,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
       final color = widget.colors.firstWhere((c) => c.id == colorId);
       for (final size in orderedSizes) {
         drafts.add(CreateVariantParams(
-          sku: _autoSku(widget.brandName, widget.productName, color.name, size),
+          sku: _autoSku(widget.brandName, widget.productName, color.name, size, widget.productId),
           size: size,
           colorId: colorId,
           originalPrice: price,
@@ -149,30 +150,76 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   }
 
   static String _autoSku(
-      String brandName, String productName, String colorName, String size) {
+      String brandName, String productName, String colorName, String size, int? productId) {
     final brand = _slugCode(brandName, 3);
     final prod = _slugCode(productName, null);
     final color = _slugCode(colorName, 3);
     final colorPart = color.isEmpty ? 'CLR' : color;
     final sizePart = size.toUpperCase();
-    final prefix = [brand, prod].where((s) => s.isNotEmpty).join('-');
-    return prefix.isEmpty ? '$colorPart-$sizePart' : '$prefix-$colorPart-$sizePart';
+    final idPart = productId != null ? '$productId' : '';
+    final prefixList = [brand, prod, idPart].where((s) => s.isNotEmpty).toList();
+    final prefix = prefixList.join('-');
+    return prefix.isEmpty
+        ? '$colorPart-$sizePart'
+        : '$prefix-$colorPart-$sizePart';
   }
 
   static String _slugCode(String text, int? maxLen) {
     const vi = {
-      'đ': 'd', 'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a',
-      'ă': 'a', 'ắ': 'a', 'ặ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a',
-      'ấ': 'a', 'ậ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a',
-      'è': 'e', 'é': 'e', 'ê': 'e', 'ế': 'e', 'ệ': 'e',
-      'ề': 'e', 'ể': 'e', 'ễ': 'e',
-      'ì': 'i', 'í': 'i', 'ị': 'i',
-      'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ố': 'o',
-      'ộ': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o',
-      'ơ': 'o', 'ớ': 'o', 'ợ': 'o', 'ờ': 'o', 'ở': 'o', 'ỡ': 'o',
-      'ù': 'u', 'ú': 'u', 'ụ': 'u', 'ừ': 'u', 'ứ': 'u',
-      'ư': 'u', 'ự': 'u', 'ử': 'u', 'ữ': 'u',
-      'ỳ': 'y', 'ý': 'y', 'ỵ': 'y',
+      'đ': 'd',
+      'à': 'a',
+      'á': 'a',
+      'â': 'a',
+      'ã': 'a',
+      'ă': 'a',
+      'ắ': 'a',
+      'ặ': 'a',
+      'ằ': 'a',
+      'ẳ': 'a',
+      'ẵ': 'a',
+      'ấ': 'a',
+      'ậ': 'a',
+      'ầ': 'a',
+      'ẩ': 'a',
+      'ẫ': 'a',
+      'è': 'e',
+      'é': 'e',
+      'ê': 'e',
+      'ế': 'e',
+      'ệ': 'e',
+      'ề': 'e',
+      'ể': 'e',
+      'ễ': 'e',
+      'ì': 'i',
+      'í': 'i',
+      'ị': 'i',
+      'ò': 'o',
+      'ó': 'o',
+      'ô': 'o',
+      'õ': 'o',
+      'ố': 'o',
+      'ộ': 'o',
+      'ồ': 'o',
+      'ổ': 'o',
+      'ỗ': 'o',
+      'ơ': 'o',
+      'ớ': 'o',
+      'ợ': 'o',
+      'ờ': 'o',
+      'ở': 'o',
+      'ỡ': 'o',
+      'ù': 'u',
+      'ú': 'u',
+      'ụ': 'u',
+      'ừ': 'u',
+      'ứ': 'u',
+      'ư': 'u',
+      'ự': 'u',
+      'ử': 'u',
+      'ữ': 'u',
+      'ỳ': 'y',
+      'ý': 'y',
+      'ỵ': 'y',
     };
     final ascii = text
         .toLowerCase()
@@ -180,7 +227,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
         .split('')
         .map((c) => vi[c] ?? c)
         .join();
-    final letters = ascii.replaceAll(RegExp(r'[^a-z]'), '');
+    final letters = ascii.replaceAll(RegExp(r'[^a-z0-9]'), '');
     final len = maxLen == null ? letters.length : min(maxLen, letters.length);
     return letters.substring(0, len).toUpperCase();
   }
@@ -330,7 +377,8 @@ class _SheetHeader extends StatelessWidget {
                   style: TextStyle(
                       fontSize: AppSizes.fontXl, fontWeight: FontWeight.w700)),
             ),
-            IconButton(onPressed: onClose, icon: const Icon(Icons.close_rounded)),
+            IconButton(
+                onPressed: onClose, icon: const Icon(Icons.close_rounded)),
           ],
         ),
       );

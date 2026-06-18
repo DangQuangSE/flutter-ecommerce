@@ -140,8 +140,7 @@ class _ColorTile extends StatelessWidget {
             border: Border.all(
                 color: selected ? AppColors.primary : AppColors.divider),
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-            color:
-                selected ? AppColors.primary.withValues(alpha: 0.06) : null,
+            color: selected ? AppColors.primary.withValues(alpha: 0.06) : null,
           ),
           child: Row(
             children: [
@@ -166,8 +165,7 @@ class _ColorTile extends StatelessWidget {
                   color.name,
                   style: TextStyle(
                     fontSize: AppSizes.fontLg,
-                    color:
-                        selected ? AppColors.primary : AppColors.textPrimary,
+                    color: selected ? AppColors.primary : AppColors.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -204,10 +202,10 @@ class _DefaultValuesSection extends StatelessWidget {
             const SizedBox(width: AppSizes.paddingSm),
             Expanded(
                 child: _DefaultPriceField(
-                    ctrl: salePriceCtrl, label: 'Giá bán', required: false)),
-            const SizedBox(width: AppSizes.paddingSm),
-            Expanded(child: _DefaultStockField(ctrl: stockCtrl)),
+                    ctrl: salePriceCtrl, label: 'Giá sale', required: false)),
           ]),
+          const SizedBox(height: AppSizes.paddingSm),
+          _DefaultStockField(ctrl: stockCtrl),
         ],
       );
 }

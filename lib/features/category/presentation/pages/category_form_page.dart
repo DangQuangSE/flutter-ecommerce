@@ -265,7 +265,8 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+        border:
+            Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
       ),
       child: SwitchListTile.adaptive(
         value: value,
@@ -280,7 +281,8 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
         ),
         subtitle: Text(
           subtitle,
-          style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+          style:
+              GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
         ),
       ),
     );

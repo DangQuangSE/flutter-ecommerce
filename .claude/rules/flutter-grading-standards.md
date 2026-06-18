@@ -137,6 +137,13 @@ lib/
 - Colors, text strings, padding values, and route names must be defined as constants in `core/constants/`
 - No copy-paste of the same UI block across screens — extract to a shared widget
 - No magic numbers in layout (`SizedBox(height: 16)` must come from `AppSizes.spacingMd`)
+- **All user-facing strings must be i18n-ready:** every `Text`, `SnackBar`, dialog,
+  or error/empty-state message must read from `core/constants/app_strings.dart`
+  (`AppStrings.xyz`) — never an inline string literal. Dynamic text (e.g.
+  `'Added $name to cart'`) must be a static method on `AppStrings`, not built
+  inline in the widget. This keeps future multi-language support a one-file change.
+  Exceptions: debug/log-only strings and non-UI identifiers (route names, asset
+  paths, API endpoints).
 
 Suggested files:
 ```dart

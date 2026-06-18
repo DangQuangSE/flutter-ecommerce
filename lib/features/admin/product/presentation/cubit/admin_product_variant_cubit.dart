@@ -56,9 +56,8 @@ class AdminProductVariantCubit extends Cubit<AdminProductVariantState> {
     final result = await _updateVariant(variantId, params);
     switch (result) {
       case Success(:final data):
-        final updated = current
-            .map((v) => v.id == variantId ? data : v)
-            .toList();
+        final updated =
+            current.map((v) => v.id == variantId ? data : v).toList();
         emit(AdminProductVariantSuccess(updated));
       case ResultFailure(:final failure):
         emit(AdminProductVariantSuccess(current));

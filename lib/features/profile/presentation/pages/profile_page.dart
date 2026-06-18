@@ -160,7 +160,8 @@ class ProfilePage extends StatelessWidget {
 
                     // Concentric glass-styled VIP Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: AppColors.accent.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(6),

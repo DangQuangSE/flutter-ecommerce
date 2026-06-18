@@ -10,7 +10,7 @@ import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_ecommerce/core/errors/exceptions.dart';
+
 
 class _AppExceptionDio implements Dio {
   final Dio _delegate;
@@ -30,7 +30,8 @@ class _AppExceptionDio implements Dio {
   HttpClientAdapter get httpClientAdapter => _delegate.httpClientAdapter;
 
   @override
-  set httpClientAdapter(HttpClientAdapter value) => _delegate.httpClientAdapter = value;
+  set httpClientAdapter(HttpClientAdapter value) =>
+      _delegate.httpClientAdapter = value;
 
   @override
   Transformer get transformer => _delegate.transformer;
@@ -69,60 +70,186 @@ class _AppExceptionDio implements Dio {
   }
 
   @override
-  Future<Response<T>> get<T>(String path, {Object? data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress}) =>
-      _delegate.get<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> get<T>(String path,
+          {Object? data,
+          Map<String, dynamic>? queryParameters,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.get<T>(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> getUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress}) =>
-      _delegate.getUri<T>(uri, data: data, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> getUri<T>(Uri uri,
+          {Object? data,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.getUri<T>(uri,
+          data: data,
+          options: options,
+          cancelToken: cancelToken,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> post<T>(String path, {Object? data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.post<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> post<T>(String path,
+          {Object? data,
+          Map<String, dynamic>? queryParameters,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.post<T>(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> postUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.postUri<T>(uri, data: data, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> postUri<T>(Uri uri,
+          {Object? data,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.postUri<T>(uri,
+          data: data,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> put<T>(String path, {Object? data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.put<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> put<T>(String path,
+          {Object? data,
+          Map<String, dynamic>? queryParameters,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.put<T>(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> putUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.putUri<T>(uri, data: data, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> putUri<T>(Uri uri,
+          {Object? data,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.putUri<T>(uri,
+          data: data,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> head<T>(String path, {Object? data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken}) =>
-      _delegate.head<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken);
+  Future<Response<T>> head<T>(String path,
+          {Object? data,
+          Map<String, dynamic>? queryParameters,
+          Options? options,
+          CancelToken? cancelToken}) =>
+      _delegate.head<T>(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken);
 
   @override
-  Future<Response<T>> headUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken}) =>
-      _delegate.headUri<T>(uri, data: data, options: options, cancelToken: cancelToken);
+  Future<Response<T>> headUri<T>(Uri uri,
+          {Object? data, Options? options, CancelToken? cancelToken}) =>
+      _delegate.headUri<T>(uri,
+          data: data, options: options, cancelToken: cancelToken);
 
   @override
-  Future<Response<T>> delete<T>(String path, {Object? data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken}) =>
-      _delegate.delete<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken);
+  Future<Response<T>> delete<T>(String path,
+          {Object? data,
+          Map<String, dynamic>? queryParameters,
+          Options? options,
+          CancelToken? cancelToken}) =>
+      _delegate.delete<T>(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken);
 
   @override
-  Future<Response<T>> deleteUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken}) =>
-      _delegate.deleteUri<T>(uri, data: data, options: options, cancelToken: cancelToken);
+  Future<Response<T>> deleteUri<T>(Uri uri,
+          {Object? data, Options? options, CancelToken? cancelToken}) =>
+      _delegate.deleteUri<T>(uri,
+          data: data, options: options, cancelToken: cancelToken);
 
   @override
-  Future<Response<T>> patch<T>(String path, {Object? data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.patch<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> patch<T>(String path,
+          {Object? data,
+          Map<String, dynamic>? queryParameters,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.patch<T>(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> patchUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.patchUri<T>(uri, data: data, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> patchUri<T>(Uri uri,
+          {Object? data,
+          Options? options,
+          CancelToken? cancelToken,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.patchUri<T>(uri,
+          data: data,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> request<T>(String path, {Object? data, Map<String, dynamic>? queryParameters, CancelToken? cancelToken, Options? options, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.request<T>(path, data: data, queryParameters: queryParameters, cancelToken: cancelToken, options: options, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> request<T>(String path,
+          {Object? data,
+          Map<String, dynamic>? queryParameters,
+          CancelToken? cancelToken,
+          Options? options,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.request<T>(path,
+          data: data,
+          queryParameters: queryParameters,
+          cancelToken: cancelToken,
+          options: options,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
-  Future<Response<T>> requestUri<T>(Uri uri, {Object? data, CancelToken? cancelToken, Options? options, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) =>
-      _delegate.requestUri<T>(uri, data: data, cancelToken: cancelToken, options: options, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  Future<Response<T>> requestUri<T>(Uri uri,
+          {Object? data,
+          CancelToken? cancelToken,
+          Options? options,
+          ProgressCallback? onSendProgress,
+          ProgressCallback? onReceiveProgress}) =>
+      _delegate.requestUri<T>(uri,
+          data: data,
+          cancelToken: cancelToken,
+          options: options,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response> download(
@@ -186,8 +313,10 @@ class DioClient {
     dio = _AppExceptionDio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
-        receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
+        connectTimeout:
+            const Duration(milliseconds: AppConstants.connectTimeoutMs),
+        receiveTimeout:
+            const Duration(milliseconds: AppConstants.receiveTimeoutMs),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -219,10 +348,27 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
   _AuthRefreshInterceptor({
     required Dio dio,
     required AuthTokenStorage authTokenStorage,
-  })  : _dio = dio,
-        _authTokenStorage = authTokenStorage;
+  })  : _mainDio = dio,
+        _authTokenStorage = authTokenStorage {
+    // A plain Dio used ONLY for the refresh-token round-trip.
+    // It MUST NOT share the main Dio instance or its QueuedInterceptor,
+    // otherwise the refresh call deadlocks because QueuedInterceptor blocks
+    // all queued requests while the current error handler is awaiting.
+    _refreshDio = Dio(
+      BaseOptions(
+        baseUrl: ApiConstants.baseUrl,
+        connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
+        receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+  }
 
-  final Dio _dio;
+  final Dio _mainDio;
+  late final Dio _refreshDio;
   final AuthTokenStorage _authTokenStorage;
 
   @override
@@ -250,9 +396,10 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
         path != ApiConstants.login &&
         path != ApiConstants.refreshToken) {
       try {
-        final refreshResponse = await _dio.post<Map<String, dynamic>>(
+        // Use _refreshDio (no QueuedInterceptor) to avoid deadlocking the
+        // main Dio while it is blocked inside this QueuedInterceptor handler.
+        final refreshResponse = await _refreshDio.post<Map<String, dynamic>>(
           ApiConstants.refreshToken,
-          options: Options(extra: {'_skipRefresh': true}),
         );
         final loginModel =
             LoginResponseModel.fromApiResponse(refreshResponse.data!);
@@ -263,7 +410,8 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
         retryOptions.headers['Authorization'] =
             'Bearer ${loginModel.accessToken}';
 
-        final retryResponse = await _dio.fetch(retryOptions);
+        // Re-execute the original request through the main Dio.
+        final retryResponse = await _mainDio.fetch(retryOptions);
         return handler.resolve(retryResponse);
       } catch (_) {
         await _authTokenStorage.clearAccessToken();
@@ -300,8 +448,7 @@ class _ErrorInterceptor extends Interceptor {
         return;
       case DioExceptionType.badResponse:
         final statusCode = err.response?.statusCode ?? 0;
-        final message =
-            extractApiMessage(err.response?.data) ?? 'Server error';
+        final message = extractApiMessage(err.response?.data) ?? 'Server error';
         if (statusCode == 401) {
           handler.reject(
             _rejectWith(err, UnauthorisedException(message)),

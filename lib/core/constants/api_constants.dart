@@ -42,6 +42,7 @@ abstract final class ApiConstants {
 
   // Coupons — admin only (requires ADMIN role)
   static const String adminCoupons = '/api/v1/admin/coupons';
+  static const String publicCoupons = '/api/v1/coupons';
 
   // Chat — any authenticated user (USER: own conversations, ADMIN: support inbox)
   static const String chatConversations = '/api/chat/conversations';
@@ -67,6 +68,7 @@ abstract final class ApiConstants {
   // Admin Product
   static const String adminProducts = '/api/admin/products';
   static String adminProductById(int id) => '/api/admin/products/$id';
+  static String adminProductRestore(int id) => '/api/admin/products/$id/restore';
   static String adminProductVariants(int productId) =>
       '/api/admin/products/$productId/variants';
   static String adminProductVariantsBatch(int productId) =>
@@ -79,4 +81,20 @@ abstract final class ApiConstants {
       '/api/admin/product-variants/$variantId';
   static String adminImageById(int imageId) =>
       '/api/admin/product-images/$imageId';
+
+  // Site Settings
+  static const String settings = '/api/settings';
+  static const String adminSettings = '/api/admin/settings';
+
+  // Reviews
+  static String productReviews(int productId) =>
+      '/api/public/reviews/product/$productId';
+
+  // User Reviews — create/update a review for a delivered order item
+  static const String userReviews = '/api/user/reviews';
+
+  // Admin Reviews — view all + reply only (no hide/delete)
+  static const String adminReviews = '/api/admin/reviews';
+  static String adminReviewReply(int reviewId) =>
+      '/api/admin/reviews/$reviewId/reply';
 }

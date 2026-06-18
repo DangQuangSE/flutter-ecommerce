@@ -7,7 +7,7 @@ class ProductCatalogEntity extends Equatable {
   final String? sku;
   final double basePrice;
   final double originalPrice;
-  final double salePrice;
+  final double? salePrice;
   final String? imageUrl;
   final String categoryName;
   final String brandName;
@@ -37,7 +37,7 @@ class ProductCatalogEntity extends Equatable {
     required this.availableColors,
   });
 
-  bool get hasDiscount => salePrice < originalPrice;
+  bool get hasDiscount => salePrice != null && salePrice! < originalPrice;
 
   @override
   List<Object?> get props => [

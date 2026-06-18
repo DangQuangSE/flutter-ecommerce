@@ -27,7 +27,8 @@ class BrandCubit extends Cubit<BrandState> {
       final result = await _repository.createBrand(brand);
       switch (result) {
         case Success(:final data):
-          final updatedList = List<BrandEntity>.from(currentState.brands)..insert(0, data);
+          final updatedList = List<BrandEntity>.from(currentState.brands)
+            ..insert(0, data);
           emit(BrandLoaded(
             brands: updatedList,
             message: 'Đã thêm thương hiệu thành công!',
@@ -45,7 +46,8 @@ class BrandCubit extends Cubit<BrandState> {
       final result = await _repository.updateBrand(id, brand);
       switch (result) {
         case Success(:final data):
-          final updatedList = currentState.brands.map((b) => b.id == id ? data : b).toList();
+          final updatedList =
+              currentState.brands.map((b) => b.id == id ? data : b).toList();
           emit(BrandLoaded(
             brands: updatedList,
             message: 'Đã cập nhật thương hiệu thành công!',
@@ -63,7 +65,8 @@ class BrandCubit extends Cubit<BrandState> {
       final result = await _repository.deleteBrand(id);
       switch (result) {
         case Success():
-          final updatedList = currentState.brands.where((b) => b.id != id).toList();
+          final updatedList =
+              currentState.brands.where((b) => b.id != id).toList();
           emit(BrandLoaded(
             brands: updatedList,
             message: 'Đã xóa thương hiệu thành công!',
@@ -83,10 +86,10 @@ class BrandCubit extends Cubit<BrandState> {
         }
         return b;
       }).toList();
-      
+
       // Speculative UI update for smooth UX
       emit(currentState.copyWith(brands: updatedBrands));
-      
+
       final result = await _repository.updateBrandStatus(id, isActive);
       switch (result) {
         case Success():

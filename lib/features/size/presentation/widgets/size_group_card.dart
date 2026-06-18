@@ -17,10 +17,7 @@ class SizeGroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final preview = group.sizes
-        .map((s) => s.name)
-        .take(5)
-        .join(', ');
+    final preview = group.sizes.map((s) => s.name).take(5).join(', ');
 
     return Card(
       elevation: 0,
@@ -84,12 +81,14 @@ class _CardActions extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: const Icon(Icons.edit_rounded, size: 20, color: AppColors.primary),
+          icon: const Icon(Icons.edit_rounded,
+              size: 20, color: AppColors.primary),
           tooltip: 'Sửa',
           onPressed: onEdit,
         ),
         IconButton(
-          icon: const Icon(Icons.delete_outline_rounded, size: 20, color: Colors.red),
+          icon: const Icon(Icons.delete_outline_rounded,
+              size: 20, color: Colors.red),
           tooltip: 'Xóa',
           onPressed: () => _confirmDelete(context),
         ),

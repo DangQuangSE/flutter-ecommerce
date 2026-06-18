@@ -70,11 +70,10 @@ class _VariantEditDialogContent extends StatefulWidget {
       _VariantEditDialogContentState();
 }
 
-class _VariantEditDialogContentState
-    extends State<_VariantEditDialogContent> {
+class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
   TextEditingController? _skuCtrl;
   late final TextEditingController _priceCtrl;
-  late final TextEditingController _saleCtrl;
+  late final TextEditingController _salePriceCtrl;
   late final TextEditingController _stockCtrl;
   late ProductStatus _status;
   final _formKey = GlobalKey<FormState>();
@@ -87,10 +86,9 @@ class _VariantEditDialogContentState
     }
     _priceCtrl =
         TextEditingController(text: widget.initialPrice.toStringAsFixed(0));
-    _saleCtrl = TextEditingController(
+    _salePriceCtrl = TextEditingController(
         text: widget.initialSalePrice?.toStringAsFixed(0) ?? '');
-    _stockCtrl =
-        TextEditingController(text: widget.initialStock.toString());
+    _stockCtrl = TextEditingController(text: widget.initialStock.toString());
     _status = widget.initialStatus;
   }
 
@@ -98,21 +96,20 @@ class _VariantEditDialogContentState
   void dispose() {
     _skuCtrl?.dispose();
     _priceCtrl.dispose();
-    _saleCtrl.dispose();
+    _salePriceCtrl.dispose();
     _stockCtrl.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
+    final salePriceText = _salePriceCtrl.text.trim();
     Navigator.pop(
       context,
       VariantEditResult(
         sku: _skuCtrl?.text.trim(),
         originalPrice: double.parse(_priceCtrl.text.trim()),
-        salePrice: _saleCtrl.text.trim().isEmpty
-            ? null
-            : double.tryParse(_saleCtrl.text.trim()),
+        salePrice: salePriceText.isEmpty ? null : double.parse(salePriceText),
         stockQuantity: int.parse(_stockCtrl.text.trim()),
         status: _status,
       ),
@@ -122,8 +119,8 @@ class _VariantEditDialogContentState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title,
-          style: const TextStyle(fontSize: AppSizes.fontXl)),
+      title:
+          Text(widget.title, style: const TextStyle(fontSize: AppSizes.fontXl)),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -138,12 +135,13 @@ class _VariantEditDialogContentState
                   controller: _priceCtrl, label: 'Giá gốc *', required: true),
               const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
               _PriceField(
-                  controller: _saleCtrl, label: 'Giá bán', required: false),
+                  controller: _salePriceCtrl,
+                  label: 'Giá khuyến mãi',
+                  required: false),
               const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
               _StockField(controller: _stockCtrl),
               if (widget.showStatus) ...[
-                const SizedBox(
-                    height: AppSizes.paddingSm + AppSizes.paddingXs),
+                const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
                 _StatusDropdown(
                   value: _status,
                   onChanged: (s) => setState(() => _status = s),
@@ -155,8 +153,7 @@ class _VariantEditDialogContentState
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy')),
+            onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
         ElevatedButton(
           onPressed: _submit,
           style: ElevatedButton.styleFrom(
@@ -180,8 +177,7 @@ class _SkuField extends StatelessWidget {
         controller: controller,
         decoration: const InputDecoration(
             labelText: 'SKU *', border: OutlineInputBorder(), isDense: true),
-        validator: (v) =>
-            (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
+        validator: (v) => (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
       );
 }
 
@@ -254,8 +250,8 @@ class _StatusDropdown extends StatelessWidget {
             .where((s) => s != ProductStatus.deleted)
             .map((s) => DropdownMenuItem(
                   value: s,
-                  child: Text(
-                      s == ProductStatus.active ? 'Đang bán' : 'Tạm ẩn'),
+                  child:
+                      Text(s == ProductStatus.active ? 'Đang bán' : 'Tạm ẩn'),
                 ))
             .toList(),
         onChanged: (s) {

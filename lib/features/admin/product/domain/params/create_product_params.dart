@@ -24,6 +24,14 @@ class CreateProductParams extends Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [name, description, categoryId, brandId, gender, isFeatured, status, sizeGroupId];
+  List<Object?> get props => [
+        name,
+        description,
+        categoryId,
+        brandId,
+        gender,
+        isFeatured,
+        status,
+        sizeGroupId,
+      ];
 }

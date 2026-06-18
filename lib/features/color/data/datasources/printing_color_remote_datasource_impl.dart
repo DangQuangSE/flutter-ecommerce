@@ -3,7 +3,8 @@ import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/features/color/data/datasources/printing_color_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/color/data/models/printing_color_model.dart';
 
-class PrintingColorRemoteDataSourceImpl implements PrintingColorRemoteDataSource {
+class PrintingColorRemoteDataSourceImpl
+    implements PrintingColorRemoteDataSource {
   final DioClient _dioClient;
 
   const PrintingColorRemoteDataSourceImpl(this._dioClient);
@@ -18,7 +19,8 @@ class PrintingColorRemoteDataSourceImpl implements PrintingColorRemoteDataSource
     if (list == null) return [];
 
     return list
-        .map((json) => PrintingColorModel.fromJson(json as Map<String, dynamic>))
+        .map(
+            (json) => PrintingColorModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
@@ -34,7 +36,8 @@ class PrintingColorRemoteDataSourceImpl implements PrintingColorRemoteDataSource
   }
 
   @override
-  Future<PrintingColorModel> updateColor(int id, PrintingColorModel color) async {
+  Future<PrintingColorModel> updateColor(
+      int id, PrintingColorModel color) async {
     final response = await _dioClient.dio.put<Map<String, dynamic>>(
       '${ApiConstants.adminPrintingColors}/$id',
       data: color.toJson(),
@@ -46,6 +49,7 @@ class PrintingColorRemoteDataSourceImpl implements PrintingColorRemoteDataSource
 
   @override
   Future<void> deleteColor(int id) async {
-    await _dioClient.dio.delete<void>('${ApiConstants.adminPrintingColors}/$id');
+    await _dioClient.dio
+        .delete<void>('${ApiConstants.adminPrintingColors}/$id');
   }
 }

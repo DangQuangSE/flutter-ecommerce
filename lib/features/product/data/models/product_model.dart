@@ -10,35 +10,73 @@ class ProductModel extends ProductEntity {
     required super.imageUrl,
     super.imageUrls = const [],
     required super.categoryId,
+    super.categoryName = '',
+    super.brandName = '',
+    super.originalPrice = 0.0,
+    super.salePrice,
     required super.stockQuantity,
     super.variants,
+    super.numericId,
+    super.averageRating = 0.0,
+    super.reviewCount = 0,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     final rawVariants = json['variants'] as List<dynamic>? ?? [];
+    final variantsList = rawVariants
+        .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>)
+            .toEntity())
+        .toList();
+
+    double price = ((json['salePrice'] ??
+            json['price'] ??
+            json['basePrice'] ??
+            json['minPrice'] ??
+            0.0) as num)
+        .toDouble();
+
+    double originalPrice = ((json['originalPrice'] ??
+            json['basePrice'] ??
+            json['maxPrice'] ??
+            0.0) as num)
+        .toDouble();
+
+    double? salePrice = (json['salePrice'] as num?)?.toDouble();
+
+    // Fallback to cheapest variant if top-level prices are not provided/zero
+    if (price == 0.0 && variantsList.isNotEmpty) {
+      final cheapest = variantsList.reduce((a, b) =>
+          (a.salePrice ?? a.originalPrice) < (b.salePrice ?? b.originalPrice)
+              ? a
+              : b);
+      price = cheapest.salePrice ?? cheapest.originalPrice;
+      originalPrice = cheapest.originalPrice;
+      salePrice = cheapest.salePrice;
+    }
+
     return ProductModel(
       id: json['slug'] as String? ?? (json['id'] ?? '').toString(),
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      price: ((json['salePrice'] ??
-              json['price'] ??
-              json['basePrice'] ??
-              json['minPrice'] ??
-              0.0) as num)
-          .toDouble(),
+      price: price,
       imageUrl: json['imageUrl'] as String? ??
           json['thumbnailUrl'] as String? ??
           json['image_url'] as String? ??
           _extractThumbnail(json['images'] as List<dynamic>?),
       imageUrls: _extractAllImageUrls(json['images'] as List<dynamic>?),
       categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
+      categoryName: json['categoryName'] as String? ?? '',
+      brandName: json['brandName'] as String? ?? '',
+      originalPrice: originalPrice,
+      salePrice: salePrice,
       stockQuantity: (json['totalStock'] ??
           json['stockQuantity'] ??
           json['stock_quantity'] ??
           0) as int,
-      variants: rawVariants
-          .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>).toEntity())
-          .toList(),
+      variants: variantsList,
+      numericId: int.tryParse((json['id'] ?? '').toString()),
+      averageRating: ((json['averageRating'] ?? 0.0) as num).toDouble(),
+      reviewCount: (json['reviewCount'] ?? 0) as int,
     );
   }
 
@@ -46,7 +84,8 @@ class ProductModel extends ProductEntity {
     if (images == null || images.isEmpty) return [];
     return (List<Map<String, dynamic>>.from(
       images.map((e) => e as Map<String, dynamic>),
-    )..sort((a, b) => ((a['sortOrder'] as int?) ?? 0).compareTo((b['sortOrder'] as int?) ?? 0)));
+    )..sort((a, b) => ((a['sortOrder'] as int?) ?? 0)
+        .compareTo((b['sortOrder'] as int?) ?? 0)));
   }
 
   static String _extractThumbnail(List<dynamic>? images) {

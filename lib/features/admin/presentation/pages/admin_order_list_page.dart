@@ -202,7 +202,8 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
                 padding: EdgeInsets.all(16),
                 child: Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(AppColors.primary),
                   ),
                 ),
               );

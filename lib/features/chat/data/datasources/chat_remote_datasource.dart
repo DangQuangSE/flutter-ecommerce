@@ -40,7 +40,8 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Future<MessageModel> sendMessage(String conversationId, String content) async {
+  Future<MessageModel> sendMessage(
+      String conversationId, String content) async {
     final response = await _dioClient.dio.post<Map<String, dynamic>>(
       '${ApiConstants.chatConversations}/$conversationId/messages',
       data: {'content': content},

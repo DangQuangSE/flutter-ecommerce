@@ -91,7 +91,8 @@ class _ProductFormStep3ImagesState extends State<ProductFormStep3Images> {
                             !isUploading &&
                             !_isPicking)
                           _buildAddTile(productId, images.length),
-                        ...images.map((img) => _buildImageTile(img, isUploading)),
+                        ...images
+                            .map((img) => _buildImageTile(img, isUploading)),
                       ],
                     ),
                     if (productId == null)
@@ -175,7 +176,8 @@ class _ProductFormStep3ImagesState extends State<ProductFormStep3Images> {
                   color: AppColors.divider,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.broken_image, color: AppColors.textHint),
+                child:
+                    const Icon(Icons.broken_image, color: AppColors.textHint),
               ),
             ),
           ),
@@ -198,7 +200,8 @@ class _ProductFormStep3ImagesState extends State<ProductFormStep3Images> {
             right: 2,
             child: GestureDetector(
               // Disable delete while uploading to prevent silent image restoration.
-              onTap: isUploading ? null : () => _imageCubit.deleteImage(image.id),
+              onTap:
+                  isUploading ? null : () => _imageCubit.deleteImage(image.id),
               child: Container(
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(

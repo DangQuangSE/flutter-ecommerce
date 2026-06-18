@@ -25,6 +25,7 @@ abstract final class AppRoutes {
 
   static const String orderList = 'order-list';
   static const String orderDetail = 'order-detail';
+  static const String writeReview = 'write-review';
 
   static const String profile = 'profile';
   static const String editProfile = 'edit-profile';
@@ -43,9 +44,11 @@ abstract final class AppRoutes {
   static const String adminColors = 'admin-colors';
   static const String adminCategories = 'admin-categories';
   static const String adminCoupons = 'admin-coupons';
+  static const String adminReviews = 'admin-reviews';
   static const String adminOrders = 'admin-orders';
   static const String adminOrderDetail = 'admin-order-detail';
   static const String adminSizeGroups = 'admin-size-groups';
   static const String adminSizeGroupCreate = 'admin-size-group-create';
   static const String adminSizeGroupEdit = 'admin-size-group-edit';
+  static const String adminSiteSettings = 'admin-site-settings';
 }

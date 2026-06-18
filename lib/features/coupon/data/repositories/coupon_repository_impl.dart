@@ -19,7 +19,8 @@ class CouponRepositoryImpl implements CouponRepository {
 
   @override
   Future<Result<CouponEntity>> create(CouponEntity coupon) {
-    return _guard(() => _remoteDataSource.create(CouponModel.fromEntity(coupon)));
+    return _guard(
+        () => _remoteDataSource.create(CouponModel.fromEntity(coupon)));
   }
 
   @override
@@ -31,6 +32,14 @@ class CouponRepositoryImpl implements CouponRepository {
   @override
   Future<Result<void>> delete(int id) {
     return _guard(() => _remoteDataSource.delete(id));
+  }
+
+  @override
+  Future<Result<List<CouponEntity>>> getUserAvailableCoupons() {
+    return _guard(() async {
+      final models = await _remoteDataSource.getUserAvailableCoupons();
+      return models;
+    });
   }
 
   /// Runs [action], mapping known exceptions to the corresponding [Failure].

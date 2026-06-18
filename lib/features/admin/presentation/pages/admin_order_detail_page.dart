@@ -105,8 +105,7 @@ class _OrderDetailBody extends StatelessWidget {
     final (badgeBg, badgeText) = OrderStatusLabel.badgeColors(order.status);
 
     return RefreshIndicator(
-      onRefresh: () =>
-          context.read<AdminOrderCubit>().refreshDetail(order.id),
+      onRefresh: () => context.read<AdminOrderCubit>().refreshDetail(order.id),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
@@ -236,9 +235,8 @@ class _OrderDetailBody extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: isUpdating
-                  ? null
-                  : () => _showStatusSheet(context, order),
+              onPressed:
+                  isUpdating ? null : () => _showStatusSheet(context, order),
               icon: isUpdating
                   ? const SizedBox(
                       width: 18,
@@ -292,7 +290,8 @@ class _OrderDetailBody extends StatelessWidget {
                 (status) => ListTile(
                   title: Text(OrderStatusLabel.vi(status)),
                   trailing: order.status == status
-                      ? const Icon(Icons.check_rounded, color: AppColors.primary)
+                      ? const Icon(Icons.check_rounded,
+                          color: AppColors.primary)
                       : null,
                   onTap: () => Navigator.pop(context, status),
                 ),

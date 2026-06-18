@@ -33,7 +33,8 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
     _nameCtrl = TextEditingController(text: g?.name ?? '');
     _descCtrl = TextEditingController(text: g?.description ?? '');
     _drafts = g?.sizes
-            .map((s) => SizeOptionDraft(name: s.name, displayOrder: s.displayOrder))
+            .map((s) =>
+                SizeOptionDraft(name: s.name, displayOrder: s.displayOrder))
             .toList() ??
         [];
   }
@@ -98,7 +99,10 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
 
   void _addDraft() {
     setState(() {
-      _drafts = [..._drafts, SizeOptionDraft(name: '', displayOrder: _drafts.length)];
+      _drafts = [
+        ..._drafts,
+        SizeOptionDraft(name: '', displayOrder: _drafts.length)
+      ];
     });
   }
 
@@ -123,7 +127,8 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
       name: _nameCtrl.text.trim(),
       description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
       sizes: _drafts
-          .map((d) => SizeOptionEntity(name: d.name.trim(), displayOrder: d.displayOrder))
+          .map((d) => SizeOptionEntity(
+              name: d.name.trim(), displayOrder: d.displayOrder))
           .toList(),
     );
     final cubit = context.read<SizeGroupCubit>();
@@ -162,7 +167,8 @@ class _NameField extends StatelessWidget {
         labelText: 'Tên nhóm kích thước *',
         border: OutlineInputBorder(),
       ),
-      validator: (v) => (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên' : null,
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên' : null,
       maxLength: 100,
     );
   }

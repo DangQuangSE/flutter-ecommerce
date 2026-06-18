@@ -55,7 +55,8 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,
@@ -74,7 +75,8 @@ abstract final class AppTheme {
         labelMedium: AppTextStyles.label,
       ),
       dividerColor: AppColors.divider,
-      dividerTheme: const DividerThemeData(color: AppColors.divider, thickness: 1),
+      dividerTheme:
+          const DividerThemeData(color: AppColors.divider, thickness: 1),
     );
   }
 }

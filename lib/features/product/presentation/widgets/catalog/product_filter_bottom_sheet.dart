@@ -145,8 +145,8 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Text('Bộ lọc',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w700)),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                 ),
                 TextButton(
                   onPressed: _resetAll,
@@ -175,7 +175,7 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
                   onSelect: (id, name) => setState(() {
                     _categoryId = id;
                     _categoryName = name;
-                  }),  // null id/name = deselect
+                  }), // null id/name = deselect
                   onToggleExpand: (id) => setState(() {
                     if (_expandedCategories.contains(id)) {
                       _expandedCategories.remove(id);
@@ -191,7 +191,7 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
                   onSelect: (id, name) => setState(() {
                     _brandId = id;
                     _brandName = name;
-                  }),  // null = deselect
+                  }), // null = deselect
                 ),
                 _GenderSection(
                   selected: _gender,
@@ -384,16 +384,14 @@ class _CategorySection extends StatelessWidget {
                                               color: selectedId == child.id
                                                   ? AppColors.primary
                                                   : AppColors.textSecondary,
-                                              fontWeight:
-                                                  selectedId == child.id
-                                                      ? FontWeight.w600
-                                                      : FontWeight.normal,
+                                              fontWeight: selectedId == child.id
+                                                  ? FontWeight.w600
+                                                  : FontWeight.normal,
                                             )),
                                       ),
                                       if (selectedId == child.id)
                                         const Icon(Icons.check,
-                                            size: 14,
-                                            color: AppColors.primary),
+                                            size: 14, color: AppColors.primary),
                                     ],
                                   ),
                                 ),
@@ -456,14 +454,12 @@ class _BrandSection extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.background,
+                        color:
+                            selected ? AppColors.primary : AppColors.background,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: selected
-                              ? AppColors.primary
-                              : AppColors.divider,
+                          color:
+                              selected ? AppColors.primary : AppColors.divider,
                         ),
                       ),
                       child: Text(
@@ -471,9 +467,8 @@ class _BrandSection extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: selected
-                              ? Colors.white
-                              : AppColors.textPrimary,
+                          color:
+                              selected ? Colors.white : AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -521,9 +516,7 @@ class _GenderSection extends StatelessWidget {
                         isSelected ? AppColors.primary : AppColors.background,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.divider,
+                      color: isSelected ? AppColors.primary : AppColors.divider,
                     ),
                   ),
                   child: Text(
@@ -532,8 +525,7 @@ class _GenderSection extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color:
-                          isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -574,9 +566,7 @@ class _ColorSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: entry.value,
                   border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary
-                        : AppColors.divider,
+                    color: isSelected ? AppColors.primary : AppColors.divider,
                     width: isSelected ? 2.5 : 1,
                   ),
                   boxShadow: isSelected
@@ -634,8 +624,8 @@ class _PriceSection extends StatelessWidget {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 ),
               ),
             ),
@@ -656,8 +646,8 @@ class _PriceSection extends StatelessWidget {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 ),
               ),
             ),
@@ -699,8 +689,7 @@ class _PresetChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.primary.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.3)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
         ),
         child: Text(label,
             style: const TextStyle(

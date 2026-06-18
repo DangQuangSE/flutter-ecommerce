@@ -49,11 +49,13 @@ class AdminDashboardTab extends StatelessWidget {
                   _chatInboxButton(context),
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(Icons.notifications_none_rounded, color: AppColors.textPrimary),
+                    icon: const Icon(Icons.notifications_none_rounded,
+                        color: AppColors.textPrimary),
                   ),
                   const CircleAvatar(
                     radius: 16,
-                    backgroundImage: NetworkImage('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e'),
+                    backgroundImage: NetworkImage(
+                        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e'),
                   ),
                 ],
               ),
@@ -93,7 +95,8 @@ class AdminDashboardTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey.shade200),
                 ),
-                child: const Icon(Icons.calendar_today_rounded, size: 16, color: AppColors.textPrimary),
+                child: const Icon(Icons.calendar_today_rounded,
+                    size: 16, color: AppColors.textPrimary),
               ),
             ],
           ),
@@ -146,7 +149,8 @@ class AdminDashboardTab extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.arrow_upward_rounded, size: 12, color: Colors.white.withOpacity(0.9)),
+                        Icon(Icons.arrow_upward_rounded,
+                            size: 12, color: Colors.white.withOpacity(0.9)),
                         const SizedBox(width: 2),
                         Text(
                           '+${stats.revenueGrowth}% so với tuần trước',
@@ -166,7 +170,8 @@ class AdminDashboardTab extends StatelessWidget {
                     color: Colors.white.withOpacity(0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.account_balance_wallet_rounded, size: 28, color: Colors.white),
+                  child: const Icon(Icons.account_balance_wallet_rounded,
+                      size: 28, color: Colors.white),
                 ),
               ],
             ),
@@ -176,7 +181,8 @@ class AdminDashboardTab extends StatelessWidget {
           // KPI row
           Row(
             children: [
-              Expanded(child: _kpiCard(
+              Expanded(
+                  child: _kpiCard(
                 label: 'ĐƠN HÀNG',
                 value: '${stats.totalOrders}',
                 growth: '+${stats.ordersGrowth}% tuần này',
@@ -184,7 +190,8 @@ class AdminDashboardTab extends StatelessWidget {
                 iconColor: AppColors.primary,
               )),
               const SizedBox(width: 12),
-              Expanded(child: _kpiCard(
+              Expanded(
+                  child: _kpiCard(
                 label: 'KHÁCH MỚI',
                 value: '${stats.newCustomers}',
                 growth: '+${stats.customersGrowth}%',
@@ -218,7 +225,8 @@ class AdminDashboardTab extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.background,
                         borderRadius: BorderRadius.circular(8),
@@ -234,7 +242,8 @@ class AdminDashboardTab extends StatelessWidget {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          const Icon(Icons.keyboard_arrow_down_rounded, size: 12, color: AppColors.textPrimary),
+                          const Icon(Icons.keyboard_arrow_down_rounded,
+                              size: 12, color: AppColors.textPrimary),
                         ],
                       ),
                     ),
@@ -325,20 +334,27 @@ class AdminDashboardTab extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () => context.pushNamed(AppRoutes.chatList),
-              icon: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.textPrimary),
+              icon: const Icon(Icons.chat_bubble_outline_rounded,
+                  color: AppColors.textPrimary),
             ),
             if (unread > 0)
               Positioned(
                 right: 6,
                 top: 6,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                  decoration: const BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  constraints:
+                      const BoxConstraints(minWidth: 16, minHeight: 16),
+                  decoration: const BoxDecoration(
+                      color: AppColors.error, shape: BoxShape.circle),
                   child: Text(
                     unread > 9 ? '9+' : '$unread',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white),
+                    style: GoogleFonts.inter(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
                   ),
                 ),
               ),
@@ -368,14 +384,27 @@ class AdminDashboardTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.8)),
+              Text(label,
+                  style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                      letterSpacing: 0.8)),
               Icon(icon, size: 16, color: iconColor),
             ],
           ),
           const SizedBox(height: 8),
-          Text(value, style: GoogleFonts.lexend(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+          Text(value,
+              style: GoogleFonts.lexend(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary)),
           const SizedBox(height: 4),
-          Text(growth, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.success)),
+          Text(growth,
+              style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.success)),
         ],
       ),
     );
@@ -393,7 +422,8 @@ class AdminDashboardTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: List.generate(traffic.length, (index) {
             final val = traffic[index];
-            final height = maxTraffic > 0 ? (val / maxTraffic) * maxHeight : 10.0;
+            final height =
+                maxTraffic > 0 ? (val / maxTraffic) * maxHeight : 10.0;
             final bool isHighlighted = index == 2;
 
             return Column(
@@ -401,7 +431,8 @@ class AdminDashboardTab extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Lưu lượng ${days[index]}: ${val.toInt()}%'),
+                      content:
+                          Text('Lưu lượng ${days[index]}: ${val.toInt()}%'),
                       duration: const Duration(milliseconds: 600),
                       backgroundColor: AppColors.primary,
                     ));
@@ -410,7 +441,9 @@ class AdminDashboardTab extends StatelessWidget {
                     width: 24,
                     height: height,
                     decoration: BoxDecoration(
-                      color: isHighlighted ? AppColors.primary : AppColors.primary.withOpacity(0.25),
+                      color: isHighlighted
+                          ? AppColors.primary
+                          : AppColors.primary.withOpacity(0.25),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(4),
                         topRight: Radius.circular(4),
@@ -423,8 +456,11 @@ class AdminDashboardTab extends StatelessWidget {
                   days[index],
                   style: GoogleFonts.inter(
                     fontSize: 10,
-                    fontWeight: isHighlighted ? FontWeight.w700 : FontWeight.w500,
-                    color: isHighlighted ? AppColors.primary : AppColors.textSecondary,
+                    fontWeight:
+                        isHighlighted ? FontWeight.w700 : FontWeight.w500,
+                    color: isHighlighted
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                   ),
                 ),
               ],

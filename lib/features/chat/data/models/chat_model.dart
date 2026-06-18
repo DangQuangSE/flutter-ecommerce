@@ -17,12 +17,14 @@ class ChatModel extends ChatEntity {
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     final name = (json['name'] as String?)?.trim();
     final avatar = (json['avatar'] as String?)?.trim();
-    final displayName = (name == null || name.isEmpty) ? 'Hỗ trợ Sport Pro' : name;
+    final displayName =
+        (name == null || name.isEmpty) ? 'Hỗ trợ Sport Pro' : name;
     return ChatModel(
       id: json['id'].toString(),
       senderName: displayName,
-      senderAvatar:
-          (avatar == null || avatar.isEmpty) ? _fallbackAvatar(displayName) : avatar,
+      senderAvatar: (avatar == null || avatar.isEmpty)
+          ? _fallbackAvatar(displayName)
+          : avatar,
       lastMessage: json['lastMessage'] as String? ?? '',
       lastMessageTime: formatTimestamp(json['lastMessageAt'] as String?),
       unreadCount: (json['unreadCount'] as num?)?.toInt() ?? 0,
@@ -44,8 +46,9 @@ class ChatModel extends ChatEntity {
     final local = dt.toLocal();
     final now = DateTime.now();
     String two(int n) => n.toString().padLeft(2, '0');
-    final isToday =
-        local.year == now.year && local.month == now.month && local.day == now.day;
+    final isToday = local.year == now.year &&
+        local.month == now.month &&
+        local.day == now.day;
     if (isToday) return '${two(local.hour)}:${two(local.minute)}';
     final yesterday = now.subtract(const Duration(days: 1));
     final isYesterday = local.year == yesterday.year &&

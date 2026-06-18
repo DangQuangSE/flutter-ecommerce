@@ -61,7 +61,8 @@ class _SizeOptionEditorRowState extends State<SizeOptionEditorRow> {
               decoration: const InputDecoration(
                 hintText: 'Tên size (vd: M, 42)',
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -77,14 +78,16 @@ class _SizeOptionEditorRowState extends State<SizeOptionEditorRow> {
               decoration: const InputDecoration(
                 hintText: 'Thứ tự',
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                 border: OutlineInputBorder(),
               ),
             ),
           ),
           IconButton(
             onPressed: widget.onRemove,
-            icon: const Icon(Icons.remove_circle_outline_rounded, color: Colors.red),
+            icon: const Icon(Icons.remove_circle_outline_rounded,
+                color: Colors.red),
             tooltip: 'Xóa',
           ),
         ],

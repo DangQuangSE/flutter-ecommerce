@@ -85,25 +85,29 @@ class _SkeletonCard extends StatelessWidget {
                       height: 10,
                       width: 80,
                       decoration: BoxDecoration(
-                          color: color, borderRadius: BorderRadius.circular(4))),
+                          color: color,
+                          borderRadius: BorderRadius.circular(4))),
                   const SizedBox(height: 6),
                   Container(
                       height: 13,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                          color: color, borderRadius: BorderRadius.circular(4))),
+                          color: color,
+                          borderRadius: BorderRadius.circular(4))),
                   const SizedBox(height: 6),
                   Container(
                       height: 10,
                       width: 60,
                       decoration: BoxDecoration(
-                          color: color, borderRadius: BorderRadius.circular(4))),
+                          color: color,
+                          borderRadius: BorderRadius.circular(4))),
                   const SizedBox(height: 6),
                   Container(
                       height: 16,
                       width: 80,
                       decoration: BoxDecoration(
-                          color: color, borderRadius: BorderRadius.circular(4))),
+                          color: color,
+                          borderRadius: BorderRadius.circular(4))),
                 ],
               ),
             ),

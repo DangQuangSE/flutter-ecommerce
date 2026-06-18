@@ -30,3 +30,8 @@ class AdminProductDeleted extends AdminProductListEvent {
   final int id;
   AdminProductDeleted(this.id);
 }
+
+class AdminProductRestored extends AdminProductListEvent {
+  final int id;
+  AdminProductRestored(this.id);
+}

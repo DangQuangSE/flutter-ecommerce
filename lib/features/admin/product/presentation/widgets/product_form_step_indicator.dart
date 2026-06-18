@@ -16,7 +16,8 @@ class ProductFormStepIndicator extends StatelessWidget {
         children: List.generate(3, (i) {
           final isDone = i < currentStep;
           final isActive = i == currentStep;
-          final color = (isDone || isActive) ? AppColors.primary : AppColors.textHint;
+          final color =
+              (isDone || isActive) ? AppColors.primary : AppColors.textHint;
 
           return Expanded(
             child: Row(
@@ -28,19 +29,24 @@ class ProductFormStepIndicator extends StatelessWidget {
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: (isDone || isActive) ? AppColors.primary : Colors.transparent,
+                        color: (isDone || isActive)
+                            ? AppColors.primary
+                            : Colors.transparent,
                         border: Border.all(color: color, width: 2),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: isDone
-                            ? const Icon(Icons.check, size: 14, color: Colors.white)
+                            ? const Icon(Icons.check,
+                                size: 14, color: Colors.white)
                             : Text(
                                 '${i + 1}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
-                                  color: isActive ? Colors.white : AppColors.textHint,
+                                  color: isActive
+                                      ? Colors.white
+                                      : AppColors.textHint,
                                 ),
                               ),
                       ),
@@ -50,7 +56,8 @@ class ProductFormStepIndicator extends StatelessWidget {
                       _labels[i],
                       style: TextStyle(
                         fontSize: 10,
-                        fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight:
+                            isActive ? FontWeight.w700 : FontWeight.w500,
                         color: color,
                       ),
                     ),

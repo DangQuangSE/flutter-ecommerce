@@ -7,7 +7,7 @@ class MessageEntity extends Equatable {
   final String timestamp;
   final bool isMe;
   final String? imageUrl; // For optional image attachments
-  final bool isSystem;   // For status alerts or design status updates
+  final bool isSystem; // For status alerts or design status updates
 
   /// Owning conversation id — needed to route real-time (WebSocket) messages
   /// to the right thread. Null for locally-created optimistic messages.
@@ -25,6 +25,14 @@ class MessageEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [id, senderId, content, timestamp, isMe, imageUrl, isSystem, conversationId];
+  List<Object?> get props => [
+        id,
+        senderId,
+        content,
+        timestamp,
+        isMe,
+        imageUrl,
+        isSystem,
+        conversationId
+      ];
 }

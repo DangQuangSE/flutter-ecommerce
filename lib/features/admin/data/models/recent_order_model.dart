@@ -11,11 +11,14 @@ class RecentOrderModel extends RecentOrderEntity {
     required super.date,
   });
 
-  factory RecentOrderModel.fromJson(Map<String, dynamic> json) => RecentOrderModel(
+  factory RecentOrderModel.fromJson(Map<String, dynamic> json) =>
+      RecentOrderModel(
         id: json['id'] as String,
         orderCode: json['order_code'] as String,
         productName: json['product_name'] as String,
-        rawStatus: json['raw_status'] as String? ?? json['status'] as String? ?? 'PENDING',
+        rawStatus: json['raw_status'] as String? ??
+            json['status'] as String? ??
+            'PENDING',
         status: json['status'] as String,
         price: (json['price'] as num).toDouble(),
         date: DateTime.parse(json['date'] as String),

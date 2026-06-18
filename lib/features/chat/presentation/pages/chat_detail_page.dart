@@ -94,7 +94,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 child: isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.primary),
                         ),
                       )
                     : _buildMessageList(messages, chatMetadata),
@@ -111,7 +112,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context, ChatEntity? chat) {
     final title = chat?.senderName ?? 'Hỗ trợ khách hàng';
-    final avatar = chat?.senderAvatar ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs';
+    final avatar = chat?.senderAvatar ??
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs';
     final isOnline = chat?.isOnline ?? true;
 
     return AppBar(
@@ -196,7 +198,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   style: GoogleFonts.inter(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: isOnline ? AppColors.textSecondary : AppColors.textHint,
+                    color:
+                        isOnline ? AppColors.textSecondary : AppColors.textHint,
                   ),
                 ),
               ],
@@ -245,7 +248,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       controller: _scrollController,
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      itemCount: messages.length + 1, // Adding 1 for the initial timestamp divider
+      itemCount:
+          messages.length + 1, // Adding 1 for the initial timestamp divider
       itemBuilder: (context, index) {
         if (index == 0) {
           // Designed static timestamp separator
@@ -303,7 +307,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 ),
               ],
             ),
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.78),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -362,7 +367,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               bottomRight: Radius.circular(0),
             ),
           ),
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.75),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -394,7 +400,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         alignment: Alignment.centerLeft,
         child: Container(
           margin: const EdgeInsets.only(bottom: 16),
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -409,7 +416,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Image.network(
-                  chat?.senderAvatar ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs',
+                  chat?.senderAvatar ??
+                      'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -419,7 +427,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 child: Container(
                   padding: message.imageUrl != null
                       ? const EdgeInsets.all(4)
-                      : const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      : const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEDEDF2),
                     borderRadius: const BorderRadius.only(
@@ -451,7 +460,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
                           child: Text(
                             message.content,
                             style: GoogleFonts.inter(
@@ -512,7 +522,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
         ),
       ),
-      padding: EdgeInsets.fromLTRB(16, 8, 16, MediaQuery.of(context).viewInsets.bottom + 12),
+      padding: EdgeInsets.fromLTRB(
+          16, 8, 16, MediaQuery.of(context).viewInsets.bottom + 12),
       child: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -536,7 +547,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 margin: const EdgeInsets.only(right: 10),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.5), width: 1.5),
+                  border: Border.all(
+                      color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
+                      width: 1.5),
                 ),
                 child: const Icon(
                   Icons.add_rounded,
@@ -575,7 +588,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             fontWeight: FontWeight.w500,
                           ),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 10),
                           isDense: true,
                         ),
                         style: GoogleFonts.inter(

@@ -27,7 +27,8 @@ class ProductColorCubit extends Cubit<ProductColorState> {
       final result = await _repository.createColor(color);
       switch (result) {
         case Success(:final data):
-          final updatedList = List<ProductColorEntity>.from(currentState.colors)..insert(0, data);
+          final updatedList = List<ProductColorEntity>.from(currentState.colors)
+            ..insert(0, data);
           emit(ProductColorLoaded(
             colors: updatedList,
             message: 'Đã thêm màu sản phẩm thành công!',
@@ -45,7 +46,8 @@ class ProductColorCubit extends Cubit<ProductColorState> {
       final result = await _repository.updateColor(id, color);
       switch (result) {
         case Success(:final data):
-          final updatedList = currentState.colors.map((c) => c.id == id ? data : c).toList();
+          final updatedList =
+              currentState.colors.map((c) => c.id == id ? data : c).toList();
           emit(ProductColorLoaded(
             colors: updatedList,
             message: 'Đã cập nhật màu sản phẩm thành công!',
@@ -63,7 +65,8 @@ class ProductColorCubit extends Cubit<ProductColorState> {
       final result = await _repository.deleteColor(id);
       switch (result) {
         case Success():
-          final updatedList = currentState.colors.where((c) => c.id != id).toList();
+          final updatedList =
+              currentState.colors.where((c) => c.id != id).toList();
           emit(ProductColorLoaded(
             colors: updatedList,
             message: 'Đã xóa màu sản phẩm thành công!',

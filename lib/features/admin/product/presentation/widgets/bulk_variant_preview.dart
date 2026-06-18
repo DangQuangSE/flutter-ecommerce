@@ -95,7 +95,9 @@ class _PreviewItemCard extends StatelessWidget {
           const SizedBox(width: AppSizes.paddingSm),
           Expanded(child: _VariantInfo(colorName: color.name, sku: item.sku)),
           _PriceDisplay(
-              originalPrice: item.originalPrice, salePrice: item.salePrice),
+            originalPrice: item.originalPrice,
+            salePrice: item.salePrice,
+          ),
           _CardAction(
               icon: Icons.edit_outlined,
               color: AppColors.primary,
@@ -161,8 +163,7 @@ class _VariantInfo extends StatelessWidget {
                   fontSize: AppSizes.fontLg, fontWeight: FontWeight.w500)),
           Text(sku,
               style: const TextStyle(
-                  fontSize: AppSizes.fontSm,
-                  color: AppColors.textSecondary)),
+                  fontSize: AppSizes.fontSm, color: AppColors.textSecondary)),
         ],
       );
 }
@@ -179,28 +180,40 @@ class _PriceDisplay extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) {
+    if (salePrice != null) {
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (salePrice != null) ...[
-            Text(_fmt(salePrice!),
-                style: const TextStyle(
-                    fontSize: AppSizes.fontMd,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary)),
-            Text(_fmt(originalPrice),
-                style: const TextStyle(
-                    fontSize: AppSizes.fontSm,
-                    color: AppColors.textHint,
-                    decoration: TextDecoration.lineThrough)),
-          ] else
-            Text(_fmt(originalPrice),
-                style: const TextStyle(
-                    fontSize: AppSizes.fontMd,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.primary)),
+          Text(
+            _fmt(originalPrice),
+            style: const TextStyle(
+              fontSize: AppSizes.fontSm,
+              color: AppColors.textSecondary,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          Text(
+            _fmt(salePrice!),
+            style: const TextStyle(
+              fontSize: AppSizes.fontMd,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primary,
+            ),
+          ),
         ],
       );
+    }
+    return Text(
+      _fmt(originalPrice),
+      style: const TextStyle(
+        fontSize: AppSizes.fontMd,
+        fontWeight: FontWeight.w500,
+        color: AppColors.primary,
+      ),
+    );
+  }
 }
 
 class _CardAction extends StatelessWidget {
@@ -243,17 +256,16 @@ class _BottomActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(
-            AppSizes.paddingMd, AppSizes.paddingSm,
-            AppSizes.paddingMd, AppSizes.paddingMd),
+        padding: const EdgeInsets.fromLTRB(AppSizes.paddingMd,
+            AppSizes.paddingSm, AppSizes.paddingMd, AppSizes.paddingMd),
         decoration: const BoxDecoration(
           color: AppColors.surface,
           border: Border(top: BorderSide(color: AppColors.divider)),
         ),
         child: Row(children: [
           Expanded(
-            child: OutlinedButton(
-                onPressed: onCancel, child: const Text('Hủy')),
+            child:
+                OutlinedButton(onPressed: onCancel, child: const Text('Hủy')),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -265,9 +277,8 @@ class _BottomActions extends StatelessWidget {
                 foregroundColor: AppColors.textOnPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: Text(count > 0
-                  ? 'Xác nhận & Lưu ($count)'
-                  : 'Xác nhận & Lưu'),
+              child: Text(
+                  count > 0 ? 'Xác nhận & Lưu ($count)' : 'Xác nhận & Lưu'),
             ),
           ),
         ]),
