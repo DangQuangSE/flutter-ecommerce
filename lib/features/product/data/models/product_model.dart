@@ -10,6 +10,10 @@ class ProductModel extends ProductEntity {
     required super.imageUrl,
     super.imageUrls = const [],
     required super.categoryId,
+    super.categoryName = '',
+    super.brandName = '',
+    super.originalPrice = 0.0,
+    super.salePrice,
     required super.stockQuantity,
     super.variants,
     super.numericId,
@@ -35,12 +39,21 @@ class ProductModel extends ProductEntity {
           _extractThumbnail(json['images'] as List<dynamic>?),
       imageUrls: _extractAllImageUrls(json['images'] as List<dynamic>?),
       categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
+      categoryName: json['categoryName'] as String? ?? '',
+      brandName: json['brandName'] as String? ?? '',
+      originalPrice: ((json['originalPrice'] ??
+              json['basePrice'] ??
+              json['maxPrice'] ??
+              0.0) as num)
+          .toDouble(),
+      salePrice: (json['salePrice'] as num?)?.toDouble(),
       stockQuantity: (json['totalStock'] ??
           json['stockQuantity'] ??
           json['stock_quantity'] ??
           0) as int,
       variants: rawVariants
-          .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>).toEntity())
+          .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>)
+              .toEntity())
           .toList(),
       numericId: int.tryParse((json['id'] ?? '').toString()),
       averageRating: ((json['averageRating'] ?? 0.0) as num).toDouble(),
@@ -52,7 +65,8 @@ class ProductModel extends ProductEntity {
     if (images == null || images.isEmpty) return [];
     return (List<Map<String, dynamic>>.from(
       images.map((e) => e as Map<String, dynamic>),
-    )..sort((a, b) => ((a['sortOrder'] as int?) ?? 0).compareTo((b['sortOrder'] as int?) ?? 0)));
+    )..sort((a, b) => ((a['sortOrder'] as int?) ?? 0)
+        .compareTo((b['sortOrder'] as int?) ?? 0)));
   }
 
   static String _extractThumbnail(List<dynamic>? images) {

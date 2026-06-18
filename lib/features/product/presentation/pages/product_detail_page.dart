@@ -91,9 +91,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildContent(BuildContext context, ProductEntity product) {
-    final String categoryLabel = product.categoryId == 'cat-training'
-        ? "MEN'S ELITE TRAINING"
-        : "MEN'S ELITE RUNNING";
+    final String categoryLabel = product.categoryName.toUpperCase();
 
     final variants = product.variants ?? [];
     final colorMap = <String, String>{};
@@ -141,6 +139,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ? (matchingVariant.salePrice ?? matchingVariant.originalPrice)
         : product.price;
 
+    final double? originalPriceToDisplay = matchingVariant != null
+        ? (matchingVariant.salePrice != null &&
+                matchingVariant.salePrice! < matchingVariant.originalPrice
+            ? matchingVariant.originalPrice
+            : null)
+        : (product.hasDiscount ? product.originalPrice : null);
+
     final stockToDisplay = matchingVariant != null
         ? matchingVariant.stockQuantity
         : product.stockQuantity;
@@ -165,7 +170,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ? [product.imageUrl]
                             : []),
                   ),
-                  _buildProductInfo(product, categoryLabel, priceToDisplay),
+                  _buildProductInfo(
+                    product,
+                    categoryLabel,
+                    priceToDisplay,
+                    originalPriceToDisplay,
+                  ),
                   _buildDivider(),
                   Padding(
                     padding: const EdgeInsets.all(16),
@@ -348,20 +358,41 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildProductInfo(
-      ProductEntity product, String categoryLabel, double priceToDisplay) {
+    ProductEntity product,
+    String categoryLabel,
+    double priceToDisplay,
+    double? originalPriceToDisplay,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            categoryLabel,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 1.5,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
+                  product.brandName.toUpperCase(),
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+              Text(
+                categoryLabel,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 6),
           Text(
@@ -378,18 +409,33 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Transform(
-                transform: Matrix4.skewX(-0.12),
-                child: Text(
-                  _formatPrice(priceToDisplay),
-                  style: GoogleFonts.lexend(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
-                    fontStyle: FontStyle.italic,
-                    letterSpacing: -0.5,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (originalPriceToDisplay != null)
+                    Text(
+                      _formatPrice(originalPriceToDisplay),
+                      style: GoogleFonts.lexend(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  Transform(
+                    transform: Matrix4.skewX(-0.12),
+                    child: Text(
+                      _formatPrice(priceToDisplay),
+                      style: GoogleFonts.lexend(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.primary,
+                        fontStyle: FontStyle.italic,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               if (product.reviewCount > 0)
                 Row(

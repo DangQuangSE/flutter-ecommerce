@@ -47,19 +47,18 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
   @override
   Widget build(BuildContext context) {
     // Symmetrical concentric double-bezel card structure
-    final bool isBestSeller = widget.product.id == 'p-001' || widget.product.id == 'p-002';
-    double? originalPrice;
-    int? discountPercent;
+    final bool isBestSeller =
+        widget.product.id == 'p-001' || widget.product.id == 'p-002';
+    final double? originalPrice =
+        widget.product.hasDiscount ? widget.product.originalPrice : null;
+    final int? discountPercent = widget.product.hasDiscount
+        ? (((widget.product.originalPrice - widget.product.price) /
+                    widget.product.originalPrice) *
+                100)
+            .round()
+        : null;
 
-    if (widget.product.id == 'p-001') {
-      originalPrice = 3060000.0;
-      discountPercent = 20;
-    } else if (widget.product.id == 'p-003') {
-      originalPrice = 2300000.0;
-      discountPercent = 15;
-    }
-
-    final String categoryName = widget.product.categoryId == 'cat-training' ? 'Giày tập luyện' : 'Giày chạy bộ';
+    final String categoryName = widget.product.categoryName;
 
     return GestureDetector(
       onTapDown: _onTapDown,
@@ -103,7 +102,8 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                       Image.network(
                         widget.product.imageUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Center(
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
                           child: Icon(
                             Icons.image_not_supported_outlined,
                             size: 28,
@@ -120,7 +120,8 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                           children: [
                             if (isBestSeller)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
                                 margin: const EdgeInsets.only(bottom: 4),
                                 decoration: BoxDecoration(
                                   color: AppColors.accent,
@@ -137,7 +138,8 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                               ),
                             if (widget.badge != null)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
                                 margin: const EdgeInsets.only(bottom: 4),
                                 decoration: BoxDecoration(
                                   color: AppColors.accent,
@@ -154,7 +156,8 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                               )
                             else if (discountPercent != null)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: AppColors.error,
                                   borderRadius: BorderRadius.circular(4),
@@ -183,14 +186,30 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      categoryName.toUpperCase(),
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textSecondary,
-                        letterSpacing: 0.4,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            widget.product.brandName.toUpperCase(),
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textSecondary,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          categoryName.toUpperCase(),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
