@@ -204,6 +204,11 @@ import 'package:flutter_ecommerce/features/address/data/datasources/address_remo
 import 'package:flutter_ecommerce/features/address/data/repositories/address_repository_impl.dart';
 import 'package:flutter_ecommerce/features/address/domain/repositories/address_repository.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+import 'package:flutter_ecommerce/features/location/data/datasources/location_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/location/data/datasources/location_remote_datasource_impl.dart';
+import 'package:flutter_ecommerce/features/location/data/repositories/location_repository_impl.dart';
+import 'package:flutter_ecommerce/features/location/domain/repositories/location_repository.dart';
+import 'package:flutter_ecommerce/features/location/presentation/cubit/location_cubit.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -619,6 +624,17 @@ Future<void> configureDependencies() async {
   );
   sl.registerLazySingleton<AddressCubit>(
     () => AddressCubit(sl<AddressRepository>()),
+  );
+
+  // ── Location ────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<LocationRemoteDataSource>(
+    () => LocationRemoteDataSourceImpl(),
+  );
+  sl.registerLazySingleton<LocationRepository>(
+    () => LocationRepositoryImpl(sl<LocationRemoteDataSource>()),
+  );
+  sl.registerFactory<LocationCubit>(
+    () => LocationCubit(sl<LocationRepository>()),
   );
 
   // ── Admin Product ────────────────────────────────────────────────────────────

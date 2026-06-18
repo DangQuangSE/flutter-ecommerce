@@ -9,6 +9,7 @@ import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.da
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/payment_method_selector.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_address_picker.dart';
 import 'package:flutter_ecommerce/features/checkout/domain/entities/order_request_entity.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_event.dart';
@@ -19,6 +20,9 @@ import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_state.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/enums/discount_type.dart';
+import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
 
 class CheckoutPage extends StatefulWidget {
   final List<int>? cartItemIds;
@@ -35,6 +39,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   late TextEditingController _addressController;
   CheckoutPaymentOption _selectedPayment = CheckoutPaymentOption.cod;
   CouponEntity? _selectedCoupon;
+  AddressEntity? _selectedAddress;
 
   double _calculateDiscount(double subtotal) {
     if (_selectedCoupon == null) return 0;
@@ -61,11 +66,34 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'Alex Mercer');
-    _phoneController = TextEditingController(text: '0987654321');
-    _addressController = TextEditingController(
-      text: '123 Lê Lợi, Quận 1, TP. Hồ Chí Minh, Việt Nam',
-    );
+    _nameController = TextEditingController(text: '');
+    _phoneController = TextEditingController(text: '');
+    _addressController = TextEditingController(text: '');
+  }
+
+  void _onAddressSelected(AddressEntity address) {
+    setState(() {
+      _selectedAddress = address;
+      _nameController.text = address.fullName;
+      _phoneController.text = address.phoneNumber;
+      _addressController.text = address.formattedAddress;
+    });
+  }
+
+  /// Picks the default address (or the first one) so the selection matches
+  /// what [CheckoutAddressPicker] shows by default. Without this, the card
+  /// renders a default address but [_selectedAddress] stays null, blocking
+  /// order submission.
+  void _autoSelectDefaultAddress(List<AddressEntity> addresses) {
+    if (_selectedAddress != null || addresses.isEmpty) return;
+    AddressEntity chosen = addresses.first;
+    for (final a in addresses) {
+      if (a.isDefault) {
+        chosen = a;
+        break;
+      }
+    }
+    _onAddressSelected(chosen);
   }
 
   @override
@@ -100,31 +128,43 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CheckoutBloc, CheckoutState>(
-      listenWhen: (previous, current) =>
-          (current is CheckoutAwaitingPayment &&
-              previous is! CheckoutAwaitingPayment) ||
-          current is CheckoutSuccess ||
-          current is CheckoutFailure,
-      listener: (context, checkoutState) async {
-        if (checkoutState is CheckoutAwaitingPayment) {
-          await _openVnpayWebView(context, checkoutState);
-        } else if (checkoutState is CheckoutSuccess) {
-          await context.read<CartCubit>().loadCart();
-          if (!context.mounted) return;
-          context.goNamed(AppRoutes.checkoutSuccess);
-        } else if (checkoutState is CheckoutFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: AppColors.error,
-              content: Text(
-                checkoutState.message,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-              ),
-            ),
-          );
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AddressCubit, AddressState>(
+          listenWhen: (previous, current) => current is AddressLoaded,
+          listener: (context, addressState) {
+            if (addressState is AddressLoaded) {
+              _autoSelectDefaultAddress(addressState.addresses);
+            }
+          },
+        ),
+        BlocListener<CheckoutBloc, CheckoutState>(
+          listenWhen: (previous, current) =>
+              (current is CheckoutAwaitingPayment &&
+                  previous is! CheckoutAwaitingPayment) ||
+              current is CheckoutSuccess ||
+              current is CheckoutFailure,
+          listener: (context, checkoutState) async {
+            if (checkoutState is CheckoutAwaitingPayment) {
+              await _openVnpayWebView(context, checkoutState);
+            } else if (checkoutState is CheckoutSuccess) {
+              await context.read<CartCubit>().loadCart();
+              if (!context.mounted) return;
+              context.goNamed(AppRoutes.checkoutSuccess);
+            } else if (checkoutState is CheckoutFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: AppColors.error,
+                  content: Text(
+                    checkoutState.message,
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
@@ -349,13 +389,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
       children: [
         Icon(icon, size: 18, color: AppColors.textSecondary),
         const SizedBox(width: 8),
-        Text(
-          title,
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 1.0,
+        Expanded(
+          child: Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+              letterSpacing: 1.0,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -363,25 +406,44 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _buildShippingForm() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CheckoutAddressPicker(
+          selectedAddress: _selectedAddress,
+          onAddressSelected: _onAddressSelected,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+        if (_selectedAddress != null) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F7FF),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.edit_outlined,
+                    size: 14, color: AppColors.primary.withValues(alpha: 0.7)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Bạn có thể chỉnh sửa thông tin giao hàng bên dưới nếu cần.',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                      height: 1.3,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          const SizedBox(height: 16),
           _buildTextField(
             label: 'HỌ VÀ TÊN',
             controller: _nameController,
@@ -394,9 +456,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
             label: 'SỐ ĐIỆN THOẠI',
             controller: _phoneController,
             keyboardType: TextInputType.phone,
-            validator: (value) => value == null || value.trim().isEmpty
-                ? 'Vui lòng nhập số điện thoại'
-                : null,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Vui lòng nhập số điện thoại';
+              }
+              final phone = value.trim().replaceAll(RegExp(r'\s+'), '');
+              if (!RegExp(r'^(0|\+84)[0-9]{9,10}$').hasMatch(phone)) {
+                return 'Số điện thoại không hợp lệ (VD: 0912345678)';
+              }
+              return null;
+            },
           ),
           const SizedBox(height: 16),
           _buildTextField(
@@ -408,7 +477,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 : null,
           ),
         ],
-      ),
+      ],
     );
   }
 
@@ -623,6 +692,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
+              if (_selectedAddress == null) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: AppColors.error,
+                    content: Text(
+                      'Vui lòng chọn địa chỉ giao hàng!',
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                );
+                return;
+              }
               if (_formKey.currentState!.validate()) {
                 final cartItemIds =
                     checkoutItems.map((item) => item.itemId).toList();
