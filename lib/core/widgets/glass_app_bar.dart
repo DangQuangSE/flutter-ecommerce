@@ -103,7 +103,7 @@ class GlassAppBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const NotificationBellIcon(),
-                  
+
                   // Shopping Cart badge stack
                   BlocBuilder<CartCubit, CartState>(
                     builder: (context, cartState) {
@@ -156,12 +156,14 @@ class GlassAppBar extends StatelessWidget {
                   // Chat badge stack
                   BlocBuilder<ChatCubit, ChatState>(
                     builder: (context, chatState) {
-                      final unreadCount = context.read<ChatCubit>().totalUnreadMessages;
+                      final unreadCount =
+                          context.read<ChatCubit>().totalUnreadMessages;
                       return Stack(
                         clipBehavior: Clip.none,
                         children: [
                           IconButton(
-                            onPressed: () => context.pushNamed(AppRoutes.chatList),
+                            onPressed: () =>
+                                context.pushNamed(AppRoutes.chatList),
                             icon: const Icon(
                               Icons.chat_bubble_outline_rounded,
                               color: AppColors.textPrimary,

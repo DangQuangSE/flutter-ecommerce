@@ -61,7 +61,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   List<CreateVariantParams>? _preview;
 
   final _originalPriceCtrl = TextEditingController();
-  final _salePriceCtrl = TextEditingController();
   final _stockCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -82,7 +81,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   @override
   void dispose() {
     _originalPriceCtrl.dispose();
-    _salePriceCtrl.dispose();
     _stockCtrl.dispose();
     super.dispose();
   }
@@ -118,9 +116,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
   void _generatePreview() {
     if (!_formKey.currentState!.validate()) return;
     final price = double.parse(_originalPriceCtrl.text.trim());
-    final salePrice = _salePriceCtrl.text.trim().isEmpty
-        ? null
-        : double.tryParse(_salePriceCtrl.text.trim());
     final stock = int.parse(_stockCtrl.text.trim());
     final group = _groupById(_sizeGroupId);
     final orderedSizes = group != null
@@ -139,7 +134,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
           size: size,
           colorId: colorId,
           originalPrice: price,
-          salePrice: salePrice,
           stockQuantity: stock,
           status: ProductStatus.active,
         ));
@@ -156,23 +150,67 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
     final colorPart = color.isEmpty ? 'CLR' : color;
     final sizePart = size.toUpperCase();
     final prefix = [brand, prod].where((s) => s.isNotEmpty).join('-');
-    return prefix.isEmpty ? '$colorPart-$sizePart' : '$prefix-$colorPart-$sizePart';
+    return prefix.isEmpty
+        ? '$colorPart-$sizePart'
+        : '$prefix-$colorPart-$sizePart';
   }
 
   static String _slugCode(String text, int? maxLen) {
     const vi = {
-      'đ': 'd', 'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a',
-      'ă': 'a', 'ắ': 'a', 'ặ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a',
-      'ấ': 'a', 'ậ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a',
-      'è': 'e', 'é': 'e', 'ê': 'e', 'ế': 'e', 'ệ': 'e',
-      'ề': 'e', 'ể': 'e', 'ễ': 'e',
-      'ì': 'i', 'í': 'i', 'ị': 'i',
-      'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ố': 'o',
-      'ộ': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o',
-      'ơ': 'o', 'ớ': 'o', 'ợ': 'o', 'ờ': 'o', 'ở': 'o', 'ỡ': 'o',
-      'ù': 'u', 'ú': 'u', 'ụ': 'u', 'ừ': 'u', 'ứ': 'u',
-      'ư': 'u', 'ự': 'u', 'ử': 'u', 'ữ': 'u',
-      'ỳ': 'y', 'ý': 'y', 'ỵ': 'y',
+      'đ': 'd',
+      'à': 'a',
+      'á': 'a',
+      'â': 'a',
+      'ã': 'a',
+      'ă': 'a',
+      'ắ': 'a',
+      'ặ': 'a',
+      'ằ': 'a',
+      'ẳ': 'a',
+      'ẵ': 'a',
+      'ấ': 'a',
+      'ậ': 'a',
+      'ầ': 'a',
+      'ẩ': 'a',
+      'ẫ': 'a',
+      'è': 'e',
+      'é': 'e',
+      'ê': 'e',
+      'ế': 'e',
+      'ệ': 'e',
+      'ề': 'e',
+      'ể': 'e',
+      'ễ': 'e',
+      'ì': 'i',
+      'í': 'i',
+      'ị': 'i',
+      'ò': 'o',
+      'ó': 'o',
+      'ô': 'o',
+      'õ': 'o',
+      'ố': 'o',
+      'ộ': 'o',
+      'ồ': 'o',
+      'ổ': 'o',
+      'ỗ': 'o',
+      'ơ': 'o',
+      'ớ': 'o',
+      'ợ': 'o',
+      'ờ': 'o',
+      'ở': 'o',
+      'ỡ': 'o',
+      'ù': 'u',
+      'ú': 'u',
+      'ụ': 'u',
+      'ừ': 'u',
+      'ứ': 'u',
+      'ư': 'u',
+      'ự': 'u',
+      'ử': 'u',
+      'ữ': 'u',
+      'ỳ': 'y',
+      'ý': 'y',
+      'ỵ': 'y',
     };
     final ascii = text
         .toLowerCase()
@@ -198,7 +236,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
       title: 'Chỉnh sửa biến thể',
       initialSku: item.sku,
       initialPrice: item.originalPrice,
-      initialSalePrice: item.salePrice,
       initialStock: item.stockQuantity,
       initialStatus: item.status,
       showStatus: false,
@@ -211,7 +248,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
           size: item.size,
           colorId: item.colorId,
           originalPrice: result.originalPrice,
-          salePrice: result.salePrice,
           stockQuantity: result.stockQuantity,
           status: item.status,
         );
@@ -272,7 +308,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
               const SizedBox(height: AppSizes.paddingMd),
               _DefaultValuesSection(
                 originalPriceCtrl: _originalPriceCtrl,
-                salePriceCtrl: _salePriceCtrl,
                 stockCtrl: _stockCtrl,
               ),
               const SizedBox(height: 12),
@@ -330,7 +365,8 @@ class _SheetHeader extends StatelessWidget {
                   style: TextStyle(
                       fontSize: AppSizes.fontXl, fontWeight: FontWeight.w700)),
             ),
-            IconButton(onPressed: onClose, icon: const Icon(Icons.close_rounded)),
+            IconButton(
+                onPressed: onClose, icon: const Icon(Icons.close_rounded)),
           ],
         ),
       );

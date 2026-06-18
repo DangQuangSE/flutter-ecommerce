@@ -65,7 +65,8 @@ class SizeGroupCubit extends Cubit<SizeGroupState> {
     final result = await _updateUseCase(id, entity);
     switch (result) {
       case Success(:final data):
-        final updated = _currentGroups().map((g) => g.id == id ? data : g).toList();
+        final updated =
+            _currentGroups().map((g) => g.id == id ? data : g).toList();
         emit(SizeGroupSuccess(
           groups: updated,
           message: 'Đã cập nhật nhóm kích thước thành công!',

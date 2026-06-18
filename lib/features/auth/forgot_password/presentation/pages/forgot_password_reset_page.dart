@@ -215,7 +215,9 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
             ),
             suffixIcon: IconButton(
               icon: Icon(
-                obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                obscure
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
               ),
               onPressed: onToggle,
             ),

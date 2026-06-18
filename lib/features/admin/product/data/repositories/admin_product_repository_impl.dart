@@ -131,7 +131,6 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
         size: params.size,
         colorId: params.colorId,
         originalPrice: params.originalPrice,
-        salePrice: params.salePrice,
         stockQuantity: params.stockQuantity,
         status: params.status.toJson(),
       );
@@ -152,7 +151,6 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
                 size: p.size,
                 colorId: p.colorId,
                 originalPrice: p.originalPrice,
-                salePrice: p.salePrice,
                 stockQuantity: p.stockQuantity,
                 status: p.status.toJson(),
               ))
@@ -173,7 +171,6 @@ class AdminProductRepositoryImpl implements AdminProductRepository {
         size: params.size,
         colorId: params.colorId,
         originalPrice: params.originalPrice,
-        salePrice: params.salePrice,
         stockQuantity: params.stockQuantity,
         status: params.status.toJson(),
       );

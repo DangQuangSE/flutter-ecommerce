@@ -151,8 +151,9 @@ class _CouponFormPageState extends State<CouponFormPage> {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(
-          content: Text(
-              widget.isEditing ? 'Đã cập nhật mã giảm giá' : 'Đã tạo mã giảm giá'),
+          content: Text(widget.isEditing
+              ? 'Đã cập nhật mã giảm giá'
+              : 'Đã tạo mã giảm giá'),
           backgroundColor: AppColors.success,
         ));
       Navigator.of(context).pop();
@@ -271,8 +272,8 @@ class _CouponFormPageState extends State<CouponFormPage> {
                   value: null,
                   child: Text('Không yêu cầu'),
                 ),
-                ...UserTier.values.map((t) =>
-                    DropdownMenuItem<UserTier?>(value: t, child: Text(t.label))),
+                ...UserTier.values.map((t) => DropdownMenuItem<UserTier?>(
+                    value: t, child: Text(t.label))),
               ],
               onChanged: (value) => setState(() => _requiredTier = value),
             ),
@@ -444,7 +445,8 @@ class _CouponFormPageState extends State<CouponFormPage> {
         ),
         subtitle: Text(
           subtitle,
-          style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+          style:
+              GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
         ),
       ),
     );

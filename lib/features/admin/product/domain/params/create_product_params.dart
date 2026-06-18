@@ -11,6 +11,7 @@ class CreateProductParams extends Equatable {
   final bool isFeatured;
   final ProductStatus status;
   final int? sizeGroupId;
+  final int? couponId;
 
   const CreateProductParams({
     required this.name,
@@ -21,9 +22,19 @@ class CreateProductParams extends Equatable {
     required this.isFeatured,
     required this.status,
     this.sizeGroupId,
+    this.couponId,
   });
 
   @override
-  List<Object?> get props =>
-      [name, description, categoryId, brandId, gender, isFeatured, status, sizeGroupId];
+  List<Object?> get props => [
+        name,
+        description,
+        categoryId,
+        brandId,
+        gender,
+        isFeatured,
+        status,
+        sizeGroupId,
+        couponId,
+      ];
 }

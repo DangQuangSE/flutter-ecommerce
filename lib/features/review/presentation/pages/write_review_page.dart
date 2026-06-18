@@ -96,7 +96,8 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(AppStrings.writeReviewTitle,
-            style: GoogleFonts.lexend(fontWeight: FontWeight.w800, fontSize: 16)),
+            style:
+                GoogleFonts.lexend(fontWeight: FontWeight.w800, fontSize: 16)),
       ),
       body: BlocConsumer<WriteReviewCubit, WriteReviewState>(
         listener: (context, state) {
@@ -140,7 +141,10 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
   Widget _buildProductName() {
     return Text(
       widget.args.productName,
-      style: GoogleFonts.lexend(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+      style: GoogleFonts.lexend(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary),
     );
   }
 
@@ -150,10 +154,13 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
         Text(
           AppStrings.writeReviewRatingLabel,
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
+          style:
+              GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 8),
-        StarRatingSelector(rating: _rating, onChanged: (value) => setState(() => _rating = value)),
+        StarRatingSelector(
+            rating: _rating,
+            onChanged: (value) => setState(() => _rating = value)),
       ],
     );
   }
@@ -164,7 +171,10 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
       children: [
         Text(
           AppStrings.writeReviewCommentLabel,
-          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -206,11 +216,13 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           ? const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              child: CircularProgressIndicator(
+                  strokeWidth: 2, color: Colors.white),
             )
           : Text(
               AppStrings.writeReviewSubmit,
-              style: GoogleFonts.lexend(fontSize: 14, fontWeight: FontWeight.w800),
+              style:
+                  GoogleFonts.lexend(fontSize: 14, fontWeight: FontWeight.w800),
             ),
     );
   }

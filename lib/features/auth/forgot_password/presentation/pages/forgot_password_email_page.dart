@@ -70,7 +70,8 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
             },
             builder: (context, state) {
               final isLoading = state is ForgotPasswordLoading;
-              final apiError = state is ForgotPasswordError ? state.message : null;
+              final apiError =
+                  state is ForgotPasswordError ? state.message : null;
 
               return Form(
                 key: _formKey,

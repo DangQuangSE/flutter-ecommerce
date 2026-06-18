@@ -19,7 +19,8 @@ class AdminSizeGroupListPage extends StatelessWidget {
     }
   }
 
-  Future<void> _navigateToEdit(BuildContext context, SizeGroupEntity group) async {
+  Future<void> _navigateToEdit(
+      BuildContext context, SizeGroupEntity group) async {
     await context.pushNamed(
       AppRoutes.adminSizeGroupEdit,
       pathParameters: {'id': group.id.toString()},
@@ -99,7 +100,8 @@ class AdminSizeGroupListPage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.straighten_rounded, size: 48, color: AppColors.textHint),
+          const Icon(Icons.straighten_rounded,
+              size: 48, color: AppColors.textHint),
           const SizedBox(height: 12),
           Text(
             'Chưa có nhóm kích thước nào',

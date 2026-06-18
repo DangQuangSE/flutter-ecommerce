@@ -18,7 +18,13 @@ const Map<String, Color> productColorMap = {
 };
 
 const List<String> productApparelSizeOrder = [
-  'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL',
+  'XS',
+  'S',
+  'M',
+  'L',
+  'XL',
+  'XXL',
+  '3XL',
 ];
 
 Color productColorFromName(String name) {

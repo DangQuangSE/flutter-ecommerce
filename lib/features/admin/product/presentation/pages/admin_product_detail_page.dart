@@ -46,8 +46,7 @@ class AdminProductDetailPage extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.edit_outlined),
-              onPressed: () =>
-                  context.push('/admin/products/$productId/edit'),
+              onPressed: () => context.push('/admin/products/$productId/edit'),
             ),
           ],
         ),
@@ -136,7 +135,6 @@ class _VariantsSection extends StatelessWidget {
       context,
       title: 'Sửa: ${variant.sku}',
       initialPrice: variant.originalPrice,
-      initialSalePrice: variant.salePrice,
       initialStock: variant.stockQuantity,
       initialStatus: variant.status,
     );
@@ -148,7 +146,6 @@ class _VariantsSection extends StatelessWidget {
           size: variant.size,
           colorId: variant.colorId,
           originalPrice: result.originalPrice,
-          salePrice: result.salePrice,
           stockQuantity: result.stockQuantity,
           status: result.status,
         ),
@@ -239,27 +236,30 @@ class _VariantsSection extends StatelessWidget {
               }
               final variantCubit = context.read<AdminProductVariantCubit>();
               return Column(
-                children: state.variants.map((v) => ListTile(
-                      title: Text('${v.size} — ${v.colorName}'),
-                      subtitle: Text(
-                          'SKU: ${v.sku} • Tồn: ${v.stockQuantity} • ${v.originalPrice.toStringAsFixed(0)}đ'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit_outlined,
-                                color: AppColors.primary),
-                            onPressed: () =>
-                                _onEditVariant(context, variantCubit, v),
+                children: state.variants
+                    .map((v) => ListTile(
+                          title: Text('${v.size} — ${v.colorName}'),
+                          subtitle: Text(
+                              'SKU: ${v.sku} • Tồn: ${v.stockQuantity} • ${v.originalPrice.toStringAsFixed(0)}đ'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined,
+                                    color: AppColors.primary),
+                                onPressed: () =>
+                                    _onEditVariant(context, variantCubit, v),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline,
+                                    color: AppColors.error),
+                                onPressed: () =>
+                                    variantCubit.deleteVariant(v.id),
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline,
-                                color: AppColors.error),
-                            onPressed: () => variantCubit.deleteVariant(v.id),
-                          ),
-                        ],
-                      ),
-                    )).toList(),
+                        ))
+                    .toList(),
               );
             }
             return const SizedBox.shrink();
@@ -361,8 +361,8 @@ class _ImagesSection extends StatelessWidget {
                         const Positioned(
                           bottom: 0,
                           left: 0,
-                          child: Icon(Icons.star,
-                              color: Colors.amber, size: 18),
+                          child:
+                              Icon(Icons.star, color: Colors.amber, size: 18),
                         ),
                     ],
                   );

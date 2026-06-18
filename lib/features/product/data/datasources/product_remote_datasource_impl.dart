@@ -31,7 +31,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           .toList();
     } on DioException catch (e) {
       throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi kết nối mạng',
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi kết nối mạng',
         statusCode: e.response?.statusCode,
       );
     }
@@ -46,7 +48,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       return ProductModel.fromJson(dataMap);
     } on DioException catch (e) {
       throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi kết nối mạng',
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi kết nối mạng',
         statusCode: e.response?.statusCode,
       );
     }
@@ -93,7 +97,11 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     String sort = 'id,desc',
   }) async {
     try {
-      final params = <String, dynamic>{'page': page, 'size': size, 'sort': sort};
+      final params = <String, dynamic>{
+        'page': page,
+        'size': size,
+        'sort': sort
+      };
       if (keyword != null && keyword.isNotEmpty) params['keyword'] = keyword;
       if (categoryId != null) params['categoryId'] = categoryId;
       if (brandId != null) params['brandId'] = brandId;
@@ -114,7 +122,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       );
     } on DioException catch (e) {
       throw NetworkException(
-        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi kết nối mạng',
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi kết nối mạng',
         statusCode: e.response?.statusCode,
       );
     }

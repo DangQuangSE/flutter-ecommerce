@@ -42,7 +42,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
         actions: [
           IconButton(
             onPressed: () => _openBrandFormSheet(context),
-            icon: const Icon(Icons.add_rounded, color: AppColors.primary, size: 28),
+            icon: const Icon(Icons.add_rounded,
+                color: AppColors.primary, size: 28),
           ),
           const SizedBox(width: 8),
         ],
@@ -80,8 +81,10 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                   },
                   decoration: InputDecoration(
                     hintText: 'Tìm kiếm thương hiệu...',
-                    hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textHint),
-                    prefixIcon: const Icon(Icons.search_rounded, size: 20, color: AppColors.textSecondary),
+                    hintStyle: GoogleFonts.inter(
+                        fontSize: 14, color: AppColors.textHint),
+                    prefixIcon: const Icon(Icons.search_rounded,
+                        size: 20, color: AppColors.textSecondary),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.close_rounded, size: 16),
@@ -100,12 +103,13 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.2),
+                      borderSide: const BorderSide(
+                          color: AppColors.primary, width: 1.2),
                     ),
                   ),
                 ),
               ),
-              
+
               // Brands Content
               Expanded(
                 child: _buildBody(state),
@@ -133,7 +137,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.branding_watermark_outlined, size: 64, color: Colors.grey.shade300),
+              Icon(Icons.branding_watermark_outlined,
+                  size: 64, color: Colors.grey.shade300),
               const SizedBox(height: 16),
               Text(
                 'Không tìm thấy thương hiệu nào',
@@ -203,13 +208,14 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                         ? Image.network(
                             brand.logoUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _buildFallbackAvatar(brand.name),
+                            errorBuilder: (_, __, ___) =>
+                                _buildFallbackAvatar(brand.name),
                           )
                         : _buildFallbackAvatar(brand.name),
                   ),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Name & Country
                 Expanded(
                   child: Column(
@@ -226,10 +232,13 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          Icon(Icons.public_rounded, size: 12, color: Colors.grey.shade400),
+                          Icon(Icons.public_rounded,
+                              size: 12, color: Colors.grey.shade400),
                           const SizedBox(width: 4),
                           Text(
-                            brand.country.isNotEmpty ? brand.country : 'Chưa có thông tin quốc gia',
+                            brand.country.isNotEmpty
+                                ? brand.country
+                                : 'Chưa có thông tin quốc gia',
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               color: AppColors.textSecondary,
@@ -241,20 +250,22 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                     ],
                   ),
                 ),
-                
+
                 // Status Switch
                 Switch.adaptive(
                   value: brand.isActive,
                   activeColor: AppColors.primary,
                   onChanged: (val) {
                     if (brand.id != null) {
-                      context.read<BrandCubit>().toggleBrandStatus(brand.id!, val);
+                      context
+                          .read<BrandCubit>()
+                          .toggleBrandStatus(brand.id!, val);
                     }
                   },
                 ),
               ],
             ),
-            
+
             // Description
             if (brand.description.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -269,11 +280,11 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 12),
             const Divider(height: 1),
             const SizedBox(height: 12),
-            
+
             // Website URL & Action Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -282,7 +293,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                   child: brand.websiteUrl.isNotEmpty
                       ? Row(
                           children: [
-                            const Icon(Icons.link_rounded, size: 14, color: AppColors.primary),
+                            const Icon(Icons.link_rounded,
+                                size: 14, color: AppColors.primary),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
@@ -306,8 +318,10 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                     IconButton(
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      onPressed: () => _openBrandFormSheet(context, brand: brand),
-                      icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                      onPressed: () =>
+                          _openBrandFormSheet(context, brand: brand),
+                      icon: const Icon(Icons.edit_outlined,
+                          color: Colors.blue, size: 20),
                     ),
                     const SizedBox(width: 16),
                     // Delete
@@ -315,7 +329,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () => _confirmDeleteBrand(context, brand),
-                      icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 20),
+                      icon: const Icon(Icons.delete_outline_rounded,
+                          color: AppColors.error, size: 20),
                     ),
                   ],
                 ),
@@ -344,7 +359,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
   void _openBrandFormSheet(BuildContext context, {BrandEntity? brand}) {
     final bool isEdit = brand != null;
     final nameController = TextEditingController(text: brand?.name ?? '');
-    final descController = TextEditingController(text: brand?.description ?? '');
+    final descController =
+        TextEditingController(text: brand?.description ?? '');
     final logoController = TextEditingController(text: brand?.logoUrl ?? '');
     final countryController = TextEditingController(text: brand?.country ?? '');
     final webController = TextEditingController(text: brand?.websiteUrl ?? '');
@@ -379,7 +395,9 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          isEdit ? 'Chỉnh sửa thương hiệu' : 'Thêm thương hiệu mới',
+                          isEdit
+                              ? 'Chỉnh sửa thương hiệu'
+                              : 'Thêm thương hiệu mới',
                           style: GoogleFonts.lexend(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
@@ -402,7 +420,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                       decoration: const InputDecoration(
                         hintText: 'Nhập tên thương hiệu (ví dụ: Nike)',
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -414,7 +433,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                       decoration: const InputDecoration(
                         hintText: 'Ví dụ: USA, Vietnam',
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -426,7 +446,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                       decoration: const InputDecoration(
                         hintText: 'Ví dụ: https://www.nike.com',
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -438,7 +459,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                       decoration: const InputDecoration(
                         hintText: 'Nhập URL hình ảnh logo',
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -481,7 +503,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                         if (name.length < 2 || name.length > 100) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Tên thương hiệu phải từ 2 đến 100 ký tự!'),
+                              content: Text(
+                                  'Tên thương hiệu phải từ 2 đến 100 ký tự!'),
                               backgroundColor: AppColors.error,
                             ),
                           );
@@ -500,7 +523,9 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                         );
 
                         if (isEdit) {
-                          context.read<BrandCubit>().updateBrand(brand.id!, brandEntity);
+                          context
+                              .read<BrandCubit>()
+                              .updateBrand(brand.id!, brandEntity);
                         } else {
                           context.read<BrandCubit>().createBrand(brandEntity);
                         }
@@ -566,7 +591,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
             onPressed: () => Navigator.pop(diagContext),
             child: Text(
               'HỦY',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+              style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600, color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -579,7 +605,8 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
             child: Text(
               'XÓA',

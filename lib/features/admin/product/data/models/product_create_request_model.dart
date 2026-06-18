@@ -7,6 +7,7 @@ class ProductCreateRequestModel {
   final bool isFeatured;
   final String status;
   final int? sizeGroupId;
+  final int? couponId;
 
   const ProductCreateRequestModel({
     required this.name,
@@ -17,6 +18,7 @@ class ProductCreateRequestModel {
     required this.isFeatured,
     required this.status,
     this.sizeGroupId,
+    this.couponId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -28,5 +30,6 @@ class ProductCreateRequestModel {
         'isFeatured': isFeatured,
         'status': status,
         if (sizeGroupId != null) 'sizeGroupId': sizeGroupId,
+        if (couponId != null) 'couponId': couponId,
       };
 }

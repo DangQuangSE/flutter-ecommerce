@@ -84,7 +84,8 @@ abstract final class AppStrings {
 
   // Write review
   static const String writeReviewTitle = 'Đánh giá sản phẩm';
-  static const String writeReviewRatingLabel = 'Bạn đánh giá sản phẩm này bao nhiêu sao?';
+  static const String writeReviewRatingLabel =
+      'Bạn đánh giá sản phẩm này bao nhiêu sao?';
   static const String writeReviewCommentLabel = 'Nhận xét của bạn';
   static const String writeReviewCommentHint =
       'Chia sẻ cảm nhận của bạn về sản phẩm...';
@@ -93,5 +94,6 @@ abstract final class AppStrings {
   static const String writeReviewRatingRequired = 'Vui lòng chọn số sao';
   static const String writeReviewCommentRequired = 'Vui lòng nhập nhận xét';
   static const String writeReviewSubmitSuccess = 'Đã gửi đánh giá. Cảm ơn bạn!';
-  static String writeReviewMaxImages(int max) => 'Chỉ được chọn tối đa $max ảnh';
+  static String writeReviewMaxImages(int max) =>
+      'Chỉ được chọn tối đa $max ảnh';
 }

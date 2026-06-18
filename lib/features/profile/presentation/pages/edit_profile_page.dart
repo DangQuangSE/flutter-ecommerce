@@ -53,25 +53,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _buildLabel('HỌ VÀ TÊN'),
               const SizedBox(height: 6),
               _buildTextField('Họ và tên', _nameController, null, (value) {
-                if (value == null || value.trim().isEmpty) return 'Vui lòng nhập họ và tên';
+                if (value == null || value.trim().isEmpty)
+                  return 'Vui lòng nhập họ và tên';
                 return null;
               }),
               const SizedBox(height: 20),
               _buildLabel('SỐ ĐIỆN THOẠI'),
               const SizedBox(height: 6),
-              _buildTextField('Số điện thoại', _phoneController, TextInputType.phone, (value) {
-                if (value == null || value.trim().isEmpty) return 'Vui lòng nhập số điện thoại';
+              _buildTextField(
+                  'Số điện thoại', _phoneController, TextInputType.phone,
+                  (value) {
+                if (value == null || value.trim().isEmpty)
+                  return 'Vui lòng nhập số điện thoại';
                 return null;
               }),
               const SizedBox(height: 20),
               _buildLabel('EMAIL'),
               const SizedBox(height: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF3F3F8),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   'alex.mercer@sportpro.com',
@@ -93,11 +99,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         behavior: SnackBarBehavior.floating,
                         content: Row(
                           children: [
-                            const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                            const Icon(Icons.check_circle_outline_rounded,
+                                color: Colors.white),
                             const SizedBox(width: 10),
                             Text(
                               'Đã lưu thay đổi!',
-                              style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12),
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600, fontSize: 12),
                             ),
                           ],
                         ),
@@ -151,7 +159,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             context.goNamed(AppRoutes.profile);
           }
         },
-        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary, size: 24),
+        icon: const Icon(Icons.arrow_back_rounded,
+            color: AppColors.textPrimary, size: 24),
       ),
       title: Align(
         alignment: Alignment.centerLeft,
@@ -242,7 +251,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Container(
                 color: const Color(0xFFF3F3F8),
-                child: const Icon(Icons.person_rounded, size: 40, color: AppColors.textSecondary),
+                child: const Icon(Icons.person_rounded,
+                    size: 40, color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -257,7 +267,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.white, width: 2),
               ),
-              child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+              child: const Icon(Icons.camera_alt_rounded,
+                  size: 16, color: Colors.white),
             ),
           ),
         ],
@@ -296,7 +307,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         isDense: true,
         filled: true,
         fillColor: const Color(0xFFF3F3F8),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,

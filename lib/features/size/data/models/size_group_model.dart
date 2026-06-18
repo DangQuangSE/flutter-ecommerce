@@ -24,9 +24,8 @@ class SizeGroupModel extends SizeGroupEntity {
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
-        'sizes': sizes
-            .map((s) => SizeOptionModel.fromEntity(s).toJson())
-            .toList(),
+        'sizes':
+            sizes.map((s) => SizeOptionModel.fromEntity(s).toJson()).toList(),
       };
 
   factory SizeGroupModel.fromEntity(SizeGroupEntity entity) {
@@ -34,9 +33,7 @@ class SizeGroupModel extends SizeGroupEntity {
       id: entity.id,
       name: entity.name,
       description: entity.description,
-      sizes: entity.sizes
-          .map(SizeOptionModel.fromEntity)
-          .toList(),
+      sizes: entity.sizes.map(SizeOptionModel.fromEntity).toList(),
     );
   }
 }

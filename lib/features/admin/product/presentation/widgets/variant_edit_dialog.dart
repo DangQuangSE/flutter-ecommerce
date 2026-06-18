@@ -6,14 +6,12 @@ import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_st
 class VariantEditResult {
   final String? sku;
   final double originalPrice;
-  final double? salePrice;
   final int stockQuantity;
   final ProductStatus status;
 
   const VariantEditResult({
     this.sku,
     required this.originalPrice,
-    this.salePrice,
     required this.stockQuantity,
     required this.status,
   });
@@ -27,7 +25,6 @@ Future<VariantEditResult?> showVariantEditDialog(
   required String title,
   String? initialSku,
   required double initialPrice,
-  double? initialSalePrice,
   required int initialStock,
   required ProductStatus initialStatus,
   bool showStatus = true,
@@ -38,7 +35,6 @@ Future<VariantEditResult?> showVariantEditDialog(
       title: title,
       initialSku: initialSku,
       initialPrice: initialPrice,
-      initialSalePrice: initialSalePrice,
       initialStock: initialStock,
       initialStatus: initialStatus,
       showStatus: showStatus,
@@ -50,7 +46,6 @@ class _VariantEditDialogContent extends StatefulWidget {
   final String title;
   final String? initialSku;
   final double initialPrice;
-  final double? initialSalePrice;
   final int initialStock;
   final ProductStatus initialStatus;
   final bool showStatus;
@@ -59,7 +54,6 @@ class _VariantEditDialogContent extends StatefulWidget {
     required this.title,
     this.initialSku,
     required this.initialPrice,
-    this.initialSalePrice,
     required this.initialStock,
     required this.initialStatus,
     required this.showStatus,
@@ -70,11 +64,9 @@ class _VariantEditDialogContent extends StatefulWidget {
       _VariantEditDialogContentState();
 }
 
-class _VariantEditDialogContentState
-    extends State<_VariantEditDialogContent> {
+class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
   TextEditingController? _skuCtrl;
   late final TextEditingController _priceCtrl;
-  late final TextEditingController _saleCtrl;
   late final TextEditingController _stockCtrl;
   late ProductStatus _status;
   final _formKey = GlobalKey<FormState>();
@@ -87,10 +79,7 @@ class _VariantEditDialogContentState
     }
     _priceCtrl =
         TextEditingController(text: widget.initialPrice.toStringAsFixed(0));
-    _saleCtrl = TextEditingController(
-        text: widget.initialSalePrice?.toStringAsFixed(0) ?? '');
-    _stockCtrl =
-        TextEditingController(text: widget.initialStock.toString());
+    _stockCtrl = TextEditingController(text: widget.initialStock.toString());
     _status = widget.initialStatus;
   }
 
@@ -98,7 +87,6 @@ class _VariantEditDialogContentState
   void dispose() {
     _skuCtrl?.dispose();
     _priceCtrl.dispose();
-    _saleCtrl.dispose();
     _stockCtrl.dispose();
     super.dispose();
   }
@@ -110,9 +98,6 @@ class _VariantEditDialogContentState
       VariantEditResult(
         sku: _skuCtrl?.text.trim(),
         originalPrice: double.parse(_priceCtrl.text.trim()),
-        salePrice: _saleCtrl.text.trim().isEmpty
-            ? null
-            : double.tryParse(_saleCtrl.text.trim()),
         stockQuantity: int.parse(_stockCtrl.text.trim()),
         status: _status,
       ),
@@ -122,8 +107,8 @@ class _VariantEditDialogContentState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title,
-          style: const TextStyle(fontSize: AppSizes.fontXl)),
+      title:
+          Text(widget.title, style: const TextStyle(fontSize: AppSizes.fontXl)),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -137,13 +122,9 @@ class _VariantEditDialogContentState
               _PriceField(
                   controller: _priceCtrl, label: 'Giá gốc *', required: true),
               const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
-              _PriceField(
-                  controller: _saleCtrl, label: 'Giá bán', required: false),
-              const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
               _StockField(controller: _stockCtrl),
               if (widget.showStatus) ...[
-                const SizedBox(
-                    height: AppSizes.paddingSm + AppSizes.paddingXs),
+                const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
                 _StatusDropdown(
                   value: _status,
                   onChanged: (s) => setState(() => _status = s),
@@ -155,8 +136,7 @@ class _VariantEditDialogContentState
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy')),
+            onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
         ElevatedButton(
           onPressed: _submit,
           style: ElevatedButton.styleFrom(
@@ -180,8 +160,7 @@ class _SkuField extends StatelessWidget {
         controller: controller,
         decoration: const InputDecoration(
             labelText: 'SKU *', border: OutlineInputBorder(), isDense: true),
-        validator: (v) =>
-            (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
+        validator: (v) => (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
       );
 }
 
@@ -254,8 +233,8 @@ class _StatusDropdown extends StatelessWidget {
             .where((s) => s != ProductStatus.deleted)
             .map((s) => DropdownMenuItem(
                   value: s,
-                  child: Text(
-                      s == ProductStatus.active ? 'Đang bán' : 'Tạm ẩn'),
+                  child:
+                      Text(s == ProductStatus.active ? 'Đang bán' : 'Tạm ẩn'),
                 ))
             .toList(),
         onChanged: (s) {

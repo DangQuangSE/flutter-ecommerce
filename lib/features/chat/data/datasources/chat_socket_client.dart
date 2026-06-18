@@ -45,7 +45,8 @@ class ChatSocketClient {
         webSocketConnectHeaders: headers,
         reconnectDelay: const Duration(seconds: 5),
         onWebSocketError: (dynamic e) => debugPrint('Chat WS error: $e'),
-        onStompError: (StompFrame f) => debugPrint('Chat STOMP error: ${f.body}'),
+        onStompError: (StompFrame f) =>
+            debugPrint('Chat STOMP error: ${f.body}'),
       ),
     );
     _client!.activate();

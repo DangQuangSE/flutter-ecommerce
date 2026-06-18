@@ -6,7 +6,6 @@ class CreateVariantParams extends Equatable {
   final String size;
   final int colorId;
   final double originalPrice;
-  final double? salePrice;
   final int stockQuantity;
   final ProductStatus status;
 
@@ -15,12 +14,11 @@ class CreateVariantParams extends Equatable {
     required this.size,
     required this.colorId,
     required this.originalPrice,
-    this.salePrice,
     required this.stockQuantity,
     required this.status,
   });
 
   @override
   List<Object?> get props =>
-      [sku, size, colorId, originalPrice, salePrice, stockQuantity, status];
+      [sku, size, colorId, originalPrice, stockQuantity, status];
 }

@@ -26,9 +26,15 @@ class AdminProductFormPage extends StatelessWidget {
             listener: (context, state) {
               if (state is AdminProductDetailSuccess) {
                 // All three are synchronous — they populate in the same listener callback.
-                context.read<AdminProductFormCubit>().loadForEdit(state.product);
-                context.read<AdminProductVariantCubit>().loadFromDetail(state.product.variants);
-                context.read<AdminProductImageCubit>().loadFromDetail(state.product.images);
+                context
+                    .read<AdminProductFormCubit>()
+                    .loadForEdit(state.product);
+                context
+                    .read<AdminProductVariantCubit>()
+                    .loadFromDetail(state.product.variants);
+                context
+                    .read<AdminProductImageCubit>()
+                    .loadFromDetail(state.product.images);
               } else if (state is AdminProductDetailFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(state.message),
@@ -42,7 +48,9 @@ class AdminProductFormPage extends StatelessWidget {
           listenWhen: (prev, curr) =>
               prev.isSuccess != curr.isSuccess ||
               prev.errorMessage != curr.errorMessage ||
-              (_isEdit && prev.currentStep != curr.currentStep && curr.currentStep == 1),
+              (_isEdit &&
+                  prev.currentStep != curr.currentStep &&
+                  curr.currentStep == 1),
           listener: (context, state) {
             if (state.isSuccess && state.currentStep == 2) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -95,7 +103,8 @@ class AdminProductFormPage extends StatelessWidget {
             child: Scaffold(
               backgroundColor: AppColors.background,
               appBar: AppBar(
-                title: Text(_isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'),
+                title:
+                    Text(_isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'),
                 backgroundColor: Colors.white,
                 foregroundColor: AppColors.textPrimary,
                 elevation: 0,
@@ -117,7 +126,8 @@ class AdminProductFormPage extends StatelessWidget {
   Widget _buildBody(BuildContext context, AdminProductFormState state,
       AdminProductFormCubit cubit) {
     if (state.dropdownStatus == DropdownStatus.loading ||
-        (state.isLoadingDetail && state.dropdownStatus != DropdownStatus.error)) {
+        (state.isLoadingDetail &&
+            state.dropdownStatus != DropdownStatus.error)) {
       return const Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -131,7 +141,8 @@ class AdminProductFormPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off_rounded, size: 48, color: AppColors.textSecondary),
+              const Icon(Icons.cloud_off_rounded,
+                  size: 48, color: AppColors.textSecondary),
               const SizedBox(height: 12),
               Text(
                 state.dropdownErrorMessage ?? 'Không thể tải danh sách.',

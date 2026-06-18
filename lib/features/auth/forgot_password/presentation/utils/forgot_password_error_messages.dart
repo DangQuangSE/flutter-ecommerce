@@ -36,7 +36,5 @@ String mapForgotPasswordRequestFailure(Failure failure) {
     return forgotPasswordOtpRateLimitMessage;
   }
   final message = failure.message.trim();
-  return message.isEmpty
-      ? 'Không thể gửi mã OTP. Vui lòng thử lại.'
-      : message;
+  return message.isEmpty ? 'Không thể gửi mã OTP. Vui lòng thử lại.' : message;
 }

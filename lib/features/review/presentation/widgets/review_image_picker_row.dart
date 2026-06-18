@@ -26,7 +26,8 @@ class ReviewImagePickerRow extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          ...List.generate(imagePaths.length, (index) => _buildThumbnail(index)),
+          ...List.generate(
+              imagePaths.length, (index) => _buildThumbnail(index)),
           if (imagePaths.length < maxImages) _buildAddButton(),
         ],
       ),
@@ -58,7 +59,8 @@ class ReviewImagePickerRow extends StatelessWidget {
                   color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.close_rounded, color: Colors.white, size: 14),
+                child: const Icon(Icons.close_rounded,
+                    color: Colors.white, size: 14),
               ),
             ),
           ),
@@ -81,11 +83,13 @@ class ReviewImagePickerRow extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add_a_photo_outlined, color: AppColors.textSecondary, size: 22),
+            const Icon(Icons.add_a_photo_outlined,
+                color: AppColors.textSecondary, size: 22),
             const SizedBox(height: 4),
             Text(
               AppStrings.writeReviewAddImage,
-              style: GoogleFonts.inter(fontSize: 10, color: AppColors.textSecondary),
+              style: GoogleFonts.inter(
+                  fontSize: 10, color: AppColors.textSecondary),
             ),
           ],
         ),

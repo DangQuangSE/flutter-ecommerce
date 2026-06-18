@@ -113,7 +113,8 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         ),
         if (imagePaths.isNotEmpty)
           'images': await Future.wait(imagePaths.map(
-            (path) => MultipartFile.fromFile(path, filename: path.split('/').last),
+            (path) =>
+                MultipartFile.fromFile(path, filename: path.split('/').last),
           )),
       });
 

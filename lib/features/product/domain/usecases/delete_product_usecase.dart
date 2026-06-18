@@ -5,6 +5,5 @@ class DeleteProductUseCase {
   final ProductRepository _repository;
   const DeleteProductUseCase(this._repository);
 
-  Future<Result<bool>> call(String id) =>
-      _repository.deleteProduct(id);
+  Future<Result<bool>> call(String id) => _repository.deleteProduct(id);
 }

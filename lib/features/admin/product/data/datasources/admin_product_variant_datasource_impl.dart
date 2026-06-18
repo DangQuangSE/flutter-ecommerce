@@ -6,7 +6,8 @@ import 'package:flutter_ecommerce/features/admin/product/data/datasources/admin_
 import 'package:flutter_ecommerce/features/admin/product/data/models/product_variant_model.dart';
 import 'package:flutter_ecommerce/features/admin/product/data/models/product_variant_request_model.dart';
 
-class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource {
+class AdminProductVariantDatasourceImpl
+    implements AdminProductVariantDatasource {
   final DioClient _dioClient;
 
   AdminProductVariantDatasourceImpl(this._dioClient);
@@ -25,7 +26,8 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
         data: request.toJson(),
       );
       final responseMap = response.data as Map<String, dynamic>;
-      return ProductVariantModel.fromJson(responseMap['data'] as Map<String, dynamic>);
+      return ProductVariantModel.fromJson(
+          responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       _throwNetworkException(e);
     }
@@ -59,7 +61,8 @@ class AdminProductVariantDatasourceImpl implements AdminProductVariantDatasource
         data: request.toJson(),
       );
       final responseMap = response.data as Map<String, dynamic>;
-      return ProductVariantModel.fromJson(responseMap['data'] as Map<String, dynamic>);
+      return ProductVariantModel.fromJson(
+          responseMap['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       _throwNetworkException(e);
     }

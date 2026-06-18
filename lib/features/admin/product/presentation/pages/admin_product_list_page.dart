@@ -41,12 +41,11 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
         title: const Text('Xác nhận xóa'),
         content: Text('Xóa sản phẩm "$name"?'),
         actions: [
-          TextButton(
-              onPressed: () => ctx.pop(false), child: const Text('Hủy')),
+          TextButton(onPressed: () => ctx.pop(false), child: const Text('Hủy')),
           TextButton(
               onPressed: () => ctx.pop(true),
-              child: const Text('Xóa',
-                  style: TextStyle(color: AppColors.error))),
+              child:
+                  const Text('Xóa', style: TextStyle(color: AppColors.error))),
         ],
       ),
     );
@@ -77,7 +76,9 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
         listener: (context, state) {
           if (state is AdminProductListFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: AppColors.error),
+              SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.error),
             );
           }
         },
@@ -113,7 +114,8 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
               },
               child: ListView.separated(
                 controller: _scrollController,
-                itemCount: state.products.length + (state.isLoadingMore ? 1 : 0),
+                itemCount:
+                    state.products.length + (state.isLoadingMore ? 1 : 0),
                 separatorBuilder: (_, __) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   if (index >= state.products.length) {
@@ -152,8 +154,7 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
                         IconButton(
                           icon: const Icon(Icons.edit_outlined),
                           onPressed: () async {
-                            final bloc =
-                                context.read<AdminProductListBloc>();
+                            final bloc = context.read<AdminProductListBloc>();
                             await context
                                 .push('/admin/products/${product.id}/edit');
                             if (context.mounted) {

@@ -77,7 +77,11 @@ class CartCubit extends Cubit<CartState> {
       );
       if (candidates.isNotEmpty) oldItemId = candidates.first.itemId;
     }
-    await addItem(variantId: variantId, quantity: quantity, isReplace: true, customDesignId: customDesignId);
+    await addItem(
+        variantId: variantId,
+        quantity: quantity,
+        isReplace: true,
+        customDesignId: customDesignId);
     if (oldItemId != null) await removeItem(oldItemId);
   }
 
@@ -107,7 +111,6 @@ class CartCubit extends Cubit<CartState> {
         emit(CartError(failure.message));
     }
   }
-
 
   Future<void> removeDesignFromItem({
     required int itemId,

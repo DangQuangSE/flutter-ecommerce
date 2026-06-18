@@ -24,7 +24,8 @@ class SizeGroupRepositoryImpl implements SizeGroupRepository {
   }
 
   @override
-  Future<Result<SizeGroupEntity>> createSizeGroup(SizeGroupEntity entity) async {
+  Future<Result<SizeGroupEntity>> createSizeGroup(
+      SizeGroupEntity entity) async {
     try {
       final model = SizeGroupModel.fromEntity(entity);
       final result = await _datasource.createSizeGroup(model);
@@ -37,7 +38,8 @@ class SizeGroupRepositoryImpl implements SizeGroupRepository {
   }
 
   @override
-  Future<Result<SizeGroupEntity>> updateSizeGroup(int id, SizeGroupEntity entity) async {
+  Future<Result<SizeGroupEntity>> updateSizeGroup(
+      int id, SizeGroupEntity entity) async {
     try {
       final model = SizeGroupModel.fromEntity(entity);
       final result = await _datasource.updateSizeGroup(id, model);

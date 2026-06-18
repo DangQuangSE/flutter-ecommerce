@@ -81,7 +81,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<void>> requestRegistrationOtp({required String email}) async {
-    return _voidResult(() => _remoteDataSource.requestRegistrationOtp(email: email));
+    return _voidResult(
+        () => _remoteDataSource.requestRegistrationOtp(email: email));
   }
 
   @override

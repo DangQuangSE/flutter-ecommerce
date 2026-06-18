@@ -142,16 +142,27 @@ class ProductCatalogBloc
     // Build next filter state
     final nextState = current != null
         ? current.copyWith(
-            keyword: event.clearAll || event.clearKeyword ? null : event.keyword,
-            categoryId: event.clearAll || event.clearCategoryId ? null : event.categoryId,
-            categoryName: event.clearAll || event.clearCategoryId ? null : event.categoryName,
-            brandId: event.clearAll || event.clearBrandId ? null : event.brandId,
-            brandName: event.clearAll || event.clearBrandId ? null : event.brandName,
+            keyword:
+                event.clearAll || event.clearKeyword ? null : event.keyword,
+            categoryId: event.clearAll || event.clearCategoryId
+                ? null
+                : event.categoryId,
+            categoryName: event.clearAll || event.clearCategoryId
+                ? null
+                : event.categoryName,
+            brandId:
+                event.clearAll || event.clearBrandId ? null : event.brandId,
+            brandName:
+                event.clearAll || event.clearBrandId ? null : event.brandName,
             gender: event.clearAll || event.clearGender ? null : event.gender,
-            productSize: event.clearAll || event.clearProductSize ? null : event.productSize,
+            productSize: event.clearAll || event.clearProductSize
+                ? null
+                : event.productSize,
             color: event.clearAll || event.clearColor ? null : event.color,
-            minPrice: event.clearAll || event.clearMinPrice ? null : event.minPrice,
-            maxPrice: event.clearAll || event.clearMaxPrice ? null : event.maxPrice,
+            minPrice:
+                event.clearAll || event.clearMinPrice ? null : event.minPrice,
+            maxPrice:
+                event.clearAll || event.clearMaxPrice ? null : event.maxPrice,
             sort: event.sort,
             clearKeyword: event.clearAll || event.clearKeyword,
             clearCategoryId: event.clearAll || event.clearCategoryId,

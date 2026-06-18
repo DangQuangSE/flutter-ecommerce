@@ -24,6 +24,8 @@ class AdminProductFormState extends Equatable {
   final int? createdProductId;
   final int? sizeGroupId;
   final String? dropdownErrorMessage;
+  final List<CouponEntity> coupons;
+  final int? couponId;
 
   const AdminProductFormState({
     this.name = '',
@@ -46,6 +48,8 @@ class AdminProductFormState extends Equatable {
     this.createdProductId,
     this.sizeGroupId,
     this.dropdownErrorMessage,
+    this.coupons = const [],
+    this.couponId,
   });
 
   AdminProductFormState copyWith({
@@ -73,6 +77,9 @@ class AdminProductFormState extends Equatable {
     bool clearSizeGroupId = false,
     String? dropdownErrorMessage,
     bool clearDropdownError = false,
+    List<CouponEntity>? coupons,
+    int? couponId,
+    bool clearCouponId = false,
   }) {
     return AdminProductFormState(
       name: name ?? this.name,
@@ -92,9 +99,15 @@ class AdminProductFormState extends Equatable {
       categories: categories ?? this.categories,
       brands: brands ?? this.brands,
       sizeGroups: sizeGroups ?? this.sizeGroups,
-      createdProductId: clearCreatedProductId ? null : createdProductId ?? this.createdProductId,
+      createdProductId: clearCreatedProductId
+          ? null
+          : createdProductId ?? this.createdProductId,
       sizeGroupId: clearSizeGroupId ? null : sizeGroupId ?? this.sizeGroupId,
-      dropdownErrorMessage: clearDropdownError ? null : dropdownErrorMessage ?? this.dropdownErrorMessage,
+      dropdownErrorMessage: clearDropdownError
+          ? null
+          : dropdownErrorMessage ?? this.dropdownErrorMessage,
+      coupons: coupons ?? this.coupons,
+      couponId: clearCouponId ? null : couponId ?? this.couponId,
     );
   }
 
@@ -122,5 +135,7 @@ class AdminProductFormState extends Equatable {
         createdProductId,
         sizeGroupId,
         dropdownErrorMessage,
+        coupons,
+        couponId,
       ];
 }

@@ -29,7 +29,8 @@ class ChatCubit extends Cubit<ChatState> {
         _repository = repository,
         super(const ChatInitial()) {
     // Listen to real-time inbound messages (WebSocket) app-wide.
-    _botReplySubscription = _repository.botReplyStream.listen(_onIncomingMessage);
+    _botReplySubscription =
+        _repository.botReplyStream.listen(_onIncomingMessage);
   }
 
   int get totalUnreadMessages {
@@ -53,7 +54,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> loadChatRoom(String chatId) async {
     emit(const ChatLoading());
-    
+
     // First, find the chat room metadata
     if (_cachedChats.isEmpty) {
       final chatsResult = await _getChatsUseCase();
@@ -61,13 +62,14 @@ class ChatCubit extends Cubit<ChatState> {
         _cachedChats = List<ChatEntity>.from(chatsResult.data);
       }
     }
-    
+
     final chat = _cachedChats.firstWhere(
       (c) => c.id == chatId,
       orElse: () => ChatEntity(
         id: chatId,
         senderName: 'Hỗ trợ khách hàng',
-        senderAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs',
+        senderAvatar:
+            'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs',
         lastMessage: '',
         lastMessageTime: '',
         unreadCount: 0,
@@ -103,7 +105,8 @@ class ChatCubit extends Cubit<ChatState> {
         isMe: true,
       );
 
-      final updatedMessages = List<MessageEntity>.from(currentState.messages)..add(tempUserMsg);
+      final updatedMessages = List<MessageEntity>.from(currentState.messages)
+        ..add(tempUserMsg);
       emit(ChatRoomLoaded(chat: currentState.chat, messages: updatedMessages));
 
       // Call domain layer UseCase
@@ -112,13 +115,14 @@ class ChatCubit extends Cubit<ChatState> {
         case Success(:final data):
           // Replace temp message with actual saved message
           final finalMessages = List<MessageEntity>.from(currentState.messages);
-          final index = finalMessages.indexWhere((m) => m.id.startsWith('msg-user-temp-'));
+          final index = finalMessages
+              .indexWhere((m) => m.id.startsWith('msg-user-temp-'));
           if (index != -1) {
             finalMessages[index] = data;
           } else {
             finalMessages.add(data);
           }
-          
+
           // Update last message in the cached thread
           final threadIndex = _cachedChats.indexWhere((c) => c.id == chatId);
           if (threadIndex != -1) {
@@ -129,11 +133,13 @@ class ChatCubit extends Cubit<ChatState> {
             );
           }
 
-          emit(ChatRoomLoaded(chat: currentState.chat.copyWith(
-            lastMessage: content,
-            lastMessageTime: data.timestamp,
-          ), messages: finalMessages));
-          
+          emit(ChatRoomLoaded(
+              chat: currentState.chat.copyWith(
+                lastMessage: content,
+                lastMessageTime: data.timestamp,
+              ),
+              messages: finalMessages));
+
         case ResultFailure(:final failure):
           // If sending fails, we can either re-emit the error state or show a message
           emit(ChatError(failure.message));
@@ -148,8 +154,8 @@ class ChatCubit extends Cubit<ChatState> {
     if (conversationId == null) return;
 
     final currentState = state;
-    final isViewingRoom =
-        currentState is ChatRoomLoaded && currentState.chat.id == conversationId;
+    final isViewingRoom = currentState is ChatRoomLoaded &&
+        currentState.chat.id == conversationId;
 
     // 1. Update the cached inbox entry (last message + unread badge).
     final threadIndex = _cachedChats.indexWhere((c) => c.id == conversationId);
@@ -164,8 +170,8 @@ class ChatCubit extends Cubit<ChatState> {
 
     // 2. Reflect the change in the current view.
     if (isViewingRoom) {
-      final updatedMessages =
-          List<MessageEntity>.from(currentState.messages)..add(message);
+      final updatedMessages = List<MessageEntity>.from(currentState.messages)
+        ..add(message);
       emit(ChatRoomLoaded(
         chat: currentState.chat.copyWith(
           lastMessage: message.content,

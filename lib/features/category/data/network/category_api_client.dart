@@ -21,9 +21,14 @@ class CategoryApiClient {
     dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
-        receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        connectTimeout:
+            const Duration(milliseconds: AppConstants.connectTimeoutMs),
+        receiveTimeout:
+            const Duration(milliseconds: AppConstants.receiveTimeoutMs),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
       ),
     );
 

@@ -44,8 +44,9 @@ class AdminProductListBloc
     AdminProductListRefreshed event,
     Emitter<AdminProductListState> emit,
   ) async {
-    final current =
-        state is AdminProductListSuccess ? state as AdminProductListSuccess : null;
+    final current = state is AdminProductListSuccess
+        ? state as AdminProductListSuccess
+        : null;
     final result = await _getProducts(
       page: 0,
       keyword: current?.keyword,

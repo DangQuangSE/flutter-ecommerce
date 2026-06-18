@@ -99,84 +99,85 @@ class _CheckoutPageState extends State<CheckoutPage> {
         }
       },
       child: Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 1,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-            height: 1,
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          scrolledUnderElevation: 1,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(
+              color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+              height: 1,
+            ),
           ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoutes.cart);
-            }
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-            size: 20,
+          leading: IconButton(
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.goNamed(AppRoutes.cart);
+              }
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: AppColors.textPrimary,
+              size: 20,
+            ),
           ),
-        ),
-        title: Text(
-          'THANH TOÁN',
-          style: GoogleFonts.lexend(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-            letterSpacing: -0.5,
+          title: Text(
+            'THANH TOÁN',
+            style: GoogleFonts.lexend(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.5,
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: BlocBuilder<CheckoutBloc, CheckoutState>(
-        builder: (context, checkoutState) {
-          final isCheckoutBusy = checkoutState is CheckoutLoading ||
-              checkoutState is CheckoutVerifying;
+        body: BlocBuilder<CheckoutBloc, CheckoutState>(
+          builder: (context, checkoutState) {
+            final isCheckoutBusy = checkoutState is CheckoutLoading ||
+                checkoutState is CheckoutVerifying;
 
-          return Stack(
-            children: [
-              BlocBuilder<CartCubit, CartState>(
-        builder: (context, state) {
-          if (state is CartLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            );
-          } else if (state is CartLoaded) {
-            if (state.items.isEmpty) {
-              return _buildEmptyState();
-            }
-            return _buildCheckoutContent(context, state);
-          } else if (state is CartError) {
-            return _buildErrorState(state.message);
-          }
-          return const SizedBox.shrink();
-        },
-      ),
-              if (isCheckoutBusy)
-                const ColoredBox(
-                  color: Color(0x66FFFFFF),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.primary),
+            return Stack(
+              children: [
+                BlocBuilder<CartCubit, CartState>(
+                  builder: (context, state) {
+                    if (state is CartLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.primary),
+                        ),
+                      );
+                    } else if (state is CartLoaded) {
+                      if (state.items.isEmpty) {
+                        return _buildEmptyState();
+                      }
+                      return _buildCheckoutContent(context, state);
+                    } else if (state is CartError) {
+                      return _buildErrorState(state.message);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+                if (isCheckoutBusy)
+                  const ColoredBox(
+                    color: Color(0x66FFFFFF),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      ),
                     ),
                   ),
-                ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
-    ),
     );
   }
 
@@ -258,7 +259,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Widget _buildCheckoutContent(BuildContext context, CartLoaded state) {
     final checkoutItems = widget.cartItemIds != null
-        ? state.items.where((e) => widget.cartItemIds!.contains(e.itemId)).toList()
+        ? state.items
+            .where((e) => widget.cartItemIds!.contains(e.itemId))
+            .toList()
         : state.items;
 
     return Form(
@@ -273,13 +276,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Shipping Section
-                  _buildSectionHeader('THÔNG TIN GIAO HÀNG', Icons.local_shipping_outlined),
+                  _buildSectionHeader(
+                      'THÔNG TIN GIAO HÀNG', Icons.local_shipping_outlined),
                   const SizedBox(height: 12),
                   _buildShippingForm(),
                   const SizedBox(height: 28),
 
                   // Payment Section
-                  _buildSectionHeader('PHƯƠNG THỨC THANH TOÁN', Icons.payments_outlined),
+                  _buildSectionHeader(
+                      'PHƯƠNG THỨC THANH TOÁN', Icons.payments_outlined),
                   const SizedBox(height: 12),
                   PaymentMethodSelector(
                     selected: _selectedPayment,
@@ -343,24 +348,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
           _buildTextField(
             label: 'HỌ VÀ TÊN',
             controller: _nameController,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập họ và tên' : null,
+            validator: (value) => value == null || value.trim().isEmpty
+                ? 'Vui lòng nhập họ và tên'
+                : null,
           ),
           const SizedBox(height: 16),
           _buildTextField(
             label: 'SỐ ĐIỆN THOẠI',
             controller: _phoneController,
             keyboardType: TextInputType.phone,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập số điện thoại' : null,
+            validator: (value) => value == null || value.trim().isEmpty
+                ? 'Vui lòng nhập số điện thoại'
+                : null,
           ),
           const SizedBox(height: 16),
           _buildTextField(
             label: 'ĐỊA CHỈ GIAO HÀNG',
             controller: _addressController,
             maxLines: 2,
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Vui lòng nhập địa chỉ giao hàng' : null,
+            validator: (value) => value == null || value.trim().isEmpty
+                ? 'Vui lòng nhập địa chỉ giao hàng'
+                : null,
           ),
         ],
       ),
@@ -401,14 +409,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
             isDense: true,
             filled: true,
             fillColor: const Color(0xFFF3F3F8),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide:
+                  const BorderSide(color: AppColors.primary, width: 1.5),
             ),
             errorStyle: GoogleFonts.inter(fontSize: 11, color: AppColors.error),
           ),
@@ -418,8 +428,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _buildOrderSummary(List<CartItemEntity> checkoutItems) {
-    final checkoutTotalItems = checkoutItems.fold(0, (sum, e) => sum + e.quantity);
-    final checkoutTotalPrice = checkoutItems.fold(0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
+    final checkoutTotalItems =
+        checkoutItems.fold(0, (sum, e) => sum + e.quantity);
+    final checkoutTotalPrice = checkoutItems.fold(
+        0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -521,7 +533,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildStickyFooter(BuildContext context, List<CartItemEntity> checkoutItems) {
+  Widget _buildStickyFooter(
+      BuildContext context, List<CartItemEntity> checkoutItems) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -610,7 +623,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 48, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               'Không thể tải thông tin thanh toán.',

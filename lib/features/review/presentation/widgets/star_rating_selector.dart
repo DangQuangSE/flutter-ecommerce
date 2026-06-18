@@ -20,7 +20,9 @@ class StarRatingSelector extends StatelessWidget {
         return IconButton(
           onPressed: () => onChanged(starValue),
           icon: Icon(
-            starValue <= rating ? Icons.star_rounded : Icons.star_outline_rounded,
+            starValue <= rating
+                ? Icons.star_rounded
+                : Icons.star_outline_rounded,
             color: AppColors.accent,
             size: 36,
           ),

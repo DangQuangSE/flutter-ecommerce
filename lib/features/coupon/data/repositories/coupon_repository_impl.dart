@@ -19,7 +19,8 @@ class CouponRepositoryImpl implements CouponRepository {
 
   @override
   Future<Result<CouponEntity>> create(CouponEntity coupon) {
-    return _guard(() => _remoteDataSource.create(CouponModel.fromEntity(coupon)));
+    return _guard(
+        () => _remoteDataSource.create(CouponModel.fromEntity(coupon)));
   }
 
   @override

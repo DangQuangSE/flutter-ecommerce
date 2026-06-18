@@ -140,8 +140,7 @@ class _ColorTile extends StatelessWidget {
             border: Border.all(
                 color: selected ? AppColors.primary : AppColors.divider),
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-            color:
-                selected ? AppColors.primary.withValues(alpha: 0.06) : null,
+            color: selected ? AppColors.primary.withValues(alpha: 0.06) : null,
           ),
           child: Row(
             children: [
@@ -166,8 +165,7 @@ class _ColorTile extends StatelessWidget {
                   color.name,
                   style: TextStyle(
                     fontSize: AppSizes.fontLg,
-                    color:
-                        selected ? AppColors.primary : AppColors.textPrimary,
+                    color: selected ? AppColors.primary : AppColors.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -180,12 +178,10 @@ class _ColorTile extends StatelessWidget {
 
 class _DefaultValuesSection extends StatelessWidget {
   final TextEditingController originalPriceCtrl;
-  final TextEditingController salePriceCtrl;
   final TextEditingController stockCtrl;
 
   const _DefaultValuesSection({
     required this.originalPriceCtrl,
-    required this.salePriceCtrl,
     required this.stockCtrl,
   });
 
@@ -201,10 +197,6 @@ class _DefaultValuesSection extends StatelessWidget {
                     ctrl: originalPriceCtrl,
                     label: 'Giá gốc *',
                     required: true)),
-            const SizedBox(width: AppSizes.paddingSm),
-            Expanded(
-                child: _DefaultPriceField(
-                    ctrl: salePriceCtrl, label: 'Giá bán', required: false)),
             const SizedBox(width: AppSizes.paddingSm),
             Expanded(child: _DefaultStockField(ctrl: stockCtrl)),
           ]),

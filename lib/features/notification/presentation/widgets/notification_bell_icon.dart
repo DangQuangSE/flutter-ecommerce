@@ -14,7 +14,8 @@ class NotificationBellIcon extends StatefulWidget {
   State<NotificationBellIcon> createState() => _NotificationBellIconState();
 }
 
-class _NotificationBellIconState extends State<NotificationBellIcon> with SingleTickerProviderStateMixin {
+class _NotificationBellIconState extends State<NotificationBellIcon>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pingScale;
   late Animation<double> _pingOpacity;

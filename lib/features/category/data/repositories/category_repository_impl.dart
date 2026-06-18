@@ -21,8 +21,8 @@ class CategoryRepositoryImpl implements CategoryRepository {
     int size = 20,
     String? search,
   }) {
-    return _guard(() =>
-        _remoteDataSource.getCategories(page: page, size: size, search: search));
+    return _guard(() => _remoteDataSource.getCategories(
+        page: page, size: size, search: search));
   }
 
   @override

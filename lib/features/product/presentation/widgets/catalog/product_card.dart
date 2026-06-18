@@ -36,7 +36,8 @@ class ProductCard extends StatelessWidget {
           children: [
             // Image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
               child: AspectRatio(
                 aspectRatio: 4 / 5,
                 child: Stack(
@@ -45,7 +46,8 @@ class ProductCard extends StatelessWidget {
                     CachedNetworkImage(
                       imageUrl: product.imageUrl ?? '',
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(color: AppColors.background),
+                      placeholder: (_, __) =>
+                          Container(color: AppColors.background),
                       errorWidget: (_, __, ___) => Container(
                         color: AppColors.background,
                         child: const Icon(Icons.image_not_supported_outlined,
@@ -150,9 +152,11 @@ class _StarRating extends StatelessWidget {
         if (i < rating.floor()) {
           return const Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
         } else if (i < rating && rating - i >= 0.5) {
-          return const Icon(Icons.star_half, size: 12, color: Color(0xFFFFC107));
+          return const Icon(Icons.star_half,
+              size: 12, color: Color(0xFFFFC107));
         }
-        return const Icon(Icons.star_border, size: 12, color: Color(0xFFFFC107));
+        return const Icon(Icons.star_border,
+            size: 12, color: Color(0xFFFFC107));
       }),
     );
   }

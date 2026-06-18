@@ -13,6 +13,9 @@ import 'package:flutter_ecommerce/features/brand/domain/entities/brand_entity.da
 import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_tree_node.dart';
 import 'package:flutter_ecommerce/features/category/domain/repositories/category_repository.dart';
+import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
+import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_page.dart';
+import 'package:flutter_ecommerce/features/coupon/domain/repositories/coupon_repository.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/domain/usecases/get_size_groups_usecase.dart';
 
@@ -25,6 +28,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
   final CategoryRepository _categoryRepository;
   final BrandRepository _brandRepository;
   final GetSizeGroupsUseCase _getSizeGroupsUseCase;
+  final CouponRepository _couponRepository;
 
   AdminProductFormCubit(
     this._createProduct,
@@ -33,6 +37,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
     this._categoryRepository,
     this._brandRepository,
     this._getSizeGroupsUseCase,
+    this._couponRepository,
   ) : super(const AdminProductFormState());
 
   void nameChanged(String v) => emit(state.copyWith(name: v, clearError: true));
@@ -42,10 +47,12 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
   void genderChanged(Gender g) => emit(state.copyWith(gender: g));
   void statusChanged(ProductStatus s) => emit(state.copyWith(status: s));
   void featuredToggled() => emit(state.copyWith(isFeatured: !state.isFeatured));
-  void sizeGroupChanged(int? id) => emit(state.copyWith(sizeGroupId: id, clearSizeGroupId: id == null));
+  void sizeGroupChanged(int? id) =>
+      emit(state.copyWith(sizeGroupId: id, clearSizeGroupId: id == null));
+  void couponChanged(int? id) =>
+      emit(state.copyWith(couponId: id, clearCouponId: id == null));
 
-  void beginEditMode() =>
-      emit(state.copyWith(isLoadingDetail: true));
+  void beginEditMode() => emit(state.copyWith(isLoadingDetail: true));
 
   void goBack() {
     if (state.currentStep > 0) {
@@ -66,18 +73,22 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
       final catFuture = _categoryRepository.getTree();
       final brandFuture = _brandRepository.getBrands(size: 100);
       final sizeGroupFuture = _getSizeGroupsUseCase();
+      final couponFuture = _couponRepository.getCoupons(size: 100);
       final catResult = await catFuture;
       final brandResult = await brandFuture;
       final sizeGroupResult = await sizeGroupFuture;
+      final couponResult = await couponFuture;
 
       if (catResult is Success<List<CategoryTreeNode>> &&
           brandResult is Success<List<BrandEntity>> &&
-          sizeGroupResult is Success<List<SizeGroupEntity>>) {
+          sizeGroupResult is Success<List<SizeGroupEntity>> &&
+          couponResult is Success<CouponPage>) {
         emit(state.copyWith(
           dropdownStatus: DropdownStatus.loaded,
           categories: catResult.data,
           brands: brandResult.data.where((b) => b.id != null).toList(),
           sizeGroups: sizeGroupResult.data,
+          coupons: couponResult.data.items,
         ));
       } else {
         String? msg;
@@ -87,10 +98,13 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
           msg = failure.message;
         } else if (sizeGroupResult case ResultFailure(:final failure)) {
           msg = failure.message;
+        } else if (couponResult case ResultFailure(:final failure)) {
+          msg = failure.message;
         }
         emit(state.copyWith(
           dropdownStatus: DropdownStatus.error,
-          dropdownErrorMessage: msg ?? 'Không thể tải danh sách. Vui lòng thử lại.',
+          dropdownErrorMessage:
+              msg ?? 'Không thể tải danh sách. Vui lòng thử lại.',
         ));
       }
     } catch (_) {
@@ -126,6 +140,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
         isFeatured: state.isFeatured,
         status: state.status,
         sizeGroupId: state.sizeGroupId,
+        couponId: state.couponId,
       ));
       switch (result) {
         case Success(:final data):
@@ -152,6 +167,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
           status: state.status,
           isFeatured: state.isFeatured,
           sizeGroupId: state.sizeGroupId,
+          couponId: state.couponId,
         ),
       );
       switch (result) {
@@ -169,7 +185,8 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
     if (id == null) return;
     final result = await _deleteProduct(id);
     if (result case ResultFailure(:final failure)) {
-      emit(state.copyWith(errorMessage: 'Không thể xóa sản phẩm: ${failure.message}'));
+      emit(state.copyWith(
+          errorMessage: 'Không thể xóa sản phẩm: ${failure.message}'));
     }
   }
 
@@ -185,6 +202,8 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
       editingId: entity.id,
       sizeGroupId: entity.sizeGroupId,
       clearSizeGroupId: entity.sizeGroupId == null,
+      couponId: entity.couponId,
+      clearCouponId: entity.couponId == null,
       isLoadingDetail: false,
       clearError: true,
     ));

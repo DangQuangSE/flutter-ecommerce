@@ -95,7 +95,8 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                       const SizedBox(height: 12),
                       Text(state.message,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: AppColors.textSecondary)),
+                          style:
+                              const TextStyle(color: AppColors.textSecondary)),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () => context
@@ -124,7 +125,8 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                   controller: _scrollController,
                   slivers: [
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(16, appBarHeight + 16, 16, 0),
+                      padding:
+                          EdgeInsets.fromLTRB(16, appBarHeight + 16, 16, 0),
                       sliver: SliverToBoxAdapter(
                         child: CatalogToolbar(
                           hasActiveFilter: loaded?.hasActiveFilter ?? false,

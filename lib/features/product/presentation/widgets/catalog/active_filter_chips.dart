@@ -23,8 +23,7 @@ class ActiveFilterChips extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.1)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
       ),
       child: Wrap(
         spacing: 6,
@@ -57,8 +56,7 @@ class ActiveFilterChips extends StatelessWidget {
       chips.add(_Chip(
         label: state.categoryName!,
         onDelete: () => context.read<ProductCatalogBloc>().add(
-              ProductCatalogFilterChanged(
-                  clearCategoryId: true, silent: true),
+              ProductCatalogFilterChanged(clearCategoryId: true, silent: true),
             ),
       ));
     }
@@ -67,8 +65,7 @@ class ActiveFilterChips extends StatelessWidget {
       chips.add(_Chip(
         label: state.brandName!,
         onDelete: () => context.read<ProductCatalogBloc>().add(
-              ProductCatalogFilterChanged(
-                  clearBrandId: true, silent: true),
+              ProductCatalogFilterChanged(clearBrandId: true, silent: true),
             ),
       ));
     }
@@ -92,8 +89,7 @@ class ActiveFilterChips extends StatelessWidget {
       chips.add(_Chip(
         label: state.productSize!,
         onDelete: () => context.read<ProductCatalogBloc>().add(
-              ProductCatalogFilterChanged(
-                  clearProductSize: true, silent: true),
+              ProductCatalogFilterChanged(clearProductSize: true, silent: true),
             ),
       ));
     }
@@ -135,7 +131,8 @@ class ActiveFilterChips extends StatelessWidget {
 
   String _fmtPrice(double p) {
     final n = p.toInt();
-    if (n >= 1000000) return '${(n / 1000000).toStringAsFixed(n % 1000000 == 0 ? 0 : 1)}M';
+    if (n >= 1000000)
+      return '${(n / 1000000).toStringAsFixed(n % 1000000 == 0 ? 0 : 1)}M';
     if (n >= 1000) return '${(n / 1000).toStringAsFixed(0)}K';
     return '${n}đ';
   }
@@ -167,8 +164,8 @@ class _Chip extends StatelessWidget {
           const SizedBox(width: 4),
           GestureDetector(
             onTap: onDelete,
-            child: const Icon(Icons.close, size: 12,
-                color: AppColors.textSecondary),
+            child: const Icon(Icons.close,
+                size: 12, color: AppColors.textSecondary),
           ),
         ],
       ),
