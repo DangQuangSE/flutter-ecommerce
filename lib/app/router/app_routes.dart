@@ -28,6 +28,8 @@ abstract final class AppRoutes {
   static const String writeReview = 'write-review';
 
   static const String profile = 'profile';
+  static const String addressList = 'address-list';
+  static const String addressForm = 'address-form';
   static const String editProfile = 'edit-profile';
 
   static const String chatList = 'chat-list';

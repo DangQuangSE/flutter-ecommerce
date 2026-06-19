@@ -81,6 +81,12 @@ import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cu
 import 'package:flutter_ecommerce/features/size/presentation/pages/admin_size_group_list_page.dart';
 import 'package:flutter_ecommerce/features/size/presentation/pages/admin_size_group_form_page.dart';
 
+// Address
+import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+import 'package:flutter_ecommerce/features/address/presentation/pages/address_list_page.dart';
+import 'package:flutter_ecommerce/features/address/presentation/pages/address_form_page.dart';
+
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
   late final StreamSubscription<dynamic> _subscription;
@@ -432,6 +438,7 @@ class AppRouter {
           providers: [
             BlocProvider(create: (_) => sl<CheckoutBloc>()),
             BlocProvider(create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
+            BlocProvider.value(value: sl<AddressCubit>()..loadAddresses()),
           ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),
@@ -513,6 +520,30 @@ class AppRouter {
           ),
         ],
       ),
+
+      // ── Address Management ──────────────────────────────────────
+      GoRoute(
+        path: '/addresses',
+        name: AppRoutes.addressList,
+        builder: (context, state) => BlocProvider.value(
+          value: sl<AddressCubit>()..loadAddresses(),
+          child: const AddressListPage(),
+        ),
+        routes: [
+          GoRoute(
+            path: 'form',
+            name: AppRoutes.addressForm,
+            builder: (context, state) {
+              final address = state.extra as AddressEntity?;
+              return BlocProvider.value(
+                value: sl<AddressCubit>(),
+                child: AddressFormPage(initialAddress: address),
+              );
+            },
+          ),
+        ],
+      ),
+
       GoRoute(
         path: '/chats',
         name: AppRoutes.chatList,
