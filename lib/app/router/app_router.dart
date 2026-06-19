@@ -43,6 +43,7 @@ import 'package:flutter_ecommerce/features/product/presentation/pages/product_li
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
+import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
@@ -516,12 +517,18 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         name: AppRoutes.profile,
-        builder: (context, state) => const ProfilePage(),
+        builder: (context, state) => BlocProvider.value(
+          value: sl<ProfileCubit>()..loadProfile(),
+          child: const ProfilePage(),
+        ),
         routes: [
           GoRoute(
             path: 'edit',
             name: AppRoutes.editProfile,
-            builder: (context, state) => const EditProfilePage(),
+            builder: (context, state) => BlocProvider.value(
+              value: sl<ProfileCubit>()..loadProfile(),
+              child: const EditProfilePage(),
+            ),
           ),
         ],
       ),
