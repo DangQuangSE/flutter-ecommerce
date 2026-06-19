@@ -28,9 +28,6 @@ class LocationCubit extends Cubit<LocationState> {
           provinces: data,
           selectedProvince: selected,
         ));
-        if (selected != null) {
-          _loadDistricts(selected.code, initialDistrictName: null);
-        }
       case ResultFailure(:final failure):
         emit(LocationError(failure.message));
     }
@@ -70,37 +67,83 @@ class LocationCubit extends Cubit<LocationState> {
 
   Future<void> initializeFromNames(
       String? provinceName, String? districtName, String? wardName) async {
-    await loadProvinces(initialProvinceName: provinceName);
+    // Step 1: load provinces
+    emit(const LocationLoading());
+    final provResult = await _repository.getProvinces();
+    final List<LocationModel> provinces;
+    switch (provResult) {
+      case Success(:final data):
+        provinces = data;
+      case ResultFailure(:final failure):
+        emit(LocationError(failure.message));
+        return;
+    }
 
-    final current = state;
-    if (current is! LocationLoaded || current.selectedProvince == null) return;
-
-    if (districtName != null) {
+    LocationModel? selectedProvince;
+    if (provinceName != null) {
       try {
-        final district = current.districts.firstWhere(
-          (d) => d.name.toLowerCase().trim() ==
-              districtName.toLowerCase().trim(),
+        selectedProvince = provinces.firstWhere(
+          (p) => p.name.toLowerCase().trim() == provinceName.toLowerCase().trim(),
         );
-        emit(current.copyWith(
-          selectedDistrict: () => district,
-          isLoadingWards: true,
-        ));
-        await _loadWards(district.code);
-
-        if (wardName != null) {
-          final updated = this.state;
-          if (updated is LocationLoaded) {
-            try {
-              final ward = updated.wards.firstWhere(
-                (w) => w.name.toLowerCase().trim() ==
-                    wardName.toLowerCase().trim(),
-              );
-              emit(updated.copyWith(selectedWard: () => ward));
-            } catch (_) {}
-          }
-        }
       } catch (_) {}
     }
+    emit(LocationLoaded(provinces: provinces, selectedProvince: selectedProvince));
+    if (selectedProvince == null) return;
+
+    // Step 2: load districts
+    final distResult = await _repository.getDistricts(selectedProvince.code);
+    final List<LocationModel> districts;
+    switch (distResult) {
+      case Success(:final data):
+        districts = data;
+      case ResultFailure():
+        return;
+    }
+
+    LocationModel? selectedDistrict;
+    if (districtName != null) {
+      try {
+        selectedDistrict = districts.firstWhere(
+          (d) => d.name.toLowerCase().trim() == districtName.toLowerCase().trim(),
+        );
+      } catch (_) {}
+    }
+
+    final s1 = state;
+    if (s1 is! LocationLoaded) return;
+    emit(s1.copyWith(
+      districts: districts,
+      selectedDistrict: () => selectedDistrict,
+      isLoadingDistricts: false,
+    ));
+    if (selectedDistrict == null) return;
+
+    // Step 3: load wards
+    final wardResult = await _repository.getWards(selectedDistrict.code);
+    final List<LocationModel> wards;
+    switch (wardResult) {
+      case Success(:final data):
+        wards = data;
+      case ResultFailure():
+        return;
+    }
+
+    LocationModel? selectedWard;
+    if (wardName != null) {
+      try {
+        selectedWard = wards.firstWhere(
+          (w) => w.name.toLowerCase().trim() == wardName.toLowerCase().trim(),
+        );
+      } catch (_) {}
+    }
+
+    final s2 = state;
+    if (s2 is! LocationLoaded) return;
+    emit(s2.copyWith(
+      wards: wards,
+      selectedWard: () => selectedWard,
+      isLoadingWards: false,
+    ));
   }
 
   Future<void> _loadDistricts(int provinceCode,
