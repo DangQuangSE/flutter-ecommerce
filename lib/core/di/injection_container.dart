@@ -180,7 +180,16 @@ import 'package:flutter_ecommerce/features/cart/domain/repositories/cart_reposit
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 
 // Profile
+import 'package:flutter_ecommerce/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:flutter_ecommerce/features/profile/domain/repositories/profile_repository.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
+
+// Shop
+import 'package:flutter_ecommerce/features/shop/data/datasources/shop_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/shop/data/repositories/shop_repository_impl.dart';
+import 'package:flutter_ecommerce/features/shop/domain/repositories/shop_repository.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
 
 // Notification
 import 'package:flutter_ecommerce/features/notification/data/repositories/notification_repository_impl.dart';
@@ -530,7 +539,27 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<CartCubit>(() => CartCubit(sl<CartRepository>()));
 
   // ── Profile ─────────────────────────────────────────────────────────────────
-  sl.registerLazySingleton<ProfileCubit>(() => ProfileCubit());
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(sl<ProfileRemoteDataSource>()),
+  );
+  // Singleton so the profile page and its edit sub-page share one instance.
+  sl.registerLazySingleton<ProfileCubit>(
+    () => ProfileCubit(sl<ProfileRepository>()),
+  );
+
+  // ── Shop ────────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<ShopRemoteDataSource>(
+    () => ShopRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ShopRepository>(
+    () => ShopRepositoryImpl(sl<ShopRemoteDataSource>()),
+  );
+  sl.registerFactory<ShopCubit>(
+    () => ShopCubit(sl<ShopRepository>()),
+  );
 
   // ── Notification ────────────────────────────────────────────────────────────
   sl.registerLazySingleton<NotificationRepository>(

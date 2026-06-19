@@ -43,6 +43,7 @@ import 'package:flutter_ecommerce/features/product/presentation/pages/product_li
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
+import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
@@ -86,6 +87,11 @@ import 'package:flutter_ecommerce/features/address/domain/entities/address_entit
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_list_page.dart';
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_form_page.dart';
+
+// Shop
+import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/pages/shop_info_page.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/pages/admin_shop_config_page.dart';
 
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -511,12 +517,18 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         name: AppRoutes.profile,
-        builder: (context, state) => const ProfilePage(),
+        builder: (context, state) => BlocProvider.value(
+          value: sl<ProfileCubit>()..loadProfile(),
+          child: const ProfilePage(),
+        ),
         routes: [
           GoRoute(
             path: 'edit',
             name: AppRoutes.editProfile,
-            builder: (context, state) => const EditProfilePage(),
+            builder: (context, state) => BlocProvider.value(
+              value: sl<ProfileCubit>()..loadProfile(),
+              child: const EditProfilePage(),
+            ),
           ),
         ],
       ),
@@ -697,6 +709,25 @@ class AppRouter {
             ],
           ),
         ],
+      ),
+      // ── Shop profile ──────────────────────────────────────────────────────
+      GoRoute(
+        path: '/shop',
+        name: AppRoutes.shopInfo,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ShopCubit>()..loadShop(),
+          child: const ShopInfoPage(),
+        ),
+      ),
+
+      // ── Admin shop config ─────────────────────────────────────────────────
+      GoRoute(
+        path: '/admin/shop-config',
+        name: AppRoutes.adminShopConfig,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ShopCubit>()..loadShop(),
+          child: const AdminShopConfigPage(),
+        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

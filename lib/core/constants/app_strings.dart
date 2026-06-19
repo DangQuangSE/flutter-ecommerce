@@ -135,4 +135,57 @@ abstract final class AppStrings {
       'Đã đặt địa chỉ mặc định thành công!';
   static const String addressLoadError =
       'Không thể tải địa chỉ. Vui lòng thử lại sau.';
+
+  // ── Shop info (user-facing) ────────────────────────────────────────────────
+  static const String shopInfoTitle = 'Thông tin cửa hàng';
+  static const String shopDescriptionLabel = 'MÔ TẢ';
+  static String shopRatingCount(int count) => '($count đánh giá)';
+  static const String shopLoadError =
+      'Không thể tải thông tin cửa hàng. Vui lòng thử lại sau.';
+
+  // ── Admin shop config ─────────────────────────────────────────────────────
+  static const String adminShopConfigTitle = 'Cấu hình cửa hàng';
+  static const String shopSaveChanges = 'Lưu thay đổi';
+  static const String shopUpdateSuccess =
+      'Đã cập nhật thông tin cửa hàng thành công!';
+  static const String shopUpdateError =
+      'Cập nhật cửa hàng thất bại. Vui lòng thử lại.';
+
+  // Shop form field labels
+  static const String shopFieldName = 'Tên cửa hàng *';
+  static const String shopFieldNameHint = 'Nhập tên cửa hàng';
+  static const String shopFieldAddress = 'Địa chỉ';
+  static const String shopFieldAddressHint = 'Nhập địa chỉ cửa hàng';
+  static const String shopFieldRating = 'Đánh giá (0.0 – 5.0)';
+  static const String shopFieldRatingHint = 'Ví dụ: 4.8';
+  static const String shopFieldRatingCount = 'Số lượt đánh giá';
+  static const String shopFieldRatingCountHint = 'Ví dụ: 1200';
+  static const String shopFieldPhone = 'Số điện thoại';
+  static const String shopFieldPhoneHint = 'Nhập số điện thoại liên hệ';
+  static const String shopFieldOpeningHours = 'Giờ mở cửa';
+  static const String shopFieldOpeningHoursHint =
+      'Ví dụ: 8:00 – 21:00 (T2 – CN)';
+  static const String shopFieldDescription = 'Mô tả cửa hàng';
+  static const String shopFieldDescriptionHint =
+      'Nhập mô tả ngắn về cửa hàng...';
+  static const String shopFieldLogoUrl = 'URL Logo';
+  static const String shopFieldLogoUrlHint =
+      'Nhập đường dẫn ảnh logo cửa hàng';
+  static const String shopFieldCoverUrl = 'URL Ảnh bìa';
+  static const String shopFieldCoverUrlHint =
+      'Nhập đường dẫn ảnh bìa cửa hàng';
+
+  // Shop form validation
+  static const String shopValidationNameRequired =
+      'Tên cửa hàng không được để trống';
+  static const String shopValidationRatingInvalid =
+      'Đánh giá phải là số thực (ví dụ: 4.8)';
+  static const String shopValidationRatingRange =
+      'Đánh giá phải nằm trong khoảng 0.0 – 5.0';
+  static const String shopValidationRatingCountInvalid =
+      'Số lượt đánh giá phải là số nguyên không âm';
+
+  // Shop entry points
+  static const String shopInfoMenuLabel = 'Thông tin cửa hàng';
+  static const String adminShopConfigMenuLabel = 'Cấu hình cửa hàng';
 }

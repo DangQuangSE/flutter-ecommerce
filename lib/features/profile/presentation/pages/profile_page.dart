@@ -4,12 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_state.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -24,7 +27,7 @@ class ProfilePage extends StatelessWidget {
       extendBody: true,
       body: PopScope(
         canPop: false,
-        onPopInvoked: (bool didPop) {
+        onPopInvokedWithResult: (bool didPop, Object? result) {
           if (didPop) return;
           if (context.canPop()) {
             context.pop();
@@ -37,32 +40,23 @@ class ProfilePage extends StatelessWidget {
         },
         child: Stack(
           children: [
-            // 1. Core scrollable profile sections
             SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               padding: EdgeInsets.fromLTRB(16, statusBarHeight + 92, 16, 120),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 1. Concentric glass bio panel with nested refraction borders
-                  _buildConcentricBioPanel(context),
+                  _buildBioPanel(context),
                   const SizedBox(height: 28),
-
-                  // 2. Re-architected menu items into clean groups with microscopic eyebrow headers
                   _buildMenuSection(context),
                 ],
               ),
             ),
-
-            // 2. Reusable Glassmorphic Top App Bar
-            Positioned(
+            const Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: const GlassAppBar(
-                showBackButton: false,
-                customTitle: 'Sport Pro',
-              ),
+              child: GlassAppBar(showBackButton: false, customTitle: 'Sport Pro'),
             ),
           ],
         ),
@@ -71,148 +65,133 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildConcentricBioPanel(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(20),
+  // ── Bio panel (live profile data) ───────────────────────────────────────────
+  Widget _buildBioPanel(BuildContext context) {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        final profile = state is ProfileLoaded ? state.profile : null;
+        final loading = state is ProfileLoading || state is ProfileInitial;
+        final name = profile?.fullName ?? (loading ? 'Đang tải…' : 'Người dùng');
+        final email = profile?.email ??
+            (state is ProfileError ? 'Không tải được hồ sơ' : '');
+
+        return Container(
+          padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFFFFFFFF),
-                const Color(0xFFF8FAFC).withOpacity(0.8),
-              ],
-            ),
-          ),
-          child: Row(
-            children: [
-              // Styled User Avatar with outer border bezel
-              Container(
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.primary.withOpacity(0.2),
-                    width: 2.0,
-                  ),
-                ),
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFF3F3F8),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.network(
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.person_rounded,
-                      size: 32,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-
-              // Bio Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Alex Mercer',
-                      style: GoogleFonts.lexend(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                        letterSpacing: -0.4,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'alex.mercer@sportpro.com',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Concentric glass-styled VIP Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.accent.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: AppColors.accent.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        'VIP MEMBER',
-                        style: GoogleFonts.spaceMono(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.accent,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Compact edit action button
-              GestureDetector(
-                onTap: () => context.pushNamed(AppRoutes.editProfile),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: const Icon(
-                    Icons.edit_outlined,
-                    size: 16,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color(0xFFFFFFFF),
+                    const Color(0xFFF8FAFC).withValues(alpha: 0.8),
+                  ],
+                ),
+              ),
+              child: Row(
+                children: [
+                  _BioAvatar(url: profile?.avatar, size: 64),
+                  const SizedBox(width: 16),
+                  Expanded(child: _buildBioText(name, email, profile?.tier)),
+                  _buildEditButton(context),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBioText(String name, String email, String? tier) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.lexend(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.4,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          email,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        if (tier != null && tier.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          _buildTierBadge(tier),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTierBadge(String tier) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+      ),
+      child: Text(
+        'HẠNG ${tier.toUpperCase()}',
+        style: GoogleFonts.spaceMono(
+          fontSize: 8,
+          fontWeight: FontWeight.w900,
+          color: AppColors.accent,
+          letterSpacing: 1.0,
         ),
       ),
     );
   }
 
+  Widget _buildEditButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.pushNamed(AppRoutes.editProfile),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: const Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary),
+      ),
+    );
+  }
+
+  // ── Menu ─────────────────────────────────────────────────────────────────────
   Widget _buildMenuSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // GROUP 1: ACCOUNT Eyebrow Header
         _buildEyebrowHeader('TÀI KHOẢN VÀ BẢO MẬT'),
         const SizedBox(height: 10),
         ProfileMenuRow(
@@ -230,7 +209,7 @@ class ProfilePage extends StatelessWidget {
         ProfileMenuRow(
           icon: Icons.location_on_outlined,
           label: 'Địa chỉ giao hàng',
-          onTap: () => context.pushNamed(AppRoutes.addressList),
+          onTap: () => context.goNamed(AppRoutes.orderList),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(
@@ -239,11 +218,14 @@ class ProfilePage extends StatelessWidget {
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
         const SizedBox(height: 10),
+        ProfileMenuRow(
+          icon: Icons.storefront_outlined,
+          label: AppStrings.shopInfoMenuLabel,
+          onTap: () => context.pushNamed(AppRoutes.shopInfo),
+        ),
+        const SizedBox(height: 10),
         _buildLogoutRow(context),
-
         const SizedBox(height: 24),
-
-        // GROUP 2: PREFERENCES Eyebrow Header
         _buildEyebrowHeader('THIẾT LẬP VÀ TIN NHẮN'),
         const SizedBox(height: 10),
         ProfileMenuRow(
@@ -344,6 +326,55 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
+/// Circular avatar that shows a network image, falling back to a person icon
+/// when the URL is missing or fails to load.
+class _BioAvatar extends StatelessWidget {
+  final String? url;
+  final double size;
+
+  const _BioAvatar({required this.url, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasUrl = url != null && url!.isNotEmpty;
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+          width: 2.0,
+        ),
+      ),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFFF3F3F8),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: hasUrl
+            ? Image.network(
+                url!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const _AvatarFallback(),
+              )
+            : const _AvatarFallback(),
+      ),
+    );
+  }
+}
+
+class _AvatarFallback extends StatelessWidget {
+  const _AvatarFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(Icons.person_rounded, size: 32, color: AppColors.textSecondary);
+  }
+}
+
 // Stateful interactive menu row with tactile spring scale micro-physics feedback
 class ProfileMenuRow extends StatefulWidget {
   final IconData icon;
@@ -399,7 +430,7 @@ class _ProfileMenuRowState extends State<ProfileMenuRow> {
               border: Border.all(color: const Color(0xFFE2E8F0)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.01),
+                  color: Colors.black.withValues(alpha: 0.01),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -407,11 +438,7 @@ class _ProfileMenuRowState extends State<ProfileMenuRow> {
             ),
             child: Row(
               children: [
-                Icon(
-                  widget.icon,
-                  size: 20,
-                  color: iconColor,
-                ),
+                Icon(widget.icon, size: 20, color: iconColor),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(

@@ -57,6 +57,10 @@ abstract final class ApiConstants {
   static const String adminOrders = '/api/v1/admin/orders';
   static const String profile = '/profile';
 
+  // User profile (current user)
+  static const String profileMe = '/api/profiles/me';
+  static const String profileAvatar = '/api/profiles/me/avatar';
+
   static const String customDesigns = '/api/custom-designs';
   static String customDesignById(int id) => '/api/custom-designs/$id';
 
@@ -100,4 +104,8 @@ abstract final class ApiConstants {
   static const String adminReviews = '/api/admin/reviews';
   static String adminReviewReply(int reviewId) =>
       '/api/admin/reviews/$reviewId/reply';
+
+  // Shop profile
+  static const String shop = '/api/shop';
+  static const String adminShop = '/api/admin/shop';
 }
