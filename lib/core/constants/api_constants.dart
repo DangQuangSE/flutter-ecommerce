@@ -100,4 +100,8 @@ abstract final class ApiConstants {
   static const String adminReviews = '/api/admin/reviews';
   static String adminReviewReply(int reviewId) =>
       '/api/admin/reviews/$reviewId/reply';
+
+  // Shop profile
+  static const String shop = '/api/shop';
+  static const String adminShop = '/api/admin/shop';
 }

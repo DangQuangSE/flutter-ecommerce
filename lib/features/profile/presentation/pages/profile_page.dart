@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
@@ -245,6 +246,12 @@ class ProfilePage extends StatelessWidget {
 
         // GROUP 2: PREFERENCES Eyebrow Header
         _buildEyebrowHeader('THIẾT LẬP VÀ TIN NHẮN'),
+        const SizedBox(height: 10),
+        ProfileMenuRow(
+          icon: Icons.store_outlined,
+          label: AppStrings.shopInfoMenuLabel,
+          onTap: () => context.pushNamed(AppRoutes.shopInfo),
+        ),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.notifications_none_rounded,

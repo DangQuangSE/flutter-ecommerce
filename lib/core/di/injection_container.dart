@@ -182,6 +182,12 @@ import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.da
 // Profile
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 
+// Shop
+import 'package:flutter_ecommerce/features/shop/data/datasources/shop_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/shop/data/repositories/shop_repository_impl.dart';
+import 'package:flutter_ecommerce/features/shop/domain/repositories/shop_repository.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
+
 // Notification
 import 'package:flutter_ecommerce/features/notification/data/repositories/notification_repository_impl.dart';
 import 'package:flutter_ecommerce/features/notification/domain/repositories/notification_repository.dart';
@@ -531,6 +537,17 @@ Future<void> configureDependencies() async {
 
   // ── Profile ─────────────────────────────────────────────────────────────────
   sl.registerLazySingleton<ProfileCubit>(() => ProfileCubit());
+
+  // ── Shop ────────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<ShopRemoteDataSource>(
+    () => ShopRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ShopRepository>(
+    () => ShopRepositoryImpl(sl<ShopRemoteDataSource>()),
+  );
+  sl.registerFactory<ShopCubit>(
+    () => ShopCubit(sl<ShopRepository>()),
+  );
 
   // ── Notification ────────────────────────────────────────────────────────────
   sl.registerLazySingleton<NotificationRepository>(

@@ -40,6 +40,14 @@ abstract final class AppSizes {
   // Color picker
   static const double colorSwatchSize = 36.0;
 
+  // Shop profile
+  static const double shopCoverRatio = 0.42; // cover height = screenWidth * ratio
+  static const double shopLogoSize = 80.0;
+  static const double iconXl = 64.0;
+  static const double fontDisplay = 32.0;
+  static const double borderThick = 3.0;
+  static const double letterSpacingWide = 1.0;
+
   // Others
   static const double buttonMinHeight = 44.0;
   static const SizedBox spacingXs = SizedBox(height: 4, width: 4);

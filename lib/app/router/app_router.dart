@@ -87,6 +87,11 @@ import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cu
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_list_page.dart';
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_form_page.dart';
 
+// Shop
+import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/pages/shop_info_page.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/pages/admin_shop_config_page.dart';
+
 /// GoRouterRefreshStream was removed from go_router 5+; implement manually.
 class GoRouterRefreshStream extends ChangeNotifier {
   late final StreamSubscription<dynamic> _subscription;
@@ -697,6 +702,25 @@ class AppRouter {
             ],
           ),
         ],
+      ),
+      // ── Shop profile ──────────────────────────────────────────────────────
+      GoRoute(
+        path: '/shop',
+        name: AppRoutes.shopInfo,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ShopCubit>()..loadShop(),
+          child: const ShopInfoPage(),
+        ),
+      ),
+
+      // ── Admin shop config ─────────────────────────────────────────────────
+      GoRoute(
+        path: '/admin/shop-config',
+        name: AppRoutes.adminShopConfig,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ShopCubit>()..loadShop(),
+          child: const AdminShopConfigPage(),
+        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
