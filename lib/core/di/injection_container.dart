@@ -154,6 +154,9 @@ import 'package:flutter_ecommerce/features/cart/domain/repositories/cart_reposit
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 
 // Profile
+import 'package:flutter_ecommerce/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:flutter_ecommerce/features/profile/domain/repositories/profile_repository.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 
 // Notification
@@ -464,7 +467,16 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<CartCubit>(() => CartCubit(sl<CartRepository>()));
 
   // ── Profile ─────────────────────────────────────────────────────────────────
-  sl.registerLazySingleton<ProfileCubit>(() => ProfileCubit());
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(sl<ProfileRemoteDataSource>()),
+  );
+  // Singleton so the profile page and its edit sub-page share one instance.
+  sl.registerLazySingleton<ProfileCubit>(
+    () => ProfileCubit(sl<ProfileRepository>()),
+  );
 
   // ── Notification ────────────────────────────────────────────────────────────
   sl.registerLazySingleton<NotificationRepository>(
