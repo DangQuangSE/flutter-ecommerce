@@ -19,9 +19,7 @@ class _OnboardingPageState extends State<OnboardingPage>
     with TickerProviderStateMixin {
   late final PageController _pageController;
   late final AnimationController _primaryButtonController;
-  late final Animation<double> _primaryButtonAnimation;
   late final AnimationController _secondaryButtonController;
-  late final Animation<double> _secondaryButtonAnimation;
 
   int _currentIndex = 0;
   double _scrollOffset = 0.0;
@@ -65,7 +63,6 @@ class _OnboardingPageState extends State<OnboardingPage>
       upperBound: 1.0,
       value: 1.0,
     );
-    _primaryButtonAnimation = _primaryButtonController;
 
     _secondaryButtonController = AnimationController(
       vsync: this,
@@ -74,7 +71,6 @@ class _OnboardingPageState extends State<OnboardingPage>
       upperBound: 1.0,
       value: 1.0,
     );
-    _secondaryButtonAnimation = _secondaryButtonController;
   }
 
   @override
@@ -201,7 +197,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                   onTapCancel: () => _primaryButtonController.forward(),
                   onTap: _primaryAction,
                   child: ScaleTransition(
-                    scale: _primaryButtonAnimation,
+                    scale: _primaryButtonController,
                     child: Container(
                       width: double.infinity,
                       height: 52,
@@ -232,7 +228,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                   onTapCancel: () => _secondaryButtonController.forward(),
                   onTap: _completeOnboardingWithLogin,
                   child: ScaleTransition(
-                    scale: _secondaryButtonAnimation,
+                    scale: _secondaryButtonController,
                     child: Container(
                       width: double.infinity,
                       height: 52,
