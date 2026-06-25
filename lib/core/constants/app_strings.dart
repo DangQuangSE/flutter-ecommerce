@@ -169,11 +169,9 @@ abstract final class AppStrings {
   static const String shopFieldDescriptionHint =
       'Nhập mô tả ngắn về cửa hàng...';
   static const String shopFieldLogoUrl = 'URL Logo';
-  static const String shopFieldLogoUrlHint =
-      'Nhập đường dẫn ảnh logo cửa hàng';
+  static const String shopFieldLogoUrlHint = 'Nhập đường dẫn ảnh logo cửa hàng';
   static const String shopFieldCoverUrl = 'URL Ảnh bìa';
-  static const String shopFieldCoverUrlHint =
-      'Nhập đường dẫn ảnh bìa cửa hàng';
+  static const String shopFieldCoverUrlHint = 'Nhập đường dẫn ảnh bìa cửa hàng';
 
   // Shop form validation
   static const String shopValidationNameRequired =
@@ -188,4 +186,27 @@ abstract final class AppStrings {
   // Shop entry points
   static const String shopInfoMenuLabel = 'Thông tin cửa hàng';
   static const String adminShopConfigMenuLabel = 'Cấu hình cửa hàng';
+
+  // Auth login/register screen strings
+  static const String authTagline = 'Hiệu suất tối đa. Khởi đầu ngay.';
+  static const String loginTitle = 'Đăng nhập';
+  static const String loginSubmit = 'Đăng nhập';
+  static const String registerTitle = 'Đăng ký';
+  static const String emailLabel = 'EMAIL';
+  static const String passwordLabel = 'MẬT KHẨU';
+  static const String emailHint = 'vvd@example.com';
+  static const String passwordHint = '••••••••';
+  static const String forgotPassword = 'Quên mật khẩu?';
+  static const String emailRequired = 'Vui lòng nhập email';
+  static const String emailInvalid = 'Email không đúng định dạng';
+  static const String passwordRequired = 'Vui lòng nhập mật khẩu';
+  static String passwordMinLength(int n) =>
+      'Mật khẩu phải chứa ít nhất $n ký tự';
+
+  // Terms & policy
+  static const String termsPrefix = 'Bằng việc đăng nhập, bạn đồng ý với ';
+  static const String termsOfService = 'Điều khoản dịch vụ';
+  static const String andConnector = ' và ';
+  static const String privacyPolicy = 'Chính sách bảo mật';
+  static const String termsSuffix = ' của chúng tôi.';
 }

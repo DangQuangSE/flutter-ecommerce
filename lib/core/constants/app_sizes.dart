@@ -41,7 +41,8 @@ abstract final class AppSizes {
   static const double colorSwatchSize = 36.0;
 
   // Shop profile
-  static const double shopCoverRatio = 0.42; // cover height = screenWidth * ratio
+  static const double shopCoverRatio =
+      0.42; // cover height = screenWidth * ratio
   static const double shopLogoSize = 80.0;
   static const double iconXl = 64.0;
   static const double fontDisplay = 32.0;
@@ -50,6 +51,12 @@ abstract final class AppSizes {
 
   // Others
   static const double buttonMinHeight = 44.0;
+  static const double tabVerticalPadding = 14.0;
+  static const double brandHeadingSize = 40.0;
+  static const double fieldLabelFontSize = 11.0;
+  static const double forgotPasswordFontSize = 13.0;
+  static const double submitButtonFontSize = 15.0;
+
   static const SizedBox spacingXs = SizedBox(height: 4, width: 4);
   static const SizedBox spacingSm = SizedBox(height: 8, width: 8);
   static const SizedBox spacingMd = SizedBox(height: 16, width: 16);
