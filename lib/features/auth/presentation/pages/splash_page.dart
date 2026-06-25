@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/core/di/injection_container.dart';
+import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
@@ -43,7 +45,12 @@ class _SplashPageState extends State<SplashPage> {
           case AuthOtpVerified():
           case AuthRegistrationSuccess():
           case AuthRegisterAccountExists():
-            context.goNamed(AppRoutes.login);
+            final hasSeen = sl<LocalStorage>().getBool('has_seen_onboarding') ?? false;
+            if (!hasSeen) {
+              context.goNamed(AppRoutes.onboarding);
+            } else {
+              context.goNamed(AppRoutes.login);
+            }
           case AuthInitial():
           case AuthLoading():
             break;

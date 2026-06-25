@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
+import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/models/forgot_password_otp_extra.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/models/forgot_password_reset_extra.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/pag
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/pages/forgot_password_otp_page.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/pages/forgot_password_reset_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/login_page.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/register_page.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/pages/register_password_page.dart';
@@ -138,11 +140,16 @@ class AppRouter {
     redirect: (BuildContext context, GoRouterState state) {
       final path = state.uri.path;
       final isForgotPasswordFlow = path.startsWith('/forgot-password');
+
+      final localStorage = sl<LocalStorage>();
+      final hasSeenOnboarding = localStorage.getBool('has_seen_onboarding') ?? false;
+
       final isGoingToAuth = path == '/login' ||
           path == '/register' ||
           path == '/register/otp' ||
           path == '/register/password' ||
           path == '/splash' ||
+          path == '/onboarding' ||
           isForgotPasswordFlow;
 
       final authState = sl<AuthBloc>().state;
@@ -161,11 +168,18 @@ class AppRouter {
 
       final isAuthenticated = authState is AuthAuthenticated;
 
-      if (!isAuthenticated && !isGoingToAuth) return '/login';
+      if (!isAuthenticated && !isGoingToAuth) {
+        if (!hasSeenOnboarding) return '/onboarding';
+        return '/login';
+      }
+
+      if (!isAuthenticated && path == '/login' && !hasSeenOnboarding) {
+        return '/onboarding';
+      }
 
       if (isAuthenticated) {
         final user = (authState as AuthAuthenticated).user;
-        if (isForgotPasswordFlow) {
+        if (isForgotPasswordFlow || path == '/onboarding') {
           return user.isAdmin ? '/admin' : '/home';
         }
         if (user.isAdmin) {
@@ -183,6 +197,11 @@ class AppRouter {
         path: '/splash',
         name: AppRoutes.splash,
         builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: AppRoutes.onboarding,
+        builder: (context, state) => const OnboardingPage(),
       ),
       GoRoute(
         path: '/login',
