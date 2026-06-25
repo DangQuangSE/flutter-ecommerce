@@ -5,7 +5,7 @@ import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/core/storage/local_storage.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_ambient_background.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/onboarding_ambient_background.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/widgets/onboarding_slide.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/widgets/onboarding_indicator.dart';
 
@@ -25,27 +25,28 @@ class _OnboardingPageState extends State<OnboardingPage>
   int _currentIndex = 0;
   double _scrollOffset = 0.0;
 
+  // Introductions focused on the platform/web capabilities
   final List<Map<String, String>> _slides = [
     {
-      'title': 'Bứt phá\ngiới hạn.',
+      'title': 'Mua sắm\ntrực tuyến.',
       'description':
-          'Trải nghiệm dòng sản phẩm thể thao cao cấp được thiết kế chuyên biệt để nâng tầm hiệu suất luyện tập của bạn hàng ngày.',
+          'Trải nghiệm website mua sắm hiện đại. Dễ dàng duyệt catalog, tìm kiếm sản phẩm với bộ lọc thông minh và thanh toán trực tuyến bảo mật qua cổng VNPay.',
       'imageUrl':
-          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600',
+          'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600',
     },
     {
-      'title': 'Tùy biến\nđộc bản.',
+      'title': 'Tự tay\nthiết kế.',
       'description':
-          'Sáng tạo phong cách cá nhân với công cụ Customizer 3D. Tự tay thiết kế và phối màu trang phục thi đấu của riêng bạn.',
+          'Đột phá với trình customizer trực quan. Tự do tùy biến kiểu dáng, phối màu sắc và thiết kế logo trực tiếp trên giao diện 3D thời gian thực.',
       'imageUrl':
-          'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=600',
+          'https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=600',
     },
     {
-      'title': 'Bắt đầu\nhành trình.',
+      'title': 'Quản lý\ndễ dàng.',
       'description':
-          'Tham gia cộng đồng Sport Pro ngay hôm nay để nhận những đặc quyền ưu đãi dành riêng cho thành viên và sẵn sàng bứt tốc.',
+          'Kiểm soát mọi thông tin cá nhân. Theo dõi hành trình đơn hàng trực tiếp, lưu sổ địa chỉ giao nhận tiện lợi và trò chuyện tư vấn tức thì qua Live Chat.',
       'imageUrl':
-          'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=600',
+          'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=600',
     },
   ];
 
@@ -83,7 +84,7 @@ class _OnboardingPageState extends State<OnboardingPage>
   }
 
   Future<void> _completeOnboarding() async {
-    // Save onboarding completion state to local storage
+    // Persist seen status in SharedPreferences (local storage)
     await sl<LocalStorage>().setBool('has_seen_onboarding', value: true);
     if (mounted) {
       context.goNamed(AppRoutes.login);
@@ -93,8 +94,8 @@ class _OnboardingPageState extends State<OnboardingPage>
   void _nextPage() {
     if (_currentIndex < _slides.length - 1) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
-        curve: const Cubic(0.32, 0.72, 0, 1.0), // High-end spring physical curve
+        duration: const Duration(milliseconds: 450),
+        curve: const Cubic(0.32, 0.72, 0, 1.0), // Spring feel easing curve
       );
     } else {
       _completeOnboarding();
@@ -103,16 +104,15 @@ class _OnboardingPageState extends State<OnboardingPage>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final isLastPage = _currentIndex == _slides.length - 1;
 
     return Scaffold(
       body: Stack(
         children: [
-          // Premium Ambient Blurred Texture Background
-          const AuthAmbientBackground(),
+          // Dynamic mesh color-interpolated background
+          OnboardingAmbientBackground(scrollOffset: _scrollOffset),
 
-          // PageView Slider containing asymmetric slides
+          // Slide Viewport
           PageView.builder(
             controller: _pageController,
             itemCount: _slides.length,
@@ -123,9 +123,9 @@ class _OnboardingPageState extends State<OnboardingPage>
             },
             itemBuilder: (context, index) {
               final slide = _slides[index];
-              // Slide offset calculated relative to this page's index
               final slideOffset = _scrollOffset - index;
               return OnboardingSlide(
+                index: index,
                 title: slide['title']!,
                 description: slide['description']!,
                 imageUrl: slide['imageUrl']!,
@@ -134,7 +134,7 @@ class _OnboardingPageState extends State<OnboardingPage>
             },
           ),
 
-          // Floating Controls Bar (Bottom)
+          // Lower control action bar
           Positioned(
             bottom: 40,
             left: 24,
@@ -142,7 +142,7 @@ class _OnboardingPageState extends State<OnboardingPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 1. Skip / Back Navigation Button with scale physics
+                // 1. Skip button (faded out on last page)
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: isLastPage ? 0.0 : 1.0,
@@ -158,24 +158,24 @@ class _OnboardingPageState extends State<OnboardingPage>
                       ),
                       child: Text(
                         'BỎ QUA',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: GoogleFonts.lexend(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary.withValues(alpha: 0.8),
-                          letterSpacing: 1.5,
+                          letterSpacing: 1.2,
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                // 2. Dynamic Slanted Pill Indicator
+                // 2. Liquid continuous slanted indicator
                 OnboardingIndicator(
                   count: _slides.length,
-                  currentIndex: _currentIndex,
+                  scrollOffset: _scrollOffset,
                 ),
 
-                // 3. Nested CTA "Island" Button with custom spring scale transitions
+                // 3. Nested CTA Button with scale physics
                 GestureDetector(
                   onTapDown: (_) => _buttonScaleController.reverse(),
                   onTapUp: (_) => _buttonScaleController.forward(),
@@ -190,7 +190,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(100), // Pill rounded
+                        borderRadius: BorderRadius.circular(100),
                         boxShadow: [
                           BoxShadow(
                             color: AppColors.primary.withValues(alpha: 0.25),
@@ -204,7 +204,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                         children: [
                           Text(
                             isLastPage ? 'BẮT ĐẦU' : 'TIẾP TỤC',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.lexend(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -212,7 +212,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                             ),
                           ),
                           const SizedBox(width: 8),
-                          // Nested trailing icon circle
+                          // Circle nested arrow
                           Container(
                             width: 22,
                             height: 22,

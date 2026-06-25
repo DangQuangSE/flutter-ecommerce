@@ -28,7 +28,7 @@ void main() {
       );
 
       // Verify first slide is displayed
-      expect(find.text('Bứt phá\ngiới hạn.'), findsOneWidget);
+      expect(find.text('Mua sắm\ntrực tuyến.'), findsOneWidget);
       expect(find.text('TIẾP TỤC'), findsOneWidget);
       expect(find.text('BỎ QUA'), findsOneWidget);
 
@@ -37,14 +37,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify second slide is displayed
-      expect(find.text('Tùy biến\nđộc bản.'), findsOneWidget);
+      expect(find.text('Tự tay\nthiết kế.'), findsOneWidget);
 
       // Swipe to the last page
       await tester.drag(find.byType(PageView), const Offset(-400, 0));
       await tester.pumpAndSettle();
 
       // Verify last slide is displayed
-      expect(find.text('Bắt đầu\nhành trình.'), findsOneWidget);
+      expect(find.text('Quản lý\ndễ dàng.'), findsOneWidget);
       expect(find.text('BẮT ĐẦU'), findsOneWidget);
       
       // Skip should be hidden or inactive (opacity animated to 0)
