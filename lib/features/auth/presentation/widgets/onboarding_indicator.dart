@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 
 class OnboardingIndicator extends StatelessWidget {
   final int count;
@@ -13,18 +12,6 @@ class OnboardingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dynamic active colors matching the current background/slide stage
-    final List<Color> activeColors = [
-      const Color(0xFF1A73E8), // Electric Blue
-      const Color(0xFF6D28D9), // Purple/Violet
-      const Color(0xFFEA580C), // Orange/Sunset
-    ];
-
-    final int index1 = scrollOffset.floor().clamp(0, count - 1);
-    final int index2 = scrollOffset.ceil().clamp(0, count - 1);
-    final double t = (scrollOffset - index1).clamp(0.0, 1.0);
-    final Color activeColor = Color.lerp(activeColors[index1], activeColors[index2], t) ?? activeColors[0];
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(count, (index) {
@@ -32,25 +19,19 @@ class OnboardingIndicator extends StatelessWidget {
         final double distance = (scrollOffset - index).abs();
         final double factor = (1.0 - distance).clamp(0.0, 1.0);
 
-        // Interpolate width and color continuously
-        final double width = 8.0 + (factor * 22.0); // Stretches from 8.0 to 30.0
-        final Color color = Color.lerp(
-          AppColors.textSecondary.withValues(alpha: 0.15),
-          activeColor,
-          factor,
-        ) ?? AppColors.textSecondary.withValues(alpha: 0.15);
+        // Interpolate width and opacity continuously
+        final double width = 6.0 + (factor * 16.0); // Stretches from 6.0 (circle) to 22.0 (capsule pill)
+        final Color color = Colors.white.withValues(
+          alpha: 0.2 + (factor * 0.8), // Blends from 0.2 opacity (inactive) to 1.0 (active)
+        );
 
-        return Transform(
-          transform: Matrix4.skewX(-0.15), // Slanted premium pill look
-          alignment: Alignment.center,
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4.0),
-            width: width,
-            height: 6.0,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(3.0),
-            ),
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+          width: width,
+          height: 6.0,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10.0), // Rounded pill/circle
           ),
         );
       }),

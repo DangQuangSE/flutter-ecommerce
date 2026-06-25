@@ -28,27 +28,26 @@ void main() {
       );
 
       // Verify first slide is displayed
-      expect(find.text('Mua sắm\ntrực tuyến.'), findsOneWidget);
+      expect(find.text('Mua sắm trực tuyến'), findsOneWidget);
       expect(find.text('TIẾP TỤC'), findsOneWidget);
-      expect(find.text('BỎ QUA'), findsOneWidget);
+      expect(find.text('ĐĂNG NHẬP'), findsOneWidget);
 
       // Swipe to the next page
       await tester.drag(find.byType(PageView), const Offset(-400, 0));
       await tester.pumpAndSettle();
 
       // Verify second slide is displayed
-      expect(find.text('Tự tay\nthiết kế.'), findsOneWidget);
+      expect(find.text('Tự tay thiết kế'), findsOneWidget);
 
       // Swipe to the last page
       await tester.drag(find.byType(PageView), const Offset(-400, 0));
       await tester.pumpAndSettle();
 
       // Verify last slide is displayed
-      expect(find.text('Quản lý\ndễ dàng.'), findsOneWidget);
-      expect(find.text('BẮT ĐẦU'), findsOneWidget);
+      expect(find.text('Quản lý dễ dàng'), findsOneWidget);
+      expect(find.text('ĐĂNG KÝ'), findsOneWidget);
       
-      // Skip should be hidden or inactive (opacity animated to 0)
-      expect(find.text('BỎ QUA'), findsOneWidget); // still in widget tree but opaque/ignored
+      expect(find.text('ĐĂNG NHẬP'), findsOneWidget);
     });
   });
 }

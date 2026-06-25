@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 
 class OnboardingAmbientBackground extends StatelessWidget {
   final double scrollOffset;
@@ -14,90 +13,63 @@ class OnboardingAmbientBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    // Vibrant theme colors for each slide stage
-    final List<Color> primaryColors = [
-      const Color(0xFF1A73E8), // Electric Blue
-      const Color(0xFF6D28D9), // Purple/Violet
-      const Color(0xFFEA580C), // Orange/Sunset
+    // Glowing highlight colors for each slide stage (Electric Blue, Deep Purple, Electric Orange)
+    final List<Color> glowColors = [
+      const Color(0xFF1D4ED8), // Slide 0: Blue glow
+      const Color(0xFF6D28D9), // Slide 1: Purple glow
+      const Color(0xFFC2410C), // Slide 2: Orange glow
     ];
 
-    final List<Color> accentColors = [
-      const Color(0xFF06B6D4), // Cyan/Teal
-      const Color(0xFFEC4899), // Pink/Magenta
-      const Color(0xFFF59E0B), // Amber/Gold
-    ];
-
-    // Calculate continuous interpolation between slides
+    // Compute active color interpolation based on scrolling
     final int index1 = scrollOffset.floor().clamp(0, 2);
     final int index2 = scrollOffset.ceil().clamp(0, 2);
     final double t = (scrollOffset - index1).clamp(0.0, 1.0);
-
-    final Color primaryColor = Color.lerp(primaryColors[index1], primaryColors[index2], t) ?? primaryColors[0];
-    final Color accentColor = Color.lerp(accentColors[index1], accentColors[index2], t) ?? accentColors[0];
+    final Color activeGlowColor = Color.lerp(glowColors[index1], glowColors[index2], t) ?? glowColors[0];
 
     return Stack(
       children: [
-        // Base dark background (neutral base, anti-sterile)
+        // 1. Deep Dark Base Gradient (matching screenshot vibe)
         Container(
-          color: AppColors.background,
-        ),
-
-        // Ambient moving primary blob
-        Positioned(
-          top: -size.height * 0.1,
-          right: -size.width * 0.25,
-          child: Container(
-            width: size.width * 0.95,
-            height: size.width * 0.95,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: primaryColor.withValues(alpha: 0.16),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF0F1020), // Deep blue-violet charcoal
+                Color(0xFF040408), // Near-black charcoal
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
         ),
 
-        // Ambient moving accent blob (opposite side)
+        // 2. Centered/Bottom Glowing Ambient Sphere (illuminating the 3D graphics)
         Positioned(
-          bottom: -size.height * 0.12,
-          left: -size.width * 0.25,
+          top: size.height * 0.28,
+          left: size.width * 0.1,
+          right: size.width * 0.1,
           child: Container(
-            width: size.width * 1.0,
-            height: size.width * 1.0,
+            height: size.height * 0.38,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: accentColor.withValues(alpha: 0.14),
+              color: activeGlowColor.withValues(alpha: 0.24), // Dynamic glowing color
             ),
           ),
         ),
 
-        // Secondary subtle center glow
-        Positioned(
-          top: size.height * 0.35,
-          left: size.width * 0.2,
-          child: Container(
-            width: size.width * 0.55,
-            height: size.width * 0.55,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: primaryColor.withValues(alpha: 0.10),
-            ),
-          ),
-        ),
-
-        // Advanced blur to create organic liquid mesh gradient
+        // 3. High blur filter to blend the sphere into a perfect ambient backdrop glow
         Positioned.fill(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90),
+            filter: ImageFilter.blur(sigmaX: 110, sigmaY: 110),
             child: Container(
               color: Colors.transparent,
             ),
           ),
         ),
 
-        // Technical dotted texture overlay for premium athletic feel
+        // 4. Subtle micro-dot texture overlay
         const Positioned.fill(
           child: CustomPaint(
-            painter: _DotGridPainter(),
+            painter: _DottedGridPainter(),
           ),
         ),
       ],
@@ -105,19 +77,19 @@ class OnboardingAmbientBackground extends StatelessWidget {
   }
 }
 
-class _DotGridPainter extends CustomPainter {
-  const _DotGridPainter();
+class _DottedGridPainter extends CustomPainter {
+  const _DottedGridPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.textPrimary.withValues(alpha: 0.02)
+      ..color = Colors.white.withValues(alpha: 0.015)
       ..style = PaintingStyle.fill;
 
-    const spacing = 24.0;
+    const spacing = 28.0;
     for (double x = spacing / 2; x < size.width; x += spacing) {
       for (double y = spacing / 2; y < size.height; y += spacing) {
-        canvas.drawCircle(Offset(x, y), 0.8, paint);
+        canvas.drawCircle(Offset(x, y), 0.7, paint);
       }
     }
   }
