@@ -1,15 +1,23 @@
-import 'package:flutter/gestures.dart';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/extensions/string_extensions.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_ambient_background.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_brand_header.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_form_field.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_tab_bar.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/login_error_banner.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/login_submit_button.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/terms_agreement_footer.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -18,15 +26,28 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends State<RegisterPage>
+    with SingleTickerProviderStateMixin {
   bool _hasNavigatedToOtp = false;
   bool _hideBlocEmailError = false;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  late final AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _animationController.forward();
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -44,364 +65,52 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          Positioned(
-            top: -size.height * 0.1,
-            right: -size.width * 0.2,
-            child: Container(
-              width: size.width * 0.8,
-              height: size.width * 0.8,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withValues(alpha: 0.05),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -size.height * 0.1,
-            left: -size.width * 0.2,
-            child: Container(
-              width: size.width * 0.9,
-              height: size.width * 0.9,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.accent.withValues(alpha: 0.05),
-              ),
-            ),
-          ),
+          const AuthAmbientBackground(),
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.paddingXl,
+                  vertical: AppSizes.paddingXl,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          Transform(
-                            transform: Matrix4.skewX(-0.15),
-                            alignment: Alignment.center,
-                            child: Text(
-                              'Sport Pro',
-                              style: GoogleFonts.lexend(
-                                fontSize: 42,
-                                fontWeight: FontWeight.w900,
-                                fontStyle: FontStyle.italic,
-                                color: AppColors.primary,
-                                letterSpacing: -1.8,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Hiệu suất tối đa. Khởi đầu ngay.',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              color: AppColors.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                    _AnimatedEntrance(
+                      delay: 0,
+                      controller: _animationController,
+                      child: const AuthBrandHeader(),
+                    ),
+                    const SizedBox(height: AppSizes.paddingXl + 8),
+                    _AnimatedEntrance(
+                      delay: 150,
+                      controller: _animationController,
+                      child: _RegisterCard(
+                        formKey: _formKey,
+                        emailController: _emailController,
+                        showError: !_hideBlocEmailError,
+                        onSubmitted: _onSubmit,
+                        onEmailChanged: () {
+                          if (!_hideBlocEmailError) {
+                            setState(() => _hideBlocEmailError = true);
+                          }
+                        },
+                        hasNavigatedToOtp: _hasNavigatedToOtp,
+                        onNavigatedToOtp: () {
+                          _hasNavigatedToOtp = true;
+                        },
                       ),
                     ),
-                    const SizedBox(height: 36),
-                    Card(
-                      elevation: 4,
-                      shadowColor: Colors.black.withValues(alpha: 0.05),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () => context.goNamed(AppRoutes.login),
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: Colors.transparent,
-                                          width: 3,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        'Đăng nhập',
-                                        style: GoogleFonts.inter(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 14,
-                                          color: AppColors.textSecondary,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () {},
-                                  borderRadius: const BorderRadius.only(
-                                    topRight: Radius.circular(16),
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: AppColors.primary,
-                                          width: 3,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        'Đăng ký',
-                                        style: GoogleFonts.inter(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 14,
-                                          color: AppColors.primary,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: BlocConsumer<AuthBloc, AuthState>(
-                              listener: (context, state) {
-                                if (state is AuthOtpSent &&
-                                    !_hasNavigatedToOtp) {
-                                  _hasNavigatedToOtp = true;
-                                  context.pushNamed(
-                                    AppRoutes.registerOtp,
-                                    extra: RegisterOtpExtra(email: state.email),
-                                  );
-                                }
-                              },
-                              builder: (context, state) {
-                                final isLoading = state is AuthLoading;
-                                final emailApiError = _hideBlocEmailError
-                                    ? null
-                                    : switch (state) {
-                                        AuthRegisterAccountExists(
-                                          :final message
-                                        ) =>
-                                          message,
-                                        AuthError(:final message) => message,
-                                        _ => null,
-                                      };
-
-                                return Form(
-                                  key: _formKey,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Text(
-                                        'EMAIL',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textPrimary,
-                                          letterSpacing: 0.8,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      TextFormField(
-                                        controller: _emailController,
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        autovalidateMode:
-                                            AutovalidateMode.onUserInteraction,
-                                        onChanged: (_) {
-                                          if (!_hideBlocEmailError) {
-                                            setState(
-                                              () => _hideBlocEmailError = true,
-                                            );
-                                          }
-                                        },
-                                        decoration: InputDecoration(
-                                          hintText: 'vvd@example.com',
-                                          prefixIcon: const Icon(
-                                            Icons.mail_outline_rounded,
-                                            size: 20,
-                                            color: AppColors.textSecondary,
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: BorderSide(
-                                              color: emailApiError != null
-                                                  ? AppColors.error
-                                                  : const Color(0xFFC1C6D7),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: BorderSide(
-                                              color: emailApiError != null
-                                                  ? AppColors.error
-                                                  : AppColors.primary,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          errorBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: AppColors.error,
-                                            ),
-                                          ),
-                                          focusedErrorBorder:
-                                              OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: const BorderSide(
-                                              color: AppColors.error,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                        ),
-                                        validator: (v) {
-                                          final value = v?.trim() ?? '';
-                                          if (value.isEmpty) {
-                                            return 'Vui lòng nhập email';
-                                          }
-                                          if (!value.isValidEmail) {
-                                            return 'Email không đúng định dạng';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      if (emailApiError != null) ...[
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          emailApiError,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: AppColors.error,
-                                            height: 1.3,
-                                          ),
-                                        ),
-                                      ],
-                                      const SizedBox(height: 28),
-                                      ElevatedButton(
-                                        onPressed: isLoading ? null : _onSubmit,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColors.accent,
-                                          foregroundColor: Colors.white,
-                                          elevation: 2,
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 16),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: isLoading
-                                            ? const SizedBox(
-                                                height: 20,
-                                                width: 20,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation<
-                                                          Color>(Colors.white),
-                                                ),
-                                              )
-                                            : Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Đăng ký',
-                                                    style: GoogleFonts.lexend(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      letterSpacing: 1.0,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  const Icon(
-                                                    Icons.arrow_forward,
-                                                    size: 18,
-                                                  ),
-                                                ],
-                                              ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                            height: 1.4,
-                          ),
-                          children: [
-                            const TextSpan(
-                                text: 'Bằng việc đăng nhập, bạn đồng ý với '),
-                            TextSpan(
-                              text: 'Điều khoản dịch vụ',
-                              style: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              recognizer: TapGestureRecognizer()..onTap = () {},
-                            ),
-                            const TextSpan(text: ' và '),
-                            TextSpan(
-                              text: 'Chính sách bảo mật',
-                              style: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              recognizer: TapGestureRecognizer()..onTap = () {},
-                            ),
-                            const TextSpan(text: ' của chúng tôi.'),
-                          ],
-                        ),
-                      ),
+                    const SizedBox(height: AppSizes.paddingXl + 8),
+                    _AnimatedEntrance(
+                      delay: 300,
+                      controller: _animationController,
+                      child: const TermsAgreementFooter(),
                     ),
                   ],
                 ),
@@ -413,3 +122,210 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
+
+class _AnimatedEntrance extends StatelessWidget {
+  final Widget child;
+  final int delay;
+  final AnimationController controller;
+
+  const _AnimatedEntrance({
+    required this.child,
+    required this.delay,
+    required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final start = delay / 1000.0;
+    final end = (delay + 450) / 1000.0;
+
+    final curvedAnimation = CurvedAnimation(
+      parent: controller,
+      curve: Interval(
+        start.clamp(0.0, 1.0),
+        end.clamp(0.0, 1.0),
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
+    return AnimatedBuilder(
+      animation: curvedAnimation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: curvedAnimation.value.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, 24 * (1.0 - curvedAnimation.value)),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+class _RegisterCard extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final bool showError;
+  final VoidCallback onSubmitted;
+  final VoidCallback onEmailChanged;
+  final bool hasNavigatedToOtp;
+  final VoidCallback onNavigatedToOtp;
+
+  const _RegisterCard({
+    required this.formKey,
+    required this.emailController,
+    required this.showError,
+    required this.onSubmitted,
+    required this.onEmailChanged,
+    required this.hasNavigatedToOtp,
+    required this.onNavigatedToOtp,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.45),
+            Colors.white.withValues(alpha: 0.10),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.05),
+            blurRadius: 40,
+            offset: const Offset(0, 16),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(1.0), // Gradient border refraction
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppSizes.radiusXl - 1),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            color: AppColors.white.withValues(alpha: 0.76),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AuthTabBar(
+                  activeIndex: 1,
+                  onLoginTap: () => context.goNamed(AppRoutes.login),
+                  onRegisterTap: () {},
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(AppSizes.paddingXl),
+                  child: _RegisterFormContent(
+                    formKey: formKey,
+                    emailController: emailController,
+                    showError: showError,
+                    onSubmitted: onSubmitted,
+                    onEmailChanged: onEmailChanged,
+                    hasNavigatedToOtp: hasNavigatedToOtp,
+                    onNavigatedToOtp: onNavigatedToOtp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RegisterFormContent extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final bool showError;
+  final VoidCallback onSubmitted;
+  final VoidCallback onEmailChanged;
+  final bool hasNavigatedToOtp;
+  final VoidCallback onNavigatedToOtp;
+
+  const _RegisterFormContent({
+    required this.formKey,
+    required this.emailController,
+    required this.showError,
+    required this.onSubmitted,
+    required this.onEmailChanged,
+    required this.hasNavigatedToOtp,
+    required this.onNavigatedToOtp,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthOtpSent && !hasNavigatedToOtp) {
+          onNavigatedToOtp();
+          context.pushNamed(
+            AppRoutes.registerOtp,
+            extra: RegisterOtpExtra(email: state.email),
+          );
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        final emailApiError = showError
+            ? switch (state) {
+                AuthRegisterAccountExists(:final message) => message,
+                AuthError(:final message) => message,
+                _ => null,
+              }
+            : null;
+        final hasCredentialError = emailApiError != null;
+
+        return Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              LoginFormField(
+                controller: emailController,
+                label: AppStrings.emailLabel,
+                hint: AppStrings.emailHint,
+                prefixIcon: Icons.mail_outline_rounded,
+                keyboardType: TextInputType.emailAddress,
+                showError: hasCredentialError,
+                onChanged: (_) => onEmailChanged(),
+                validator: (v) {
+                  final value = v?.trim() ?? '';
+                  if (value.isEmpty) {
+                    return AppStrings.emailRequired;
+                  }
+                  if (!value.isValidEmail) {
+                    return AppStrings.emailInvalid;
+                  }
+                  return null;
+                },
+              ),
+              if (emailApiError != null) ...[
+                const SizedBox(height: AppSizes.paddingSm + 4),
+                LoginErrorBanner(message: emailApiError),
+              ],
+              const SizedBox(height: AppSizes.paddingXl),
+              LoginSubmitButton(
+                isLoading: isLoading,
+                onPressed: onSubmitted,
+                label: AppStrings.registerTitle,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+

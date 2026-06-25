@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,11 +7,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_otp_extra.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/models/register_password_extra.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_ambient_background.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_brand_header.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/widgets/login_submit_button.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final RegisterOtpExtra extra;
@@ -22,15 +26,36 @@ class OtpVerificationPage extends StatefulWidget {
   State<OtpVerificationPage> createState() => _OtpVerificationPageState();
 }
 
-class _OtpVerificationPageState extends State<OtpVerificationPage> {
+class _OtpVerificationPageState extends State<OtpVerificationPage>
+    with SingleTickerProviderStateMixin {
   final _pinController = TextEditingController();
   Timer? _resendTimer;
   int _resendSeconds = 0;
+  late final AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _startResendCooldown();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _animationController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<AuthBloc>().state;
+      if (state is AuthRegisterOtpError) {
+        _pinController.clear();
+      }
+    });
+  }
 
   @override
   void dispose() {
     _resendTimer?.cancel();
     _pinController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -74,171 +99,282 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _startResendCooldown();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final state = context.read<AuthBloc>().state;
-      if (state is AuthRegisterOtpError) {
-        _pinController.clear();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
-      width: 48,
-      height: 52,
+      width: 44,
+      height: 48,
       textStyle: GoogleFonts.inter(
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFC1C6D7)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(
+          color: AppColors.borderGray.withValues(alpha: 0.5),
+          width: 1.2,
+        ),
       ),
     );
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textPrimary),
           onPressed: () => context.goNamed(AppRoutes.register),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: BlocConsumer<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state is AuthOtpVerified) {
-                // Router redirect handles navigation; post-frame fallback if refresh races.
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!context.mounted) return;
-                  final location = GoRouterState.of(context).uri.path;
-                  if (location != '/register/password') {
-                    context.goNamed(
-                      AppRoutes.registerPassword,
-                      extra: RegisterPasswordExtra(email: state.email),
-                    );
-                  }
-                });
-              } else if (state is AuthRegisterOtpError) {
-                _pinController.clear();
-              } else if (state is AuthOtpSent) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Mã OTP đã được gửi lại')),
-                );
-                _pinController.clear();
-              }
-            },
-            builder: (context, state) {
-              final isLoading = state is AuthLoading;
-              final inlineError =
-                  state is AuthRegisterOtpError ? state.message : null;
-              final canVerify =
-                  !isLoading && _pinController.text.trim().length == 6;
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Xác minh email',
-                    style: GoogleFonts.lexend(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
+      body: Stack(
+        children: [
+          const AuthAmbientBackground(),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.paddingXl,
+                  vertical: AppSizes.paddingXl,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _AnimatedEntrance(
+                      delay: 0,
+                      controller: _animationController,
+                      child: const AuthBrandHeader(),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Nhập mã 6 số đã gửi tới ${_maskEmail(widget.extra.email)}',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Pinput(
-                    controller: _pinController,
-                    length: 6,
-                    enabled: !isLoading,
-                    defaultPinTheme: defaultPinTheme,
-                    focusedPinTheme: defaultPinTheme.copyWith(
-                      decoration: defaultPinTheme.decoration!.copyWith(
-                        border: Border.all(
-                          color: AppColors.primary,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                    onChanged: (_) => setState(() {}),
-                    onCompleted: (_) => _onVerify(),
-                  ),
-                  if (inlineError != null) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      inlineError,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: AppColors.error,
+                    const SizedBox(height: AppSizes.paddingXl + 8),
+                    _AnimatedEntrance(
+                      delay: 150,
+                      controller: _animationController,
+                      child: _OtpCard(
+                        email: _maskEmail(widget.extra.email),
+                        pinController: _pinController,
+                        defaultPinTheme: defaultPinTheme,
+                        onVerify: _onVerify,
+                        onResend: _onResend,
+                        resendSeconds: _resendSeconds,
                       ),
                     ),
                   ],
-                  const SizedBox(height: 28),
-                  ElevatedButton(
-                    onPressed: canVerify ? _onVerify : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnimatedEntrance extends StatelessWidget {
+  final Widget child;
+  final int delay;
+  final AnimationController controller;
+
+  const _AnimatedEntrance({
+    required this.child,
+    required this.delay,
+    required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final start = delay / 1000.0;
+    final end = (delay + 450) / 1000.0;
+
+    final curvedAnimation = CurvedAnimation(
+      parent: controller,
+      curve: Interval(
+        start.clamp(0.0, 1.0),
+        end.clamp(0.0, 1.0),
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
+    return AnimatedBuilder(
+      animation: curvedAnimation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: curvedAnimation.value.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, 24 * (1.0 - curvedAnimation.value)),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+class _OtpCard extends StatelessWidget {
+  final String email;
+  final TextEditingController pinController;
+  final PinTheme defaultPinTheme;
+  final VoidCallback onVerify;
+  final VoidCallback onResend;
+  final int resendSeconds;
+
+  const _OtpCard({
+    required this.email,
+    required this.pinController,
+    required this.defaultPinTheme,
+    required this.onVerify,
+    required this.onResend,
+    required this.resendSeconds,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.45),
+            Colors.white.withValues(alpha: 0.10),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.05),
+            blurRadius: 40,
+            offset: const Offset(0, 16),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(1.0), // Gradient border refraction
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppSizes.radiusXl - 1),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            color: AppColors.white.withValues(alpha: 0.76),
+            padding: const EdgeInsets.all(AppSizes.paddingXl),
+            child: BlocConsumer<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is AuthOtpVerified) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!context.mounted) return;
+                    final location = GoRouterState.of(context).uri.path;
+                    if (location != '/register/password') {
+                      context.goNamed(
+                        AppRoutes.registerPassword,
+                        extra: RegisterPasswordExtra(email: state.email),
+                      );
+                    }
+                  });
+                } else if (state is AuthOtpSent) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Mã OTP đã được gửi lại')),
+                  );
+                }
+              },
+              builder: (context, state) {
+                final isLoading = state is AuthLoading;
+                final inlineError =
+                    state is AuthRegisterOtpError ? state.message : null;
+                final canVerify =
+                    !isLoading && pinController.text.trim().length == 6;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Xác minh email'.toUpperCase(),
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: AppSizes.fontXxl - 2, // 16
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                        letterSpacing: 0.5,
                       ),
                     ),
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            'Xác nhận',
-                            style: GoogleFonts.lexend(
-                              fontWeight: FontWeight.w700,
+                    const SizedBox(height: 8),
+                    Text(
+                      'Nhập mã 6 số đã gửi tới $email',
+                      style: GoogleFonts.inter(
+                        fontSize: AppSizes.fontLg - 1, // 13
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: Pinput(
+                        controller: pinController,
+                        length: 6,
+                        enabled: !isLoading,
+                        defaultPinTheme: defaultPinTheme,
+                        focusedPinTheme: defaultPinTheme.copyWith(
+                          decoration: defaultPinTheme.decoration!.copyWith(
+                            border: Border.all(
+                              color: AppColors.primary,
+                              width: 1.6,
                             ),
                           ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed:
-                        _resendSeconds > 0 || isLoading ? null : _onResend,
-                    child: Text(
-                      _resendSeconds > 0
-                          ? 'Gửi lại sau ${_resendSeconds}s'
-                          : 'Gửi lại mã OTP',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
+                        ),
+                        onChanged: (_) {},
+                        onCompleted: (_) => onVerify(),
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
+                    if (inlineError != null) ...[
+                      const SizedBox(height: 14),
+                      Text(
+                        inlineError,
+                        style: GoogleFonts.inter(
+                          fontSize: AppSizes.fontSm + 1, // 12
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 28),
+                    LoginSubmitButton(
+                      isLoading: isLoading,
+                      onPressed: canVerify ? onVerify : null,
+                      label: 'Xác nhận',
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed:
+                          resendSeconds > 0 || isLoading ? null : onResend,
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        resendSeconds > 0
+                            ? 'Gửi lại sau ${resendSeconds}s'
+                            : 'Gửi lại mã OTP',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
     );
   }
 }
+
