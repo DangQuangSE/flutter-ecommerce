@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
@@ -771,6 +772,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       builder: (context, couponState) {
         final isLoading =
             couponState is CouponLoading || couponState is CouponInitial;
+        final hasError = couponState is CouponError;
         final coupons = couponState is CouponLoaded
             ? couponState.coupons
             : const <CouponEntity>[];
@@ -780,12 +782,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
         return InkWell(
           onTap: isLoading
               ? null
-              : () => _openCouponBottomSheet(
-                    context,
-                    subtotal,
-                    coupons: coupons,
-                    errorMessage: errorMessage,
-                  ),
+              : hasError
+                  ? () => context.read<CouponCubit>().loadUserAvailableCoupons()
+                  : () => _openCouponBottomSheet(
+                        context,
+                        subtotal,
+                        coupons: coupons,
+                        errorMessage: errorMessage,
+                      ),
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -835,15 +839,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       Text(
                         hasCoupon
                             ? 'Tiết kiệm được ${_formatPrice(discount)}'
-                            : (isLoading
-                                ? 'Đang tải mã giảm giá...'
-                                : 'Chọn hoặc nhập mã giảm giá'),
+                            : hasError
+                                ? AppStrings.couponLoadError
+                                : (isLoading
+                                    ? 'Đang tải mã giảm giá...'
+                                    : 'Chọn hoặc nhập mã giảm giá'),
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                           color: hasCoupon
                               ? const Color(0xFF009933)
-                              : AppColors.textHint,
+                              : hasError
+                                  ? AppColors.error
+                                  : AppColors.textHint,
                         ),
                       ),
                     ],
@@ -854,6 +862,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     width: 14,
                     height: 14,
                     child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else if (hasError)
+                  const Icon(
+                    Icons.refresh_rounded,
+                    color: AppColors.error,
+                    size: 18,
                   )
                 else
                   Icon(
@@ -1031,15 +1045,20 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    // Keep viewInsets padding OUTSIDE the SizedBox that has a fixed height,
-    // otherwise the keyboard's resize animation fights the fixed height
-    // mid-layout.
+    // The sheet sits above the keyboard via the viewInsets padding. Cap its
+    // height to the space left after the keyboard so a fixed height + keyboard
+    // can never exceed the screen — otherwise the inner Expanded(list) collapses
+    // to a negative height and throws "RenderBox was not laid out" the moment
+    // the user taps the code field to type a voucher.
+    final media = MediaQuery.of(context);
+    final maxHeight = media.size.height * 0.75;
+    final availableHeight =
+        media.size.height - media.viewInsets.bottom - media.padding.top;
+    final sheetHeight = maxHeight < availableHeight ? maxHeight : availableHeight;
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
+      padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.75,
+        height: sheetHeight,
         child: Column(
           children: [
             Center(

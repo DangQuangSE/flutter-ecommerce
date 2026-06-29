@@ -247,7 +247,6 @@ Future<void> configureDependencies() async {
 
   sl.registerLazySingleton<DioClient>(
     () => DioClient(
-      localStorage: sl<LocalStorage>(),
       authTokenStorage: sl<AuthTokenStorage>(),
       cookieJar: sl<CookieJar>(),
     ),
