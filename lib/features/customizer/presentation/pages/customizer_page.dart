@@ -76,9 +76,12 @@ class _CustomizerPageState extends State<CustomizerPage> {
     if (widget.customDesignId == null) {
       _hasRestoredExistingDesign = true;
     }
-    context
-        .read<CustomizerCubit>()
-        .loadPrintingConfigs(existingDesignId: widget.customDesignId);
+    Future.microtask(() {
+      if (!mounted) return;
+      context
+          .read<CustomizerCubit>()
+          .loadPrintingConfigs(existingDesignId: widget.customDesignId);
+    });
   }
 
   @override

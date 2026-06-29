@@ -3,12 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_tree_node.dart';
+import 'package:flutter_ecommerce/features/category/presentation/models/category_form_extra.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_state.dart';
-import 'package:flutter_ecommerce/features/category/presentation/pages/category_form_page.dart';
 
 class CategoryManagementPage extends StatefulWidget {
   const CategoryManagementPage({super.key});
@@ -23,7 +24,10 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
   @override
   void initState() {
     super.initState();
-    context.read<CategoryCubit>().load();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<CategoryCubit>().load();
+    });
   }
 
   @override
@@ -34,17 +38,16 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
 
   CategoryCubit get _cubit => context.read<CategoryCubit>();
 
-  /// Pushes the form, re-providing the SAME cubit so mutations refresh this list.
   void _openForm({CategoryEntity? category}) {
     final loaded = _cubit.state;
     final parents =
         loaded is CategoryLoaded ? loaded.categories : <CategoryEntity>[];
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: _cubit,
-          child: CategoryFormPage(category: category, parents: parents),
-        ),
+    context.pushNamed(
+      AppRoutes.adminCategoryForm,
+      extra: CategoryFormExtra(
+        cubit: _cubit,
+        category: category,
+        parents: parents,
       ),
     );
   }

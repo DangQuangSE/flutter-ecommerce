@@ -1,5 +1,3 @@
-import 'package:flutter_ecommerce/app/router/app_routes.dart';
-
 class NavigationHistory {
   // A stack of tab routes visited
   static final List<String> _tabHistory = [];

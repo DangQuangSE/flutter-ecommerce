@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
@@ -111,12 +112,11 @@ class _AddressListView extends StatelessWidget {
               return AddressCard(
                 address: addr,
                 onSetDefault: addr.id != null
-                    ? () => context
-                        .read<AddressCubit>()
-                        .setDefaultAddress(addr.id!)
+                    ? () =>
+                        context.read<AddressCubit>().setDefaultAddress(addr.id!)
                     : null,
-                onEdit: () => context.push(
-                  '/addresses/form',
+                onEdit: () => context.pushNamed(
+                  AppRoutes.addressForm,
                   extra: addr,
                 ),
                 onDelete: () => _confirmDelete(context, addr.id!),
@@ -159,7 +159,7 @@ class _AddressListView extends StatelessWidget {
             ),
             const SizedBox(height: AppSizes.paddingXl),
             ElevatedButton.icon(
-              onPressed: () => context.push('/addresses/form'),
+              onPressed: () => context.pushNamed(AppRoutes.addressForm),
               icon: const Icon(Icons.add),
               label: const Text(AppStrings.addressAdd),
             ),

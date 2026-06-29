@@ -24,7 +24,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   void initState() {
     super.initState();
-    context.read<ChatCubit>().loadChats();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<ChatCubit>().loadChats();
+    });
   }
 
   @override

@@ -39,7 +39,6 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_detail_page.dart';
-import 'package:flutter_ecommerce/features/product/presentation/pages/product_list_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
@@ -72,8 +71,12 @@ import 'package:flutter_ecommerce/features/color/presentation/cubit/product_colo
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
+import 'package:flutter_ecommerce/features/category/presentation/models/category_form_extra.dart';
+import 'package:flutter_ecommerce/features/category/presentation/pages/category_form_page.dart';
 import 'package:flutter_ecommerce/features/category/presentation/pages/category_management_page.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/models/coupon_form_extra.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_form_page.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_management_page.dart';
 import 'package:flutter_ecommerce/features/review/presentation/cubit/admin_review_cubit.dart';
 import 'package:flutter_ecommerce/features/review/presentation/pages/admin_review_list_page.dart';
@@ -164,7 +167,7 @@ class AppRouter {
       if (!isAuthenticated && !isGoingToAuth) return '/login';
 
       if (isAuthenticated) {
-        final user = (authState as AuthAuthenticated).user;
+        final user = authState.user;
         if (isForgotPasswordFlow) {
           return user.isAdmin ? '/admin' : '/home';
         }
@@ -320,6 +323,28 @@ class AppRouter {
           create: (_) => sl<CategoryCubit>(),
           child: const CategoryManagementPage(),
         ),
+        routes: [
+          GoRoute(
+            path: 'form',
+            name: AppRoutes.adminCategoryForm,
+            builder: (context, state) {
+              final extra = state.extra as CategoryFormExtra?;
+              if (extra == null) {
+                return BlocProvider(
+                  create: (_) => sl<CategoryCubit>(),
+                  child: const CategoryManagementPage(),
+                );
+              }
+              return BlocProvider.value(
+                value: extra.cubit,
+                child: CategoryFormPage(
+                  category: extra.category,
+                  parents: extra.parents,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/admin/coupons',
@@ -328,6 +353,25 @@ class AppRouter {
           create: (_) => sl<CouponCubit>(),
           child: const CouponManagementPage(),
         ),
+        routes: [
+          GoRoute(
+            path: 'form',
+            name: AppRoutes.adminCouponForm,
+            builder: (context, state) {
+              final extra = state.extra as CouponFormExtra?;
+              if (extra == null) {
+                return BlocProvider(
+                  create: (_) => sl<CouponCubit>(),
+                  child: const CouponManagementPage(),
+                );
+              }
+              return BlocProvider.value(
+                value: extra.cubit,
+                child: CouponFormPage(coupon: extra.coupon),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/admin/reviews',
@@ -443,7 +487,8 @@ class AppRouter {
         builder: (context, state) => MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => sl<CheckoutBloc>()),
-            BlocProvider(create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
+            BlocProvider(
+                create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
             BlocProvider.value(value: sl<AddressCubit>()..loadAddresses()),
           ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),

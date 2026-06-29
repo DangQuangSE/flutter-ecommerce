@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/message_entity.dart';
@@ -134,7 +135,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           if (context.canPop()) {
             context.pop();
           } else {
-            context.go('/chats');
+            context.goNamed(AppRoutes.chatList);
           }
         },
         icon: const Icon(

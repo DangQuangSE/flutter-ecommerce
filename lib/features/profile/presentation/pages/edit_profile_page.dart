@@ -36,8 +36,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    final state = context.read<ProfileCubit>().state;
-    if (state is ProfileLoaded) _prefill(state.profile);
+    Future.microtask(() {
+      if (!mounted) return;
+      final state = context.read<ProfileCubit>().state;
+      if (state is ProfileLoaded) _prefill(state.profile);
+    });
   }
 
   @override
@@ -65,7 +68,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _pickedAvatar = File(picked.path);
       _uploadingAvatar = true;
     });
-    final error = await context.read<ProfileCubit>().updateAvatar(File(picked.path));
+    final error =
+        await context.read<ProfileCubit>().updateAvatar(File(picked.path));
     if (!mounted) return;
     setState(() => _uploadingAvatar = false);
     _showSnack(error ?? 'Đã cập nhật ảnh đại diện', isError: error != null);
@@ -151,9 +155,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             _buildTextField(
               controller: _firstNameController,
               hint: 'Tên',
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Vui lòng nhập tên'
-                  : null,
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên' : null,
             ),
             const SizedBox(height: 20),
             _buildLabel('HỌ'),
@@ -161,9 +164,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             _buildTextField(
               controller: _lastNameController,
               hint: 'Họ',
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Vui lòng nhập họ'
-                  : null,
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Vui lòng nhập họ' : null,
             ),
             const SizedBox(height: 20),
             _buildLabel('EMAIL'),
@@ -229,7 +231,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.white, width: 2),
                 ),
-                child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+                child: const Icon(Icons.camera_alt_rounded,
+                    size: 16, color: Colors.white),
               ),
             ),
           ),
@@ -255,7 +258,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget _avatarFallback() {
     return Container(
       color: const Color(0xFFF3F3F8),
-      child: const Icon(Icons.person_rounded, size: 40, color: AppColors.textSecondary),
+      child: const Icon(Icons.person_rounded,
+          size: 40, color: AppColors.textSecondary),
     );
   }
 
@@ -266,7 +270,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       decoration: BoxDecoration(
         color: const Color(0xFFF3F3F8),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+        border:
+            Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
       ),
       child: Text(
         email,
@@ -341,7 +346,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         isDense: true,
         filled: true,
         fillColor: const Color(0xFFF3F3F8),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
@@ -375,7 +381,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             context.goNamed(AppRoutes.profile);
           }
         },
-        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary, size: 24),
+        icon: const Icon(Icons.arrow_back_rounded,
+            color: AppColors.textPrimary, size: 24),
       ),
       title: Align(
         alignment: Alignment.centerLeft,
@@ -420,7 +427,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         color: AppColors.accent,
                         shape: BoxShape.circle,
                       ),
-                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                      constraints:
+                          const BoxConstraints(minWidth: 16, minHeight: 16),
                       child: Text(
                         '$unreadCount',
                         textAlign: TextAlign.center,

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
-import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
-import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
-import 'package:flutter_ecommerce/features/customizer/domain/repositories/custom_design_repository.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_custom_design_spec_usecase.dart';
 
 class CustomDesignSpecCard extends StatefulWidget {
   final int customDesignId;
@@ -41,69 +39,24 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
 
   Future<void> _loadDesignDetails() async {
     try {
-      final dioClient = sl<DioClient>();
-      final customDesignRepo = sl<CustomDesignRepository>();
-
-      final results = await Future.wait([
-        dioClient.dio.get('/api/custom-designs/${widget.customDesignId}'),
-        customDesignRepo.getPrintingConfigs(),
-      ]);
-
-      final designResponse = results[0] as Response;
-      final configResult = results[1] as Result<PrintingConfigEntity>;
-
-      final body = designResponse.data as Map<String, dynamic>;
-      final data = body['data'] as Map<String, dynamic>;
-
-      final materialId = (data['printingMaterialId'] as num?)?.toInt();
-      final materialName = data['printingMaterialName'] as String?;
-      final numTextLines = (data['numTextLines'] as num? ?? 0).toInt();
-      final numImages = (data['numImages'] as num? ?? 0).toInt();
-      final totalPrintingPrice =
-          (data['totalPrintingPrice'] as num? ?? 0.0).toDouble();
-
-      double materialBasePrice = 0.0;
-      double textUnitPrice = 0.0;
-      double imageUnitPrice = 0.0;
-
-      if (configResult is Success<PrintingConfigEntity>) {
-        final config = configResult.data;
-        if (materialId != null) {
-          final matchedMat = config.materials.firstWhere(
-            (m) => m.id == materialId,
-            orElse: () => config.materials.firstWhere(
-              (m) => m.name.toLowerCase() == materialName?.toLowerCase(),
-              orElse: () => const PrintingMaterialEntity(
-                  id: -1,
-                  name: '',
-                  description: '',
-                  basePrice: 0.0,
-                  isActive: false),
-            ),
-          );
-          if (matchedMat.id != -1) {
-            materialBasePrice = matchedMat.basePrice;
-          }
-        }
-
-        for (final pc in config.priceConfigs) {
-          if (pc.type == 'TEXT') {
-            textUnitPrice = pc.unitPrice;
-          } else if (pc.type == 'IMAGE') {
-            imageUnitPrice = pc.unitPrice;
-          }
-        }
+      final result =
+          await sl<GetCustomDesignSpecUseCase>()(widget.customDesignId);
+      if (result is! Success<CustomDesignSpecEntity>) {
+        if (mounted) setState(() => _isLoading = false);
+        return;
       }
+
+      final spec = result.data;
 
       if (mounted) {
         setState(() {
-          _materialName = materialName;
-          _numTextLines = numTextLines;
-          _numImages = numImages;
-          _totalPrintingPrice = totalPrintingPrice;
-          _materialBasePrice = materialBasePrice;
-          _textUnitPrice = textUnitPrice;
-          _imageUnitPrice = imageUnitPrice;
+          _materialName = spec.materialName;
+          _numTextLines = spec.numTextLines;
+          _numImages = spec.numImages;
+          _totalPrintingPrice = spec.totalPrintingPrice;
+          _materialBasePrice = spec.materialBasePrice;
+          _textUnitPrice = spec.textUnitPrice;
+          _imageUnitPrice = spec.imageUnitPrice;
           _isLoading = false;
         });
       }

@@ -12,6 +12,13 @@ abstract interface class CustomDesignRemoteDataSource {
 
   Future<PrintingConfigEntity> getPrintingConfigs();
 
-  Future<({String designMetadata, String printingMaterialName})>
-      getExistingDesign(int id);
+  Future<
+      ({
+        String designMetadata,
+        String printingMaterialName,
+        int? printingMaterialId,
+        int numTextLines,
+        int numImages,
+        double totalPrintingPrice,
+      })> getExistingDesign(int id);
 }

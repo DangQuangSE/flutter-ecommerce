@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
@@ -46,7 +47,10 @@ class AdminProductDetailPage extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.edit_outlined),
-              onPressed: () => context.push('/admin/products/$productId/edit'),
+              onPressed: () => context.pushNamed(
+                AppRoutes.adminProductEdit,
+                pathParameters: {'id': productId.toString()},
+              ),
             ),
           ],
         ),

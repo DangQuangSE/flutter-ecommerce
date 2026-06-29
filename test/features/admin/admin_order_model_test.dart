@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_ecommerce/features/admin/data/models/admin_order_model.dart';
 import 'package:flutter_ecommerce/features/checkout/data/models/order_request_model.dart';
-import 'package:flutter_ecommerce/features/checkout/domain/entities/order_request_entity.dart';
 
 void main() {
   group('OrderRequestModel', () {

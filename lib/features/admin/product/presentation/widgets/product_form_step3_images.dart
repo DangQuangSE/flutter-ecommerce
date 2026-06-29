@@ -30,12 +30,15 @@ class _ProductFormStep3ImagesState extends State<ProductFormStep3Images> {
   // Cached to prevent the grid disappearing when AdminProductImageFailure is emitted.
   List<ProductImageEntity> _lastKnownImages = [];
 
-  late final AdminProductImageCubit _imageCubit;
+  late AdminProductImageCubit _imageCubit;
+  bool _didResolveImageCubit = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didResolveImageCubit) return;
     _imageCubit = context.read<AdminProductImageCubit>();
+    _didResolveImageCubit = true;
   }
 
   @override

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/enums/discount_type.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/models/coupon_form_extra.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_state.dart';
-import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_form_page.dart';
 
 class CouponManagementPage extends StatefulWidget {
   const CouponManagementPage({super.key});
@@ -27,7 +29,10 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
   @override
   void initState() {
     super.initState();
-    context.read<CouponCubit>().load();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<CouponCubit>().load();
+    });
   }
 
   @override
@@ -38,14 +43,12 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
 
   CouponCubit get _cubit => context.read<CouponCubit>();
 
-  /// Pushes the form, re-providing the SAME cubit so mutations refresh this list.
   void _openForm({CouponEntity? coupon}) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: _cubit,
-          child: CouponFormPage(coupon: coupon),
-        ),
+    context.pushNamed(
+      AppRoutes.adminCouponForm,
+      extra: CouponFormExtra(
+        cubit: _cubit,
+        coupon: coupon,
       ),
     );
   }

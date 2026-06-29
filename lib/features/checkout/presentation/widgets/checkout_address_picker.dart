@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
@@ -91,7 +92,7 @@ class CheckoutAddressPicker extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
-            onPressed: () => context.push('/addresses/form'),
+            onPressed: () => context.pushNamed(AppRoutes.addressForm),
             icon: const Icon(Icons.add, size: 16),
             label: Text(
               'THÊM ĐỊA CHỈ',
@@ -115,7 +116,8 @@ class CheckoutAddressPicker extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressCard(BuildContext context, List<AddressEntity> addresses) {
+  Widget _buildAddressCard(
+      BuildContext context, List<AddressEntity> addresses) {
     final displayAddress = selectedAddress ?? _findDefaultOrFirst(addresses);
 
     return Container(
@@ -202,7 +204,8 @@ class CheckoutAddressPicker extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          if (displayAddress.label != null && displayAddress.label!.isNotEmpty) ...[
+          if (displayAddress.label != null &&
+              displayAddress.label!.isNotEmpty) ...[
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -327,7 +330,7 @@ class _AddressPickerSheet extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
-                  context.push('/addresses/form');
+                  context.pushNamed(AppRoutes.addressForm);
                 },
                 icon: const Icon(Icons.add, size: 16),
                 label: Text(
@@ -374,7 +377,9 @@ class _AddressPickerTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.05) : Colors.white,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.05)
+              : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected

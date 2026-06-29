@@ -1,6 +1,6 @@
 {
   "project": "flutter-ecommerce",
-  "branch": "feat/product-management",
+  "branch": "quang/feat/preview",
   "rules": "YAGNI \u00b7 KISS \u00b7 DRY \u00b7 Brutal honesty \u00b7 Challenge assumptions \u00b7 Before any .dart edit, read .anti-flutter/RULES.md and .claude/rules/flutter-grading-standards.md",
-  "updated_at": "2026-06-18T15:39:53.708002"
+  "updated_at": "2026-06-29T19:16:58.056709"
 }

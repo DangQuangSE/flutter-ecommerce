@@ -59,8 +59,15 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
   }
 
   @override
-  Future<({String designMetadata, String printingMaterialName})>
-      getExistingDesign(int id) async {
+  Future<
+      ({
+        String designMetadata,
+        String printingMaterialName,
+        int? printingMaterialId,
+        int numTextLines,
+        int numImages,
+        double totalPrintingPrice,
+      })> getExistingDesign(int id) async {
     try {
       final response =
           await _dioClient.dio.get(ApiConstants.customDesignById(id));
@@ -70,6 +77,11 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
         designMetadata: data['designMetadata'] as String? ?? '',
         printingMaterialName:
             data['printingMaterialName'] as String? ?? 'In chuyển nhiệt',
+        printingMaterialId: (data['printingMaterialId'] as num?)?.toInt(),
+        numTextLines: (data['numTextLines'] as num? ?? 0).toInt(),
+        numImages: (data['numImages'] as num? ?? 0).toInt(),
+        totalPrintingPrice:
+            (data['totalPrintingPrice'] as num? ?? 0.0).toDouble(),
       );
     } on DioException catch (e) {
       throw NetworkException(

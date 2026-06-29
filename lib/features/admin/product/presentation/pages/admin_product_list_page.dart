@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_status.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
@@ -72,7 +73,7 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final bloc = context.read<AdminProductListBloc>();
-          await context.push('/admin/products/create');
+          await context.pushNamed(AppRoutes.adminProductCreate);
           if (context.mounted) {
             bloc.add(AdminProductListRefreshed());
           }
@@ -173,8 +174,12 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
                                 onPressed: () async {
                                   final bloc =
                                       context.read<AdminProductListBloc>();
-                                  await context.push(
-                                      '/admin/products/${product.id}/edit');
+                                  await context.pushNamed(
+                                    AppRoutes.adminProductEdit,
+                                    pathParameters: {
+                                      'id': product.id.toString(),
+                                    },
+                                  );
                                   if (context.mounted) {
                                     bloc.add(AdminProductListRefreshed());
                                   }
@@ -192,7 +197,10 @@ class _AdminProductListPageState extends State<AdminProductListPage> {
                         ? null
                         : () async {
                             final bloc = context.read<AdminProductListBloc>();
-                            await context.push('/admin/products/${product.id}');
+                            await context.pushNamed(
+                              AppRoutes.adminProductDetail,
+                              pathParameters: {'id': product.id.toString()},
+                            );
                             if (context.mounted) {
                               bloc.add(AdminProductListRefreshed());
                             }
