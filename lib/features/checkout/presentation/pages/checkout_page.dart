@@ -784,7 +784,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ? null
               : hasError
                   ? () => context.read<CouponCubit>().loadUserAvailableCoupons()
-                  : () => _openCouponBottomSheet(
+                  : () => _openCouponDialog(
                         context,
                         subtotal,
                         coupons: coupons,
@@ -883,21 +883,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  void _openCouponBottomSheet(
+  void _openCouponDialog(
     BuildContext context,
     double subtotal, {
     required List<CouponEntity> coupons,
     required String? errorMessage,
   }) {
-    showModalBottomSheet(
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (modalContext) {
-        return _CouponSelectionSheet(
+      barrierDismissible: true,
+      builder: (dialogContext) => Dialog(
+        insetPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        child: _CouponSelectionSheet(
           subtotal: subtotal,
           selectedCoupon: _selectedCoupon,
           coupons: coupons,
@@ -906,10 +907,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
             setState(() {
               _selectedCoupon = coupon;
             });
-            Navigator.pop(modalContext);
+            Navigator.pop(dialogContext);
           },
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -1045,161 +1046,140 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    // The sheet sits above the keyboard via the viewInsets padding. Cap its
-    // height to the space left after the keyboard so a fixed height + keyboard
-    // can never exceed the screen — otherwise the inner Expanded(list) collapses
-    // to a negative height and throws "RenderBox was not laid out" the moment
-    // the user taps the code field to type a voucher.
-    final media = MediaQuery.of(context);
-    final maxHeight = media.size.height * 0.75;
-    final availableHeight =
-        media.size.height - media.viewInsets.bottom - media.padding.top;
-    final sheetHeight = maxHeight < availableHeight ? maxHeight : availableHeight;
-    return Padding(
-      padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
-      child: SizedBox(
-        height: sheetHeight,
-        child: Column(
-          children: [
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 8, bottom: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(2),
+    // Dialog provides bounded width+height so no SizedBox/Expanded tricks needed.
+    // ConstrainedBox caps the list height; Column(min) sizes to its content.
+    final listMaxHeight = MediaQuery.sizeOf(context).height * 0.4;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 4, 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Chọn Sport Pro Voucher',
+                  style: GoogleFonts.lexend(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
                 children: [
-                  Text(
-                    'Chọn Sport Pro Voucher',
-                    style: GoogleFonts.lexend(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
+                  Expanded(
+                    child: TextField(
+                      controller: _codeController,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        hintText: 'Nhập mã voucher',
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFC1C6D7)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: AppColors.primary),
+                        ),
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 20),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _codeController,
-                          textCapitalization: TextCapitalization.characters,
-                          decoration: InputDecoration(
-                            hintText: 'Nhập mã voucher',
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 12,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide:
-                                  const BorderSide(color: Color(0xFFC1C6D7)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide:
-                                  const BorderSide(color: AppColors.primary),
-                            ),
-                          ),
-                        ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: _applyManualCode,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      // Override global theme minimumSize so width never resolves
+                      // to infinity when this button sits inside an unconstrained Row.
+                      minimumSize: const Size(88, 48),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: _applyManualCode,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'Áp dụng',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ],
-                  ),
-                  if (_errorMessage != null) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      _errorMessage!,
+                    ),
+                    child: Text(
+                      'Áp dụng',
                       style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: AppColors.error,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                  ],
+                  ),
                 ],
               ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: _buildCouponList(),
-            ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    widget.onCouponSelected(_tempSelectedCoupon);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'OK',
-                    style: GoogleFonts.lexend(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                    ),
+              if (_errorMessage != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  _errorMessage!,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+              ],
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        // ConstrainedBox gives the list a concrete bounded height — no Expanded
+        // needed, so Column(min) never has to distribute unconstrained space.
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: listMaxHeight),
+          child: _buildCouponList(),
+        ),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+          ),
+          child: ElevatedButton(
+            onPressed: () => widget.onCouponSelected(_tempSelectedCoupon),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accent,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-          ],
-        ), // Column
-      ), // SizedBox
-    ); // Padding (keyboard inset wrapper)
+            child: Text(
+              'OK',
+              style: GoogleFonts.lexend(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildSectionLabel(String text) {
