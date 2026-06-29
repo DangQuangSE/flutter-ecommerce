@@ -30,7 +30,7 @@ class AdminProfileTab extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 54,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                     backgroundImage: user?.avatarUrl != null
                         ? NetworkImage(user!.avatarUrl!)
                         : null,
@@ -78,7 +78,7 @@ class AdminProfileTab extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.accent.withOpacity(0.15),
+                  color: AppColors.accent.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

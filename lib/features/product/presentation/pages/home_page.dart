@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           border: Border.all(color: const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 16,
               offset: const Offset(0, 8),
             ),
@@ -187,10 +187,10 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                         border:
-                            Border.all(color: Colors.white.withOpacity(0.15)),
+                            Border.all(color: Colors.white.withValues(alpha: 0.15)),
                       ),
                       child: Text(
                         'DÒNG SẢN PHẨM MỚI NHẤT',
@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white.withOpacity(0.75),
+                        color: Colors.white.withValues(alpha: 0.75),
                         height: 1.4,
                       ),
                     ),
@@ -374,7 +374,7 @@ class _HomePageState extends State<HomePage> {
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
                               colors: [
-                                Colors.black.withOpacity(0.7),
+                                Colors.black.withValues(alpha: 0.7),
                                 Colors.black12,
                               ],
                             ),

@@ -253,7 +253,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
         border: Border.all(color: Colors.grey.shade100),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.015),
+            color: Colors.black.withValues(alpha: 0.015),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -295,8 +295,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: isActive
-                              ? Colors.green.withOpacity(0.85)
-                              : Colors.red.withOpacity(0.85),
+                              ? Colors.green.withValues(alpha: 0.85)
+                              : Colors.red.withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -543,9 +543,9 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                           },
                           child: Chip(
                             backgroundColor:
-                                parsedPresetColor.withOpacity(0.12),
+                                parsedPresetColor.withValues(alpha: 0.12),
                             side: BorderSide(
-                                color: parsedPresetColor.withOpacity(0.3)),
+                                color: parsedPresetColor.withValues(alpha: 0.3)),
                             avatar: CircleAvatar(
                               radius: 8,
                               backgroundColor: parsedPresetColor,
@@ -760,9 +760,9 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                           },
                           child: Chip(
                             backgroundColor:
-                                parsedPresetColor.withOpacity(0.12),
+                                parsedPresetColor.withValues(alpha: 0.12),
                             side: BorderSide(
-                                color: parsedPresetColor.withOpacity(0.3)),
+                                color: parsedPresetColor.withValues(alpha: 0.3)),
                             avatar: CircleAvatar(
                               radius: 8,
                               backgroundColor: parsedPresetColor,

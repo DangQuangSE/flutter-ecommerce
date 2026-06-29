@@ -95,7 +95,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
             border: Border.all(color: const Color(0xFFE2E8F0)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.015),
+                color: Colors.black.withValues(alpha: 0.015),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

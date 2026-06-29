@@ -79,7 +79,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 10,
                 offset: const Offset(0, -2))
           ],
@@ -90,7 +90,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textSecondary.withOpacity(0.7),
+          unselectedItemColor: AppColors.textSecondary.withValues(alpha: 0.7),
           selectedLabelStyle:
               GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11),
           unselectedLabelStyle:

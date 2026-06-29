@@ -32,16 +32,16 @@ class GlassAppBar extends StatelessWidget {
           // Top padding accounts for status bar safe area, flat edges fill the whole width
           padding: EdgeInsets.fromLTRB(16, statusBarHeight + 12, 16, 12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
+            color: Colors.white.withValues(alpha: 0.85),
             border: Border(
               bottom: BorderSide(
-                color: const Color(0xFFE2E8F0).withOpacity(0.8),
+                color: const Color(0xFFE2E8F0).withValues(alpha: 0.8),
                 width: 1.0,
               ),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

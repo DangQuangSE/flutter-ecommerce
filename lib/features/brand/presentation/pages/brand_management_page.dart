@@ -180,7 +180,7 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
         border: Border.all(color: Colors.grey.shade100),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.015),
+            color: Colors.black.withValues(alpha: 0.015),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -198,7 +198,7 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.05),
+                    color: AppColors.primary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade200),
                   ),
