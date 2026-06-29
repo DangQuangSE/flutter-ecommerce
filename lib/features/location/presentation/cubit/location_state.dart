@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_ecommerce/features/location/data/models/location_model.dart';
+import 'package:flutter_ecommerce/features/location/domain/entities/location_entity.dart';
 
 sealed class LocationState extends Equatable {
   const LocationState();
@@ -17,12 +17,12 @@ class LocationLoading extends LocationState {
 }
 
 class LocationLoaded extends LocationState {
-  final List<LocationModel> provinces;
-  final List<LocationModel> districts;
-  final List<LocationModel> wards;
-  final LocationModel? selectedProvince;
-  final LocationModel? selectedDistrict;
-  final LocationModel? selectedWard;
+  final List<LocationEntity> provinces;
+  final List<LocationEntity> districts;
+  final List<LocationEntity> wards;
+  final LocationEntity? selectedProvince;
+  final LocationEntity? selectedDistrict;
+  final LocationEntity? selectedWard;
   final bool isLoadingDistricts;
   final bool isLoadingWards;
 
@@ -38,12 +38,12 @@ class LocationLoaded extends LocationState {
   });
 
   LocationLoaded copyWith({
-    List<LocationModel>? provinces,
-    List<LocationModel>? districts,
-    List<LocationModel>? wards,
-    LocationModel? Function()? selectedProvince,
-    LocationModel? Function()? selectedDistrict,
-    LocationModel? Function()? selectedWard,
+    List<LocationEntity>? provinces,
+    List<LocationEntity>? districts,
+    List<LocationEntity>? wards,
+    LocationEntity? Function()? selectedProvince,
+    LocationEntity? Function()? selectedDistrict,
+    LocationEntity? Function()? selectedWard,
     bool? isLoadingDistricts,
     bool? isLoadingWards,
   }) {
@@ -55,8 +55,7 @@ class LocationLoaded extends LocationState {
           selectedProvince != null ? selectedProvince() : this.selectedProvince,
       selectedDistrict:
           selectedDistrict != null ? selectedDistrict() : this.selectedDistrict,
-      selectedWard:
-          selectedWard != null ? selectedWard() : this.selectedWard,
+      selectedWard: selectedWard != null ? selectedWard() : this.selectedWard,
       isLoadingDistricts: isLoadingDistricts ?? this.isLoadingDistricts,
       isLoadingWards: isLoadingWards ?? this.isLoadingWards,
     );

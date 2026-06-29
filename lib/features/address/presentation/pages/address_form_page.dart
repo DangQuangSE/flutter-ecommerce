@@ -9,7 +9,7 @@ import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
-import 'package:flutter_ecommerce/features/location/data/models/location_model.dart';
+import 'package:flutter_ecommerce/features/location/domain/entities/location_entity.dart';
 import 'package:flutter_ecommerce/features/location/presentation/cubit/location_cubit.dart';
 import 'package:flutter_ecommerce/features/location/presentation/cubit/location_state.dart';
 
@@ -61,7 +61,9 @@ class _AddressFormPageState extends State<AddressFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    final title = _isEditing ? AppStrings.addressFormEditTitle : AppStrings.addressFormTitle;
+    final title = _isEditing
+        ? AppStrings.addressFormEditTitle
+        : AppStrings.addressFormTitle;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
@@ -79,7 +81,10 @@ class _AddressFormPageState extends State<AddressFormPage> {
           final isSubmitting = state is AddressLoaded && state.isSubmitting;
           return Container(
             padding: EdgeInsets.fromLTRB(
-              16, 12, 16, MediaQuery.of(context).padding.bottom + 12,
+              16,
+              12,
+              16,
+              MediaQuery.of(context).padding.bottom + 12,
             ),
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -103,11 +108,14 @@ class _AddressFormPageState extends State<AddressFormPage> {
                         height: 22,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.4,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.white),
                         ),
                       )
                     : Text(
-                        _isEditing ? AppStrings.addressUpdate : AppStrings.addressSave,
+                        _isEditing
+                            ? AppStrings.addressUpdate
+                            : AppStrings.addressSave,
                         style: GoogleFonts.lexend(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -122,7 +130,9 @@ class _AddressFormPageState extends State<AddressFormPage> {
         value: _locationCubit,
         child: BlocConsumer<AddressCubit, AddressState>(
           listener: (context, state) {
-            if (state is AddressLoaded && state.message != null && !state.isSubmitting) {
+            if (state is AddressLoaded &&
+                state.message != null &&
+                !state.isSubmitting) {
               context.pop();
             }
           },
@@ -165,7 +175,8 @@ class _AddressFormPageState extends State<AddressFormPage> {
                                 return AppStrings.addressPhoneRequired;
                               }
                               final phone = v.trim();
-                              if (!RegExp(r'^(0[3|5|7|8|9])[0-9]{8}$').hasMatch(phone)) {
+                              if (!RegExp(r'^(0[3|5|7|8|9])[0-9]{8}$')
+                                  .hasMatch(phone)) {
                                 return 'Số điện thoại không hợp lệ (VD: 0912345678)';
                               }
                               return null;
@@ -197,31 +208,36 @@ class _AddressFormPageState extends State<AddressFormPage> {
                         _buildLabeledField(
                           label: 'Tỉnh / Thành phố',
                           required: true,
-                          child: _buildLocationDropdown<LocationModel>(
+                          child: _buildLocationDropdown<LocationEntity>(
                             hint: 'Chọn tỉnh/thành phố',
                             icon: Icons.map_outlined,
                             items: (s) => s.provinces,
                             selectedItem: (s) => s.selectedProvince,
                             isLoading: (_) => false,
                             onChanged: (v) {
-                              if (v != null) context.read<LocationCubit>().selectProvince(v);
+                              if (v != null) {
+                                context.read<LocationCubit>().selectProvince(v);
+                              }
                             },
-                            validator: (v) =>
-                                v == null ? 'Vui lòng chọn tỉnh/thành phố' : null,
+                            validator: (v) => v == null
+                                ? 'Vui lòng chọn tỉnh/thành phố'
+                                : null,
                           ),
                         ),
                         const SizedBox(height: 14),
                         _buildLabeledField(
                           label: 'Quận / Huyện',
                           required: true,
-                          child: _buildLocationDropdown<LocationModel>(
+                          child: _buildLocationDropdown<LocationEntity>(
                             hint: 'Chọn quận/huyện',
                             icon: Icons.location_city_outlined,
                             items: (s) => s.districts,
                             selectedItem: (s) => s.selectedDistrict,
                             isLoading: (s) => s.isLoadingDistricts,
                             onChanged: (v) {
-                              if (v != null) context.read<LocationCubit>().selectDistrict(v);
+                              if (v != null) {
+                                context.read<LocationCubit>().selectDistrict(v);
+                              }
                             },
                             validator: (v) =>
                                 v == null ? 'Vui lòng chọn quận/huyện' : null,
@@ -231,14 +247,16 @@ class _AddressFormPageState extends State<AddressFormPage> {
                         _buildLabeledField(
                           label: 'Phường / Xã',
                           required: true,
-                          child: _buildLocationDropdown<LocationModel>(
+                          child: _buildLocationDropdown<LocationEntity>(
                             hint: 'Chọn phường/xã',
                             icon: Icons.place_outlined,
                             items: (s) => s.wards,
                             selectedItem: (s) => s.selectedWard,
                             isLoading: (s) => s.isLoadingWards,
                             onChanged: (v) {
-                              if (v != null) context.read<LocationCubit>().selectWard(v);
+                              if (v != null) {
+                                context.read<LocationCubit>().selectWard(v);
+                              }
                             },
                             validator: (v) =>
                                 v == null ? 'Vui lòng chọn phường/xã' : null,
@@ -406,7 +424,8 @@ class _AddressFormPageState extends State<AddressFormPage> {
             : null,
         filled: true,
         fillColor: const Color(0xFFF8F9FC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
@@ -465,7 +484,9 @@ class _AddressFormPageState extends State<AddressFormPage> {
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: _isDefault ? AppColors.primary : AppColors.textPrimary,
+                      color: _isDefault
+                          ? AppColors.primary
+                          : AppColors.textPrimary,
                     ),
                   ),
                   Text(
@@ -486,12 +507,14 @@ class _AddressFormPageState extends State<AddressFormPage> {
                 color: _isDefault ? AppColors.primary : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: _isDefault ? AppColors.primary : const Color(0xFFD1D5DB),
+                  color:
+                      _isDefault ? AppColors.primary : const Color(0xFFD1D5DB),
                   width: 1.5,
                 ),
               ),
               child: _isDefault
-                  ? const Icon(Icons.check_rounded, size: 14, color: Colors.white)
+                  ? const Icon(Icons.check_rounded,
+                      size: 14, color: Colors.white)
                   : null,
             ),
           ],
@@ -531,7 +554,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
     }
   }
 
-  Widget _buildLocationDropdown<T extends LocationModel>({
+  Widget _buildLocationDropdown<T extends LocationEntity>({
     required String hint,
     IconData? icon,
     required List<T> Function(LocationLoaded state) items,
@@ -540,7 +563,8 @@ class _AddressFormPageState extends State<AddressFormPage> {
     required void Function(T?) onChanged,
     required String? Function(T?)? validator,
   }) {
-    OutlineInputBorder borderOf(Color color, [double width = 1]) => OutlineInputBorder(
+    OutlineInputBorder borderOf(Color color, [double width = 1]) =>
+        OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: color, width: width),
         );
@@ -550,7 +574,8 @@ class _AddressFormPageState extends State<AddressFormPage> {
         final loaded = state is LocationLoaded ? state : null;
         final loading = loaded == null || isLoading(loaded);
         return DropdownButtonFormField<T>(
-          key: ValueKey('loc_${hint}_${loaded == null ? null : selectedItem(loaded)?.code}'),
+          key: ValueKey(
+              'loc_${hint}_${loaded == null ? null : selectedItem(loaded)?.code}'),
           initialValue: loaded == null ? null : selectedItem(loaded),
           menuMaxHeight: 280,
           isExpanded: true,
@@ -565,13 +590,15 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   color: AppColors.textSecondary),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
+            hintStyle:
+                GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
             prefixIcon: icon != null
                 ? Icon(icon, size: 18, color: AppColors.textSecondary)
                 : null,
             filled: true,
             fillColor: const Color(0xFFF8F9FC),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
             border: borderOf(const Color(0xFFE5E7EB)),
             enabledBorder: borderOf(const Color(0xFFE5E7EB)),
             focusedBorder: borderOf(AppColors.primary, 1.6),
