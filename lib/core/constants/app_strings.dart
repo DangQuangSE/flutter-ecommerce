@@ -2,6 +2,19 @@
 /// constant here instead, so swapping to a localization framework later
 /// only touches this file.
 abstract final class AppStrings {
+  // Checkout
+  static const String checkoutTitle = 'THANH TO\u00c1N';
+  static const String checkoutShippingSectionTitle =
+      'TH\u00d4NG TIN GIAO H\u00c0NG';
+  static const String checkoutPaymentSectionTitle =
+      'PH\u01af\u01a0NG TH\u1ee8C THANH TO\u00c1N';
+  static const String checkoutCouponSectionTitle =
+      'M\u00c3 GI\u1ea2M GI\u00c1 (COUPON)';
+  static const String checkoutAddressRequired =
+      'Vui l\u00f2ng ch\u1ecdn \u0111\u1ecba ch\u1ec9 giao h\u00e0ng!';
+  static const String checkoutShippingInfoRequired =
+      'Vui l\u00f2ng \u0111i\u1ec1n \u0111\u1ea7y \u0111\u1ee7 th\u00f4ng tin giao h\u00e0ng!';
+
   // Cart
   static const String cartEmptyTitle = 'GIỎ HÀNG TRỐNG';
   static const String cartEmptyMessage =
