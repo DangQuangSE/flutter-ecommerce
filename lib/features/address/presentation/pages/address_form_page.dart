@@ -6,6 +6,7 @@ import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/app_section_card.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
@@ -145,7 +146,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Section 1: Contact info
-                    _buildSectionCard(
+                    AppSectionCard(
                       title: 'Thông tin người nhận',
                       icon: Icons.person_outline_rounded,
                       children: [
@@ -188,7 +189,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
                     const SizedBox(height: 12),
 
                     // Section 2: Address detail
-                    _buildSectionCard(
+                    AppSectionCard(
                       title: 'Địa chỉ giao hàng',
                       icon: Icons.location_on_outlined,
                       children: [
@@ -267,7 +268,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
                     const SizedBox(height: 12),
 
                     // Section 3: Optional
-                    _buildSectionCard(
+                    AppSectionCard(
                       title: 'Tuỳ chọn',
                       icon: Icons.tune_outlined,
                       children: [
@@ -297,67 +298,6 @@ class _AddressFormPageState extends State<AddressFormPage> {
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
-
-  Widget _buildSectionCard({
-    required String title,
-    required IconData icon,
-    required List<Widget> children,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: Row(
-              children: [
-                Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(icon, size: 16, color: AppColors.primary),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  title,
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 12),
-            child: Divider(height: 1, color: Color(0xFFF0F0F0)),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: children,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildLabeledField({
     required String label,

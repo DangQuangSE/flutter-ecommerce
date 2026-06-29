@@ -2,6 +2,13 @@
 /// constant here instead, so swapping to a localization framework later
 /// only touches this file.
 abstract final class AppStrings {
+  // Cart
+  static const String cartEmptyTitle = 'GIỎ HÀNG TRỐNG';
+  static const String cartEmptyMessage =
+      'Bạn chưa thêm bất kỳ sản phẩm nào vào giỏ hàng. Hãy khám phá bộ sưu tập thể thao Pro ngay!';
+  static const String cartLoadErrorTitle = 'Không thể tải thông tin giỏ hàng.';
+  static const String continueShopping = 'TIẾP TỤC MUA SẮM';
+
   // Common actions
   static const String retry = 'Thử lại';
   static const String viewCart = 'XEM GIỎ';
