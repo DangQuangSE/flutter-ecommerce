@@ -346,7 +346,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                             fit: BoxFit.contain,
                             child: Switch.adaptive(
                               value: isActive,
-                              activeColor: AppColors.primary,
+                              activeThumbColor: AppColors.primary,
                               onChanged: onToggleActive,
                               materialTapTargetSize:
                                   MaterialTapTargetSize.shrinkWrap,
@@ -545,7 +545,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                             backgroundColor:
                                 parsedPresetColor.withValues(alpha: 0.12),
                             side: BorderSide(
-                                color: parsedPresetColor.withValues(alpha: 0.3)),
+                                color:
+                                    parsedPresetColor.withValues(alpha: 0.3)),
                             avatar: CircleAvatar(
                               radius: 8,
                               backgroundColor: parsedPresetColor,
@@ -762,7 +763,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                             backgroundColor:
                                 parsedPresetColor.withValues(alpha: 0.12),
                             side: BorderSide(
-                                color: parsedPresetColor.withValues(alpha: 0.3)),
+                                color:
+                                    parsedPresetColor.withValues(alpha: 0.3)),
                             avatar: CircleAvatar(
                               radius: 8,
                               backgroundColor: parsedPresetColor,
@@ -788,7 +790,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                         _buildLabel('TRẠNG THÁI HOẠT ĐỘNG'),
                         Switch.adaptive(
                           value: activeVal,
-                          activeColor: AppColors.primary,
+                          activeThumbColor: AppColors.primary,
                           onChanged: (val) {
                             setSheetState(() {
                               activeVal = val;
@@ -891,11 +893,10 @@ class _ColorManagementPageState extends State<ColorManagementPage>
               pickerColor: initColor,
               onColorChanged: (color) {
                 final hexStr =
-                    '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+                    '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
                 hexController.text = hexStr;
                 setSheetState(() {});
               },
-              showLabel: true,
               pickerAreaHeightPercent: 0.7,
             ),
           ),

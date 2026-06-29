@@ -150,7 +150,8 @@ class AdminDashboardTab extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.arrow_upward_rounded,
-                            size: 12, color: Colors.white.withValues(alpha: 0.9)),
+                            size: 12,
+                            color: Colors.white.withValues(alpha: 0.9)),
                         const SizedBox(width: 2),
                         Text(
                           '+${stats.revenueGrowth}% so với tuần trước',

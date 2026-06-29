@@ -31,7 +31,7 @@ void main() {
 
   group('AdminOrderModel', () {
     test('fromJson parses customerName', () {
-      final model = AdminOrderModel.fromJson({
+      final model = AdminOrderModel.fromJson(const {
         'id': 1,
         'shippingAddress': '123 St',
         'phoneNumber': '0987654321',
@@ -48,7 +48,7 @@ void main() {
     });
 
     test('displayCustomerName falls back to em dash when missing', () {
-      final model = AdminOrderModel.fromJson({
+      final model = AdminOrderModel.fromJson(const {
         'id': 2,
         'shippingAddress': '123 St',
         'phoneNumber': '0987654321',

@@ -49,7 +49,7 @@ class _ProductListPageState extends State<ProductListPage> {
       extendBody: true,
       body: PopScope(
         canPop: false,
-        onPopInvoked: (bool didPop) {
+        onPopInvokedWithResult: (bool didPop, Object? result) {
           if (didPop) return;
           if (context.canPop()) {
             context.pop();
@@ -103,11 +103,11 @@ class _ProductListPageState extends State<ProductListPage> {
             ),
 
             // 2. Reusable Glassmorphic Top App Bar (showing back button)
-            Positioned(
+            const Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: const GlassAppBar(
+              child: GlassAppBar(
                 showBackButton: true,
                 customTitle: 'Sport Pro',
               ),

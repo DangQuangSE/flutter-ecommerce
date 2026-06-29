@@ -254,7 +254,7 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                 // Status Switch
                 Switch.adaptive(
                   value: brand.isActive,
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                   onChanged: (val) {
                     if (brand.id != null) {
                       context
@@ -485,7 +485,7 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
                         _buildLabel('TRẠNG THÁI HOẠT ĐỘNG'),
                         Switch.adaptive(
                           value: activeVal,
-                          activeColor: AppColors.primary,
+                          activeThumbColor: AppColors.primary,
                           onChanged: (val) {
                             setSheetState(() {
                               activeVal = val;

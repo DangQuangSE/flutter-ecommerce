@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
       extendBody: true,
       body: PopScope(
         canPop: false,
-        onPopInvoked: (bool didPop) {
+        onPopInvokedWithResult: (bool didPop, Object? result) {
           if (didPop) return;
           final prevTab = NavigationHistory.popTab();
           if (prevTab != null) {
@@ -92,11 +92,11 @@ class _HomePageState extends State<HomePage> {
             ),
 
             // 2. Reusable Glassmorphic Top App Bar
-            Positioned(
+            const Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: const GlassAppBar(
+              child: GlassAppBar(
                 showBackButton: false,
                 customTitle: 'Sport Pro',
               ),
@@ -189,8 +189,8 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
-                        border:
-                            Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.15)),
                       ),
                       child: Text(
                         'DÒNG SẢN PHẨM MỚI NHẤT',

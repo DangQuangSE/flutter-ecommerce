@@ -13,10 +13,9 @@ class ProductTactileCard extends StatefulWidget {
 
   const ProductTactileCard({
     super.key,
-    required ProductEntity product,
+    required this.product,
     this.badge,
-  })  : product = product,
-        catalogProduct = null;
+  }) : catalogProduct = null;
 
   const ProductTactileCard.fromCatalog({
     super.key,
@@ -34,17 +33,28 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
 
   String get _id => widget.product?.id ?? widget.catalogProduct?.slug ?? '';
   String get _name => widget.product?.name ?? widget.catalogProduct?.name ?? '';
-  String get _imageUrl => widget.product?.imageUrl ?? widget.catalogProduct?.imageUrl ?? '';
-  String get _brandName => widget.product?.brandName ?? widget.catalogProduct?.brandName ?? '';
-  String get _categoryName => widget.product?.categoryName ?? widget.catalogProduct?.categoryName ?? '';
-  
+  String get _imageUrl =>
+      widget.product?.imageUrl ?? widget.catalogProduct?.imageUrl ?? '';
+  String get _brandName =>
+      widget.product?.brandName ?? widget.catalogProduct?.brandName ?? '';
+  String get _categoryName =>
+      widget.product?.categoryName ?? widget.catalogProduct?.categoryName ?? '';
+
   double get _price => widget.product != null
       ? widget.product!.price
-      : (widget.catalogProduct?.salePrice ?? widget.catalogProduct?.originalPrice ?? 0.0);
+      : (widget.catalogProduct?.salePrice ??
+          widget.catalogProduct?.originalPrice ??
+          0.0);
 
-  double get _originalPrice => widget.product?.originalPrice ?? widget.catalogProduct?.originalPrice ?? 0.0;
+  double get _originalPrice =>
+      widget.product?.originalPrice ??
+      widget.catalogProduct?.originalPrice ??
+      0.0;
 
-  double get _averageRating => widget.product?.averageRating ?? widget.catalogProduct?.averageRating ?? 0.0;
+  double get _averageRating =>
+      widget.product?.averageRating ??
+      widget.catalogProduct?.averageRating ??
+      0.0;
 
   bool get _hasDiscount => widget.product != null
       ? widget.product!.hasDiscount
@@ -291,11 +301,12 @@ class _StarRating extends StatelessWidget {
         if (i < rating.floor()) {
           return const Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
         } else if (i < rating && rating - i >= 0.5) {
-          return const Icon(Icons.star_half, size: 12, color: Color(0xFFFFC107));
+          return const Icon(Icons.star_half,
+              size: 12, color: Color(0xFFFFC107));
         }
-        return const Icon(Icons.star_border, size: 12, color: Color(0xFFFFC107));
+        return const Icon(Icons.star_border,
+            size: 12, color: Color(0xFFFFC107));
       }),
     );
   }
 }
-

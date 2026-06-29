@@ -119,8 +119,7 @@ class AdminProfileTab extends StatelessWidget {
                             fontSize: 14, fontWeight: FontWeight.w600)),
                     trailing:
                         const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                    onTap: () =>
-                        context.pushNamed(AppRoutes.adminShopConfig),
+                    onTap: () => context.pushNamed(AppRoutes.adminShopConfig),
                   ),
                   const Divider(height: 1),
                   ListTile(

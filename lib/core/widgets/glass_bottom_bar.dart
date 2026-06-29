@@ -107,7 +107,7 @@ class GlassBottomBar extends StatelessWidget {
     required bool isActive,
     required VoidCallback onTap,
   }) {
-    final activeColor = AppColors.accent;
+    const activeColor = AppColors.accent;
     final inactiveColor = AppColors.textSecondary.withValues(alpha: 0.7);
 
     return InkWell(

@@ -1372,15 +1372,21 @@ class _CouponSelectionSheetState extends State<_CouponSelectionSheet> {
               ),
             ),
             if (isEligible)
-              Radio<String>(
-                value: c.code,
-                groupValue: _tempSelectedCoupon?.code,
-                activeColor: AppColors.primary,
-                onChanged: (_) {
-                  setState(() {
-                    _tempSelectedCoupon = c;
-                  });
-                },
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IconButton(
+                  icon: Icon(
+                    _tempSelectedCoupon?.code == c.code
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                    color: AppColors.primary,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _tempSelectedCoupon = c;
+                    });
+                  },
+                ),
               )
             else
               Padding(
