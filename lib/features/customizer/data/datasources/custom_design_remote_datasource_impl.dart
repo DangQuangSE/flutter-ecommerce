@@ -6,6 +6,7 @@ import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/features/customizer/data/datasources/custom_design_remote_datasource.dart';
+import 'package:flutter_ecommerce/features/customizer/data/models/printing_config_model.dart';
 
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 
@@ -99,7 +100,7 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
       final response = await _dioClient.dio.get(ApiConstants.printingAll);
       final body = response.data as Map<String, dynamic>;
       final data = body['data'] as Map<String, dynamic>;
-      return PrintingConfigEntity.fromJson(data);
+      return PrintingConfigModel.fromJson(data).toEntity();
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ??
