@@ -1,28 +1,15 @@
 import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/printing_constants.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_state.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
-import 'package:flutter_ecommerce/features/customizer/presentation/widgets/canvas_workspace.dart';
-import 'package:flutter_ecommerce/features/customizer/presentation/widgets/design_config_panel.dart';
-import 'package:flutter_ecommerce/features/customizer/presentation/widgets/pricing_footer.dart';
-
-part 'customizer_actions.dart';
-part 'customizer_layer_handlers.dart';
-part 'customizer_view_helpers.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_view_helpers.dart';
 
 class CustomizerPage extends StatefulWidget {
   final String productId;
@@ -45,23 +32,22 @@ class CustomizerPage extends StatefulWidget {
   });
 
   @override
-  State<CustomizerPage> createState() => _CustomizerPageState();
+  State<CustomizerPage> createState() => CustomizerPageState();
 }
 
-class _CustomizerPageState extends State<CustomizerPage> {
-  final GlobalKey _canvasKey = GlobalKey();
-  final TextEditingController _textController = TextEditingController();
-  final ImagePicker _imagePicker = ImagePicker();
+class CustomizerPageState extends State<CustomizerPage> {
+  final GlobalKey canvasKey = GlobalKey();
+  final TextEditingController textController = TextEditingController();
 
-  bool _isFrontView = true;
-  double _zoomScale = 1.0;
-  double _rotationAngle = 0.0;
-  String _printMethod = 'In chuyển nhiệt';
-  final List<DesignLayer> _layers = [];
-  DesignLayer? _activeLayer;
-  bool _hasRestoredExistingDesign = false;
+  bool isFrontView = true;
+  double zoomScale = 1.0;
+  double rotationAngle = 0.0;
+  String printMethod = AppStrings.customizerDefaultPrintMethod;
+  final List<DesignLayer> layers = [];
+  DesignLayer? activeLayer;
+  bool hasRestoredExistingDesign = false;
 
-  final List<Color> _presetColors = [
+  final List<Color> presetColors = [
     AppColors.canvasGradientStart,
     AppColors.darkText,
     AppColors.accentBlue,
@@ -72,13 +58,13 @@ class _CustomizerPageState extends State<CustomizerPage> {
     AppColors.accentYellow,
   ];
 
-  final List<String> _fontsList = ['Lexend', 'Inter', 'Roboto', 'Montserrat'];
+  final List<String> fontsList = ['Lexend', 'Inter', 'Roboto', 'Montserrat'];
 
   @override
   void initState() {
     super.initState();
     if (widget.customDesignId == null) {
-      _hasRestoredExistingDesign = true;
+      hasRestoredExistingDesign = true;
     }
     Future.microtask(() {
       if (!mounted) return;
@@ -90,20 +76,22 @@ class _CustomizerPageState extends State<CustomizerPage> {
 
   @override
   void dispose() {
-    _textController.dispose();
+    textController.dispose();
     super.dispose();
   }
 
-  void _updateState(VoidCallback fn) => setState(fn);
+  void updateState(VoidCallback fn) => setState(fn);
 
-  PrintingMaterialEntity? get _selectedMaterial {
+  PrintingMaterialEntity? get selectedMaterial {
     if (context.read<CustomizerCubit>().state
         case CustomizerLoaded(:final printingConfigs)) {
-      for (final m in printingConfigs.materials) {
-        if (m.name.toLowerCase() == _printMethod.toLowerCase() ||
-            m.name.toLowerCase().contains(_printMethod.toLowerCase()) ||
-            _printMethod.toLowerCase().contains(m.name.toLowerCase())) {
-          return m;
+      for (final material in printingConfigs.materials) {
+        final materialName = material.name.toLowerCase();
+        final selectedName = printMethod.toLowerCase();
+        if (materialName == selectedName ||
+            materialName.contains(selectedName) ||
+            selectedName.contains(materialName)) {
+          return material;
         }
       }
       if (printingConfigs.materials.isNotEmpty) {
@@ -113,111 +101,114 @@ class _CustomizerPageState extends State<CustomizerPage> {
     return null;
   }
 
-  double get _printingMethodCost {
-    return _selectedMaterial?.basePrice ??
-        (_printMethod == 'In chuyển nhiệt'
+  double get printingMethodCost {
+    return selectedMaterial?.basePrice ??
+        (printMethod == AppStrings.customizerDefaultPrintMethod
             ? PrintingConstants.heatTransferCost
             : PrintingConstants.reflectiveDecalCost);
   }
 
-  double get _textUnitPrice {
+  double get textUnitPrice {
     final state = context.read<CustomizerCubit>().state;
     if (state case CustomizerLoaded(:final printingConfigs)) {
       try {
         return printingConfigs.priceConfigs
-            .firstWhere((c) => c.type == 'TEXT')
+            .firstWhere((config) => config.type == 'TEXT')
             .unitPrice;
       } catch (_) {}
     }
     return 10000.0;
   }
 
-  double get _imageUnitPrice {
+  double get imageUnitPrice {
     final state = context.read<CustomizerCubit>().state;
     if (state case CustomizerLoaded(:final printingConfigs)) {
       try {
         return printingConfigs.priceConfigs
-            .firstWhere((c) => c.type == 'IMAGE')
+            .firstWhere((config) => config.type == 'IMAGE')
             .unitPrice;
       } catch (_) {}
     }
     return 25000.0;
   }
 
-  double get _totalPrintingPrice {
-    if (_layers.isEmpty) return 0.0;
-    final numTextLines = _layers.where((l) => l.type == LayerType.text).length;
-    final numImages = _layers.where((l) => l.type == LayerType.logo).length;
-    return _printingMethodCost +
-        (numTextLines * _textUnitPrice) +
-        (numImages * _imageUnitPrice);
+  double get totalPrintingPrice {
+    if (layers.isEmpty) return 0.0;
+    final textLayerCount =
+        layers.where((layer) => layer.type == LayerType.text).length;
+    final imageLayerCount =
+        layers.where((layer) => layer.type == LayerType.logo).length;
+    return printingMethodCost +
+        (textLayerCount * textUnitPrice) +
+        (imageLayerCount * imageUnitPrice);
   }
 
-  double get _totalPrice =>
+  double get totalPrice =>
       (widget.basePrice ?? PrintingConstants.baseProductPrice) +
-      _totalPrintingPrice;
+      totalPrintingPrice;
 
-  List<Color> get _effectiveColors {
+  List<Color> get effectiveColors {
     final state = context.read<CustomizerCubit>().state;
     if (state case CustomizerLoaded(:final printingConfigs)
         when printingConfigs.colors.isNotEmpty) {
       try {
         return printingConfigs.colors
-            .map((c) => _parseHexColor(c.hexCode))
+            .map((color) => parseHexColor(color.hexCode))
             .toList();
       } catch (_) {}
     }
-    return _presetColors;
+    return presetColors;
   }
 
-  Color _parseHexColor(String hex) {
-    var hexStr = hex.replaceAll('#', '');
-    if (hexStr.length == 6) hexStr = 'FF$hexStr';
-    return Color(int.parse(hexStr, radix: 16));
+  Color parseHexColor(String hex) {
+    var hexValue = hex.replaceAll('#', '');
+    if (hexValue.length == 6) hexValue = 'FF$hexValue';
+    return Color(int.parse(hexValue, radix: 16));
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<CustomizerCubit, CustomizerState>(
-      listenWhen: (prev, curr) =>
-          !_hasRestoredExistingDesign && curr is CustomizerLoaded,
+      listenWhen: (previous, current) =>
+          !hasRestoredExistingDesign && current is CustomizerLoaded,
       listener: (context, state) {
         if (state case CustomizerLoaded(:final existingDesign)
             when existingDesign != null) {
-          final metadata = existingDesign.designMetadata;
-          if (metadata.isNotEmpty) {
-            try {
-              final List<dynamic> decoded =
-                  jsonDecode(metadata) as List<dynamic>;
-              final restored = decoded
-                  .map((e) => DesignLayer.fromJson(e as Map<String, dynamic>))
-                  .toList();
-              setState(() {
-                _layers
-                  ..clear()
-                  ..addAll(restored);
-                if (restored.isNotEmpty) {
-                  _activeLayer = restored.last;
-                  if (_activeLayer!.type == LayerType.text) {
-                    _textController.text = _activeLayer!.text;
-                  }
-                }
-                _printMethod = existingDesign.printingMaterialName;
-              });
-            } catch (_) {}
-          }
+          restoreExistingDesign(existingDesign.designMetadata);
+          printMethod = existingDesign.printingMaterialName;
         }
-        _hasRestoredExistingDesign = true;
+        hasRestoredExistingDesign = true;
       },
       child: BlocBuilder<CustomizerCubit, CustomizerState>(
         builder: (context, state) => switch (state) {
-          CustomizerLoading() => _buildLoading(),
-          CustomizerError(:final message) => _buildError(message),
-          CustomizerLoaded() => _buildLoaded(),
-          CustomizerSaving() => _buildLoaded(isSaving: true),
-          CustomizerInitial() => _buildLoading(),
+          CustomizerLoading() => buildLoading(),
+          CustomizerError(:final message) => buildError(message),
+          CustomizerLoaded() => buildLoaded(),
+          CustomizerSaving() => buildLoaded(isSaving: true),
+          CustomizerInitial() => buildLoading(),
         },
       ),
     );
+  }
+
+  void restoreExistingDesign(String metadata) {
+    if (metadata.isEmpty) return;
+    try {
+      final decoded = jsonDecode(metadata) as List<dynamic>;
+      final restored = decoded
+          .map((entry) => DesignLayer.fromJson(entry as Map<String, dynamic>))
+          .toList();
+      setState(() {
+        layers
+          ..clear()
+          ..addAll(restored);
+        if (restored.isNotEmpty) {
+          activeLayer = restored.last;
+          if (activeLayer!.type == LayerType.text) {
+            textController.text = activeLayer!.text;
+          }
+        }
+      });
+    } catch (_) {}
   }
 }

@@ -94,6 +94,47 @@ abstract final class AppStrings {
   static String productFilterPriceFrom(String min) => 'Từ $min';
   static String productFilterPriceTo(String max) => 'Đến $max';
 
+  // Customizer
+  static const String customizerDefaultPrintMethod = 'In chuyển nhiệt';
+  static const String customizerDefaultTextLayer = 'LỚP CHỮ MỚI';
+  static const String customizerDefaultLayerText = 'SPORT PRO';
+  static const String customizerDefaultTeamText = 'TEAM SPORT';
+  static const String customizerDefaultTextColor = 'Jet Black';
+  static const String customizerUploadImageError =
+      'Không thể tải ảnh. Vui lòng kiểm tra quyền truy cập thư viện.';
+  static const String customizerColorPickerTitle = 'Chọn màu sắc in';
+  static const String customizerCaptureError = 'Không thể chụp hình thiết kế.';
+  static const String customizerSaveSuccess =
+      'Đã lưu thiết kế lên hệ thống thành công!';
+  static const String customizerSyncError = 'Không thể đồng bộ với server.';
+  static const String customizerLoading = 'Đang tải cấu hình in ấn...';
+  static const String customizerLoadError = 'Không thể tải cấu hình in ấn.';
+  static const String customizerSaving = 'Đang lưu thiết kế lên server...';
+  static const String customizerTitle = 'TÙY CHỈNH THIẾT KẾ';
+  static const String customizerPanelSubtitle =
+      'Tự tay thiết kế áo thi đấu đẳng cấp cao. Tên, số áo và logo tùy chỉnh theo ý bạn.';
+  static const String customizerMaterialSection = 'CHẤT LIỆU IN ẤN';
+  static const String customizerTextEditorTitle = 'CHỈNH SỬA CHỮ / SỐ';
+  static const String customizerAddLayer = 'THÊM LỚP MỚI';
+  static const String customizerTextLayerContent = 'NỘI DUNG LỚP CHỮ';
+  static const String customizerFont = 'FONT CHỮ';
+  static const String customizerSportFontSuffix = 'Thể thao';
+  static const String customizerPrintColor = 'MÀU SẮC IN';
+  static const String customizerFontSize = 'CỠ CHỮ';
+  static const String customizerNoTextLayerSelected =
+      'Chọn hoặc thêm một lớp chữ để bắt đầu chỉnh sửa.';
+  static const String customizerUploadLogoTitle = 'TẢI LÊN LOGO CỦA BẠN';
+  static const String customizerUploadLogoAction = 'NHẤN ĐỂ TẢI ẢNH LÊN';
+  static const String customizerUploadLogoHint = 'PNG, JPG, SVG (Tối đa 5MB)';
+  static const String customizerTotalProduct = 'TỔNG CỘNG SẢN PHẨM';
+  static const String customizerPrintingPriceLabel = 'Giá in thêm';
+  static const String customizerPrintingPriceHint = '(Gồm phôi & lớp in)';
+  static const String customizerSelectedColor = 'Selected Color';
+  static String customizerSportFontLabel(String font) =>
+      '$font ($customizerSportFontSuffix)';
+  static String customizerPrintingPrice(String price) =>
+      '$customizerPrintingPriceLabel: $price ₫';
+
   // Product detail — brand / rating
   static const String brandName = 'Sport Pro';
   static const String noRatingYet = 'Chưa có đánh giá';

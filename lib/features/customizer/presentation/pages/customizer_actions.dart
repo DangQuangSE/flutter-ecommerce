@@ -1,81 +1,97 @@
-part of 'customizer_page.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
-extension _CustomizerActions on _CustomizerPageState {
-  void _addNewTextLayer() {
-    _updateState(() {
-      final offset = (_layers.length % 4) * 0.1 - 0.15;
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/constants/printing_constants.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_state.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
+
+extension CustomizerActions on CustomizerPageState {
+  void addNewTextLayer() {
+    updateState(() {
+      final offset = (layers.length % 4) * 0.1 - 0.15;
       final newLayer = DesignLayer(
         id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
         type: LayerType.text,
-        text: 'LỚP CHỮ MỚI',
+        text: AppStrings.customizerDefaultTextLayer,
         color: AppColors.accentRed,
         fontSize: AppSizes.fontXxl,
         x: offset,
         y: offset,
       );
-      _layers.add(newLayer);
-      _activeLayer = newLayer;
-      _textController.text = newLayer.text;
+      layers.add(newLayer);
+      activeLayer = newLayer;
+      textController.text = newLayer.text;
     });
   }
 
-  Future<void> _uploadLogo() async {
+  Future<void> uploadLogo() async {
     try {
-      final XFile? image =
-          await _imagePicker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        _updateState(() {
-          final newLayer = DesignLayer(
-            id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
-            type: LayerType.logo,
-            logoPath: image.path,
-            y: -0.3,
-          );
-          _layers.add(newLayer);
-          _activeLayer = newLayer;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  'Không thể tải ảnh. Vui lòng kiểm tra quyền truy cập thư viện.')),
+      final imagePicker = ImagePicker();
+      final image = await imagePicker.pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+
+      updateState(() {
+        final newLayer = DesignLayer(
+          id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
+          type: LayerType.logo,
+          logoPath: image.path,
+          y: -0.3,
         );
-      }
+        layers.add(newLayer);
+        activeLayer = newLayer;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.customizerUploadImageError)),
+      );
     }
   }
 
-  void _handleReset() {
-    _updateState(() {
-      _layers.clear();
-      _activeLayer = null;
-      _textController.clear();
-      _printMethod = 'In chuyển nhiệt';
-      _zoomScale = 1.0;
-      _rotationAngle = 0.0;
-      _isFrontView = true;
-      _addDefaultLayer();
+  void handleReset() {
+    updateState(() {
+      layers.clear();
+      activeLayer = null;
+      textController.clear();
+      printMethod = AppStrings.customizerDefaultPrintMethod;
+      zoomScale = 1.0;
+      rotationAngle = 0.0;
+      isFrontView = true;
+      addDefaultLayer();
     });
   }
 
-  void _addDefaultLayer() {
+  void addDefaultLayer() {
     final defaultLayer = DesignLayer(
       id: 'layer-default',
       type: LayerType.text,
-      text: 'SPORT PRO',
+      text: AppStrings.customizerDefaultLayerText,
       color: AppColors.accentBlue,
       fontSize: AppSizes.fontHeading,
       y: -0.1,
     );
-    _layers.add(defaultLayer);
-    _activeLayer = defaultLayer;
-    _textController.text = defaultLayer.text;
+    layers.add(defaultLayer);
+    activeLayer = defaultLayer;
+    textController.text = defaultLayer.text;
   }
 
-  Future<Uint8List?> _captureCanvas() async {
+  Future<Uint8List?> captureCanvas() async {
     try {
-      final boundary = _canvasKey.currentContext?.findRenderObject()
+      final boundary = canvasKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
       if (boundary == null) return null;
       final image = await boundary.toImage(pixelRatio: 2.0);
@@ -86,40 +102,49 @@ extension _CustomizerActions on _CustomizerPageState {
     }
   }
 
-  void _showColorPicker() {
-    if (_activeLayer == null || _activeLayer!.type != LayerType.text) return;
-    Color pickerColor = _activeLayer!.color;
+  void showColorPicker() {
+    if (activeLayer == null || activeLayer!.type != LayerType.text) return;
+    var pickerColor = activeLayer!.color;
     showDialog(
       context: context,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: Text('Chọn màu sắc in',
-            style: GoogleFonts.inter(
-                fontWeight: FontWeight.w700, fontSize: AppSizes.fontMd)),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          AppStrings.customizerColorPickerTitle,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            fontSize: AppSizes.fontMd,
+          ),
+        ),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: pickerColor,
-            onColorChanged: (c) => pickerColor = c,
+            onColorChanged: (color) => pickerColor = color,
             labelTypes: const [],
             pickerAreaHeightPercent: 0.7,
           ),
         ),
         actions: [
           TextButton(
-            child: Text('Hủy',
-                style: GoogleFonts.inter(color: AppColors.textSecondary)),
-            onPressed: () => ctx.pop(),
+            child: Text(
+              AppStrings.cancel,
+              style: GoogleFonts.inter(color: AppColors.textSecondary),
+            ),
+            onPressed: () => dialogContext.pop(),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-            child:
-                Text('Xác nhận', style: GoogleFonts.inter(color: Colors.white)),
+            child: Text(
+              AppStrings.productFilterApply,
+              style: GoogleFonts.inter(color: AppColors.white),
+            ),
             onPressed: () {
-              _updateState(() {
-                _activeLayer = _activeLayer!.copyWith(color: pickerColor);
-                final idx = _layers.indexWhere((l) => l.id == _activeLayer!.id);
-                if (idx != -1) _layers[idx] = _activeLayer!;
+              updateState(() {
+                activeLayer = activeLayer!.copyWith(color: pickerColor);
+                final index =
+                    layers.indexWhere((layer) => layer.id == activeLayer!.id);
+                if (index != -1) layers[index] = activeLayer!;
               });
-              ctx.pop();
+              dialogContext.pop();
             },
           ),
         ],
@@ -127,48 +152,51 @@ extension _CustomizerActions on _CustomizerPageState {
     );
   }
 
-  Future<void> _handleConfirm() async {
+  Future<void> handleConfirm() async {
     final cubit = context.read<CustomizerCubit>();
-    final previousActive = _activeLayer;
-    _updateState(() => _activeLayer = null);
+    final previousActive = activeLayer;
+    updateState(() => activeLayer = null);
     await Future.delayed(const Duration(milliseconds: 100));
 
-    final bytes = await _captureCanvas();
-    _updateState(() => _activeLayer = previousActive);
+    final bytes = await captureCanvas();
+    updateState(() => activeLayer = previousActive);
     if (bytes == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Không thể chụp hình thiết kế.'),
-            backgroundColor: AppColors.error),
+          content: Text(AppStrings.customizerCaptureError),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
 
-    final primary = _extractPrimaryTextLayer();
-    final hasLogo = _layers.any((l) => l.type == LayerType.logo);
-    final layersJsonStr = jsonEncode(_layers.map((l) => l.toJson()).toList());
-    final materialId = _selectedMaterial?.id ??
-        (_printMethod == 'In chuyển nhiệt'
+    final primary = extractPrimaryTextLayer();
+    final hasLogo = layers.any((layer) => layer.type == LayerType.logo);
+    final layersJson =
+        jsonEncode(layers.map((layer) => layer.toJson()).toList());
+    final materialId = selectedMaterial?.id ??
+        (printMethod == AppStrings.customizerDefaultPrintMethod
             ? PrintingConstants.heatTransferId
             : PrintingConstants.reflectiveDecalId);
     final textLayersCount =
-        _layers.where((l) => l.type == LayerType.text).length;
-    final imagesCount = _layers.where((l) => l.type == LayerType.logo).length;
+        layers.where((layer) => layer.type == LayerType.text).length;
+    final imagesCount =
+        layers.where((layer) => layer.type == LayerType.logo).length;
 
     await cubit.saveCustomization(
       productId: widget.productId,
       materialId: materialId,
       numTextLines: textLayersCount,
       numImages: imagesCount,
-      metadata: layersJsonStr,
+      metadata: layersJson,
       imageBytes: bytes,
       activeText: primary.text,
       activeColor: primary.color,
       activeFontSize: primary.fontSize,
       hasLogo: hasLogo,
-      printMethod: _printMethod,
-      layersJson: layersJsonStr,
+      printMethod: printMethod,
+      layersJson: layersJson,
     );
 
     if (!mounted) return;
@@ -176,19 +204,28 @@ extension _CustomizerActions on _CustomizerPageState {
     final state = context.read<CustomizerCubit>().state;
     if (state is CustomizerLoaded) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: [
-          const Icon(Icons.check_circle_rounded,
-              color: Colors.white, size: AppSizes.iconMd),
-          AppSizes.spacingSm,
-          Text('Đã lưu thiết kế lên hệ thống thành công!',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-        ]),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.white,
+                size: AppSizes.iconMd,
+              ),
+              AppSizes.spacingSm,
+              Text(
+                AppStrings.customizerSaveSuccess,
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 2),
+        ),
+      );
       if (widget.variantId != null) {
-        final savedDesignId = _findSavedDesignId();
+        final savedDesignId = findSavedDesignId();
         if (savedDesignId != null) {
           await widget.onConfirm?.call(savedDesignId);
         }
@@ -197,14 +234,16 @@ extension _CustomizerActions on _CustomizerPageState {
       context.goNamed(AppRoutes.cart);
     } else {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Không thể đồng bộ với server.'),
-        backgroundColor: AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(AppStrings.customizerSyncError),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
-  int? _findSavedDesignId() {
+  int? findSavedDesignId() {
     final state = context.read<CustomizerCubit>().state;
     if (state case CustomizerLoaded(:final savedCustomizations)) {
       return savedCustomizations[widget.productId]?.customDesignId;
@@ -212,14 +251,14 @@ extension _CustomizerActions on _CustomizerPageState {
     return null;
   }
 
-  ({String text, int color, double fontSize}) _extractPrimaryTextLayer() {
-    final textLayers = _layers.where((l) => l.type == LayerType.text);
+  ({String text, int color, double fontSize}) extractPrimaryTextLayer() {
+    final textLayers = layers.where((layer) => layer.type == LayerType.text);
     if (textLayers.isNotEmpty) {
       final primary = textLayers.first;
       return (
         text: primary.text,
         color: primary.color.toARGB32(),
-        fontSize: primary.fontSize
+        fontSize: primary.fontSize,
       );
     }
     return (text: '', color: 0xFF1A1C1F, fontSize: AppSizes.fontHeading);

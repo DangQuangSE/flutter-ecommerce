@@ -1,7 +1,11 @@
-part of 'customizer_page.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
 
-extension _CustomizerLayerHandlers on _CustomizerPageState {
-  TextStyle _getFontFamily(String fontName) {
+extension CustomizerLayerHandlers on CustomizerPageState {
+  TextStyle getFontFamily(String fontName) {
     switch (fontName) {
       case 'Lexend':
         return GoogleFonts.lexend();
@@ -16,59 +20,85 @@ extension _CustomizerLayerHandlers on _CustomizerPageState {
     }
   }
 
-  void _onFrontViewChanged(bool v) => _updateState(() => _isFrontView = v);
-  void _onZoomChanged(double v) => _updateState(() => _zoomScale = v);
-  void _onPrintMethodChanged(String v) => _updateState(() => _printMethod = v);
+  void onFrontViewChanged(bool value) {
+    updateState(() => isFrontView = value);
+  }
 
-  void _onLayerActivatedFromCanvas(DesignLayer layer) => _updateState(() {
-        _activeLayer = layer;
-        if (layer.type == LayerType.text) {
-          _textController.text = layer.text;
-          _textController.selection = TextSelection.fromPosition(
-              TextPosition(offset: _textController.text.length));
-        }
-      });
+  void onZoomChanged(double value) {
+    updateState(() => zoomScale = value);
+  }
 
-  void _onLayerDragged(String id, Offset delta) => _updateState(() {
-        final idx = _layers.indexWhere((l) => l.id == id);
-        if (idx == -1) return;
-        final canvasWidth =
-            MediaQuery.of(context).size.width * AppSizes.canvasWidthRatio;
-        final canvasHeight =
-            MediaQuery.of(context).size.height * AppSizes.canvasHeightRatio;
-        final cur = _layers[idx];
-        final newX = (cur.x + delta.dx / _zoomScale)
-            .clamp(-canvasWidth * 0.40, canvasWidth * 0.40);
-        final newY = (cur.y + delta.dy / _zoomScale)
-            .clamp(-canvasHeight * 0.40, canvasHeight * 0.40);
-        _layers[idx] = cur.copyWith(x: newX, y: newY);
-        _activeLayer = _layers[idx];
-      });
+  void onPrintMethodChanged(String value) {
+    updateState(() => printMethod = value);
+  }
 
-  void _onLayerDeletedFromCanvas(String id) => _updateState(() {
-        _layers.removeWhere((l) => l.id == id);
-        _activeLayer = null;
-        _textController.clear();
-      });
+  void onLayerActivatedFromCanvas(DesignLayer layer) {
+    updateState(() {
+      activeLayer = layer;
+      if (layer.type == LayerType.text) {
+        textController.text = layer.text;
+        textController.selection = TextSelection.fromPosition(
+          TextPosition(offset: textController.text.length),
+        );
+      }
+    });
+  }
 
-  void _onActiveLayerPropChanged(DesignLayer Function(DesignLayer) updater) =>
-      _updateState(() {
-        if (_activeLayer == null) return;
-        _activeLayer = updater(_activeLayer!);
-        final idx = _layers.indexWhere((l) => l.id == _activeLayer!.id);
-        if (idx != -1) _layers[idx] = _activeLayer!;
-      });
+  void onLayerDragged(String id, Offset delta) {
+    updateState(() {
+      final index = layers.indexWhere((layer) => layer.id == id);
+      if (index == -1) return;
 
-  void _onPanelLayerActivated(DesignLayer layer) => _updateState(() {
-        _activeLayer = layer;
-        if (layer.type == LayerType.text) _textController.text = layer.text;
-      });
+      final canvasWidth =
+          MediaQuery.of(context).size.width * AppSizes.canvasWidthRatio;
+      final canvasHeight =
+          MediaQuery.of(context).size.height * AppSizes.canvasHeightRatio;
+      final currentLayer = layers[index];
+      final newX = (currentLayer.x + delta.dx / zoomScale).clamp(
+        -canvasWidth * AppSizes.canvasMaxOffsetRatio,
+        canvasWidth * AppSizes.canvasMaxOffsetRatio,
+      );
+      final newY = (currentLayer.y + delta.dy / zoomScale).clamp(
+        -canvasHeight * AppSizes.canvasMaxOffsetRatio,
+        canvasHeight * AppSizes.canvasMaxOffsetRatio,
+      );
 
-  void _onPanelLayerDeleted(int index, String id) => _updateState(() {
-        _layers.removeAt(index);
-        if (_activeLayer?.id == id) {
-          _activeLayer = null;
-          _textController.clear();
-        }
-      });
+      layers[index] = currentLayer.copyWith(x: newX, y: newY);
+      activeLayer = layers[index];
+    });
+  }
+
+  void onLayerDeletedFromCanvas(String id) {
+    updateState(() {
+      layers.removeWhere((layer) => layer.id == id);
+      activeLayer = null;
+      textController.clear();
+    });
+  }
+
+  void onActiveLayerPropChanged(DesignLayer Function(DesignLayer) updater) {
+    updateState(() {
+      if (activeLayer == null) return;
+      activeLayer = updater(activeLayer!);
+      final index = layers.indexWhere((layer) => layer.id == activeLayer!.id);
+      if (index != -1) layers[index] = activeLayer!;
+    });
+  }
+
+  void onPanelLayerActivated(DesignLayer layer) {
+    updateState(() {
+      activeLayer = layer;
+      if (layer.type == LayerType.text) textController.text = layer.text;
+    });
+  }
+
+  void onPanelLayerDeleted(int index, String id) {
+    updateState(() {
+      layers.removeAt(index);
+      if (activeLayer?.id == id) {
+        activeLayer = null;
+        textController.clear();
+      }
+    });
+  }
 }

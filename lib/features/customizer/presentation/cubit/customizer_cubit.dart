@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/customization_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/existing_design_entity.dart';
@@ -118,7 +119,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
         _customizations[productId] = CustomizationEntity(
           productId: productId,
           customText: activeText,
-          textColor: 'Selected Color',
+          textColor: AppStrings.customizerSelectedColor,
           colorHex: activeColor,
           printMethod: printMethod,
           logoEnabled: hasLogo,
@@ -147,10 +148,10 @@ class CustomizerCubit extends Cubit<CustomizerState> {
     }
     return CustomizationEntity(
       productId: productId,
-      customText: 'TEAM SPORT',
-      textColor: 'Jet Black',
+      customText: AppStrings.customizerDefaultTeamText,
+      textColor: AppStrings.customizerDefaultTextColor,
       colorHex: 0xFF1A1C1F,
-      printMethod: 'In chuyển nhiệt',
+      printMethod: AppStrings.customizerDefaultPrintMethod,
       logoEnabled: true,
       textScale: 1.0,
     );
@@ -171,7 +172,8 @@ class CustomizerCubit extends Cubit<CustomizerState> {
       customText: json['customText'] as String? ?? '',
       textColor: json['textColor'] as String? ?? '',
       colorHex: json['colorHex'] as int? ?? 0xFF1A1C1F,
-      printMethod: json['printMethod'] as String? ?? 'In chuyển nhiệt',
+      printMethod: json['printMethod'] as String? ??
+          AppStrings.customizerDefaultPrintMethod,
       logoEnabled: json['logoEnabled'] as bool? ?? false,
       textScale: (json['textScale'] as num?)?.toDouble() ?? 1.0,
       layersJson: json['layersJson'] as String? ?? '',

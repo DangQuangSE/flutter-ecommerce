@@ -1,215 +1,257 @@
-part of 'customizer_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_state.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_actions.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_layer_handlers.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/widgets/canvas_workspace.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/widgets/design_config_panel.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/widgets/pricing_footer.dart';
 
-extension _CustomizerViewHelpers on _CustomizerPageState {
-  Widget _buildLoading() => Scaffold(
-        backgroundColor: AppColors.canvasLight,
-        appBar: _buildAppBar(context),
-        body: Center(
+extension CustomizerViewHelpers on CustomizerPageState {
+  Widget buildLoading() {
+    return Scaffold(
+      backgroundColor: AppColors.canvasLight,
+      appBar: buildAppBar(context),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            ),
+            AppSizes.spacingMd,
+            Text(
+              AppStrings.customizerLoading,
+              style: GoogleFonts.inter(
+                fontSize: AppSizes.fontLg,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildError(String message) {
+    return Scaffold(
+      backgroundColor: AppColors.canvasLight,
+      appBar: buildAppBar(context),
+      body: Center(
+        child: Padding(
+          padding: AppSizes.screenPadding,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              const Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: AppColors.error,
               ),
               AppSizes.spacingMd,
               Text(
-                'Đang tải cấu hình in ấn...',
+                AppStrings.customizerLoadError,
                 style: GoogleFonts.inter(
                   fontSize: AppSizes.fontLg,
                   fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              AppSizes.spacingSm,
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: AppSizes.fontMd,
                   color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: AppSizes.paddingLg),
+              ElevatedButton(
+                onPressed: () =>
+                    context.read<CustomizerCubit>().loadPrintingConfigs(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  ),
+                ),
+                child: const Text(AppStrings.retry),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLoaded({bool isSaving = false}) {
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppColors.canvasLight,
+          appBar: buildAppBar(context),
+          body: SafeArea(
+            child: Column(
+              children: [
+                buildCanvasSection(),
+                Expanded(flex: 6, child: buildConfigPanel()),
+                PricingFooter(
+                  totalPrice: totalPrice,
+                  totalPrintingPrice: totalPrintingPrice,
+                  onReset: handleReset,
+                  onConfirm: handleConfirm,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isSaving) buildSavingOverlay(),
+      ],
+    );
+  }
+
+  Widget buildSavingOverlay() {
+    return Positioned.fill(
+      child: Container(
+        color: AppColors.black.withValues(alpha: 0.5),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
+              ),
+              AppSizes.spacingMd,
+              Text(
+                AppStrings.customizerSaving,
+                style: GoogleFonts.inter(
+                  color: AppColors.white,
+                  fontSize: AppSizes.fontLg,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.none,
                 ),
               ),
             ],
           ),
         ),
-      );
+      ),
+    );
+  }
 
-  Widget _buildError(String message) => Scaffold(
-        backgroundColor: AppColors.canvasLight,
-        appBar: _buildAppBar(context),
-        body: Center(
-          child: Padding(
-            padding: AppSizes.screenPadding,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline_rounded,
-                    size: 48, color: AppColors.error),
-                AppSizes.spacingMd,
-                Text(
-                  'Không thể tải cấu hình in ấn.',
-                  style: GoogleFonts.inter(
-                    fontSize: AppSizes.fontLg,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                AppSizes.spacingSm,
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: AppSizes.fontMd,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: AppSizes.paddingLg),
-                ElevatedButton(
-                  onPressed: () =>
-                      context.read<CustomizerCubit>().loadPrintingConfigs(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                    ),
-                  ),
-                  child: const Text('Thử lại'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
+  Widget buildConfigPanel() {
+    return DesignConfigPanel(
+      printMethod: printMethod,
+      onPrintMethodChanged: onPrintMethodChanged,
+      activeLayer: activeLayer,
+      textController: textController,
+      fontsList: fontsList,
+      presetColors: effectiveColors,
+      getFontFamily: getFontFamily,
+      onTextChanged: (value) =>
+          onActiveLayerPropChanged((layer) => layer.copyWith(text: value)),
+      onFontChanged: (value) =>
+          onActiveLayerPropChanged((layer) => layer.copyWith(font: value)),
+      onColorSelected: (color) =>
+          onActiveLayerPropChanged((layer) => layer.copyWith(color: color)),
+      onCustomColorTap: showColorPicker,
+      onFontSizeChanged: (value) =>
+          onActiveLayerPropChanged((layer) => layer.copyWith(fontSize: value)),
+      onAddLayer: addNewTextLayer,
+      onUploadLogo: uploadLogo,
+      layers: layers,
+      activeLayerId: activeLayer?.id,
+      onLayerActivated: onPanelLayerActivated,
+      onLayerDeleted: onPanelLayerDeleted,
+      materials: switch (context.read<CustomizerCubit>().state) {
+        CustomizerLoaded(:final printingConfigs) => printingConfigs.materials,
+        _ => null,
+      },
+    );
+  }
 
-  Widget _buildLoaded({bool isSaving = false}) => Stack(
-        children: [
-          Scaffold(
-            backgroundColor: AppColors.canvasLight,
-            appBar: _buildAppBar(context),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  _buildCanvasSection(),
-                  Expanded(flex: 6, child: _buildConfigPanel()),
-                  PricingFooter(
-                    totalPrice: _totalPrice,
-                    totalPrintingPrice: _totalPrintingPrice,
-                    onReset: _handleReset,
-                    onConfirm: _handleConfirm,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (isSaving) _buildSavingOverlay(),
-        ],
-      );
+  Widget buildCanvasSection() {
+    return Expanded(
+      flex: 5,
+      child: CanvasWorkspace(
+        canvasKey: canvasKey,
+        layers: layers,
+        activeLayerId: activeLayer?.id,
+        isFrontView: isFrontView,
+        zoomScale: zoomScale,
+        rotationAngle: rotationAngle,
+        onFrontViewChanged: onFrontViewChanged,
+        onZoomChanged: onZoomChanged,
+        onLayerActivated: onLayerActivatedFromCanvas,
+        onLayerDragged: onLayerDragged,
+        onLayerDeleted: onLayerDeletedFromCanvas,
+        getFontFamily: getFontFamily,
+      ),
+    );
+  }
 
-  Widget _buildSavingOverlay() => Positioned.fill(
+  PreferredSizeWidget buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: AppColors.white,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: Colors.black.withValues(alpha: 0.5),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.accent)),
-                AppSizes.spacingMd,
-                Text('Đang lưu thiết kế lên server...',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: AppSizes.fontLg,
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.none,
-                    )),
-              ],
-            ),
-          ),
+          color: AppColors.borderGray.withValues(alpha: 0.3),
+          height: 1,
         ),
-      );
-
-  Widget _buildConfigPanel() => DesignConfigPanel(
-        printMethod: _printMethod,
-        onPrintMethodChanged: _onPrintMethodChanged,
-        activeLayer: _activeLayer,
-        textController: _textController,
-        fontsList: _fontsList,
-        presetColors: _effectiveColors,
-        getFontFamily: _getFontFamily,
-        onTextChanged: (val) =>
-            _onActiveLayerPropChanged((l) => l.copyWith(text: val)),
-        onFontChanged: (val) =>
-            _onActiveLayerPropChanged((l) => l.copyWith(font: val)),
-        onColorSelected: (color) =>
-            _onActiveLayerPropChanged((l) => l.copyWith(color: color)),
-        onCustomColorTap: _showColorPicker,
-        onFontSizeChanged: (val) =>
-            _onActiveLayerPropChanged((l) => l.copyWith(fontSize: val)),
-        onAddLayer: _addNewTextLayer,
-        onUploadLogo: _uploadLogo,
-        layers: _layers,
-        activeLayerId: _activeLayer?.id,
-        onLayerActivated: _onPanelLayerActivated,
-        onLayerDeleted: _onPanelLayerDeleted,
-        materials: switch (context.read<CustomizerCubit>().state) {
-          CustomizerLoaded(:final printingConfigs) => printingConfigs.materials,
-          _ => null,
+      ),
+      leading: IconButton(
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoutes.cart);
+          }
         },
-      );
-
-  Widget _buildCanvasSection() => Expanded(
-        flex: 5,
-        child: CanvasWorkspace(
-          canvasKey: _canvasKey,
-          layers: _layers,
-          activeLayerId: _activeLayer?.id,
-          isFrontView: _isFrontView,
-          zoomScale: _zoomScale,
-          rotationAngle: _rotationAngle,
-          onFrontViewChanged: _onFrontViewChanged,
-          onZoomChanged: _onZoomChanged,
-          onLayerActivated: _onLayerActivatedFromCanvas,
-          onLayerDragged: _onLayerDragged,
-          onLayerDeleted: _onLayerDeletedFromCanvas,
-          getFontFamily: _getFontFamily,
+        icon: const Icon(
+          Icons.close_rounded,
+          color: AppColors.textPrimary,
+          size: AppSizes.iconLg,
         ),
-      );
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) => AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 1,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-              color: AppColors.borderGray.withValues(alpha: 0.3), height: 1),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoutes.cart);
-            }
-          },
-          icon: const Icon(Icons.close_rounded,
-              color: AppColors.textPrimary, size: AppSizes.iconLg),
-        ),
-        title: Column(
-          children: [
-            Transform(
-              transform: Matrix4.skewX(-0.12),
-              child: Text(
-                'TÙY CHỈNH THIẾT KẾ',
-                style: GoogleFonts.lexend(
-                    fontSize: AppSizes.fontXl,
-                    fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.textPrimary,
-                    letterSpacing: -0.5),
+      ),
+      title: Column(
+        children: [
+          Transform(
+            transform: Matrix4.skewX(-0.12),
+            child: Text(
+              AppStrings.customizerTitle,
+              style: GoogleFonts.lexend(
+                fontSize: AppSizes.fontXl,
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 2),
-            Text(widget.productName,
-                style: GoogleFonts.inter(
-                    fontSize: AppSizes.fontSm,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary)),
-          ],
-        ),
-        centerTitle: true,
-      );
+          ),
+          const SizedBox(height: 2),
+          Text(
+            widget.productName,
+            style: GoogleFonts.inter(
+              fontSize: AppSizes.fontSm,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+      centerTitle: true,
+    );
+  }
 }
