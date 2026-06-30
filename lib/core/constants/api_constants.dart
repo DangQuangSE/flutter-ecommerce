@@ -1,12 +1,20 @@
 import 'package:flutter/foundation.dart';
 
 abstract final class ApiConstants {
-  static const String baseUrl = kIsWeb
-      ? 'http://127.0.0.1:8080'
-      : String.fromEnvironment(
-          'BASE_URL',
-          defaultValue: 'http://10.0.2.2:8080',
-        );
+  /// Base URL of the Spring Boot backend, resolved per platform so the app
+  /// reaches the dev host without a manual `--dart-define` on every run:
+  /// - an explicit `--dart-define=BASE_URL=...` always wins (real device / staging)
+  /// - Android emulator: `10.0.2.2` is its alias for the host machine
+  /// - iOS simulator / macOS / web: reach the host directly via localhost
+  static String get baseUrl {
+    const override = String.fromEnvironment('BASE_URL');
+    if (override.isNotEmpty) return override;
+    if (kIsWeb) return 'http://127.0.0.1:8080';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:8080';
+    }
+    return 'http://localhost:8080';
+  }
 
   static const String login = '/api/auth/login';
   static const String me = '/api/auth/me';

@@ -8,6 +8,10 @@ abstract final class AppStrings {
   static const String addToCart = 'ADD TO CART';
   static const String outOfStock = 'HẾT HÀNG';
 
+  // Checkout — coupon selector
+  static const String couponLoadError =
+      'Không tải được mã giảm giá. Nhấn để thử lại.';
+
   // Product detail — brand / rating
   static const String brandName = 'Sport Pro';
   static const String noRatingYet = 'Chưa có đánh giá';
