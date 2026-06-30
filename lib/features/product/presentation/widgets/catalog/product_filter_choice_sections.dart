@@ -1,14 +1,23 @@
-part of 'product_filter_bottom_sheet.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/brand/domain/entities/brand_entity.dart';
+import 'package:flutter_ecommerce/features/product/presentation/utils/product_constants.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/catalog/product_filter_section_title.dart';
 
-class _BrandSection extends StatelessWidget {
+class ProductFilterBrandSection extends StatelessWidget {
   final List<BrandEntity> brands;
   final bool loading;
+  final String? error;
   final int? selectedId;
   final void Function(int? id, String? name) onSelect;
 
-  const _BrandSection({
+  const ProductFilterBrandSection({
+    super.key,
     required this.brands,
     required this.loading,
+    this.error,
     required this.selectedId,
     required this.onSelect,
   });
@@ -18,51 +27,27 @@ class _BrandSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Thương hiệu'),
+        const ProductFilterSectionTitle(AppStrings.productFilterBrand),
         if (loading)
           const Center(child: CircularProgressIndicator(strokeWidth: 2))
+        else if (error != null)
+          Text(error!, style: const TextStyle(color: AppColors.error))
         else
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 140),
             child: SingleChildScrollView(
               child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: brands.map((brand) {
-                  final selected = selectedId == brand.id;
-                  return GestureDetector(
-                    onTap: () {
-                      if (brand.id == null) return;
-                      if (selectedId == brand.id) {
-                        onSelect(null, null);
-                      } else {
-                        onSelect(brand.id!, brand.name);
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color:
-                            selected ? AppColors.primary : AppColors.background,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color:
-                              selected ? AppColors.primary : AppColors.divider,
-                        ),
+                spacing: AppSizes.paddingSm,
+                runSpacing: AppSizes.paddingSm,
+                children: brands
+                    .map(
+                      (brand) => _BrandChip(
+                        brand: brand,
+                        selected: selectedId == brand.id,
+                        onSelect: onSelect,
                       ),
-                      child: Text(
-                        brand.name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color:
-                              selected ? Colors.white : AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+                    )
+                    .toList(),
               ),
             ),
           ),
@@ -72,111 +57,220 @@ class _BrandSection extends StatelessWidget {
   }
 }
 
-class _GenderSection extends StatelessWidget {
+class _BrandChip extends StatelessWidget {
+  final BrandEntity brand;
+  final bool selected;
+  final void Function(int? id, String? name) onSelect;
+
+  const _BrandChip({
+    required this.brand,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        final id = brand.id;
+        if (id == null) return;
+        selected ? onSelect(null, null) : onSelect(id, brand.name);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.paddingMd,
+          vertical: AppSizes.radiusSm,
+        ),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.background,
+          borderRadius: BorderRadius.circular(AppSizes.paddingSm),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.divider,
+          ),
+        ),
+        child: Text(
+          brand.name,
+          style: TextStyle(
+            fontSize: AppSizes.fontMd,
+            fontWeight: FontWeight.w600,
+            color: selected ? AppColors.white : AppColors.textPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProductFilterGenderSection extends StatelessWidget {
   final String? selected;
   final void Function(String? gender) onSelect;
 
-  const _GenderSection({required this.selected, required this.onSelect});
+  const ProductFilterGenderSection({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
     const options = [
-      (null, 'Tất cả'),
-      ('MALE', 'Nam'),
-      ('FEMALE', 'Nữ'),
-      ('UNISEX', 'Unisex'),
+      _FilterOption(null, AppStrings.productFilterAll),
+      _FilterOption('MALE', AppStrings.productFilterMale),
+      _FilterOption('FEMALE', AppStrings.productFilterFemale),
+      _FilterOption('UNISEX', AppStrings.productFilterUnisex),
     ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Giới tính'),
+        const ProductFilterSectionTitle(AppStrings.productFilterGender),
         Row(
-          children: options.map(((String?, String) opt) {
-            final (value, label) = opt;
-            final isSelected = selected == value;
-            return Expanded(
-              child: GestureDetector(
-                onTap: () => onSelect(value),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color:
-                        isSelected ? AppColors.primary : AppColors.background,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.divider,
-                    ),
-                  ),
-                  child: Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
-                    ),
+          children: options
+              .map(
+                (option) => Expanded(
+                  child: _SelectableTextChip(
+                    label: option.label,
+                    selected: selected == option.value,
+                    onTap: () => onSelect(option.value),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              )
+              .toList(),
         ),
-        const SizedBox(height: 8),
+        AppSizes.spacingSm,
         const Divider(),
       ],
     );
   }
 }
 
-class _ColorSection extends StatelessWidget {
+class ProductFilterColorSection extends StatelessWidget {
   final String? selected;
   final void Function(String? color) onSelect;
 
-  const _ColorSection({required this.selected, required this.onSelect});
+  const ProductFilterColorSection({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Màu sắc'),
+        const ProductFilterSectionTitle(AppStrings.productFilterColor),
         Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: productColorMap.entries.map((entry) {
-            final isSelected = selected == entry.key;
-            return GestureDetector(
-              onTap: () => onSelect(selected == entry.key ? null : entry.key),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+          spacing: AppSizes.paddingMd,
+          runSpacing: AppSizes.paddingMd,
+          children: productColorMap.entries
+              .map(
+                (entry) => _ColorChip(
+                  colorKey: entry.key,
                   color: entry.value,
-                  border: Border.all(
-                    color: isSelected ? AppColors.primary : AppColors.divider,
-                    width: isSelected ? 2.5 : 1,
-                  ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.3),
-                            blurRadius: 6,
-                          ),
-                        ]
-                      : null,
+                  selected: selected == entry.key,
+                  onSelect: onSelect,
                 ),
-                child: isSelected
-                    ? const Icon(Icons.check, size: 16, color: Colors.white)
-                    : null,
-              ),
-            );
-          }).toList(),
+              )
+              .toList(),
         ),
-        const SizedBox(height: 12),
+        AppSizes.spacingMd,
         const Divider(),
       ],
     );
   }
+}
+
+class _SelectableTextChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _SelectableTextChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: AppSizes.paddingSm),
+        padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.background,
+          borderRadius: BorderRadius.circular(AppSizes.paddingSm),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.divider,
+          ),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: AppSizes.fontMd,
+            fontWeight: FontWeight.w600,
+            color: selected ? AppColors.white : AppColors.textPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ColorChip extends StatelessWidget {
+  final String colorKey;
+  final Color color;
+  final bool selected;
+  final ValueChanged<String?> onSelect;
+
+  const _ColorChip({
+    required this.colorKey,
+    required this.color,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onSelect(selected ? null : colorKey),
+      child: Container(
+        width: AppSizes.colorSwatchSize,
+        height: AppSizes.colorSwatchSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.divider,
+            width: selected ? 2.5 : 1,
+          ),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: AppSizes.radiusSm,
+                  ),
+                ]
+              : null,
+        ),
+        child: selected
+            ? const Icon(
+                Icons.check,
+                size: AppSizes.fontXl,
+                color: AppColors.white,
+              )
+            : null,
+      ),
+    );
+  }
+}
+
+class _FilterOption {
+  final String? value;
+  final String label;
+
+  const _FilterOption(this.value, this.label);
 }

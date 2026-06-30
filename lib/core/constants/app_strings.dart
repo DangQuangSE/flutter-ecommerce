@@ -30,6 +30,40 @@ abstract final class AppStrings {
   static const String addToCart = 'ADD TO CART';
   static const String outOfStock = 'HẾT HÀNG';
 
+  // Product catalog / filter
+  static const String productSearchHint = 'Tìm kiếm sản phẩm...';
+  static const String productFilterTitle = 'Bộ lọc';
+  static const String productFilterClearAll = 'Xóa tất cả';
+  static const String productFilterReset = 'Đặt lại';
+  static const String productFilterApply = 'Áp dụng';
+  static const String productFilterCategory = 'Danh mục';
+  static const String productFilterBrand = 'Thương hiệu';
+  static const String productFilterGender = 'Giới tính';
+  static const String productFilterColor = 'Màu sắc';
+  static const String productFilterPriceRange = 'Khoảng giá';
+  static const String productFilterAll = 'Tất cả';
+  static const String productFilterMale = 'Nam';
+  static const String productFilterFemale = 'Nữ';
+  static const String productFilterUnisex = 'Unisex';
+  static const String productFilterMinPrice = 'Từ';
+  static const String productFilterMaxPrice = 'Đến';
+  static const String productFilterCurrencySuffix = 'đ';
+  static const String productFilterUnderOneMillion = 'Dưới 1.000.000đ';
+  static const String productFilterOneToThreeMillion = '1 - 3 triệu';
+  static const String productFilterCategoryLoadError =
+      'Không tải được danh mục';
+  static const String productFilterBrandLoadError =
+      'Không tải được thương hiệu';
+  static const String productSortNewest = 'Mới nhất';
+  static const String productSortPriceAsc = 'Giá tăng dần';
+  static const String productSortPriceDesc = 'Giá giảm dần';
+  static const String productCatalogEmpty = 'Không tìm thấy sản phẩm';
+  static const String productCatalogClearFilter = 'Xóa bộ lọc';
+  static String productFilterPriceBetween(String min, String max) =>
+      '$min - $max';
+  static String productFilterPriceFrom(String min) => 'Từ $min';
+  static String productFilterPriceTo(String max) => 'Đến $max';
+
   // Product detail — brand / rating
   static const String brandName = 'Sport Pro';
   static const String noRatingYet = 'Chưa có đánh giá';
@@ -215,9 +249,12 @@ abstract final class AppStrings {
   static const String adminSizeGroupEditTitle = 'Sửa nhóm kích thước';
   static const String adminSizeGroupEmpty = 'Chưa có nhóm kích thước nào';
   static const String adminSizeGroupCreateAction = 'Tạo mới';
-  static const String adminSizeGroupCreated = 'Đã tạo nhóm kích thước thành công!';
-  static const String adminSizeGroupUpdated = 'Đã cập nhật nhóm kích thước thành công!';
-  static const String adminSizeGroupDeleted = 'Đã xóa nhóm kích thước thành công!';
+  static const String adminSizeGroupCreated =
+      'Đã tạo nhóm kích thước thành công!';
+  static const String adminSizeGroupUpdated =
+      'Đã cập nhật nhóm kích thước thành công!';
+  static const String adminSizeGroupDeleted =
+      'Đã xóa nhóm kích thước thành công!';
   static const String adminSizeGroupDeleteTitle = 'Xác nhận xóa';
   static String adminSizeGroupDeleteBody(String name) =>
       'Bạn có chắc muốn xóa nhóm kích thước "$name"?';
@@ -274,8 +311,7 @@ abstract final class AppStrings {
   static const String adminColorProductNameLabel = 'TÊN MÀU SẮC';
   static const String adminColorProductNameHint =
       'Nhập tên màu (ví dụ: Aero Blue)';
-  static const String adminColorProductHexHint =
-      'Nhập mã Hex (ví dụ: #FF6D00)';
+  static const String adminColorProductHexHint = 'Nhập mã Hex (ví dụ: #FF6D00)';
   static const String adminColorProductNameRequired = 'Vui lòng nhập tên màu!';
   static const String adminColorHexInvalidFull =
       'Mã HEX không hợp lệ! Vui lòng bắt đầu với # và có 3 hoặc 6 ký tự số/chữ.';

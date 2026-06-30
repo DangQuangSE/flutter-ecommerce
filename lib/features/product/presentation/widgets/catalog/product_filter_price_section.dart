@@ -1,11 +1,17 @@
-part of 'product_filter_bottom_sheet.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/catalog/product_filter_section_title.dart';
 
-class _PriceSection extends StatelessWidget {
+class ProductFilterPriceSection extends StatelessWidget {
   final TextEditingController minController;
   final TextEditingController maxController;
   final void Function(double? min, double? max) onPreset;
 
-  const _PriceSection({
+  const ProductFilterPriceSection({
+    super.key,
     required this.minController,
     required this.maxController,
     required this.onPreset,
@@ -16,68 +22,76 @@ class _PriceSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Khoảng giá'),
+        const ProductFilterSectionTitle(AppStrings.productFilterPriceRange),
         Row(
           children: [
             Expanded(
-              child: TextField(
+              child: _PriceField(
                 controller: minController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(
-                  labelText: 'Từ',
-                  suffixText: 'đ',
-                  filled: true,
-                  fillColor: AppColors.background,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
+                label: AppStrings.productFilterMinPrice,
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Text('–', style: TextStyle(fontSize: 18)),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingSm),
+              child: Text('-', style: TextStyle(fontSize: AppSizes.fontXxl)),
             ),
             Expanded(
-              child: TextField(
+              child: _PriceField(
                 controller: maxController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(
-                  labelText: 'Đến',
-                  suffixText: 'đ',
-                  filled: true,
-                  fillColor: AppColors.background,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
+                label: AppStrings.productFilterMaxPrice,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        // Price presets
+        AppSizes.spacingMd,
         Wrap(
-          spacing: 8,
+          spacing: AppSizes.paddingSm,
           children: [
             _PresetChip(
-              label: 'Dưới 1.000.000đ',
+              label: AppStrings.productFilterUnderOneMillion,
               onTap: () => onPreset(null, 1000000),
             ),
             _PresetChip(
-              label: '1 – 3 triệu',
+              label: AppStrings.productFilterOneToThreeMillion,
               onTap: () => onPreset(1000000, 3000000),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        AppSizes.spacingMd,
       ],
+    );
+  }
+}
+
+class _PriceField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+
+  const _PriceField({
+    required this.controller,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      decoration: InputDecoration(
+        labelText: label,
+        suffixText: AppStrings.productFilterCurrencySuffix,
+        filled: true,
+        fillColor: AppColors.background,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.paddingMd,
+          vertical: AppSizes.radiusMd,
+        ),
+      ),
     );
   }
 }
@@ -93,17 +107,23 @@ class _PresetChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.paddingMd,
+          vertical: AppSizes.radiusSm,
+        ),
         decoration: BoxDecoration(
           color: AppColors.primary.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppSizes.radiusRound),
           border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
         ),
-        child: Text(label,
-            style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primary)),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: AppSizes.fontMd,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primary,
+          ),
+        ),
       ),
     );
   }

@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/core/di/injection_container.dart';
-import 'package:flutter_ecommerce/core/errors/result.dart';
-import 'package:flutter_ecommerce/features/brand/domain/entities/brand_entity.dart';
-import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
-import 'package:flutter_ecommerce/features/category/domain/entities/category_tree_node.dart';
-import 'package:flutter_ecommerce/features/category/domain/repositories/category_repository.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
-import 'package:flutter_ecommerce/features/product/presentation/utils/product_constants.dart';
-
-part 'product_filter_category_section.dart';
-part 'product_filter_choice_sections.dart';
-part 'product_filter_price_section.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/product_filter_options_cubit.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/product_filter_options_state.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/catalog/product_filter_category_section.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/catalog/product_filter_choice_sections.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/catalog/product_filter_price_section.dart';
 
 class ProductFilterBottomSheet extends StatefulWidget {
   final ProductCatalogLoaded appliedState;
@@ -26,7 +21,6 @@ class ProductFilterBottomSheet extends StatefulWidget {
 }
 
 class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
-  // Pending filter state — local copy, not applied until Apply tapped
   int? _categoryId;
   String? _categoryName;
   int? _brandId;
@@ -35,33 +29,16 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
   String? _color;
   final _minPriceController = TextEditingController();
   final _maxPriceController = TextEditingController();
-
-  // UI state
   final Set<int> _expandedCategories = {};
-  bool _loadingCategories = true;
-  bool _loadingBrands = true;
-  List<CategoryTreeNode> _categories = [];
-  List<BrandEntity> _brands = [];
-  String? _loadError;
 
   @override
   void initState() {
     super.initState();
-    // Init pending filter from applied state (not from Bloc — snapshot at open time)
-    final s = widget.appliedState;
-    _categoryId = s.categoryId;
-    _categoryName = s.categoryName;
-    _brandId = s.brandId;
-    _brandName = s.brandName;
-    _gender = s.gender;
-    _color = s.color;
-    if (s.minPrice != null) {
-      _minPriceController.text = s.minPrice!.toInt().toString();
-    }
-    if (s.maxPrice != null) {
-      _maxPriceController.text = s.maxPrice!.toInt().toString();
-    }
-    _loadData();
+    _syncAppliedFilter();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<ProductFilterOptionsCubit>().loadOptions();
+    });
   }
 
   @override
@@ -71,23 +48,20 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    // Use sl<> (GetIt) — repositories are NOT in the Flutter provider tree
-    final catResult = await sl<CategoryRepository>().getTree();
-    final brandResult = await sl<BrandRepository>().getBrands(size: 200);
-    if (!mounted) return;
-    setState(() {
-      _loadingCategories = false;
-      _loadingBrands = false;
-      if (catResult case Success(:final data)) {
-        _categories = data;
-      } else {
-        _loadError = 'Không tải được danh mục';
-      }
-      if (brandResult case Success(:final data)) {
-        _brands = data.where((b) => b.isActive).toList();
-      }
-    });
+  void _syncAppliedFilter() {
+    final state = widget.appliedState;
+    _categoryId = state.categoryId;
+    _categoryName = state.categoryName;
+    _brandId = state.brandId;
+    _brandName = state.brandName;
+    _gender = state.gender;
+    _color = state.color;
+    if (state.minPrice != null) {
+      _minPriceController.text = state.minPrice!.toInt().toString();
+    }
+    if (state.maxPrice != null) {
+      _maxPriceController.text = state.maxPrice!.toInt().toString();
+    }
   }
 
   void _resetAll() {
@@ -119,148 +93,85 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
     Navigator.of(context).pop();
   }
 
+  void _selectCategory(int? id, String? name) {
+    setState(() {
+      _categoryId = id;
+      _categoryName = name;
+    });
+  }
+
+  void _selectBrand(int? id, String? name) {
+    setState(() {
+      _brandId = id;
+      _brandName = name;
+    });
+  }
+
+  void _toggleCategory(int id) {
+    setState(() {
+      if (_expandedCategories.contains(id)) {
+        _expandedCategories.remove(id);
+      } else {
+        _expandedCategories.add(id);
+      }
+    });
+  }
+
+  void _setPricePreset(double? min, double? max) {
+    setState(() {
+      if (min != null) {
+        _minPriceController.text = min.toInt().toString();
+      } else {
+        _minPriceController.clear();
+      }
+      if (max != null) {
+        _maxPriceController.text = max.toInt().toString();
+      } else {
+        _maxPriceController.clear();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
       height: screenHeight * 0.92,
       decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        color: AppColors.white,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusRound),
+        ),
       ),
       child: Column(
         children: [
-          // Handle bar
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.divider,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          // Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 12, 0),
-            child: Row(
-              children: [
-                const Icon(Icons.tune_rounded, color: AppColors.primary),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Bộ lọc',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                ),
-                TextButton(
-                  onPressed: _resetAll,
-                  child: const Text('Xóa tất cả',
-                      style: TextStyle(color: AppColors.error)),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
+          const _FilterSheetHandle(),
+          _FilterSheetHeader(
+            onReset: _resetAll,
+            onClose: () => Navigator.of(context).pop(),
           ),
           const Divider(height: 1),
-          // Content
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                _CategorySection(
-                  categories: _categories,
-                  loading: _loadingCategories,
-                  error: _loadError,
-                  selectedId: _categoryId,
-                  expandedIds: _expandedCategories,
-                  onSelect: (id, name) => setState(() {
-                    _categoryId = id;
-                    _categoryName = name;
-                  }), // null id/name = deselect
-                  onToggleExpand: (id) => setState(() {
-                    if (_expandedCategories.contains(id)) {
-                      _expandedCategories.remove(id);
-                    } else {
-                      _expandedCategories.add(id);
-                    }
-                  }),
-                ),
-                _BrandSection(
-                  brands: _brands,
-                  loading: _loadingBrands,
-                  selectedId: _brandId,
-                  onSelect: (id, name) => setState(() {
-                    _brandId = id;
-                    _brandName = name;
-                  }), // null = deselect
-                ),
-                _GenderSection(
-                  selected: _gender,
-                  onSelect: (g) => setState(() => _gender = g),
-                ),
-                _ColorSection(
-                  selected: _color,
-                  onSelect: (c) => setState(() => _color = c),
-                ),
-                _PriceSection(
-                  minController: _minPriceController,
-                  maxController: _maxPriceController,
-                  onPreset: (min, max) => setState(() {
-                    if (min != null) {
-                      _minPriceController.text = min.toInt().toString();
-                    } else {
-                      _minPriceController.clear();
-                    }
-                    if (max != null) {
-                      _maxPriceController.text = max.toInt().toString();
-                    } else {
-                      _maxPriceController.clear();
-                    }
-                  }),
-                ),
-                const SizedBox(height: 100),
-              ],
+            child: _FilterSheetContent(
+              categoryId: _categoryId,
+              brandId: _brandId,
+              gender: _gender,
+              color: _color,
+              expandedCategories: _expandedCategories,
+              minPriceController: _minPriceController,
+              maxPriceController: _maxPriceController,
+              onCategorySelected: _selectCategory,
+              onBrandSelected: _selectBrand,
+              onCategoryToggled: _toggleCategory,
+              onGenderSelected: (gender) => setState(() => _gender = gender),
+              onColorSelected: (color) => setState(() => _color = color),
+              onPricePresetSelected: _setPricePreset,
             ),
           ),
-          // Apply button — pinned at bottom
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _resetAll,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text('Đặt lại'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _apply,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text('Áp dụng',
-                          style: TextStyle(fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          _FilterSheetActions(
+            onReset: _resetAll,
+            onApply: _apply,
           ),
         ],
       ),
@@ -268,4 +179,209 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
   }
 }
 
-// ── Section widgets ────────────────────────────────────────────────────────────
+class _FilterSheetHandle extends StatelessWidget {
+  const _FilterSheetHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: AppSizes.paddingLg),
+      width: 40,
+      height: 4,
+      decoration: BoxDecoration(
+        color: AppColors.divider,
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+      ),
+    );
+  }
+}
+
+class _FilterSheetHeader extends StatelessWidget {
+  final VoidCallback onReset;
+  final VoidCallback onClose;
+
+  const _FilterSheetHeader({
+    required this.onReset,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.paddingLg,
+        AppSizes.paddingMd,
+        AppSizes.paddingMd,
+        0,
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.tune_rounded, color: AppColors.primary),
+          AppSizes.spacingSm,
+          const Expanded(
+            child: Text(
+              AppStrings.productFilterTitle,
+              style: TextStyle(
+                fontSize: AppSizes.fontXxl,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: onReset,
+            child: const Text(
+              AppStrings.productFilterClearAll,
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: onClose,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterSheetContent extends StatelessWidget {
+  final int? categoryId;
+  final int? brandId;
+  final String? gender;
+  final String? color;
+  final Set<int> expandedCategories;
+  final TextEditingController minPriceController;
+  final TextEditingController maxPriceController;
+  final void Function(int? id, String? name) onCategorySelected;
+  final void Function(int? id, String? name) onBrandSelected;
+  final ValueChanged<int> onCategoryToggled;
+  final ValueChanged<String?> onGenderSelected;
+  final ValueChanged<String?> onColorSelected;
+  final void Function(double? min, double? max) onPricePresetSelected;
+
+  const _FilterSheetContent({
+    required this.categoryId,
+    required this.brandId,
+    required this.gender,
+    required this.color,
+    required this.expandedCategories,
+    required this.minPriceController,
+    required this.maxPriceController,
+    required this.onCategorySelected,
+    required this.onBrandSelected,
+    required this.onCategoryToggled,
+    required this.onGenderSelected,
+    required this.onColorSelected,
+    required this.onPricePresetSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProductFilterOptionsCubit, ProductFilterOptionsState>(
+      builder: (context, state) {
+        final loading = state is ProductFilterOptionsInitial ||
+            state is ProductFilterOptionsLoading;
+        final loaded = state is ProductFilterOptionsLoaded ? state : null;
+
+        return ListView(
+          padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
+          children: [
+            ProductFilterCategorySection(
+              categories: loaded?.categories ?? const [],
+              loading: loading,
+              error: loaded?.categoryError,
+              selectedId: categoryId,
+              expandedIds: expandedCategories,
+              onSelect: onCategorySelected,
+              onToggleExpand: onCategoryToggled,
+            ),
+            ProductFilterBrandSection(
+              brands: loaded?.brands ?? const [],
+              loading: loading,
+              error: loaded?.brandError,
+              selectedId: brandId,
+              onSelect: onBrandSelected,
+            ),
+            ProductFilterGenderSection(
+              selected: gender,
+              onSelect: onGenderSelected,
+            ),
+            ProductFilterColorSection(
+              selected: color,
+              onSelect: onColorSelected,
+            ),
+            ProductFilterPriceSection(
+              minController: minPriceController,
+              maxController: maxPriceController,
+              onPreset: onPricePresetSelected,
+            ),
+            const SizedBox(height: 100),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _FilterSheetActions extends StatelessWidget {
+  final VoidCallback onReset;
+  final VoidCallback onApply;
+
+  const _FilterSheetActions({
+    required this.onReset,
+    required this.onApply,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.paddingLg,
+          AppSizes.paddingSm,
+          AppSizes.paddingLg,
+          AppSizes.paddingMd,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: onReset,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSizes.paddingMd,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                  ),
+                ),
+                child: const Text(AppStrings.productFilterReset),
+              ),
+            ),
+            AppSizes.spacingMd,
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: onApply,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSizes.paddingMd,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                  ),
+                ),
+                child: const Text(
+                  AppStrings.productFilterApply,
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

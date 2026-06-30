@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
+import 'package:flutter_ecommerce/features/brand/domain/repositories/brand_repository.dart';
+import 'package:flutter_ecommerce/features/category/domain/repositories/category_repository.dart';
 import 'package:flutter_ecommerce/features/product/data/datasources/product_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/product/data/datasources/product_remote_datasource_impl.dart';
 import 'package:flutter_ecommerce/features/product/data/repositories/product_repository_impl.dart';
@@ -12,6 +14,7 @@ import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_
 import 'package:flutter_ecommerce/features/product/domain/usecases/update_product_usecase.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/product_filter_options_cubit.dart';
 
 void setupProductModule(GetIt sl) {
   sl.registerLazySingleton<ProductRemoteDataSource>(
@@ -43,5 +46,11 @@ void setupProductModule(GetIt sl) {
   );
   sl.registerFactory<ProductCatalogBloc>(
     () => ProductCatalogBloc(sl<GetProductCatalogUseCase>()),
+  );
+  sl.registerFactory<ProductFilterOptionsCubit>(
+    () => ProductFilterOptionsCubit(
+      categoryRepository: sl<CategoryRepository>(),
+      brandRepository: sl<BrandRepository>(),
+    ),
   );
 }

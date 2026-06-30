@@ -41,6 +41,7 @@ import 'package:flutter_ecommerce/features/product/presentation/bloc/product_blo
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/product_filter_options_cubit.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
@@ -447,8 +448,14 @@ class AppRouter {
       GoRoute(
         path: '/products',
         name: AppRoutes.productList,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) =>
+                  sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
+            ),
+            BlocProvider(create: (_) => sl<ProductFilterOptionsCubit>()),
+          ],
           child: const ProductCatalogPage(),
         ),
         routes: [
