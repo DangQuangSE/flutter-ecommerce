@@ -106,10 +106,10 @@ class _VoucherText extends StatelessWidget {
     final description = _description();
     final minOrderText = coupon.minOrderAmount == null
         ? ''
-        : 'ÄÆ¡n tá»‘i thiá»ƒu ${formatPrice(coupon.minOrderAmount!)}';
+        : 'Đơn tối thiểu ${formatPrice(coupon.minOrderAmount!)}';
     final expiryText = coupon.endDate == null
         ? ''
-        : 'Háº¡n dÃ¹ng: ${coupon.endDate!.day}/${coupon.endDate!.month}/${coupon.endDate!.year}';
+        : 'Hạn dùng: ${coupon.endDate!.day}/${coupon.endDate!.month}/${coupon.endDate!.year}';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,13 +157,13 @@ class _VoucherText extends StatelessWidget {
 
   String _description() {
     if (coupon.discountType == DiscountType.percentage) {
-      var desc = 'Giáº£m ${coupon.discountValue.toStringAsFixed(0)}%';
+      var desc = 'Giảm ${coupon.discountValue.toStringAsFixed(0)}%';
       if (coupon.maxDiscountAmount != null) {
-        desc += ' (Tá»‘i Ä‘a ${formatPrice(coupon.maxDiscountAmount!)})';
+        desc += ' (Tối đa ${formatPrice(coupon.maxDiscountAmount!)})';
       }
       return desc;
     }
-    return 'Giáº£m ${formatPrice(coupon.discountValue)}';
+    return 'Giảm ${formatPrice(coupon.discountValue)}';
   }
 }
 
@@ -190,6 +190,7 @@ class _VoucherAction extends StatelessWidget {
         ),
       );
     }
+
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: IconButton(

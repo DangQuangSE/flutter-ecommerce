@@ -36,6 +36,7 @@ class CheckoutCouponSelector extends StatelessWidget {
       builder: (context, couponState) {
         final isLoading =
             couponState is CouponLoading || couponState is CouponInitial;
+        final hasError = couponState is CouponError;
         final coupons = couponState is CouponLoaded
             ? couponState.coupons
             : const <CouponEntity>[];
@@ -45,12 +46,14 @@ class CheckoutCouponSelector extends StatelessWidget {
         return InkWell(
           onTap: isLoading
               ? null
-              : () => onOpen(
-                    context,
-                    subtotal,
-                    coupons: coupons,
-                    errorMessage: errorMessage,
-                  ),
+              : hasError
+                  ? () => context.read<CouponCubit>().loadUserAvailableCoupons()
+                  : () => onOpen(
+                        context,
+                        subtotal,
+                        coupons: coupons,
+                        errorMessage: errorMessage,
+                      ),
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -85,6 +88,7 @@ class CheckoutCouponSelector extends StatelessWidget {
                     selectedCoupon: selectedCoupon,
                     discount: discount,
                     isLoading: isLoading,
+                    hasError: hasError,
                     formatPrice: formatPrice,
                   ),
                 ),
@@ -93,6 +97,12 @@ class CheckoutCouponSelector extends StatelessWidget {
                     width: 14,
                     height: 14,
                     child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else if (hasError)
+                  const Icon(
+                    Icons.refresh_rounded,
+                    color: AppColors.error,
+                    size: 18,
                   )
                 else
                   Icon(
@@ -113,24 +123,27 @@ class _CouponText extends StatelessWidget {
   final CouponEntity? selectedCoupon;
   final double discount;
   final bool isLoading;
+  final bool hasError;
   final String Function(double price) formatPrice;
 
   const _CouponText({
     required this.selectedCoupon,
     required this.discount,
     required this.isLoading,
+    required this.hasError,
     required this.formatPrice,
   });
 
   @override
   Widget build(BuildContext context) {
     final hasCoupon = selectedCoupon != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           hasCoupon
-              ? 'ÄÃ£ Ã¡p dá»¥ng mÃ£: ${selectedCoupon!.code}'
+              ? 'Đã áp dụng mã: ${selectedCoupon!.code}'
               : 'Sport Pro Voucher',
           style: GoogleFonts.inter(
             fontSize: 13,
@@ -140,18 +153,25 @@ class _CouponText extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          hasCoupon
-              ? 'Tiáº¿t kiá»‡m Ä‘Æ°á»£c ${formatPrice(discount)}'
-              : (isLoading
-                  ? 'Äang táº£i mÃ£ giáº£m giÃ¡...'
-                  : 'Chá»n hoáº·c nháº­p mÃ£ giáº£m giÃ¡'),
+          _subtitle(hasCoupon),
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: hasCoupon ? const Color(0xFF009933) : AppColors.textHint,
+            color: hasCoupon
+                ? const Color(0xFF009933)
+                : hasError
+                    ? AppColors.error
+                    : AppColors.textHint,
           ),
         ),
       ],
     );
+  }
+
+  String _subtitle(bool hasCoupon) {
+    if (hasCoupon) return 'Tiết kiệm được ${formatPrice(discount)}';
+    if (hasError) return 'Không tải được mã giảm giá. Nhấn để thử lại.';
+    if (isLoading) return 'Đang tải mã giảm giá...';
+    return 'Chọn hoặc nhập mã giảm giá';
   }
 }

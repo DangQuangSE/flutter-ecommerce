@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/coupon_manual_code_form.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/coupon_voucher_card.dart';
+import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 
 class CouponSelectionSheet extends StatefulWidget {
   final double subtotal;
@@ -44,14 +44,12 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
   }
 
   void _applyManualCode() {
-    setState(() {
-      _errorMessage = null;
-    });
+    setState(() => _errorMessage = null);
     final typedCode = _codeController.text.trim().toUpperCase();
     if (typedCode.isEmpty) return;
 
     final match = widget.coupons.firstWhere(
-      (c) => c.code.toUpperCase() == typedCode,
+      (coupon) => coupon.code.toUpperCase() == typedCode,
       orElse: () => const CouponEntity(code: ''),
     );
 
@@ -79,91 +77,69 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    // Keep viewInsets padding OUTSIDE the SizedBox that has a fixed height,
-    // otherwise the keyboard's resize animation fights the fixed height
-    // mid-layout.
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.75,
-        child: Column(
-          children: [
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 8, bottom: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Chọn Sport Pro Voucher',
-                    style: GoogleFonts.lexend(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 20),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            CouponManualCodeForm(
-              controller: _codeController,
-              errorMessage: _errorMessage,
-              onApply: _applyManualCode,
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: _buildCouponList(),
-            ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    widget.onCouponSelected(_tempSelectedCoupon);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'OK',
-                    style: GoogleFonts.lexend(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                    ),
+    final listMaxHeight = MediaQuery.sizeOf(context).height * 0.4;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 4, 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Chọn Sport Pro Voucher',
+                  style: GoogleFonts.lexend(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        CouponManualCodeForm(
+          controller: _codeController,
+          errorMessage: _errorMessage,
+          onApply: _applyManualCode,
+        ),
+        const Divider(height: 1),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: listMaxHeight),
+          child: _buildCouponList(),
+        ),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+          ),
+          child: ElevatedButton(
+            onPressed: () => widget.onCouponSelected(_tempSelectedCoupon),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accent,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          ],
-        ), // Column
-      ), // SizedBox
-    ); // Padding (keyboard inset wrapper)
+            child: Text(
+              'OK',
+              style: GoogleFonts.lexend(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildSectionLabel(String text) {
@@ -180,24 +156,27 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
 
   Widget _buildEmptyVouchers() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.confirmation_num_outlined,
-            size: 48,
-            color: AppColors.textHint,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Không có mã giảm giá nào',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.confirmation_num_outlined,
+              size: 48,
+              color: AppColors.textHint,
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Text(
+              'Không có mã giảm giá nào',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -222,13 +201,15 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
   Widget _buildCouponListView(List<CouponEntity> coupons) {
     final eligible = <CouponEntity>[];
     final ineligible = <CouponEntity>[];
-    for (final c in coupons) {
-      if (c.minOrderAmount != null && widget.subtotal < c.minOrderAmount!) {
-        ineligible.add(c);
+    for (final coupon in coupons) {
+      if (coupon.minOrderAmount != null &&
+          widget.subtotal < coupon.minOrderAmount!) {
+        ineligible.add(coupon);
       } else {
-        eligible.add(c);
+        eligible.add(coupon);
       }
     }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       physics: const BouncingScrollPhysics(),
@@ -236,29 +217,31 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
         if (eligible.isNotEmpty) ...[
           _buildSectionLabel('MÃ GIẢM GIÁ KHẢ DỤNG'),
           const SizedBox(height: 8),
-          ...eligible.map((c) => CouponVoucherCard(
-                coupon: c,
-                isEligible: true,
-                isSelected: _tempSelectedCoupon?.code == c.code,
-                formatPrice: _formatPrice,
-                onSelect: () {
-                  setState(() {
-                    _tempSelectedCoupon = c;
-                  });
-                },
-              )),
+          ...eligible.map(
+            (coupon) => CouponVoucherCard(
+              coupon: coupon,
+              isEligible: true,
+              isSelected: _tempSelectedCoupon?.code == coupon.code,
+              formatPrice: _formatPrice,
+              onSelect: () {
+                setState(() => _tempSelectedCoupon = coupon);
+              },
+            ),
+          ),
         ],
         if (ineligible.isNotEmpty) ...[
           if (eligible.isNotEmpty) const SizedBox(height: 24),
           _buildSectionLabel('MÃ KHÔNG KHẢ DỤNG'),
           const SizedBox(height: 8),
-          ...ineligible.map((c) => CouponVoucherCard(
-                coupon: c,
-                isEligible: false,
-                isSelected: false,
-                formatPrice: _formatPrice,
-                onSelect: () {},
-              )),
+          ...ineligible.map(
+            (coupon) => CouponVoucherCard(
+              coupon: coupon,
+              isEligible: false,
+              isSelected: false,
+              formatPrice: _formatPrice,
+              onSelect: () {},
+            ),
+          ),
         ],
       ],
     );

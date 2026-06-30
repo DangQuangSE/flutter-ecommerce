@@ -2,15 +2,15 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/constants/app_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
-import 'package:flutter_ecommerce/core/network/auth_interceptor.dart';
-import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
-
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 
 class _AppExceptionDio implements Dio {
   final Dio _delegate;
@@ -306,7 +306,6 @@ class DioClient {
   late final Dio dio;
 
   DioClient({
-    required LocalStorage localStorage,
     required AuthTokenStorage authTokenStorage,
     required CookieJar cookieJar,
   }) {
@@ -336,9 +335,12 @@ class DioClient {
       ));
     }
 
-    dio.interceptors.add(AuthInterceptor(localStorage));
     dio.interceptors.add(
-      _AuthRefreshInterceptor(dio: dio, authTokenStorage: authTokenStorage),
+      _AuthRefreshInterceptor(
+        dio: dio,
+        authTokenStorage: authTokenStorage,
+        cookieJar: cookieJar,
+      ),
     );
     dio.interceptors.add(_ErrorInterceptor());
   }
@@ -348,6 +350,7 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
   _AuthRefreshInterceptor({
     required Dio dio,
     required AuthTokenStorage authTokenStorage,
+    required CookieJar cookieJar,
   })  : _mainDio = dio,
         _authTokenStorage = authTokenStorage {
     // A plain Dio used ONLY for the refresh-token round-trip.
@@ -357,14 +360,23 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
     _refreshDio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(milliseconds: AppConstants.connectTimeoutMs),
-        receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeoutMs),
+        connectTimeout:
+            const Duration(milliseconds: AppConstants.connectTimeoutMs),
+        receiveTimeout:
+            const Duration(milliseconds: AppConstants.receiveTimeoutMs),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
       ),
     );
+    // The backend issues the refresh token as a cookie scoped to
+    // `/api/auth/refresh-token`. Sharing the cookie jar lets this isolated Dio
+    // send that cookie — without it the refresh always fails (HTTP 400) and the
+    // user is logged out the instant their access token expires.
+    if (!kIsWeb) {
+      _refreshDio.interceptors.add(CookieManager(cookieJar));
+    }
   }
 
   final Dio _mainDio;
@@ -393,8 +405,17 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
 
     if (statusCode == 401 &&
         !alreadyRetried &&
+        // Refresh (and the resulting single logout) only fire while a session
+        // token still exists. QueuedInterceptor runs these handlers one at a
+        // time, so the first definitive failure clears the token before the
+        // next queued 401 is evaluated — later ones see a null token and skip,
+        // preventing a storm of refresh + logout round-trips from one expiry.
+        _authTokenStorage.getAccessToken() != null &&
         path != ApiConstants.login &&
-        path != ApiConstants.refreshToken) {
+        path != ApiConstants.refreshToken &&
+        // The logout call runs during teardown after the token is cleared; it
+        // must never be refreshed (that would resurrect the session).
+        path != ApiConstants.logout) {
       try {
         // Use _refreshDio (no QueuedInterceptor) to avoid deadlocking the
         // main Dio while it is blocked inside this QueuedInterceptor handler.
@@ -414,7 +435,12 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
         final retryResponse = await _mainDio.fetch(retryOptions);
         return handler.resolve(retryResponse);
       } catch (_) {
+        // Refresh definitively failed — the session is over. Clear the stale
+        // token and notify the auth layer so the app returns to login. This is
+        // now the single owner of session-expiry handling (previously a second
+        // interceptor logged the user out on the FIRST 401, before refresh ran).
         await _authTokenStorage.clearAccessToken();
+        GetIt.instance<AuthBloc>().add(const AuthLogoutRequested());
       }
     }
 

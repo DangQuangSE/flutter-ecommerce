@@ -53,6 +53,7 @@ class CouponManualCodeForm extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
+                  minimumSize: const Size(88, 48),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,

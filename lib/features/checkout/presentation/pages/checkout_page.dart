@@ -5,28 +5,29 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
+import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
+import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
-import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
-import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_app_bar.dart';
-import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_body.dart';
-import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_cart_state_view.dart';
-import 'package:flutter_ecommerce/features/checkout/presentation/widgets/coupon_selection_sheet.dart';
 import 'package:flutter_ecommerce/features/checkout/domain/entities/order_request_entity.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_event.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_state.dart';
-import 'package:flutter_ecommerce/features/payment/domain/entities/vnpay_payment_result.dart';
-import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_app_bar.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_body.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_cart_state_view.dart';
+import 'package:flutter_ecommerce/features/checkout/presentation/widgets/coupon_selection_sheet.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/enums/discount_type.dart';
-import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
-import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
-import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
+import 'package:flutter_ecommerce/features/payment/domain/entities/vnpay_payment_result.dart';
+import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
 
 class CheckoutPage extends StatefulWidget {
   final List<int>? cartItemIds;
+
   const CheckoutPage({super.key, this.cartItemIds});
 
   @override
@@ -42,12 +43,29 @@ class _CheckoutPageState extends State<CheckoutPage> {
   CouponEntity? _selectedCoupon;
   AddressEntity? _selectedAddress;
 
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: '');
+    _phoneController = TextEditingController(text: '');
+    _addressController = TextEditingController(text: '');
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    super.dispose();
+  }
+
   double _calculateDiscount(double subtotal) {
     if (_selectedCoupon == null) return 0;
     if (_selectedCoupon!.minOrderAmount != null &&
         subtotal < _selectedCoupon!.minOrderAmount!) {
       return 0;
     }
+
     double discount = 0;
     if (_selectedCoupon!.discountType == DiscountType.percentage) {
       discount = subtotal * (_selectedCoupon!.discountValue / 100);
@@ -58,18 +76,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     } else if (_selectedCoupon!.discountType == DiscountType.fixedAmount) {
       discount = _selectedCoupon!.discountValue;
     }
-    if (discount > subtotal) {
-      discount = subtotal;
-    }
-    return discount;
-  }
 
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: '');
-    _phoneController = TextEditingController(text: '');
-    _addressController = TextEditingController(text: '');
+    return discount > subtotal ? subtotal : discount;
   }
 
   void _onAddressSelected(AddressEntity address) {
@@ -81,28 +89,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
     });
   }
 
-  /// Picks the default address (or the first one) so the selection matches
-  /// what [CheckoutAddressPicker] shows by default. Without this, the card
-  /// renders a default address but [_selectedAddress] stays null, blocking
-  /// order submission.
   void _autoSelectDefaultAddress(List<AddressEntity> addresses) {
     if (_selectedAddress != null || addresses.isEmpty) return;
     AddressEntity chosen = addresses.first;
-    for (final a in addresses) {
-      if (a.isDefault) {
-        chosen = a;
+    for (final address in addresses) {
+      if (address.isDefault) {
+        chosen = address;
         break;
       }
     }
     _onAddressSelected(chosen);
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
-    super.dispose();
   }
 
   String _normalizePhone(String raw) => raw.replaceAll(RegExp(r'\s+'), '');
@@ -134,10 +130,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
 
     if (!_formKey.currentState!.validate()) {
-      _showCheckoutError(
-        context,
-        AppStrings.checkoutShippingInfoRequired,
-      );
+      _showCheckoutError(context, AppStrings.checkoutShippingInfoRequired);
       return;
     }
 
@@ -195,15 +188,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               if (!context.mounted) return;
               context.goNamed(AppRoutes.checkoutSuccess);
             } else if (checkoutState is CheckoutFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: AppColors.error,
-                  content: Text(
-                    checkoutState.message,
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              );
+              _showCheckoutError(context, checkoutState.message);
             }
           },
         ),
@@ -219,7 +204,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget _buildCheckoutContent(BuildContext context, CartLoaded state) {
     final checkoutItems = widget.cartItemIds != null
         ? state.items
-            .where((e) => widget.cartItemIds!.contains(e.itemId))
+            .where((item) => widget.cartItemIds!.contains(item.itemId))
             .toList()
         : state.items;
 
@@ -238,26 +223,26 @@ class _CheckoutPageState extends State<CheckoutPage> {
       },
       calculateDiscount: _calculateDiscount,
       formatPrice: _formatPrice,
-      onOpenCoupon: _openCouponBottomSheet,
+      onOpenCoupon: _openCouponDialog,
       onConfirm: () => _submitOrder(context, checkoutItems),
     );
   }
 
-  void _openCouponBottomSheet(
+  void _openCouponDialog(
     BuildContext context,
     double subtotal, {
     required List<CouponEntity> coupons,
     required String? errorMessage,
   }) {
-    showModalBottomSheet(
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (modalContext) {
-        return CouponSelectionSheet(
+      barrierDismissible: true,
+      builder: (dialogContext) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        child: CouponSelectionSheet(
           subtotal: subtotal,
           selectedCoupon: _selectedCoupon,
           coupons: coupons,
@@ -266,10 +251,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
             setState(() {
               _selectedCoupon = coupon;
             });
-            Navigator.pop(modalContext);
+            Navigator.pop(dialogContext);
           },
-        );
-      },
+        ),
+      ),
     );
   }
 
