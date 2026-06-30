@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_error_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
@@ -52,10 +54,11 @@ class AdminProductDetailPage extends StatelessWidget {
         body: BlocBuilder<AdminProductDetailCubit, AdminProductDetailState>(
           builder: (context, state) {
             if (state is AdminProductDetailLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const AppLoadingView();
             }
             if (state is AdminProductDetailFailure) {
-              return _DetailFailureView(
+              return AppErrorView(
+                title: AppStrings.genericLoadError,
                 message: state.message,
                 onRetry: () =>
                     context.read<AdminProductDetailCubit>().refresh(productId),
@@ -87,28 +90,4 @@ class AdminProductDetailPage extends StatelessWidget {
       ),
     );
   }
-}
-
-class _DetailFailureView extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _DetailFailureView({
-    required this.message,
-    required this.onRetry,
-  });
-
-  @override
-  Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(message),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: const Text(AppStrings.adminProductDetailRetry),
-            ),
-          ],
-        ),
-      );
 }

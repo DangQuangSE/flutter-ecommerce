@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_image_entity.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
@@ -52,10 +53,11 @@ class _ProductFormStep3ImagesState extends State<ProductFormStep3Images> {
         if (state is AdminProductImageSuccess) {
           _lastKnownImages = state.images;
         } else if (state is AdminProductImageFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: AppColors.error,
-          ));
+          AppSnackBar.show(
+            context,
+            message: state.message,
+            type: AppSnackBarType.error,
+          );
         }
       },
       builder: (context, imageState) {
@@ -139,12 +141,14 @@ class _ProductFormStep3ImagesState extends State<ProductFormStep3Images> {
       final toUpload = files.take(remaining).toList();
 
       if (toUpload.length < files.length) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            AppStrings.adminProductImagesUploadLimit(remaining, _maxImages),
+        AppSnackBar.show(
+          context,
+          message: AppStrings.adminProductImagesUploadLimit(
+            remaining,
+            _maxImages,
           ),
-          backgroundColor: AppColors.warning,
-        ));
+          type: AppSnackBarType.warning,
+        );
       }
 
       for (final file in toUpload) {

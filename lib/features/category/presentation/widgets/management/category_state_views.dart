@@ -1,58 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_empty_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_error_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 
 class CategoryLoadingView extends StatelessWidget {
   const CategoryLoadingView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const AppLoadingView();
 }
 
 class CategoryEmptyView extends StatelessWidget {
   const CategoryEmptyView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.category_outlined,
-              size: 56,
-              color: AppColors.textSecondary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Chưa có danh mục nào',
-              style: GoogleFonts.lexend(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Nhấn "Thêm" để tạo danh mục đầu tiên.',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const AppEmptyView(
+        icon: Icons.category_outlined,
+        title: AppStrings.adminCategoryEmptyTitle,
+        message: AppStrings.adminCategoryEmptyMessage,
+      );
 }
 
 class CategoryErrorView extends StatelessWidget {
@@ -66,48 +34,9 @@ class CategoryErrorView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline_rounded,
-              size: 48,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Không tải được danh mục',
-              style: GoogleFonts.lexend(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: onRetry,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Thử lại'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AppErrorView(
+        title: AppStrings.adminCategoryLoadErrorTitle,
+        message: message,
+        onRetry: onRetry,
+      );
 }

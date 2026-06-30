@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_state.dart';
@@ -65,35 +69,17 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
   }
 
   Future<void> _confirmDelete(CouponEntity coupon) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          'Xóa mã giảm giá',
-          style: GoogleFonts.lexend(fontWeight: FontWeight.w700),
-        ),
-        content: Text(
-          'Bạn có chắc muốn xóa mã "${coupon.code}"?',
-          style: GoogleFonts.inter(fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Hủy'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Xóa'),
-          ),
-        ],
-      ),
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.adminCouponDeleteTitle,
+      message: AppStrings.adminCouponDeleteMessage(coupon.code),
+      confirmLabel: AppStrings.delete,
     );
 
-    if (confirmed != true || coupon.id == null) return;
+    if (!confirmed || coupon.id == null) return;
     final error = await _cubit.delete(coupon.id!);
     if (!mounted) return;
-    _showSnack(error ?? 'Đã xóa mã giảm giá', isError: error != null);
+    _showSnack(error ?? AppStrings.adminCouponDeleted, isError: error != null);
   }
 
   Future<void> _toggle(CouponEntity coupon) async {
@@ -103,15 +89,11 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
   }
 
   void _showSnack(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? AppColors.error : AppColors.success,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: isError ? AppSnackBarType.error : AppSnackBarType.success,
+    );
   }
 
   void _showDetail(CouponEntity coupon) {
@@ -120,7 +102,8 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
       backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppSizes.radiusRound)),
       ),
       builder: (_) => CouponDetailSheet(coupon: coupon),
     );
@@ -136,10 +119,7 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
         foregroundColor: Colors.white,
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add_rounded),
-        label: Text(
-          'Thêm',
-          style: GoogleFonts.lexend(fontWeight: FontWeight.w700),
-        ),
+        label: const Text(AppStrings.adminCatalogAdd),
       ),
       body: Column(
         children: [
@@ -153,12 +133,7 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
             child: BlocBuilder<CouponCubit, CouponState>(
               builder: (context, state) {
                 return switch (state) {
-                  CouponLoading() => const Center(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColors.primary),
-                      ),
-                    ),
+                  CouponLoading() => const AppLoadingView(),
                   CouponError(:final message) => CouponErrorView(
                       message: message,
                       onRetry: _cubit.load,

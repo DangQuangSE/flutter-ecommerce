@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_status.dart';
 
 class VariantEditResult {
@@ -19,9 +20,6 @@ class VariantEditResult {
   });
 }
 
-/// Shows a dialog to edit variant fields.
-/// Pass [initialSku] to show the SKU field (e.g. for preview items).
-/// Set [showStatus] to false to hide the status dropdown (default true).
 Future<VariantEditResult?> showVariantEditDialog(
   BuildContext context, {
   required String title,
@@ -59,7 +57,7 @@ class _VariantEditDialogContent extends StatefulWidget {
     required this.title,
     this.initialSku,
     required this.initialPrice,
-    this.initialSalePrice,
+    required this.initialSalePrice,
     required this.initialStock,
     required this.initialStatus,
     required this.showStatus,
@@ -71,10 +69,10 @@ class _VariantEditDialogContent extends StatefulWidget {
 }
 
 class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
-  TextEditingController? _skuCtrl;
-  late final TextEditingController _priceCtrl;
-  late final TextEditingController _salePriceCtrl;
-  late final TextEditingController _stockCtrl;
+  TextEditingController? _skuController;
+  late final TextEditingController _priceController;
+  late final TextEditingController _salePriceController;
+  late final TextEditingController _stockController;
   late ProductStatus _status;
   final _formKey = GlobalKey<FormState>();
 
@@ -82,35 +80,38 @@ class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
   void initState() {
     super.initState();
     if (widget.initialSku != null) {
-      _skuCtrl = TextEditingController(text: widget.initialSku);
+      _skuController = TextEditingController(text: widget.initialSku);
     }
-    _priceCtrl =
-        TextEditingController(text: widget.initialPrice.toStringAsFixed(0));
-    _salePriceCtrl = TextEditingController(
-        text: widget.initialSalePrice?.toStringAsFixed(0) ?? '');
-    _stockCtrl = TextEditingController(text: widget.initialStock.toString());
+    _priceController = TextEditingController(
+      text: widget.initialPrice.toStringAsFixed(0),
+    );
+    _salePriceController = TextEditingController(
+      text: widget.initialSalePrice?.toStringAsFixed(0) ?? '',
+    );
+    _stockController =
+        TextEditingController(text: widget.initialStock.toString());
     _status = widget.initialStatus;
   }
 
   @override
   void dispose() {
-    _skuCtrl?.dispose();
-    _priceCtrl.dispose();
-    _salePriceCtrl.dispose();
-    _stockCtrl.dispose();
+    _skuController?.dispose();
+    _priceController.dispose();
+    _salePriceController.dispose();
+    _stockController.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    final salePriceText = _salePriceCtrl.text.trim();
+    final salePriceText = _salePriceController.text.trim();
     Navigator.pop(
       context,
       VariantEditResult(
-        sku: _skuCtrl?.text.trim(),
-        originalPrice: double.parse(_priceCtrl.text.trim()),
+        sku: _skuController?.text.trim(),
+        originalPrice: double.parse(_priceController.text.trim()),
         salePrice: salePriceText.isEmpty ? null : double.parse(salePriceText),
-        stockQuantity: int.parse(_stockCtrl.text.trim()),
+        stockQuantity: int.parse(_stockController.text.trim()),
         status: _status,
       ),
     );
@@ -119,32 +120,38 @@ class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title:
-          Text(widget.title, style: const TextStyle(fontSize: AppSizes.fontXl)),
+      title: Text(
+        widget.title,
+        style: const TextStyle(fontSize: AppSizes.fontXl),
+      ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (_skuCtrl != null) ...[
-                _SkuField(controller: _skuCtrl!),
+              if (_skuController != null) ...[
+                _SkuField(controller: _skuController!),
                 const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
               ],
               _PriceField(
-                  controller: _priceCtrl, label: 'Giá gốc *', required: true),
+                controller: _priceController,
+                label: AppStrings.adminProductBulkOriginalPrice,
+                required: true,
+              ),
               const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
               _PriceField(
-                  controller: _salePriceCtrl,
-                  label: 'Giá khuyến mãi',
-                  required: false),
+                controller: _salePriceController,
+                label: AppStrings.adminProductBulkSalePrice,
+                required: false,
+              ),
               const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
-              _StockField(controller: _stockCtrl),
+              _StockField(controller: _stockController),
               if (widget.showStatus) ...[
                 const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
                 _StatusDropdown(
                   value: _status,
-                  onChanged: (s) => setState(() => _status = s),
+                  onChanged: (status) => setState(() => _status = status),
                 ),
               ],
             ],
@@ -153,31 +160,36 @@ class _VariantEditDialogContentState extends State<_VariantEditDialogContent> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+          onPressed: () => Navigator.pop(context),
+          child: const Text(AppStrings.cancel),
+        ),
         ElevatedButton(
           onPressed: _submit,
           style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.textOnPrimary),
-          child: const Text('Lưu'),
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.textOnPrimary,
+          ),
+          child: const Text(AppStrings.save),
         ),
       ],
     );
   }
 }
 
-// ── Form field sub-widgets ────────────────────────────────────────────────────
-
 class _SkuField extends StatelessWidget {
   final TextEditingController controller;
+
   const _SkuField({required this.controller});
 
   @override
   Widget build(BuildContext context) => TextFormField(
         controller: controller,
         decoration: const InputDecoration(
-            labelText: 'SKU *', border: OutlineInputBorder(), isDense: true),
-        validator: (v) => (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
+          labelText: AppStrings.adminProductVariantSkuLabel,
+          border: OutlineInputBorder(),
+          isDense: true,
+        ),
+        validator: _requiredValidator,
       );
 }
 
@@ -197,16 +209,19 @@ class _PriceField extends StatelessWidget {
         controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
-            labelText: label,
-            border: const OutlineInputBorder(),
-            isDense: true,
-            suffixText: '₫'),
-        validator: (v) {
-          if (required && (v == null || v.trim().isEmpty)) return 'Bắt buộc';
-          if (v != null &&
-              v.trim().isNotEmpty &&
-              double.tryParse(v.trim()) == null) {
-            return 'Không hợp lệ';
+          labelText: label,
+          border: const OutlineInputBorder(),
+          isDense: true,
+          suffixText: AppStrings.adminProductVariantPriceSuffix,
+        ),
+        validator: (value) {
+          if (required && (value == null || value.trim().isEmpty)) {
+            return AppStrings.adminProductBulkRequired;
+          }
+          if (value != null &&
+              value.trim().isNotEmpty &&
+              double.tryParse(value.trim()) == null) {
+            return AppStrings.adminProductBulkInvalid;
           }
           return null;
         },
@@ -215,6 +230,7 @@ class _PriceField extends StatelessWidget {
 
 class _StockField extends StatelessWidget {
   final TextEditingController controller;
+
   const _StockField({required this.controller});
 
   @override
@@ -222,12 +238,16 @@ class _StockField extends StatelessWidget {
         controller: controller,
         keyboardType: TextInputType.number,
         decoration: const InputDecoration(
-            labelText: 'Tồn kho *',
-            border: OutlineInputBorder(),
-            isDense: true),
-        validator: (v) {
-          if (v == null || v.trim().isEmpty) return 'Bắt buộc';
-          if (int.tryParse(v.trim()) == null) return 'Số nguyên';
+          labelText: AppStrings.adminProductBulkStock,
+          border: OutlineInputBorder(),
+          isDense: true,
+        ),
+        validator: (value) {
+          final requiredMessage = _requiredValidator(value);
+          if (requiredMessage != null) return requiredMessage;
+          if (int.tryParse(value!.trim()) == null) {
+            return AppStrings.adminProductBulkInteger;
+          }
           return null;
         },
       );
@@ -237,25 +257,39 @@ class _StatusDropdown extends StatelessWidget {
   final ProductStatus value;
   final ValueChanged<ProductStatus> onChanged;
 
-  const _StatusDropdown({required this.value, required this.onChanged});
+  const _StatusDropdown({
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) => DropdownButtonFormField<ProductStatus>(
         initialValue: value,
         decoration: const InputDecoration(
-            labelText: 'Trạng thái',
-            border: OutlineInputBorder(),
-            isDense: true),
+          labelText: AppStrings.adminProductVariantStatusLabel,
+          border: OutlineInputBorder(),
+          isDense: true,
+        ),
         items: ProductStatus.values
-            .where((s) => s != ProductStatus.deleted)
-            .map((s) => DropdownMenuItem(
-                  value: s,
-                  child:
-                      Text(s == ProductStatus.active ? 'Đang bán' : 'Tạm ẩn'),
-                ))
+            .where((status) => status != ProductStatus.deleted)
+            .map(
+              (status) => DropdownMenuItem(
+                value: status,
+                child: Text(
+                  status == ProductStatus.active
+                      ? AppStrings.adminProductVariantStatusActive
+                      : AppStrings.adminProductVariantStatusInactive,
+                ),
+              ),
+            )
             .toList(),
-        onChanged: (s) {
-          if (s != null) onChanged(s);
+        onChanged: (status) {
+          if (status != null) onChanged(status);
         },
       );
 }
+
+String? _requiredValidator(String? value) =>
+    value == null || value.trim().isEmpty
+        ? AppStrings.adminProductBulkRequired
+        : null;

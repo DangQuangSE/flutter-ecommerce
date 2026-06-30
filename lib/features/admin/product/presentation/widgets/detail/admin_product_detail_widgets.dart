@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/admin_product_detail_entity.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
@@ -178,17 +180,16 @@ class AdminProductDetailVariantsSection extends StatelessWidget {
           BlocConsumer<AdminProductVariantCubit, AdminProductVariantState>(
             listener: (context, state) {
               if (state is AdminProductVariantFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: AppColors.error,
-                  ),
+                AppSnackBar.show(
+                  context,
+                  message: state.message,
+                  type: AppSnackBarType.error,
                 );
               }
             },
             builder: (context, state) {
               if (state is AdminProductVariantLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const AppLoadingView();
               }
               if (state is AdminProductVariantSuccess) {
                 if (state.variants.isEmpty) {
@@ -267,11 +268,10 @@ class AdminProductDetailImagesSection extends StatelessWidget {
           BlocConsumer<AdminProductImageCubit, AdminProductImageState>(
             listener: (context, state) {
               if (state is AdminProductImageFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: AppColors.error,
-                  ),
+                AppSnackBar.show(
+                  context,
+                  message: state.message,
+                  type: AppSnackBarType.error,
                 );
               }
             },

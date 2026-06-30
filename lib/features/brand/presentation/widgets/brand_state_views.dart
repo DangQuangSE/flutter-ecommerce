@@ -1,47 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_empty_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_error_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 
 class BrandLoadingView extends StatelessWidget {
   const BrandLoadingView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const AppLoadingView();
 }
 
 class BrandEmptyView extends StatelessWidget {
   const BrandEmptyView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.branding_watermark_outlined,
-            size: 64,
-            color: Colors.grey.shade300,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Không tìm thấy thương hiệu nào',
-            style: GoogleFonts.inter(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const AppEmptyView(
+        icon: Icons.branding_watermark_outlined,
+        title: AppStrings.adminBrandEmptyTitle,
+      );
 }
 
 class BrandErrorView extends StatelessWidget {
@@ -53,12 +31,8 @@ class BrandErrorView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        message,
-        style: GoogleFonts.inter(color: AppColors.error),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AppErrorView(
+        title: AppStrings.productFilterBrandLoadError,
+        message: message,
+      );
 }

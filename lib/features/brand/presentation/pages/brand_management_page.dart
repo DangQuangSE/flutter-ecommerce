@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/brand/domain/entities/brand_entity.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_cubit.dart';
 import 'package:flutter_ecommerce/features/brand/presentation/cubit/brand_state.dart';
@@ -85,15 +87,11 @@ class _BrandManagementPageState extends State<BrandManagementPage> {
   }
 
   void _showSnack(String message, {required bool isError}) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? AppColors.error : AppColors.success,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: isError ? AppSnackBarType.error : AppSnackBarType.success,
+    );
   }
 
   @override
@@ -150,7 +148,7 @@ class _BrandContent extends StatelessWidget {
           onDelete: onDelete,
         ),
       BrandError(:final message) => BrandErrorView(message: message),
-      _ => const BrandErrorView(message: 'Đã xảy ra lỗi khi tải dữ liệu.'),
+      _ => const BrandErrorView(message: AppStrings.adminBrandLoadFallback),
     };
   }
 }

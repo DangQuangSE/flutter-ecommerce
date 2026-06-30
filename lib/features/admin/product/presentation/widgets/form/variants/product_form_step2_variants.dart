@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_status.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
@@ -77,10 +79,11 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
       listener: (context, state) {
         if (state is AdminProductVariantFailure) {
           setState(() => _isSubmittingVariant = false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: AppColors.error,
-          ));
+          AppSnackBar.show(
+            context,
+            message: state.message,
+            type: AppSnackBarType.error,
+          );
         }
         if (state is AdminProductVariantSuccess && _isSubmittingVariant) {
           _clearAddForm();
@@ -97,12 +100,7 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
           children: [
             Expanded(
               child: isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColors.primary),
-                      ),
-                    )
+                  ? const AppLoadingView()
                   : SingleChildScrollView(
                       padding: const EdgeInsets.all(AppSizes.paddingMd),
                       child: Column(
@@ -260,7 +258,9 @@ class _ProductFormStep2VariantsState extends State<ProductFormStep2Variants> {
       useSafeArea: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusXl),
+        ),
       ),
       builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.92,

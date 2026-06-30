@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_state.dart';
@@ -66,7 +70,10 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
     if (confirmed != true || category.id == null) return;
     final error = await _cubit.delete(category.id!);
     if (!mounted) return;
-    _showSnack(error ?? 'Đã xóa danh mục', isError: error != null);
+    _showSnack(
+      error ?? AppStrings.adminCategoryDeleted,
+      isError: error != null,
+    );
   }
 
   Future<void> _toggle(CategoryEntity category) async {
@@ -78,15 +85,11 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
   }
 
   void _showSnack(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? AppColors.error : AppColors.success,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: isError ? AppSnackBarType.error : AppSnackBarType.success,
+    );
   }
 
   void _showDetail(CategoryEntity category) {
@@ -94,7 +97,8 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppSizes.radiusRound)),
       ),
       builder: (_) => FutureBuilder<CategoryEntity?>(
         future: (category.slug != null && category.slug!.isNotEmpty)
@@ -104,11 +108,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
           if (snapshot.connectionState != ConnectionState.done) {
             return const SizedBox(
               height: 180,
-              child: Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              ),
+              child: AppLoadingView(),
             );
           }
 
@@ -124,7 +124,8 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
       backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppSizes.radiusRound)),
       ),
       builder: (_) => CategoryTreeSheet(treeFuture: _cubit.fetchTree()),
     );
@@ -146,7 +147,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
         foregroundColor: Colors.white,
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Thêm'),
+        label: const Text(AppStrings.adminCatalogAdd),
       ),
       body: Column(
         children: [

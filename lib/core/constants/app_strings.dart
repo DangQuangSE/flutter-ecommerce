@@ -26,6 +26,10 @@ abstract final class AppStrings {
   static const String retry = 'Thử lại';
   static const String edit = 'Sửa';
   static const String delete = 'Xóa';
+  static const String save = 'Lưu';
+  static const String confirm = 'Xác nhận';
+  static const String clearSearch = 'Xóa tìm kiếm';
+  static const String genericLoadError = 'Đã xảy ra lỗi khi tải dữ liệu.';
   static const String viewCart = 'XEM GIỎ';
   static const String addToCart = 'ADD TO CART';
   static const String outOfStock = 'HẾT HÀNG';
@@ -223,6 +227,27 @@ abstract final class AppStrings {
     return salePrice == null ? base : '$base (Sale: $salePrice)';
   }
 
+  // Admin product - pages
+  static const String adminProductListTitle = 'Quản lý sản phẩm';
+  static const String adminProductListEmpty = 'Không có sản phẩm nào';
+  static const String adminProductDeleteTitle = 'Xác nhận xóa';
+  static String adminProductDeleteMessage(String name) =>
+      'Xóa sản phẩm "$name"?';
+  static const String adminProductCreateTitle = 'Thêm sản phẩm mới';
+  static const String adminProductEditTitle = 'Chỉnh sửa sản phẩm';
+  static const String adminProductCreated = 'Tạo sản phẩm thành công';
+  static const String adminProductUpdated = 'Cập nhật sản phẩm thành công';
+  static const String adminProductBasicInfoSaved = 'Đã lưu thông tin cơ bản';
+  static const String adminProductDropdownLoadError =
+      'Không thể tải danh sách.';
+  static const String adminProductAbandonTitle = 'Rời khỏi form?';
+  static const String adminProductAbandonMessage =
+      'Sản phẩm đã được tạo nhưng chưa hoàn tất.\nXóa sản phẩm này và thoát?';
+  static const String adminProductContinueEditing = 'Tiếp tục chỉnh sửa';
+  static const String adminProductDeleteAndExit = 'Xóa & thoát';
+  static const String adminProductManualDeleteWarning =
+      'Không thể xóa sản phẩm. Vui lòng xóa thủ công từ danh sách.';
+
   // Admin product - image form
   static const String adminProductImagesAdd = 'Thêm ảnh';
   static const String adminProductImagesThumbnail = 'Thumb';
@@ -234,6 +259,29 @@ abstract final class AppStrings {
       'Hình ảnh sản phẩm ($count/$max)';
   static String adminProductImagesUploadLimit(int remaining, int max) =>
       'Chỉ tải lên $remaining ảnh còn lại (giới hạn $max ảnh)';
+
+  // Admin catalog common
+  static const String adminCatalogAdd = 'Thêm';
+  static const String adminBrandSearchHint = 'Tìm kiếm thương hiệu...';
+  static const String adminBrandEmptyTitle = 'Không tìm thấy thương hiệu nào';
+  static const String adminBrandLoadFallback =
+      'Đã xảy ra lỗi khi tải thương hiệu.';
+  static const String adminCategorySearchHint = 'Tìm danh mục...';
+  static const String adminCategoryEmptyTitle = 'Chưa có danh mục nào';
+  static const String adminCategoryEmptyMessage =
+      'Nhấn "Thêm" để tạo danh mục đầu tiên.';
+  static const String adminCategoryLoadErrorTitle = 'Không tải được danh mục';
+  static const String adminCategoryDeleted = 'Đã xóa danh mục';
+  static const String adminCouponSearchHint = 'Tìm theo mã giảm giá...';
+  static const String adminCouponEmptyTitle = 'Chưa có mã giảm giá nào';
+  static const String adminCouponEmptyMessage =
+      'Nhấn "Thêm" để tạo mã đầu tiên.';
+  static const String adminCouponAdd = 'Thêm mã';
+  static const String adminCouponLoadErrorTitle = 'Không tải được mã giảm giá';
+  static const String adminCouponDeleteTitle = 'Xóa mã giảm giá';
+  static const String adminCouponDeleted = 'Đã xóa mã giảm giá';
+  static String adminCouponDeleteMessage(String code) =>
+      'Bạn có chắc muốn xóa mã "$code"?';
 
   // Admin product - basic info form
   static const String adminProductBasicNameLabel = 'Tên sản phẩm *';
