@@ -6,10 +6,10 @@ import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admi
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/product_form_step_indicator.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/product_form_step1_basic_info.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/product_form_step2_variants.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/product_form_step3_images.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/form/basic_info/product_form_step1_basic_info.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/form/images/product_form_step3_images.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/form/product_form_step_indicator.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/form/variants/product_form_step2_variants.dart';
 
 class AdminProductFormPage extends StatelessWidget {
   final int? productId;

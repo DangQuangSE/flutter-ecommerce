@@ -8,11 +8,11 @@ import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_st
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_sheet.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/product_variant_actions.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/product_variant_add_form.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/product_variant_list_widgets.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/variant_edit_dialog.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant/bulk_variant_sheet.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/form/variants/product_variant_actions.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/form/variants/product_variant_add_form.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/form/variants/product_variant_list_widgets.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/shared/variant_edit_dialog.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_state.dart';

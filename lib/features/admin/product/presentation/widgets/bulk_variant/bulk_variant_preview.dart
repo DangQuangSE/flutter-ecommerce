@@ -3,7 +3,7 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_helpers.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant/bulk_variant_helpers.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 
 class BulkVariantPreviewSection extends StatelessWidget {

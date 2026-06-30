@@ -223,6 +223,44 @@ abstract final class AppStrings {
     return salePrice == null ? base : '$base (Sale: $salePrice)';
   }
 
+  // Admin product - image form
+  static const String adminProductImagesAdd = 'Thêm ảnh';
+  static const String adminProductImagesThumbnail = 'Thumb';
+  static const String adminProductImagesBack = 'Quay lại';
+  static const String adminProductImagesComplete = 'Hoàn tất';
+  static const String adminProductImagesBasicInfoRequired =
+      'Hoàn tất thông tin cơ bản ở Bước 1 trước khi thêm ảnh.';
+  static String adminProductImagesTitle(int count, int max) =>
+      'Hình ảnh sản phẩm ($count/$max)';
+  static String adminProductImagesUploadLimit(int remaining, int max) =>
+      'Chỉ tải lên $remaining ảnh còn lại (giới hạn $max ảnh)';
+
+  // Admin product - basic info form
+  static const String adminProductBasicNameLabel = 'Tên sản phẩm *';
+  static const String adminProductBasicNameRequired =
+      'Vui lòng nhập tên sản phẩm';
+  static const String adminProductBasicDescriptionLabel = 'Mô tả';
+  static const String adminProductBasicCategoryLabel = 'Danh mục *';
+  static const String adminProductBasicCategoryRequired =
+      'Vui lòng chọn danh mục';
+  static const String adminProductBasicBrandLabel = 'Thương hiệu *';
+  static const String adminProductBasicBrandRequired =
+      'Vui lòng chọn thương hiệu';
+  static const String adminProductBasicSizeGroupLabel = 'Nhóm kích thước';
+  static const String adminProductBasicNoSizeGroup = 'Không có nhóm kích thước';
+  static const String adminProductBasicGenderLabel = 'Giới tính *';
+  static const String adminProductBasicGenderRequired =
+      'Vui lòng chọn giới tính';
+  static const String adminProductBasicGenderMale = 'Nam';
+  static const String adminProductBasicGenderFemale = 'Nữ';
+  static const String adminProductBasicGenderUnisex = 'Unisex';
+  static const String adminProductBasicStatusLabel = 'Trạng thái';
+  static const String adminProductBasicFeaturedTitle = 'Nổi bật';
+  static const String adminProductBasicFeaturedSubtitle =
+      'Hiển thị trên trang chủ';
+  static const String adminProductBasicNext = 'Tiếp theo';
+  static const String adminProductCategoryDepthPrefix = '—';
+
   // Product detail — brand / rating
   static const String brandName = 'Sport Pro';
   static const String noRatingYet = 'Chưa có đánh giá';

@@ -7,7 +7,7 @@ import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/admin_product_detail_widgets.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/detail/admin_product_detail_widgets.dart';
 
 class AdminProductDetailPage extends StatelessWidget {
   final int productId;

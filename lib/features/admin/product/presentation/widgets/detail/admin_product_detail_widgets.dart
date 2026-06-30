@@ -9,8 +9,8 @@ import 'package:flutter_ecommerce/features/admin/product/domain/entities/product
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_image_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_variant_cubit.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_sheet.dart';
-import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/variant_edit_dialog.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant/bulk_variant_sheet.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/shared/variant_edit_dialog.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_state.dart';
