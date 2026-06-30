@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/size/presentation/widgets/size_option_draft.dart';
 
 class SizeOptionEditorRow extends StatefulWidget {
@@ -50,7 +53,7 @@ class _SizeOptionEditorRowState extends State<SizeOptionEditorRow> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSizes.paddingSm),
       child: Row(
         children: [
           Expanded(
@@ -59,7 +62,7 @@ class _SizeOptionEditorRowState extends State<SizeOptionEditorRow> {
               controller: _nameCtrl,
               onChanged: (_) => _notifyChanged(),
               decoration: const InputDecoration(
-                hintText: 'Tên size (vd: M, 42)',
+                hintText: AppStrings.adminSizeGroupSizeNameHint,
                 isDense: true,
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -67,28 +70,30 @@ class _SizeOptionEditorRowState extends State<SizeOptionEditorRow> {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.paddingSm),
           SizedBox(
-            width: 64,
+            width: AppSizes.iconXl,
             child: TextFormField(
               controller: _orderCtrl,
               onChanged: (_) => _notifyChanged(),
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(
-                hintText: 'Thứ tự',
+                hintText: AppStrings.adminSizeGroupSizeOrderHint,
                 isDense: true,
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    EdgeInsets.symmetric(horizontal: AppSizes.paddingSm, vertical: 10),
                 border: OutlineInputBorder(),
               ),
             ),
           ),
           IconButton(
             onPressed: widget.onRemove,
-            icon: const Icon(Icons.remove_circle_outline_rounded,
-                color: Colors.red),
-            tooltip: 'Xóa',
+            icon: const Icon(
+              Icons.remove_circle_outline_rounded,
+              color: AppColors.error,
+            ),
+            tooltip: AppStrings.delete,
           ),
         ],
       ),

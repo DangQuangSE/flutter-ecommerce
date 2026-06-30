@@ -24,6 +24,8 @@ abstract final class AppStrings {
 
   // Common actions
   static const String retry = 'Thử lại';
+  static const String edit = 'Sửa';
+  static const String delete = 'Xóa';
   static const String viewCart = 'XEM GIỎ';
   static const String addToCart = 'ADD TO CART';
   static const String outOfStock = 'HẾT HÀNG';
@@ -206,6 +208,27 @@ abstract final class AppStrings {
   // Shop entry points
   static const String shopInfoMenuLabel = 'Thông tin cửa hàng';
   static const String adminShopConfigMenuLabel = 'Cấu hình cửa hàng';
+
+  // Admin size group management
+  static const String adminSizeGroupTitle = 'Nhóm kích thước';
+  static const String adminSizeGroupCreateTitle = 'Tạo nhóm kích thước';
+  static const String adminSizeGroupEditTitle = 'Sửa nhóm kích thước';
+  static const String adminSizeGroupEmpty = 'Chưa có nhóm kích thước nào';
+  static const String adminSizeGroupCreateAction = 'Tạo mới';
+  static const String adminSizeGroupCreated = 'Đã tạo nhóm kích thước thành công!';
+  static const String adminSizeGroupUpdated = 'Đã cập nhật nhóm kích thước thành công!';
+  static const String adminSizeGroupDeleted = 'Đã xóa nhóm kích thước thành công!';
+  static const String adminSizeGroupDeleteTitle = 'Xác nhận xóa';
+  static String adminSizeGroupDeleteBody(String name) =>
+      'Bạn có chắc muốn xóa nhóm kích thước "$name"?';
+  static const String adminSizeGroupNameLabel = 'Tên nhóm kích thước *';
+  static const String adminSizeGroupNameRequired = 'Vui lòng nhập tên';
+  static const String adminSizeGroupDescriptionLabel = 'Mô tả (tùy chọn)';
+  static const String adminSizeGroupSave = 'Lưu';
+  static const String adminSizeGroupSizeListLabel = 'Danh sách kích thước';
+  static const String adminSizeGroupAddSize = 'Thêm kích thước';
+  static const String adminSizeGroupSizeNameHint = 'Tên size (vd: M, 42)';
+  static const String adminSizeGroupSizeOrderHint = 'Thứ tự';
 
   // Auth login/register screen strings
   static const String authTagline = 'Hiệu suất tối đa. Khởi đầu ngay.';

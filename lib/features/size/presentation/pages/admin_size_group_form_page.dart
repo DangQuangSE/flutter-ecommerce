@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_option_entity.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_state.dart';
+import 'package:flutter_ecommerce/features/size/presentation/widgets/size_group_form_fields.dart';
 import 'package:flutter_ecommerce/features/size/presentation/widgets/size_option_draft.dart';
 import 'package:flutter_ecommerce/features/size/presentation/widgets/size_option_list_editor.dart';
 
@@ -29,12 +32,14 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
   @override
   void initState() {
     super.initState();
-    final g = widget.initialGroup;
-    _nameCtrl = TextEditingController(text: g?.name ?? '');
-    _descCtrl = TextEditingController(text: g?.description ?? '');
-    _drafts = g?.sizes
-            .map((s) =>
-                SizeOptionDraft(name: s.name, displayOrder: s.displayOrder))
+    final group = widget.initialGroup;
+    _nameCtrl = TextEditingController(text: group?.name ?? '');
+    _descCtrl = TextEditingController(text: group?.description ?? '');
+    _drafts = group?.sizes
+            .map((size) => SizeOptionDraft(
+                  name: size.name,
+                  displayOrder: size.displayOrder,
+                ))
             .toList() ??
         [];
   }
@@ -54,24 +59,24 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
         backgroundColor: AppColors.background,
         appBar: _buildAppBar(),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSizes.paddingMd),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _NameField(controller: _nameCtrl),
+                SizeGroupNameField(controller: _nameCtrl),
                 const SizedBox(height: 12),
-                _DescriptionField(controller: _descCtrl),
-                const SizedBox(height: 20),
+                SizeGroupDescriptionField(controller: _descCtrl),
+                const SizedBox(height: AppSizes.paddingLg),
                 SizeOptionListEditor(
                   drafts: _drafts,
                   onAdd: _addDraft,
                   onRemove: _removeDraft,
                   onChanged: _updateDraft,
                 ),
-                const SizedBox(height: 24),
-                _SaveButton(onPressed: _submit),
+                AppSizes.spacingLg,
+                SizeGroupSaveButton(onPressed: _submit),
               ],
             ),
           ),
@@ -82,16 +87,16 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
       iconTheme: const IconThemeData(color: AppColors.textPrimary),
       title: Text(
-        _isEdit ? 'Sửa nhóm kích thước' : 'Tạo nhóm kích thước',
+        _isEdit ? AppStrings.adminSizeGroupEditTitle : AppStrings.adminSizeGroupCreateTitle,
         style: GoogleFonts.lexend(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w700,
-          fontSize: 18,
+          fontSize: AppSizes.fontXxl,
         ),
       ),
     );
@@ -101,7 +106,7 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
     setState(() {
       _drafts = [
         ..._drafts,
-        SizeOptionDraft(name: '', displayOrder: _drafts.length)
+        SizeOptionDraft(name: '', displayOrder: _drafts.length),
       ];
     });
   }
@@ -127,8 +132,12 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
       name: _nameCtrl.text.trim(),
       description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
       sizes: _drafts
-          .map((d) => SizeOptionEntity(
-              name: d.name.trim(), displayOrder: d.displayOrder))
+          .map(
+            (draft) => SizeOptionEntity(
+              name: draft.name.trim(),
+              displayOrder: draft.displayOrder,
+            ),
+          )
           .toList(),
     );
     final cubit = context.read<SizeGroupCubit>();
@@ -151,70 +160,5 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
         ),
       );
     }
-  }
-}
-
-class _NameField extends StatelessWidget {
-  final TextEditingController controller;
-
-  const _NameField({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      decoration: const InputDecoration(
-        labelText: 'Tên nhóm kích thước *',
-        border: OutlineInputBorder(),
-      ),
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên' : null,
-      maxLength: 100,
-    );
-  }
-}
-
-class _DescriptionField extends StatelessWidget {
-  final TextEditingController controller;
-
-  const _DescriptionField({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      decoration: const InputDecoration(
-        labelText: 'Mô tả (tuỳ chọn)',
-        border: OutlineInputBorder(),
-      ),
-      maxLength: 255,
-      maxLines: 2,
-    );
-  }
-}
-
-class _SaveButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _SaveButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(
-        'Lưu',
-        style: GoogleFonts.inter(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 15,
-        ),
-      ),
-    );
   }
 }

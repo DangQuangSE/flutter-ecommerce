@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_state.dart';
@@ -20,7 +22,9 @@ class AdminSizeGroupListPage extends StatelessWidget {
   }
 
   Future<void> _navigateToEdit(
-      BuildContext context, SizeGroupEntity group) async {
+    BuildContext context,
+    SizeGroupEntity group,
+  ) async {
     await context.pushNamed(
       AppRoutes.adminSizeGroupEdit,
       pathParameters: {'id': group.id.toString()},
@@ -38,28 +42,28 @@ class AdminSizeGroupListPage extends StatelessWidget {
       appBar: _buildAppBar(),
       body: BlocConsumer<SizeGroupCubit, SizeGroupState>(
         listener: _onStateChange,
-        builder: (ctx, state) => _buildBody(ctx, state),
+        builder: (context, state) => _buildBody(context, state),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToCreate(context),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add_rounded, color: Colors.white),
+        child: const Icon(Icons.add_rounded, color: AppColors.white),
       ),
     );
   }
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
       iconTheme: const IconThemeData(color: AppColors.textPrimary),
       title: Text(
-        'Nhóm kích thước',
+        AppStrings.adminSizeGroupTitle,
         style: GoogleFonts.lexend(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w700,
-          fontSize: 18,
+          fontSize: AppSizes.fontXxl,
         ),
       ),
     );
@@ -67,16 +71,12 @@ class AdminSizeGroupListPage extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, SizeGroupState state) {
     return switch (state) {
-      SizeGroupLoading() => _buildLoading(),
+      SizeGroupLoading() => const Center(child: CircularProgressIndicator()),
       SizeGroupError(:final message) => _buildError(context, message),
       SizeGroupEmpty() => _buildEmpty(context),
       SizeGroupSuccess(:final groups) => _buildList(context, groups),
-      SizeGroupInitial() => _buildLoading(),
+      SizeGroupInitial() => const Center(child: CircularProgressIndicator()),
     };
-  }
-
-  Widget _buildLoading() {
-    return const Center(child: CircularProgressIndicator());
   }
 
   Widget _buildError(BuildContext context, String message) {
@@ -85,10 +85,10 @@ class AdminSizeGroupListPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(message, textAlign: TextAlign.center),
-          const SizedBox(height: 12),
+          AppSizes.spacingSm,
           ElevatedButton(
             onPressed: () => context.read<SizeGroupCubit>().loadSizeGroups(),
-            child: const Text('Thử lại'),
+            child: const Text(AppStrings.retry),
           ),
         ],
       ),
@@ -100,17 +100,20 @@ class AdminSizeGroupListPage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.straighten_rounded,
-              size: 48, color: AppColors.textHint),
-          const SizedBox(height: 12),
+          const Icon(
+            Icons.straighten_rounded,
+            size: 48,
+            color: AppColors.textHint,
+          ),
+          AppSizes.spacingSm,
           Text(
-            'Chưa có nhóm kích thước nào',
+            AppStrings.adminSizeGroupEmpty,
             style: GoogleFonts.inter(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 12),
+          AppSizes.spacingSm,
           ElevatedButton(
             onPressed: () => _navigateToCreate(context),
-            child: const Text('Tạo mới'),
+            child: const Text(AppStrings.adminSizeGroupCreateAction),
           ),
         ],
       ),
@@ -119,10 +122,10 @@ class AdminSizeGroupListPage extends StatelessWidget {
 
   Widget _buildList(BuildContext context, List<SizeGroupEntity> groups) {
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 80, top: 8),
+      padding: const EdgeInsets.only(bottom: 80, top: AppSizes.paddingSm),
       itemCount: groups.length,
-      itemBuilder: (ctx, i) {
-        final group = groups[i];
+      itemBuilder: (context, index) {
+        final group = groups[index];
         return SizeGroupCard(
           group: group,
           onEdit: () => _navigateToEdit(context, group),
