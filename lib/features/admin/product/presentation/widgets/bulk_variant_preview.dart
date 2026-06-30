@@ -1,14 +1,19 @@
-part of 'bulk_variant_sheet.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_helpers.dart';
+import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 
-// ── Preview section ───────────────────────────────────────────────────────────
-
-class _PreviewSection extends StatelessWidget {
+class BulkVariantPreviewSection extends StatelessWidget {
   final List<CreateVariantParams> preview;
   final List<ProductColorEntity> colors;
   final ValueChanged<int> onRemove;
   final ValueChanged<int> onEdit;
 
-  const _PreviewSection({
+  const BulkVariantPreviewSection({
+    super.key,
     required this.preview,
     required this.colors,
     required this.onRemove,
@@ -27,16 +32,17 @@ class _PreviewSection extends StatelessWidget {
             itemCount: preview.length,
             separatorBuilder: (_, __) =>
                 const SizedBox(height: AppSizes.paddingXs + 2),
-            itemBuilder: (_, i) {
-              final item = preview[i];
-              final color =
-                  colors.where((c) => c.id == item.colorId).firstOrNull ??
-                      const ProductColorEntity(name: '?', hexCode: '#999999');
+            itemBuilder: (_, index) {
+              final item = preview[index];
+              final color = colors
+                      .where((color) => color.id == item.colorId)
+                      .firstOrNull ??
+                  const ProductColorEntity(name: '?', hexCode: '#999999');
               return _PreviewItemCard(
                 item: item,
                 color: color,
-                onRemove: () => onRemove(i),
-                onEdit: () => onEdit(i),
+                onRemove: () => onRemove(index),
+                onEdit: () => onEdit(index),
               );
             },
           ),
@@ -44,29 +50,91 @@ class _PreviewSection extends StatelessWidget {
       );
 }
 
+class BulkVariantBottomActions extends StatelessWidget {
+  final VoidCallback onCancel;
+  final VoidCallback? onConfirm;
+  final int count;
+
+  const BulkVariantBottomActions({
+    super.key,
+    required this.onCancel,
+    required this.onConfirm,
+    required this.count,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.paddingMd,
+          AppSizes.paddingSm,
+          AppSizes.paddingMd,
+          AppSizes.paddingMd,
+        ),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          border: Border(top: BorderSide(color: AppColors.divider)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: onCancel,
+                child: const Text(AppStrings.cancel),
+              ),
+            ),
+            const SizedBox(width: AppSizes.radiusLg),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: onConfirm,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textOnPrimary,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: AppSizes.radiusLg),
+                ),
+                child: Text(
+                  count > 0
+                      ? AppStrings.adminProductBulkConfirmSaveCount(count)
+                      : AppStrings.adminProductBulkConfirmSave,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
 class _PreviewHeader extends StatelessWidget {
   final int count;
+
   const _PreviewHeader({required this.count});
 
   @override
-  Widget build(BuildContext context) => Row(children: [
-        _sectionLabel('XEM TRƯỚC'),
-        const SizedBox(width: AppSizes.paddingSm),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(AppSizes.radiusRound),
-          ),
-          child: Text(
-            '$count biến thể',
-            style: const TextStyle(
+  Widget build(BuildContext context) => Row(
+        children: [
+          const BulkVariantSectionLabel(AppStrings.adminProductBulkPreview),
+          const SizedBox(width: AppSizes.paddingSm),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.paddingSm,
+              vertical: 2,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusRound),
+            ),
+            child: Text(
+              AppStrings.adminProductBulkVariantCount(count),
+              style: const TextStyle(
                 fontSize: AppSizes.fontSm,
                 color: AppColors.primary,
-                fontWeight: FontWeight.w600),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ),
-      ]);
+        ],
+      );
 }
 
 class _PreviewItemCard extends StatelessWidget {
@@ -84,48 +152,54 @@ class _PreviewItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.radiusLg,
+          vertical: AppSizes.paddingSm,
+        ),
         decoration: BoxDecoration(
           border: Border.all(color: AppColors.divider),
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         ),
-        child: Row(children: [
-          _ColorDot(hexCode: color.hexCode),
-          _SizeBadge(size: item.size),
-          const SizedBox(width: AppSizes.paddingSm),
-          Expanded(child: _VariantInfo(colorName: color.name, sku: item.sku)),
-          _PriceDisplay(
-            originalPrice: item.originalPrice,
-            salePrice: item.salePrice,
-          ),
-          _CardAction(
+        child: Row(
+          children: [
+            _ColorDot(hexCode: color.hexCode),
+            _SizeBadge(size: item.size),
+            const SizedBox(width: AppSizes.paddingSm),
+            Expanded(child: _VariantInfo(colorName: color.name, sku: item.sku)),
+            _PriceDisplay(
+              originalPrice: item.originalPrice,
+              salePrice: item.salePrice,
+            ),
+            _CardAction(
               icon: Icons.edit_outlined,
               color: AppColors.primary,
               size: AppSizes.iconSm + 2,
-              tooltip: 'Sửa',
-              onTap: onEdit),
-          _CardAction(
+              tooltip: AppStrings.edit,
+              onTap: onEdit,
+            ),
+            _CardAction(
               icon: Icons.remove_circle_outline_rounded,
               color: AppColors.error,
               size: AppSizes.iconMd,
-              onTap: onRemove),
-        ]),
+              onTap: onRemove,
+            ),
+          ],
+        ),
       );
 }
 
-// ── Card sub-widgets ──────────────────────────────────────────────────────────
-
 class _ColorDot extends StatelessWidget {
   final String hexCode;
+
   const _ColorDot({required this.hexCode});
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 12,
-        height: 12,
+        width: AppSizes.radiusLg,
+        height: AppSizes.radiusLg,
         margin: const EdgeInsets.only(right: AppSizes.paddingSm),
         decoration: BoxDecoration(
-          color: _hexColor(hexCode),
+          color: bulkVariantHexColor(hexCode),
           shape: BoxShape.circle,
           border: Border.all(color: AppColors.divider),
         ),
@@ -134,36 +208,53 @@ class _ColorDot extends StatelessWidget {
 
 class _SizeBadge extends StatelessWidget {
   final String size;
+
   const _SizeBadge({required this.size});
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.radiusSm,
+          vertical: 2,
+        ),
         decoration: BoxDecoration(
           color: AppColors.background,
           borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         ),
-        child: Text(size,
-            style: const TextStyle(
-                fontSize: AppSizes.fontSm, fontWeight: FontWeight.w600)),
+        child: Text(
+          size,
+          style: const TextStyle(
+            fontSize: AppSizes.fontSm,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       );
 }
 
 class _VariantInfo extends StatelessWidget {
   final String colorName;
   final String sku;
+
   const _VariantInfo({required this.colorName, required this.sku});
 
   @override
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(colorName,
-              style: const TextStyle(
-                  fontSize: AppSizes.fontLg, fontWeight: FontWeight.w500)),
-          Text(sku,
-              style: const TextStyle(
-                  fontSize: AppSizes.fontSm, color: AppColors.textSecondary)),
+          Text(
+            colorName,
+            style: const TextStyle(
+              fontSize: AppSizes.fontLg,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            sku,
+            style: const TextStyle(
+              fontSize: AppSizes.fontSm,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
       );
 }
@@ -171,12 +262,17 @@ class _VariantInfo extends StatelessWidget {
 class _PriceDisplay extends StatelessWidget {
   final double originalPrice;
   final double? salePrice;
+
   const _PriceDisplay({required this.originalPrice, this.salePrice});
 
-  static String _fmt(double price) {
-    if (price >= 1000000) return '${(price / 1000000).toStringAsFixed(1)}M₫';
-    if (price >= 1000) return '${(price / 1000).toStringAsFixed(0)}K₫';
-    return '${price.toStringAsFixed(0)}₫';
+  static String _format(double price) {
+    if (price >= 1000000) {
+      return '${(price / 1000000).toStringAsFixed(1)}M${AppStrings.productFilterCurrencySuffix}';
+    }
+    if (price >= 1000) {
+      return '${(price / 1000).toStringAsFixed(0)}K${AppStrings.productFilterCurrencySuffix}';
+    }
+    return '${price.toStringAsFixed(0)}${AppStrings.productFilterCurrencySuffix}';
   }
 
   @override
@@ -187,7 +283,7 @@ class _PriceDisplay extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            _fmt(originalPrice),
+            _format(originalPrice),
             style: const TextStyle(
               fontSize: AppSizes.fontSm,
               color: AppColors.textSecondary,
@@ -195,7 +291,7 @@ class _PriceDisplay extends StatelessWidget {
             ),
           ),
           Text(
-            _fmt(salePrice!),
+            _format(salePrice!),
             style: const TextStyle(
               fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w700,
@@ -206,7 +302,7 @@ class _PriceDisplay extends StatelessWidget {
       );
     }
     return Text(
-      _fmt(originalPrice),
+      _format(originalPrice),
       style: const TextStyle(
         fontSize: AppSizes.fontMd,
         fontWeight: FontWeight.w500,
@@ -238,49 +334,5 @@ class _CardAction extends StatelessWidget {
         padding: const EdgeInsets.all(AppSizes.paddingXs),
         constraints: const BoxConstraints(),
         tooltip: tooltip,
-      );
-}
-
-// ── Bottom actions ────────────────────────────────────────────────────────────
-
-class _BottomActions extends StatelessWidget {
-  final VoidCallback onCancel;
-  final VoidCallback? onConfirm;
-  final int count;
-
-  const _BottomActions({
-    required this.onCancel,
-    required this.onConfirm,
-    required this.count,
-  });
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(AppSizes.paddingMd,
-            AppSizes.paddingSm, AppSizes.paddingMd, AppSizes.paddingMd),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.divider)),
-        ),
-        child: Row(children: [
-          Expanded(
-            child:
-                OutlinedButton(onPressed: onCancel, child: const Text('Hủy')),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            flex: 2,
-            child: ElevatedButton(
-              onPressed: onConfirm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.textOnPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: Text(
-                  count > 0 ? 'Xác nhận & Lưu ($count)' : 'Xác nhận & Lưu'),
-            ),
-          ),
-        ]),
       );
 }

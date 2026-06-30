@@ -135,6 +135,94 @@ abstract final class AppStrings {
   static String customizerPrintingPrice(String price) =>
       '$customizerPrintingPriceLabel: $price ₫';
 
+  // Admin product - bulk variants
+  static const String adminProductBulkTitle = 'Tạo nhanh biến thể';
+  static const String adminProductBulkSizeGroupStep = '1. CHỌN NHÓM SIZE';
+  static const String adminProductBulkSizeGroupHint = 'Chọn nhóm kích thước';
+  static const String adminProductBulkSizeGroupRequired =
+      'Vui lòng chọn nhóm size';
+  static const String adminProductBulkSizeStep = '2. TÙY CHỌN KÍCH THƯỚC';
+  static const String adminProductBulkColorStep = '3. CHỌN MÀU SẮC';
+  static const String adminProductBulkDefaultsStep =
+      '4. THÔNG SỐ BIẾN THỂ MẶC ĐỊNH';
+  static const String adminProductBulkOriginalPrice = 'Giá gốc *';
+  static const String adminProductBulkSalePrice = 'Giá sale';
+  static const String adminProductBulkStock = 'Tồn kho *';
+  static const String adminProductBulkRequired = 'Bắt buộc';
+  static const String adminProductBulkInvalid = 'Không hợp lệ';
+  static const String adminProductBulkInteger = 'Số nguyên';
+  static const String adminProductBulkPreview = 'XEM TRƯỚC';
+  static const String adminProductBulkRegenerate = 'Tạo lại tổ hợp';
+  static const String adminProductBulkPreviewAction = 'Xem trước tổ hợp';
+  static const String adminProductBulkEditVariant = 'Chỉnh sửa biến thể';
+  static const String adminProductBulkConfirmSave = 'Xác nhận & Lưu';
+  static String adminProductBulkVariantCount(int count) => '$count biến thể';
+  static String adminProductBulkConfirmSaveCount(int count) =>
+      '$adminProductBulkConfirmSave ($count)';
+
+  // Admin product - variant form
+  static const String adminProductVariantBasicInfoRequired =
+      'Hoàn tất thông tin cơ bản ở Bước 1 trước khi thêm biến thể.';
+  static const String adminProductVariantEmptyTitle = 'Chưa có biến thể nào';
+  static const String adminProductVariantEmptyHint =
+      'Nhấn "Thêm biến thể" để thêm mới';
+  static const String adminProductVariantAddTitle = 'Thêm biến thể';
+  static const String adminProductVariantColorLabel = 'Màu sắc *';
+  static const String adminProductVariantColorRequired =
+      'Vui lòng chọn màu sắc';
+  static const String adminProductVariantSizeLabel = 'Kích thước *';
+  static const String adminProductVariantSizeHint = 'S, M, L...';
+  static const String adminProductVariantSkuLabel = 'SKU *';
+  static const String adminProductVariantStatusLabel = 'Trạng thái';
+  static const String adminProductVariantStatusActive = 'Đang bán';
+  static const String adminProductVariantStatusInactive = 'Tạm ẩn';
+  static const String adminProductVariantCreateBulk = 'Tạo hàng loạt';
+  static const String adminProductVariantAddOne = 'Thêm 1 biến thể';
+  static const String adminProductVariantBack = 'Quay lại';
+  static const String adminProductVariantNext = 'Tiếp theo';
+  static const String adminProductVariantAdd = 'Thêm';
+  static const String adminProductVariantPriceSuffix = 'đ';
+  static String adminProductVariantEditTitle(String sku) => 'Sửa: $sku';
+  static String adminProductVariantStockUnit(int count) => '$count cái';
+  static String adminProductVariantSubtitle({
+    required String size,
+    required String colorName,
+    required String price,
+    String? salePrice,
+  }) =>
+      salePrice == null
+          ? '$size · $colorName · $price'
+          : '$size · $colorName · $price (Sale: $salePrice)';
+
+  // Admin product - detail
+  static const String adminProductDetailTitle = 'Chi tiết sản phẩm';
+  static const String adminProductDetailRetry = 'Thử lại';
+  static const String adminProductDetailBrandLabel = 'Thương hiệu';
+  static const String adminProductDetailCategoryLabel = 'Danh mục';
+  static const String adminProductDetailGenderLabel = 'Giới tính';
+  static const String adminProductDetailStatusLabel = 'Trạng thái';
+  static const String adminProductDetailVariantsTitle = 'Biến thể';
+  static const String adminProductDetailImagesTitle = 'Ảnh sản phẩm';
+  static const String adminProductDetailUploadImage = 'Tải ảnh';
+  static const String adminProductDetailUploadingImage = 'Đang tải ảnh...';
+  static const String adminProductDetailNoImages = 'Chưa có ảnh nào';
+  static const String adminProductDetailSkuLabel = 'SKU';
+  static const String adminProductDetailStockLabel = 'Tồn';
+  static String adminProductDetailLabel(String label, String value) =>
+      '$label: $value';
+  static String adminProductDetailVariantTitle(String size, String colorName) =>
+      '$size — $colorName';
+  static String adminProductDetailVariantSubtitle({
+    required String sku,
+    required int stock,
+    required String price,
+    String? salePrice,
+  }) {
+    final base =
+        '$adminProductDetailSkuLabel: $sku • $adminProductDetailStockLabel: $stock • $price';
+    return salePrice == null ? base : '$base (Sale: $salePrice)';
+  }
+
   // Product detail — brand / rating
   static const String brandName = 'Sport Pro';
   static const String noRatingYet = 'Chưa có đánh giá';

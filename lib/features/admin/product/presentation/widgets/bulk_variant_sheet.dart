@@ -3,36 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/enums/product_status.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/params/create_variant_params.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_preview.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_selection.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/variant_edit_dialog.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
-
-part 'bulk_variant_selection.dart';
-part 'bulk_variant_preview.dart';
-
-// ── Shared helper ─────────────────────────────────────────────────────────────
-
-Color _hexColor(String hex) {
-  try {
-    return Color(int.parse('FF${hex.replaceAll('#', '')}', radix: 16));
-  } catch (_) {
-    return Colors.grey;
-  }
-}
-
-Widget _sectionLabel(String text) => Text(
-      text,
-      style: const TextStyle(
-        fontSize: AppSizes.fontSm,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0.5,
-        color: AppColors.textSecondary,
-      ),
-    );
-
-// ── Main widget ───────────────────────────────────────────────────────────────
 
 class BulkVariantSheet extends StatefulWidget {
   final List<SizeGroupEntity> sizeGroups;
@@ -121,7 +99,8 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
     if (!_formKey.currentState!.validate()) return;
     final price = double.parse(_originalPriceCtrl.text.trim());
     final salePriceText = _salePriceCtrl.text.trim();
-    final salePrice = salePriceText.isEmpty ? null : double.parse(salePriceText);
+    final salePrice =
+        salePriceText.isEmpty ? null : double.parse(salePriceText);
     final stock = int.parse(_stockCtrl.text.trim());
     final group = _groupById(_sizeGroupId);
     final orderedSizes = group != null
@@ -136,7 +115,8 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
       final color = widget.colors.firstWhere((c) => c.id == colorId);
       for (final size in orderedSizes) {
         drafts.add(CreateVariantParams(
-          sku: _autoSku(widget.brandName, widget.productName, color.name, size, widget.productId),
+          sku: _autoSku(widget.brandName, widget.productName, color.name, size,
+              widget.productId),
           size: size,
           colorId: colorId,
           originalPrice: price,
@@ -149,15 +129,16 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
     setState(() => _preview = drafts);
   }
 
-  static String _autoSku(
-      String brandName, String productName, String colorName, String size, int? productId) {
+  static String _autoSku(String brandName, String productName, String colorName,
+      String size, int? productId) {
     final brand = _slugCode(brandName, 3);
     final prod = _slugCode(productName, null);
     final color = _slugCode(colorName, 3);
     final colorPart = color.isEmpty ? 'CLR' : color;
     final sizePart = size.toUpperCase();
     final idPart = productId != null ? '$productId' : '';
-    final prefixList = [brand, prod, idPart].where((s) => s.isNotEmpty).toList();
+    final prefixList =
+        [brand, prod, idPart].where((s) => s.isNotEmpty).toList();
     final prefix = prefixList.join('-');
     return prefix.isEmpty
         ? '$colorPart-$sizePart'
@@ -242,7 +223,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
     final item = _preview![index];
     final result = await showVariantEditDialog(
       context,
-      title: 'Chỉnh sửa biến thể',
+      title: AppStrings.adminProductBulkEditVariant,
       initialSku: item.sku,
       initialPrice: item.originalPrice,
       initialSalePrice: item.salePrice,
@@ -279,7 +260,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
           const _SheetHandle(),
           _SheetHeader(onClose: () => Navigator.pop(context)),
           Flexible(child: _buildScrollBody(group)),
-          _BottomActions(
+          BulkVariantBottomActions(
             onCancel: () => Navigator.pop(context),
             onConfirm: (_preview?.isNotEmpty == true) ? _confirm : null,
             count: _preview?.length ?? 0,
@@ -297,27 +278,27 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _SizeGroupDropdown(
+              BulkVariantSizeGroupDropdown(
                 sizeGroups: widget.sizeGroups,
                 selectedId: _sizeGroupId,
                 onChanged: _onSizeGroupChanged,
               ),
               const SizedBox(height: AppSizes.paddingMd),
               if (group != null) ...[
-                _SizeChipsSection(
+                BulkVariantSizeChipsSection(
                   sizes: group.sizes.map((s) => s.name).toList(),
                   selectedSizes: _selectedSizes,
                   onToggle: _toggleSize,
                 ),
                 const SizedBox(height: AppSizes.paddingMd),
               ],
-              _ColorCheckboxSection(
+              BulkVariantColorCheckboxSection(
                 colors: widget.colors,
                 selectedIds: _selectedColorIds,
                 onToggle: _toggleColor,
               ),
               const SizedBox(height: AppSizes.paddingMd),
-              _DefaultValuesSection(
+              BulkVariantDefaultValuesSection(
                 originalPriceCtrl: _originalPriceCtrl,
                 salePriceCtrl: _salePriceCtrl,
                 stockCtrl: _stockCtrl,
@@ -330,7 +311,7 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
               ),
               if (_preview != null) ...[
                 const SizedBox(height: AppSizes.paddingMd),
-                _PreviewSection(
+                BulkVariantPreviewSection(
                   preview: _preview!,
                   colors: widget.colors,
                   onRemove: _removePreviewItem,
@@ -342,8 +323,6 @@ class _BulkVariantSheetState extends State<BulkVariantSheet> {
         ),
       );
 }
-
-// ── Shell widgets ─────────────────────────────────────────────────────────────
 
 class _SheetHandle extends StatelessWidget {
   const _SheetHandle();
@@ -373,9 +352,13 @@ class _SheetHeader extends StatelessWidget {
         child: Row(
           children: [
             const Expanded(
-              child: Text('Tạo Nhanh Biến Thể',
-                  style: TextStyle(
-                      fontSize: AppSizes.fontXl, fontWeight: FontWeight.w700)),
+              child: Text(
+                AppStrings.adminProductBulkTitle,
+                style: TextStyle(
+                  fontSize: AppSizes.fontXl,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
             IconButton(
                 onPressed: onClose, icon: const Icon(Icons.close_rounded)),
@@ -403,6 +386,10 @@ class _GenerateButton extends StatelessWidget {
           foregroundColor: AppColors.primary,
           side: const BorderSide(color: AppColors.primary),
         ),
-        child: Text(hasPreview ? 'Tạo lại tổ hợp' : 'Xem trước tổ hợp'),
+        child: Text(
+          hasPreview
+              ? AppStrings.adminProductBulkRegenerate
+              : AppStrings.adminProductBulkPreviewAction,
+        ),
       );
 }

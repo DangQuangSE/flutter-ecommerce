@@ -1,13 +1,18 @@
-part of 'bulk_variant_sheet.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/admin/product/presentation/widgets/bulk_variant_helpers.dart';
+import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
+import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 
-// ── Selection form sections ───────────────────────────────────────────────────
-
-class _SizeGroupDropdown extends StatelessWidget {
+class BulkVariantSizeGroupDropdown extends StatelessWidget {
   final List<SizeGroupEntity> sizeGroups;
   final int? selectedId;
   final ValueChanged<int?> onChanged;
 
-  const _SizeGroupDropdown({
+  const BulkVariantSizeGroupDropdown({
+    super.key,
     required this.sizeGroups,
     required this.selectedId,
     required this.onChanged,
@@ -17,33 +22,43 @@ class _SizeGroupDropdown extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _sectionLabel('1. CHỌN NHÓM SIZE'),
+          const BulkVariantSectionLabel(
+            AppStrings.adminProductBulkSizeGroupStep,
+          ),
           const SizedBox(height: AppSizes.paddingSm),
           DropdownButtonFormField<int>(
             initialValue: selectedId,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               isDense: true,
-              hintText: 'Chọn nhóm kích thước',
+              hintText: AppStrings.adminProductBulkSizeGroupHint,
             ),
             isExpanded: true,
             items: sizeGroups
-                .where((g) => g.id != null)
-                .map((g) => DropdownMenuItem(value: g.id!, child: Text(g.name)))
+                .where((group) => group.id != null)
+                .map(
+                  (group) => DropdownMenuItem(
+                    value: group.id!,
+                    child: Text(group.name),
+                  ),
+                )
                 .toList(),
             onChanged: onChanged,
-            validator: (v) => v == null ? 'Vui lòng chọn nhóm size' : null,
+            validator: (value) => value == null
+                ? AppStrings.adminProductBulkSizeGroupRequired
+                : null,
           ),
         ],
       );
 }
 
-class _SizeChipsSection extends StatelessWidget {
+class BulkVariantSizeChipsSection extends StatelessWidget {
   final List<String> sizes;
   final Set<String> selectedSizes;
   final ValueChanged<String> onToggle;
 
-  const _SizeChipsSection({
+  const BulkVariantSizeChipsSection({
+    super.key,
     required this.sizes,
     required this.selectedSizes,
     required this.onToggle,
@@ -53,7 +68,7 @@ class _SizeChipsSection extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _sectionLabel('2. TÙY CHỌN KÍCH THƯỚC'),
+          const BulkVariantSectionLabel(AppStrings.adminProductBulkSizeStep),
           const SizedBox(height: AppSizes.paddingSm),
           Wrap(
             spacing: AppSizes.paddingSm,
@@ -71,7 +86,8 @@ class _SizeChipsSection extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
                 side: BorderSide(
-                    color: selected ? AppColors.primary : AppColors.divider),
+                  color: selected ? AppColors.primary : AppColors.divider,
+                ),
               );
             }).toList(),
           ),
@@ -79,12 +95,13 @@ class _SizeChipsSection extends StatelessWidget {
       );
 }
 
-class _ColorCheckboxSection extends StatelessWidget {
+class BulkVariantColorCheckboxSection extends StatelessWidget {
   final List<ProductColorEntity> colors;
   final Set<int> selectedIds;
   final ValueChanged<int> onToggle;
 
-  const _ColorCheckboxSection({
+  const BulkVariantColorCheckboxSection({
+    super.key,
     required this.colors,
     required this.selectedIds,
     required this.onToggle,
@@ -92,11 +109,11 @@ class _ColorCheckboxSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valid = colors.where((c) => c.id != null).toList();
+    final validColors = colors.where((color) => color.id != null).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionLabel('3. CHỌN MÀU SẮC'),
+        const BulkVariantSectionLabel(AppStrings.adminProductBulkColorStep),
         const SizedBox(height: AppSizes.paddingSm),
         GridView.builder(
           shrinkWrap: true,
@@ -107,16 +124,63 @@ class _ColorCheckboxSection extends StatelessWidget {
             crossAxisSpacing: AppSizes.paddingSm,
             mainAxisSpacing: AppSizes.paddingSm,
           ),
-          itemCount: valid.length,
-          itemBuilder: (_, i) => _ColorTile(
-            color: valid[i],
-            selected: selectedIds.contains(valid[i].id!),
-            onTap: () => onToggle(valid[i].id!),
-          ),
+          itemCount: validColors.length,
+          itemBuilder: (_, index) {
+            final color = validColors[index];
+            return _ColorTile(
+              color: color,
+              selected: selectedIds.contains(color.id!),
+              onTap: () => onToggle(color.id!),
+            );
+          },
         ),
       ],
     );
   }
+}
+
+class BulkVariantDefaultValuesSection extends StatelessWidget {
+  final TextEditingController originalPriceCtrl;
+  final TextEditingController salePriceCtrl;
+  final TextEditingController stockCtrl;
+
+  const BulkVariantDefaultValuesSection({
+    super.key,
+    required this.originalPriceCtrl,
+    required this.salePriceCtrl,
+    required this.stockCtrl,
+  });
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const BulkVariantSectionLabel(
+              AppStrings.adminProductBulkDefaultsStep),
+          const SizedBox(height: AppSizes.paddingSm),
+          Row(
+            children: [
+              Expanded(
+                child: _DefaultPriceField(
+                  controller: originalPriceCtrl,
+                  label: AppStrings.adminProductBulkOriginalPrice,
+                  required: true,
+                ),
+              ),
+              const SizedBox(width: AppSizes.paddingSm),
+              Expanded(
+                child: _DefaultPriceField(
+                  controller: salePriceCtrl,
+                  label: AppStrings.adminProductBulkSalePrice,
+                  required: false,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSizes.paddingSm),
+          _DefaultStockField(controller: stockCtrl),
+        ],
+      );
 }
 
 class _ColorTile extends StatelessWidget {
@@ -138,7 +202,8 @@ class _ColorTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingXs),
           decoration: BoxDecoration(
             border: Border.all(
-                color: selected ? AppColors.primary : AppColors.divider),
+              color: selected ? AppColors.primary : AppColors.divider,
+            ),
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             color: selected ? AppColors.primary.withValues(alpha: 0.06) : null,
           ),
@@ -151,11 +216,11 @@ class _ColorTile extends StatelessWidget {
                 activeColor: AppColors.primary,
               ),
               Container(
-                width: 14,
-                height: 14,
+                width: AppSizes.fontLg,
+                height: AppSizes.fontLg,
                 margin: const EdgeInsets.only(right: AppSizes.paddingXs + 2),
                 decoration: BoxDecoration(
-                  color: _hexColor(color.hexCode),
+                  color: bulkVariantHexColor(color.hexCode),
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.divider),
                 ),
@@ -176,67 +241,35 @@ class _ColorTile extends StatelessWidget {
       );
 }
 
-class _DefaultValuesSection extends StatelessWidget {
-  final TextEditingController originalPriceCtrl;
-  final TextEditingController salePriceCtrl;
-  final TextEditingController stockCtrl;
-
-  const _DefaultValuesSection({
-    required this.originalPriceCtrl,
-    required this.salePriceCtrl,
-    required this.stockCtrl,
-  });
-
-  @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _sectionLabel('4. THÔNG SỐ BIẾN THỂ MẶC ĐỊNH'),
-          const SizedBox(height: AppSizes.paddingSm),
-          Row(children: [
-            Expanded(
-                child: _DefaultPriceField(
-                    ctrl: originalPriceCtrl,
-                    label: 'Giá gốc *',
-                    required: true)),
-            const SizedBox(width: AppSizes.paddingSm),
-            Expanded(
-                child: _DefaultPriceField(
-                    ctrl: salePriceCtrl, label: 'Giá sale', required: false)),
-          ]),
-          const SizedBox(height: AppSizes.paddingSm),
-          _DefaultStockField(ctrl: stockCtrl),
-        ],
-      );
-}
-
 class _DefaultPriceField extends StatelessWidget {
-  final TextEditingController ctrl;
+  final TextEditingController controller;
   final String label;
   final bool required;
 
   const _DefaultPriceField({
-    required this.ctrl,
+    required this.controller,
     required this.label,
     required this.required,
   });
 
   @override
   Widget build(BuildContext context) => TextFormField(
-        controller: ctrl,
+        controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
           isDense: true,
-          suffixText: '₫',
+          suffixText: AppStrings.productFilterCurrencySuffix,
         ),
-        validator: (v) {
-          if (required && (v == null || v.trim().isEmpty)) return 'Bắt buộc';
-          if (v != null &&
-              v.trim().isNotEmpty &&
-              double.tryParse(v.trim()) == null) {
-            return 'Không hợp lệ';
+        validator: (value) {
+          if (required && (value == null || value.trim().isEmpty)) {
+            return AppStrings.adminProductBulkRequired;
+          }
+          if (value != null &&
+              value.trim().isNotEmpty &&
+              double.tryParse(value.trim()) == null) {
+            return AppStrings.adminProductBulkInvalid;
           }
           return null;
         },
@@ -244,21 +277,26 @@ class _DefaultPriceField extends StatelessWidget {
 }
 
 class _DefaultStockField extends StatelessWidget {
-  final TextEditingController ctrl;
-  const _DefaultStockField({required this.ctrl});
+  final TextEditingController controller;
+
+  const _DefaultStockField({required this.controller});
 
   @override
   Widget build(BuildContext context) => TextFormField(
-        controller: ctrl,
+        controller: controller,
         keyboardType: TextInputType.number,
         decoration: const InputDecoration(
-          labelText: 'Tồn kho *',
+          labelText: AppStrings.adminProductBulkStock,
           border: OutlineInputBorder(),
           isDense: true,
         ),
-        validator: (v) {
-          if (v == null || v.trim().isEmpty) return 'Bắt buộc';
-          if (int.tryParse(v.trim()) == null) return 'Số nguyên';
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return AppStrings.adminProductBulkRequired;
+          }
+          if (int.tryParse(value.trim()) == null) {
+            return AppStrings.adminProductBulkInteger;
+          }
           return null;
         },
       );
