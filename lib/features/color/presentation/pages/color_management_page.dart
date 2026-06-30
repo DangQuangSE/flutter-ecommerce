@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/printing_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_state.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_state.dart';
-
-part 'color_management_dialogs.dart';
-part 'color_management_cards.dart';
-part 'color_management_printing_form.dart';
-part 'color_management_product_form.dart';
-part 'color_management_tabs.dart';
+import 'package:flutter_ecommerce/features/color/presentation/widgets/color_card.dart';
+import 'package:flutter_ecommerce/features/color/presentation/widgets/color_delete_dialog.dart';
+import 'package:flutter_ecommerce/features/color/presentation/widgets/color_printing_form_sheet.dart';
+import 'package:flutter_ecommerce/features/color/presentation/widgets/color_product_form_sheet.dart';
+import 'package:flutter_ecommerce/features/color/presentation/widgets/color_state_views.dart';
 
 class ColorManagementPage extends StatefulWidget {
   const ColorManagementPage({super.key});
@@ -26,16 +26,6 @@ class ColorManagementPage extends StatefulWidget {
 class _ColorManagementPageState extends State<ColorManagementPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final List<Map<String, String>> _presets = const [
-    {'name': 'Đen Jet', 'hex': '#000000'},
-    {'name': 'Trắng Chalk', 'hex': '#FFFFFF'},
-    {'name': 'Đỏ Crimson', 'hex': '#DC143C'},
-    {'name': 'Xanh Cobalt', 'hex': '#0047AB'},
-    {'name': 'Vàng Neon', 'hex': '#E0FF00'},
-    {'name': 'Cam Hổ Phách', 'hex': '#FFBF00'},
-    {'name': 'Lục Emerald', 'hex': '#50C878'},
-    {'name': 'Tím Lavender', 'hex': '#E6E6FA'},
-  ];
 
   @override
   void initState() {
@@ -49,19 +39,82 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     super.dispose();
   }
 
-  Color _hexToColor(String hexCode) {
-    try {
-      String cleanHex = hexCode.replaceAll('#', '').trim();
-      if (cleanHex.length == 3) {
-        cleanHex = cleanHex.split('').map((c) => '$c$c').join();
-      }
-      if (cleanHex.length == 6) {
-        cleanHex = 'FF$cleanHex';
-      }
-      return Color(int.parse(cleanHex, radix: 16));
-    } catch (_) {
-      return Colors.grey;
-    }
+  void _openProductColorForm({ProductColorEntity? color}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
+      builder: (_) => ColorProductFormSheet(
+        color: color,
+        onSubmit: (entity) {
+          if (color == null) {
+            context.read<ProductColorCubit>().createColor(entity);
+          } else {
+            context.read<ProductColorCubit>().updateColor(color.id!, entity);
+          }
+        },
+      ),
+    );
+  }
+
+  void _openPrintingColorForm({PrintingColorEntity? color}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
+      builder: (_) => ColorPrintingFormSheet(
+        color: color,
+        onSubmit: (entity) {
+          if (color == null) {
+            context.read<PrintingColorCubit>().createColor(entity);
+          } else {
+            context.read<PrintingColorCubit>().updateColor(color.id!, entity);
+          }
+        },
+      ),
+    );
+  }
+
+  void _confirmDeleteProductColor(ProductColorEntity color) {
+    showDialog(
+      context: context,
+      builder: (_) => ColorDeleteDialog(
+        title: AppStrings.adminColorDeleteProductTitle,
+        content: AppStrings.adminColorDeleteProductBody(color.name),
+        onConfirm: () {
+          if (color.id != null) {
+            context.read<ProductColorCubit>().deleteColor(color.id!);
+          }
+        },
+      ),
+    );
+  }
+
+  void _confirmDeletePrintingColor(PrintingColorEntity color) {
+    showDialog(
+      context: context,
+      builder: (_) => ColorDeleteDialog(
+        title: AppStrings.adminColorDeletePrintingTitle,
+        content: AppStrings.adminColorDeletePrintingBody(color.name),
+        onConfirm: () {
+          if (color.id != null) {
+            context.read<PrintingColorCubit>().deleteColor(color.id!);
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -69,15 +122,15 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Quản lý Màu sắc',
+          AppStrings.adminColorManagementTitle,
           style: GoogleFonts.lexend(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
-            fontSize: 18,
+            fontSize: AppSizes.fontXxl,
           ),
         ),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
@@ -92,32 +145,194 @@ class _ColorManagementPageState extends State<ColorManagementPage>
           unselectedLabelStyle:
               GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
           tabs: const [
-            Tab(text: 'Màu sản phẩm'),
-            Tab(text: 'Màu in ấn'),
+            Tab(text: AppStrings.adminColorProductTab),
+            Tab(text: AppStrings.adminColorPrintingTab),
           ],
         ),
         actions: [
           IconButton(
             onPressed: () {
               if (_tabController.index == 0) {
-                _openProductColorForm(context);
+                _openProductColorForm();
               } else {
-                _openPrintingColorForm(context);
+                _openPrintingColorForm();
               }
             },
             icon: const Icon(Icons.add_rounded,
                 color: AppColors.primary, size: 28),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.paddingSm),
         ],
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildProductColorsTab(),
-          _buildPrintingColorsTab(),
+          _ProductColorsTab(
+            onEdit: (color) => _openProductColorForm(color: color),
+            onDelete: _confirmDeleteProductColor,
+          ),
+          _PrintingColorsTab(
+            onEdit: (color) => _openPrintingColorForm(color: color),
+            onDelete: _confirmDeletePrintingColor,
+          ),
         ],
       ),
+    );
+  }
+}
+
+// ── Product Colors Tab ─────────────────────────────────────────────────────────
+
+class _ProductColorsTab extends StatelessWidget {
+  final ValueChanged<ProductColorEntity> onEdit;
+  final ValueChanged<ProductColorEntity> onDelete;
+
+  const _ProductColorsTab({required this.onEdit, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<ProductColorCubit, ProductColorState>(
+      listener: (context, state) {
+        if (state is ProductColorLoaded && state.message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message!),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+          ));
+        } else if (state is ProductColorError) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+      },
+      builder: (context, state) {
+        if (state is ProductColorLoading) return const ColorLoadingView();
+        if (state is ProductColorLoaded) {
+          if (state.colors.isEmpty) {
+            return const ColorEmptyView(
+                message: AppStrings.adminColorProductEmpty);
+          }
+          return _ProductColorGrid(
+              colors: state.colors, onEdit: onEdit, onDelete: onDelete);
+        }
+        return const ColorErrorView(
+            message: AppStrings.adminColorProductError);
+      },
+    );
+  }
+}
+
+class _ProductColorGrid extends StatelessWidget {
+  final List<ProductColorEntity> colors;
+  final ValueChanged<ProductColorEntity> onEdit;
+  final ValueChanged<ProductColorEntity> onDelete;
+
+  const _ProductColorGrid(
+      {required this.colors, required this.onEdit, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 1.05,
+      ),
+      itemCount: colors.length,
+      itemBuilder: (context, index) {
+        final color = colors[index];
+        return ColorCard(
+          name: color.name,
+          hexCode: color.hexCode,
+          onEdit: () => onEdit(color),
+          onDelete: () => onDelete(color),
+        );
+      },
+    );
+  }
+}
+
+// ── Printing Colors Tab ────────────────────────────────────────────────────────
+
+class _PrintingColorsTab extends StatelessWidget {
+  final ValueChanged<PrintingColorEntity> onEdit;
+  final ValueChanged<PrintingColorEntity> onDelete;
+
+  const _PrintingColorsTab({required this.onEdit, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<PrintingColorCubit, PrintingColorState>(
+      listener: (context, state) {
+        if (state is PrintingColorLoaded && state.message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message!),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+          ));
+        } else if (state is PrintingColorError) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+      },
+      builder: (context, state) {
+        if (state is PrintingColorLoading) return const ColorLoadingView();
+        if (state is PrintingColorLoaded) {
+          if (state.colors.isEmpty) {
+            return const ColorEmptyView(
+                message: AppStrings.adminColorPrintingEmpty);
+          }
+          return _PrintingColorGrid(
+              colors: state.colors, onEdit: onEdit, onDelete: onDelete);
+        }
+        return const ColorErrorView(
+            message: AppStrings.adminColorPrintingError);
+      },
+    );
+  }
+}
+
+class _PrintingColorGrid extends StatelessWidget {
+  final List<PrintingColorEntity> colors;
+  final ValueChanged<PrintingColorEntity> onEdit;
+  final ValueChanged<PrintingColorEntity> onDelete;
+
+  const _PrintingColorGrid(
+      {required this.colors, required this.onEdit, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: colors.length,
+      itemBuilder: (context, index) {
+        final color = colors[index];
+        return ColorCard(
+          name: color.name,
+          hexCode: color.hexCode,
+          isActive: color.isActive,
+          onToggleActive: (val) {
+            if (color.id != null) {
+              context.read<PrintingColorCubit>().toggleColorStatus(color.id!, val);
+            }
+          },
+          onEdit: () => onEdit(color),
+          onDelete: () => onDelete(color),
+        );
+      },
     );
   }
 }

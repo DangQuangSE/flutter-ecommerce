@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/domain/repositories/product_color_repository.dart';
@@ -31,7 +32,7 @@ class ProductColorCubit extends Cubit<ProductColorState> {
             ..insert(0, data);
           emit(ProductColorLoaded(
             colors: updatedList,
-            message: 'Đã thêm màu sản phẩm thành công!',
+            message: AppStrings.adminColorProductCreated,
           ));
         case ResultFailure(:final failure):
           emit(ProductColorError(failure.message));
@@ -50,7 +51,7 @@ class ProductColorCubit extends Cubit<ProductColorState> {
               currentState.colors.map((c) => c.id == id ? data : c).toList();
           emit(ProductColorLoaded(
             colors: updatedList,
-            message: 'Đã cập nhật màu sản phẩm thành công!',
+            message: AppStrings.adminColorProductUpdated,
           ));
         case ResultFailure(:final failure):
           emit(ProductColorError(failure.message));
@@ -69,7 +70,7 @@ class ProductColorCubit extends Cubit<ProductColorState> {
               currentState.colors.where((c) => c.id != id).toList();
           emit(ProductColorLoaded(
             colors: updatedList,
-            message: 'Đã xóa màu sản phẩm thành công!',
+            message: AppStrings.adminColorProductDeleted,
           ));
         case ResultFailure(:final failure):
           emit(ProductColorError(failure.message));

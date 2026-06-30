@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/printing_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/domain/repositories/printing_color_repository.dart';
@@ -32,7 +33,7 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
                 ..insert(0, data);
           emit(PrintingColorLoaded(
             colors: updatedList,
-            message: 'Đã thêm màu in ấn thành công!',
+            message: AppStrings.adminColorPrintingCreated,
           ));
         case ResultFailure(:final failure):
           emit(PrintingColorError(failure.message));
@@ -51,7 +52,7 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
               currentState.colors.map((c) => c.id == id ? data : c).toList();
           emit(PrintingColorLoaded(
             colors: updatedList,
-            message: 'Đã cập nhật màu in ấn thành công!',
+            message: AppStrings.adminColorPrintingUpdated,
           ));
         case ResultFailure(:final failure):
           emit(PrintingColorError(failure.message));
@@ -70,7 +71,7 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
               currentState.colors.where((c) => c.id != id).toList();
           emit(PrintingColorLoaded(
             colors: updatedList,
-            message: 'Đã xóa màu in ấn thành công!',
+            message: AppStrings.adminColorPrintingDeleted,
           ));
         case ResultFailure(:final failure):
           emit(PrintingColorError(failure.message));
@@ -99,7 +100,7 @@ class PrintingColorCubit extends Cubit<PrintingColorState> {
         case Success():
           emit(PrintingColorLoaded(
             colors: updatedColors,
-            message: 'Đã cập nhật trạng thái màu in!',
+            message: AppStrings.adminColorPrintingStatusUpdated,
           ));
         case ResultFailure(:final failure):
           // Rollback

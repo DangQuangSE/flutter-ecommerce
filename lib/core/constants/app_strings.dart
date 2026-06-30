@@ -230,6 +230,79 @@ abstract final class AppStrings {
   static const String adminSizeGroupSizeNameHint = 'Tên size (vd: M, 42)';
   static const String adminSizeGroupSizeOrderHint = 'Thứ tự';
 
+  // Admin color management
+  static const String adminColorManagementTitle = 'Quản lý Màu sắc';
+  static const String adminColorProductTab = 'Màu sản phẩm';
+  static const String adminColorPrintingTab = 'Màu in ấn';
+  static const String adminColorStatusActive = 'Active';
+  static const String adminColorStatusDisabled = 'Disabled';
+
+  // Color picker dialog
+  static const String adminColorPickerTitle = 'Chọn màu sắc';
+  static const String adminColorPickerDone = 'XONG';
+
+  // Delete dialogs
+  static const String adminColorDeleteProductTitle = 'Xóa màu sản phẩm?';
+  static String adminColorDeleteProductBody(String name) =>
+      'Bạn có chắc muốn xóa màu "$name" khỏi sản phẩm?';
+  static const String adminColorDeletePrintingTitle = 'Xóa màu in ấn?';
+  static String adminColorDeletePrintingBody(String name) =>
+      'Bạn có chắc muốn xóa màu in ấn "$name"?';
+
+  // Printing color form
+  static const String adminColorPrintingFormEditTitle = 'Sửa màu in ấn';
+  static const String adminColorPrintingFormCreateTitle = 'Thêm màu in ấn mới';
+  static const String adminColorPrintingNameLabel = 'TÊN MÀU IN';
+  static const String adminColorPrintingNameHint =
+      'Nhập tên màu in (ví dụ: Gold Foil)';
+  static const String adminColorHexLabel = 'MÃ HEX (HEX CODE)';
+  static const String adminColorPrintingHexHint =
+      'Nhập mã Hex (ví dụ: #D4AF37)';
+  static const String adminColorPreviewLabel = 'Xem trước màu sắc';
+  static const String adminColorPresetsLabel = 'MÀU ĐÃ CÓ SẴN (GỢI Ý)';
+  static const String adminColorStatusLabel = 'TRẠNG THÁI HOẠT ĐỘNG';
+  static const String adminColorPrintingNameRequired =
+      'Vui lòng nhập tên màu in!';
+  static const String adminColorHexInvalid = 'Mã HEX không hợp lệ!';
+  static const String adminColorSaveChanges = 'LƯU THAY ĐỔI';
+  static const String adminColorCreatePrintingAction = 'THÊM MÀU IN ẤN';
+
+  // Product color form
+  static const String adminColorProductFormEditTitle = 'Sửa màu sản phẩm';
+  static const String adminColorProductFormCreateTitle =
+      'Thêm màu sản phẩm mới';
+  static const String adminColorProductNameLabel = 'TÊN MÀU SẮC';
+  static const String adminColorProductNameHint =
+      'Nhập tên màu (ví dụ: Aero Blue)';
+  static const String adminColorProductHexHint =
+      'Nhập mã Hex (ví dụ: #FF6D00)';
+  static const String adminColorProductNameRequired = 'Vui lòng nhập tên màu!';
+  static const String adminColorHexInvalidFull =
+      'Mã HEX không hợp lệ! Vui lòng bắt đầu với # và có 3 hoặc 6 ký tự số/chữ.';
+  static const String adminColorCreateProductAction = 'THÊM MÀU SẢN PHẨM';
+
+  // Color list empty / error states
+  static const String adminColorProductEmpty = 'Chưa có màu sản phẩm nào.';
+  static const String adminColorProductError = 'Lỗi tải màu sản phẩm.';
+  static const String adminColorPrintingEmpty = 'Chưa có màu in ấn nào.';
+  static const String adminColorPrintingError = 'Lỗi tải màu in ấn.';
+
+  // Cubit success messages
+  static const String adminColorPrintingCreated =
+      'Đã thêm màu in ấn thành công!';
+  static const String adminColorPrintingUpdated =
+      'Đã cập nhật màu in ấn thành công!';
+  static const String adminColorPrintingDeleted =
+      'Đã xóa màu in ấn thành công!';
+  static const String adminColorPrintingStatusUpdated =
+      'Đã cập nhật trạng thái màu in!';
+  static const String adminColorProductCreated =
+      'Đã thêm màu sản phẩm thành công!';
+  static const String adminColorProductUpdated =
+      'Đã cập nhật màu sản phẩm thành công!';
+  static const String adminColorProductDeleted =
+      'Đã xóa màu sản phẩm thành công!';
+
   // Auth login/register screen strings
   static const String authTagline = 'Hiệu suất tối đa. Khởi đầu ngay.';
   static const String loginTitle = 'Đăng nhập';
