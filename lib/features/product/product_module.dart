@@ -10,6 +10,7 @@ import 'package:flutter_ecommerce/features/product/domain/repositories/product_r
 import 'package:flutter_ecommerce/features/product/domain/usecases/add_product_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/delete_product_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_product_catalog_usecase.dart';
+import 'package:flutter_ecommerce/features/product/domain/usecases/get_product_filter_options_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/update_product_usecase.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
@@ -28,6 +29,12 @@ void setupProductModule(GetIt sl) {
   );
   sl.registerLazySingleton<GetProductCatalogUseCase>(
     () => GetProductCatalogUseCase(sl<ProductRepository>()),
+  );
+  sl.registerLazySingleton<GetProductFilterOptionsUseCase>(
+    () => GetProductFilterOptionsUseCase(
+      categoryRepository: sl<CategoryRepository>(),
+      brandRepository: sl<BrandRepository>(),
+    ),
   );
   sl.registerLazySingleton<AddProductUseCase>(
     () => AddProductUseCase(sl<ProductRepository>()),
@@ -48,9 +55,6 @@ void setupProductModule(GetIt sl) {
     () => ProductCatalogBloc(sl<GetProductCatalogUseCase>()),
   );
   sl.registerFactory<ProductFilterOptionsCubit>(
-    () => ProductFilterOptionsCubit(
-      categoryRepository: sl<CategoryRepository>(),
-      brandRepository: sl<BrandRepository>(),
-    ),
+    () => ProductFilterOptionsCubit(sl<GetProductFilterOptionsUseCase>()),
   );
 }

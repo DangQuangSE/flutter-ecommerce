@@ -59,6 +59,36 @@ abstract final class AppStrings {
   static const String productSortPriceDesc = 'Giá giảm dần';
   static const String productCatalogEmpty = 'Không tìm thấy sản phẩm';
   static const String productCatalogClearFilter = 'Xóa bộ lọc';
+  static const String productHomeCategoriesTitle = 'Danh mục';
+  static const String productHomeViewAll = 'XEM TẤT CẢ';
+  static const String productHomeFeaturedTitle = 'Sản phẩm nổi bật';
+  static const String productHomeFeaturedEmpty =
+      'Không có sản phẩm nổi bật nào.';
+  static const String productHomeLoadError = 'Đã xảy ra lỗi khi tải trang chủ.';
+  static const String productHomeCategoryRunning = 'Giày Chạy';
+  static const String productHomeCategoryApparel = 'Trang Phục';
+  static const String productHomeCategoryAccessories = 'Phụ Kiện';
+  static const String productHomeCategoryEquipment = 'Dụng Cụ';
+  static const String productHomeHeroEyebrow = 'DÒNG SẢN PHẨM MỚI NHẤT';
+  static const String productHomeHeroTitle = 'BỨT PHÁ GIỚI HẠN';
+  static const String productHomeHeroSubtitle =
+      'Trang bị đỉnh cao cho những vận động viên không ngừng vươn lên và chinh phục đỉnh cao mới.';
+  static const String productHomeHeroCta = 'MUA SẮM NGAY';
+  static const String productListCollectionEyebrow = 'BỘ SƯU TẬP SPORT PRO';
+  static const String productListAllProducts = 'Tất cả sản phẩm';
+  static const String productListBack = 'Trở về';
+  static const String productListEmptySubtitle =
+      'Không có sản phẩm nào phù hợp với bộ lọc đã chọn.';
+  static const String productListLoadError = 'Đã xảy ra lỗi khi tải sản phẩm.';
+  static const String productListFilterAndSort = 'Bộ lọc & Sắp xếp';
+  static const String productListSortByPrice = 'SẮP XẾP THEO GIÁ';
+  static const String productListSortNone = 'Không sắp xếp';
+  static const String productListSortPriceLowToHigh = 'Giá từ thấp đến cao';
+  static const String productListSortPriceHighToLow = 'Giá từ cao đến thấp';
+  static const String productListCategoryRunning = 'Giày chạy bộ';
+  static const String productListCategoryMen = 'Nam';
+  static const String productListCategorySize42 = 'Size 42';
+  static const String productListCategoryClothing = 'Quần áo';
   static String productFilterPriceBetween(String min, String max) =>
       '$min - $max';
   static String productFilterPriceFrom(String min) => 'Từ $min';
