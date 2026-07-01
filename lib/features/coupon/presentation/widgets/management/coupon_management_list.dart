@@ -159,11 +159,9 @@ class _CouponTile extends StatelessWidget {
       onTap: () => onOpenDetail(coupon),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-          ),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizes.paddingLg - 6,

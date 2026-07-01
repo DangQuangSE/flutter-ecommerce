@@ -99,7 +99,7 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
   void _showDetail(CouponEntity coupon) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius:

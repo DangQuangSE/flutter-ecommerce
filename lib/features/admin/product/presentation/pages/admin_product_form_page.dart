@@ -116,7 +116,6 @@ class AdminProductFormPage extends StatelessWidget {
                       ? AppStrings.adminProductEditTitle
                       : AppStrings.adminProductCreateTitle,
                 ),
-                backgroundColor: Colors.white,
                 foregroundColor: AppColors.textPrimary,
                 elevation: 0,
               ),

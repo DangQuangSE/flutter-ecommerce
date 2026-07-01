@@ -56,7 +56,7 @@ class CouponFormFields extends StatelessWidget {
         const _FieldLabel('Mã giảm giá *'),
         TextFormField(
           controller: codeController,
-          decoration: _decoration('VD: SUMMER2026'),
+          decoration: _decoration('VD: SUMMER2026', context),
           textCapitalization: TextCapitalization.characters,
           maxLength: 50,
           inputFormatters: [
@@ -72,7 +72,7 @@ class CouponFormFields extends StatelessWidget {
         const _FieldLabel('Loại giảm giá *'),
         DropdownButtonFormField<DiscountType>(
           initialValue: discountType,
-          decoration: _decoration(''),
+          decoration: _decoration('', context),
           items: DiscountType.values
               .map((type) =>
                   DropdownMenuItem(value: type, child: Text(type.label)))
@@ -86,7 +86,7 @@ class CouponFormFields extends StatelessWidget {
         ),
         TextFormField(
           controller: discountValueController,
-          decoration: _decoration(isPercentage ? 'VD: 20' : 'VD: 50000'),
+          decoration: _decoration(isPercentage ? 'VD: 20' : 'VD: 50000', context),
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
@@ -105,14 +105,14 @@ class CouponFormFields extends StatelessWidget {
         const _FieldLabel('Đơn hàng tối thiểu (đ)'),
         TextFormField(
           controller: minOrderController,
-          decoration: _decoration('Để trống nếu không yêu cầu'),
+          decoration: _decoration('Để trống nếu không yêu cầu', context),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         const _FieldLabel('Giảm tối đa (đ)'),
         TextFormField(
           controller: maxDiscountController,
-          decoration: _decoration('Áp dụng cho giảm theo %'),
+          decoration: _decoration('Áp dụng cho giảm theo %', context),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
@@ -120,7 +120,7 @@ class CouponFormFields extends StatelessWidget {
         const _FieldLabel('Hạng thành viên yêu cầu'),
         DropdownButtonFormField<UserTier?>(
           initialValue: requiredTier,
-          decoration: _decoration('Không yêu cầu'),
+          decoration: _decoration('Không yêu cầu', context),
           items: [
             const DropdownMenuItem<UserTier?>(
               value: null,
@@ -138,7 +138,7 @@ class CouponFormFields extends StatelessWidget {
         const _FieldLabel('Giới hạn lượt dùng'),
         TextFormField(
           controller: usageLimitController,
-          decoration: _decoration('Để trống nếu không giới hạn'),
+          decoration: _decoration('Để trống nếu không giới hạn', context),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
@@ -191,9 +191,9 @@ class CouponDateField extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Row(
             children: [
@@ -263,11 +263,9 @@ class CouponStatusSwitch extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: SwitchListTile.adaptive(
         value: value,
@@ -314,12 +312,12 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
-InputDecoration _decoration(String hint) {
+InputDecoration _decoration(String hint, BuildContext context) {
   return InputDecoration(
     hintText: hint,
     hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textHint),
     filled: true,
-    fillColor: Colors.white,
+    fillColor: Theme.of(context).inputDecorationTheme.fillColor,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     border: _fieldBorder(),
     enabledBorder: _fieldBorder(),

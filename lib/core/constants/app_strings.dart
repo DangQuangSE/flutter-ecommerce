@@ -887,6 +887,41 @@ abstract final class AppStrings {
   static const String adminSupportMessages = 'Tin nhắn hỗ trợ';
   static const String adminReturnPolicy = 'Chính sách đổi trả & bảo hành';
 
+  // Admin dashboard tab
+  static const String adminDashboardTitle = 'Dashboard';
+  static const String adminRevenueLabel = 'DOANH THU';
+  static const String adminOrdersCountLabel = 'ĐƠN HÀNG';
+  static const String adminNewCustomersLabel = 'KHÁCH MỚI';
+  static const String adminTrafficTitle = 'Lưu lượng truy cập';
+  static const String adminTrafficPeriod = 'TUẦN NÀY';
+  static String adminTrafficDay(String day, int value) =>
+      'Lưu lượng $day: $value%';
+
+  // Admin notification sheet
+  static const String adminNotificationSheetTitle = 'Thông báo đơn hàng mới';
+  static const String adminNotificationEmpty = 'Chưa có thông báo nào';
+
+  // Admin order detail
+  static const String adminOrderInfoSection = 'THÔNG TIN ĐƠN HÀNG';
+  static const String adminOrderCodeLabel = 'Mã đơn hàng';
+  static const String adminOrderCustomerNameLabel = 'Tên người đặt';
+  static const String adminOrderPhoneLabel = 'Số điện thoại';
+  static const String adminOrderPaymentLabel = 'Thanh toán';
+  static const String adminOrderAddressSection = 'ĐỊA CHỈ GIAO HÀNG';
+  static const String adminOrderAddressLabel = 'Địa chỉ';
+  static String adminOrderItemsSection(int count) => 'SẢN PHẨM ($count)';
+  static const String adminOrderTotalLabel = 'Tổng cộng';
+
+  // Admin location tab
+  static const String adminLocationTitle = 'Vị trí của cửa hàng';
+  static const String adminShowroomName = 'Sport Pro Showroom';
+  static const String adminShowroomLabel = 'SHOWROOM';
+
+  // Admin profile tab
+  static const String adminRoleLabel = 'QUẢN TRỊ VIÊN';
+  static const String adminShopViewLabel = 'Về Cửa hàng (User View)';
+  static const String adminLogoutLabel = 'Đăng xuất tài khoản';
+
   // Category form
   static const String categoryNameLabel = 'Tên danh mục *';
   static const String categoryNameHint = 'VD: Giày chạy bộ';

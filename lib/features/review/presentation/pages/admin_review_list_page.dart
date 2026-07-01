@@ -35,7 +35,7 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
     final reply = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -82,7 +82,6 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(

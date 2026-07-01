@@ -28,7 +28,6 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
     return Scaffold(
       
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         title: Text(

@@ -97,12 +97,12 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
                   prefixIcon:
                       Icon(Icons.search_rounded, size: AppSizes.iconMd),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: AppSizes.spacing12),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderSide: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -123,7 +123,6 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
       
       appBar: widget.showAppBar
           ? AppBar(
-              backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
               title: Text(
@@ -374,6 +373,7 @@ class _StatusChip extends StatelessWidget {
         label: Text(label),
         selected: isSelected,
         onSelected: (_) => onTap(),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         selectedColor: AppColors.primary.withValues(alpha: 0.12),
         checkmarkColor: AppColors.primary,
         labelStyle: GoogleFonts.inter(

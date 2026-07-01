@@ -17,7 +17,6 @@ class AdminShopConfigPage extends StatelessWidget {
     return Scaffold(
       
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -218,7 +217,7 @@ class _AdminShopFormState extends State<_AdminShopForm> {
         labelText: label,
         hintText: hint,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           borderSide: const BorderSide(color: AppColors.divider),

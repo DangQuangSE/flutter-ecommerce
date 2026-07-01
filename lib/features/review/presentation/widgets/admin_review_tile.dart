@@ -24,10 +24,9 @@ class AdminReviewTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       padding: const EdgeInsets.all(14),
       child: Column(

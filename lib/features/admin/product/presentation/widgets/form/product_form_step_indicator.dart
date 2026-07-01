@@ -10,7 +10,7 @@ class ProductFormStepIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
       child: Row(
         children: List.generate(3, (i) {

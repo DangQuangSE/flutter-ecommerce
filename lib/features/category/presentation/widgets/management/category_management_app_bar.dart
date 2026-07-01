@@ -20,7 +20,6 @@ class CategoryManagementAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(

@@ -22,7 +22,6 @@ class AdminOrderDetailPage extends StatelessWidget {
     return Scaffold(
       
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -117,9 +116,9 @@ class _OrderDetailBody extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardTheme.color,
                 borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Row(
                 children: [
@@ -167,38 +166,38 @@ class _OrderDetailBody extends StatelessWidget {
             ),
             SizedBox(height: 16),
             _Section(
-              title: 'THÔNG TIN ĐƠN HÀNG',
+              title: AppStrings.adminOrderInfoSection,
               icon: Icons.receipt_long_outlined,
               children: [
                 _DetailRow(
-                  label: 'Mã đơn hàng',
+                  label: AppStrings.adminOrderCodeLabel,
                   value: order.displayCode,
                 ),
                 _DetailRow(
-                  label: 'Tên người đặt',
+                  label: AppStrings.adminOrderCustomerNameLabel,
                   value: order.displayCustomerName,
                 ),
                 _DetailRow(
-                  label: 'Số điện thoại',
+                  label: AppStrings.adminOrderPhoneLabel,
                   value: order.phoneNumber,
                 ),
                 _DetailRow(
-                  label: 'Thanh toán',
+                  label: AppStrings.adminOrderPaymentLabel,
                   value: OrderStatusLabel.paymentMethodVi(order.paymentMethod),
                 ),
               ],
             ),
             SizedBox(height: 16),
             _Section(
-              title: 'ĐỊA CHỈ GIAO HÀNG',
+              title: AppStrings.adminOrderAddressSection,
               icon: Icons.location_on_outlined,
               children: [
-                _DetailRow(label: 'Địa chỉ', value: order.shippingAddress),
+                _DetailRow(label: AppStrings.adminOrderAddressLabel, value: order.shippingAddress),
               ],
             ),
             SizedBox(height: 16),
             _Section(
-              title: 'SẢN PHẨM (${order.items.length})',
+              title: AppStrings.adminOrderItemsSection(order.items.length),
               icon: Icons.shopping_bag_outlined,
               children: order.items
                   .map((item) => _ItemCard(
@@ -211,15 +210,15 @@ class _OrderDetailBody extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardTheme.color,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Tổng cộng',
+                    AppStrings.adminOrderTotalLabel,
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -373,9 +372,9 @@ class _Section extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,9 +463,9 @@ class _ItemCard extends StatelessWidget {
                     width: 56,
                     height: 56,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _placeholder(),
+                    errorBuilder: (_, __, ___) => _placeholder(context),
                   )
-                : _placeholder(),
+                : _placeholder(context),
           ),
           SizedBox(width: 12),
           Expanded(
@@ -505,11 +504,11 @@ class _ItemCard extends StatelessWidget {
     );
   }
 
-  Widget _placeholder() {
+  Widget _placeholder(BuildContext context) {
     return Container(
       width: 56,
       height: 56,
-      color: AppColors.background,
+      color: Theme.of(context).colorScheme.surface,
       child: Icon(Icons.image_outlined, color: AppColors.textSecondary),
     );
   }

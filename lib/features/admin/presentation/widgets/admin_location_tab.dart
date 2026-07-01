@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class AdminLocationTab extends StatelessWidget {
   final VoidCallback onBackToDashboard;
@@ -24,7 +25,7 @@ class AdminLocationTab extends StatelessWidget {
                 ),
                 SizedBox(width: 16),
                 Text(
-                  'Vị trí của cửa hàng',
+                  AppStrings.adminLocationTitle,
                   style: GoogleFonts.lexend(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -37,7 +38,7 @@ class AdminLocationTab extends StatelessWidget {
             child: Stack(
               children: [
                 Container(
-                  color: const Color(0xFFE5E7EB),
+                  color: Theme.of(context).colorScheme.surface,
                   child: Stack(
                     children: [
                       Positioned.fill(
@@ -58,7 +59,7 @@ class AdminLocationTab extends StatelessWidget {
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: Theme.of(context).cardTheme.color,
                                         borderRadius: BorderRadius.circular(20),
                                         boxShadow: [
                                           BoxShadow(
@@ -71,7 +72,7 @@ class AdminLocationTab extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 5),
                                       child: Text(
-                                        'Sport Pro Showroom',
+                                        AppStrings.adminShowroomName,
                                         style: GoogleFonts.inter(
                                             fontSize: 9,
                                             fontWeight: FontWeight.w700,
@@ -98,7 +99,7 @@ class AdminLocationTab extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardTheme.color,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -115,16 +116,16 @@ class AdminLocationTab extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                              color: const Color(0xFFE0F2FE),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6)),
-                          child: Text('SHOWROOM',
+                          child: Text(AppStrings.adminShowroomLabel,
                               style: GoogleFonts.inter(
                                   fontSize: 8,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.primary)),
                         ),
                         SizedBox(height: 8),
-                        Text('Sport Pro Showroom',
+                        Text(AppStrings.adminShowroomName,
                             style: GoogleFonts.lexend(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,

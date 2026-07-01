@@ -82,7 +82,7 @@ class AdminProfileTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'QUẢN TRỊ VIÊN',
+                  AppStrings.adminRoleLabel,
                   style: GoogleFonts.inter(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
@@ -103,7 +103,7 @@ class AdminProfileTab extends StatelessWidget {
                   ListTile(
                     leading: Icon(Icons.store_mall_directory_rounded,
                         color: AppColors.primary),
-                    title: Text('Về Cửa hàng (User View)',
+                    title: Text(AppStrings.adminShopViewLabel,
                         style: GoogleFonts.inter(
                             fontSize: 14, fontWeight: FontWeight.w600)),
                     trailing:
@@ -125,7 +125,7 @@ class AdminProfileTab extends StatelessWidget {
                   ListTile(
                     leading: Icon(Icons.logout_rounded,
                         color: AppColors.error),
-                    title: Text('Đăng xuất tài khoản',
+                    title: Text(AppStrings.adminLogoutLabel,
                         style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
