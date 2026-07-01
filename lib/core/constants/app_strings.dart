@@ -673,6 +673,7 @@ abstract final class AppStrings {
       'Không thể tải thông tin cửa hàng. Vui lòng thử lại sau.';
 
   // ── Admin shop config ─────────────────────────────────────────────────────
+  static const String adminShopSectionLabel = 'QUẢN LÝ CỬA HÀNG';
   static const String adminShopConfigTitle = 'Cấu hình cửa hàng';
   static const String shopSaveChanges = 'Lưu thay đổi';
   static const String shopUpdateSuccess =
