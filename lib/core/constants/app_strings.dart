@@ -816,6 +816,9 @@ abstract final class AppStrings {
   static const String authTagline = 'Hiệu suất tối đa. Khởi đầu ngay.';
   static const String loginTitle = 'Đăng nhập';
   static const String loginSubmit = 'Đăng nhập';
+  static const String loginOrDivider = 'Hoặc';
+  static const String googleLogoLetter = 'G';
+  static const String googleBrandName = 'Google';
   static const String registerTitle = 'Đăng ký';
   static const String emailLabel = 'EMAIL';
   static const String passwordLabel = 'MẬT KHẨU';
