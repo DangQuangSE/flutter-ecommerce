@@ -35,7 +35,7 @@ class AuthTabBar extends StatelessWidget {
                   bottom: BorderSide(
                     color: activeIndex == 0
                         ? AppColors.primary
-                        : Colors.transparent,
+                        : AppColors.textSecondaryLight,
                     width: AppSizes.borderThick,
                   ),
                 ),
@@ -49,7 +49,7 @@ class AuthTabBar extends StatelessWidget {
                     fontSize: AppSizes.fontLg,
                     color: activeIndex == 0
                         ? AppColors.primary
-                        : AppColors.textSecondary,
+                        : AppColors.textSecondaryLight,
                     letterSpacing: AppSizes.letterSpacingWide / 2,
                   ),
                 ),
@@ -72,7 +72,7 @@ class AuthTabBar extends StatelessWidget {
                   bottom: BorderSide(
                     color: activeIndex == 1
                         ? AppColors.primary
-                        : Colors.transparent,
+                        : AppColors.textSecondaryLight,
                     width: AppSizes.borderThick,
                   ),
                 ),
@@ -86,7 +86,7 @@ class AuthTabBar extends StatelessWidget {
                     fontSize: AppSizes.fontLg,
                     color: activeIndex == 1
                         ? AppColors.primary
-                        : AppColors.textSecondary,
+                        : AppColors.textSecondaryLight,
                     letterSpacing: AppSizes.letterSpacingWide / 2,
                   ),
                 ),

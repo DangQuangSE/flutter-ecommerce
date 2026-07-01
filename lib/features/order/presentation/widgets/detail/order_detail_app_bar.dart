@@ -36,7 +36,7 @@ class OrderDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             context.goNamed(AppRoutes.orderList);
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_rounded,
           color: AppColors.textPrimary,
           size: 24,
@@ -81,7 +81,7 @@ class _ChatActionIcon extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () => context.goNamed(AppRoutes.chatList),
-              icon: const Icon(
+              icon: Icon(
                 Icons.chat_bubble_outline_rounded,
                 color: AppColors.primary,
                 size: 24,
@@ -97,7 +97,7 @@ class _ChatActionIcon extends StatelessWidget {
                     color: AppColors.accent,
                     shape: BoxShape.circle,
                   ),
-                  constraints: const BoxConstraints(
+                  constraints: BoxConstraints(
                     minWidth: 16,
                     minHeight: 16,
                   ),

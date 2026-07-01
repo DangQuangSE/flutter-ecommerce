@@ -13,9 +13,17 @@ abstract final class AppColors {
   static const Color surface = Color(0xFFFFFFFF);
   static const Color divider = Color(0xFFE0E0E0);
 
-  static const Color textPrimary = Color(0xFF1A1A2E);
-  static const Color textSecondary = Color(0xFF6B7280);
+  static bool isDarkMode = false;
+
+  static Color get textPrimary =>
+      isDarkMode ? Colors.white : const Color(0xFF1A1A2E);
+  static Color get textSecondary =>
+      isDarkMode ? const Color(0xFFE2E8F0) : const Color(0xFF6B7280);
   static const Color textHint = Color(0xFFADB5BD);
+
+  // Fixed light-mode text colors for always-light surfaces (e.g. auth screens)
+  static const Color textPrimaryLight = Color(0xFF1A1A2E);
+  static const Color textSecondaryLight = Color(0xFF6B7280);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
   static const Color success = Color(0xFF2ECC71);

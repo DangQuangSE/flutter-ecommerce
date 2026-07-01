@@ -121,7 +121,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        
         appBar: _buildAppBar(context),
         body: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
@@ -145,11 +145,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: AppSizes.paddingMd),
+            SizedBox(height: AppSizes.paddingMd),
             _buildAvatarSection(profile?.avatar),
-            const SizedBox(height: AppSizes.fontDisplay),
+            SizedBox(height: AppSizes.fontDisplay),
             _buildLabel(AppStrings.editProfileFirstNameLabel),
-            const SizedBox(height: AppSizes.radiusSm),
+            SizedBox(height: AppSizes.radiusSm),
             _buildTextField(
               controller: _firstNameController,
               hint: AppStrings.editProfileFirstNameHint,
@@ -157,9 +157,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ? AppStrings.editProfileFirstNameRequired
                   : null,
             ),
-            const SizedBox(height: AppSizes.paddingLg),
+            SizedBox(height: AppSizes.paddingLg),
             _buildLabel(AppStrings.editProfileLastNameLabel),
-            const SizedBox(height: AppSizes.radiusSm),
+            SizedBox(height: AppSizes.radiusSm),
             _buildTextField(
               controller: _lastNameController,
               hint: AppStrings.editProfileLastNameHint,
@@ -167,13 +167,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ? AppStrings.editProfileLastNameRequired
                   : null,
             ),
-            const SizedBox(height: AppSizes.paddingLg),
+            SizedBox(height: AppSizes.paddingLg),
             _buildLabel(AppStrings.editProfileEmailLabel),
-            const SizedBox(height: AppSizes.radiusSm),
+            SizedBox(height: AppSizes.radiusSm),
             _buildReadOnlyEmail(profile?.email ?? ''),
-            const SizedBox(height: AppSizes.fontDisplay),
+            SizedBox(height: AppSizes.fontDisplay),
             _buildSaveButton(),
-            const SizedBox(height: AppSizes.fontDisplay),
+            SizedBox(height: AppSizes.fontDisplay),
           ],
         ),
       ),
@@ -227,7 +227,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.white, width: 2),
                 ),
-                child: const Icon(Icons.camera_alt_rounded,
+                child: Icon(Icons.camera_alt_rounded,
                     size: 16, color: Colors.white),
               ),
             ),
@@ -253,8 +253,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget _avatarFallback() {
     return Container(
-      color: const Color(0xFFF3F3F8),
-      child: const Icon(Icons.person_rounded,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF1E293B)
+          : const Color(0xFFF3F3F8),
+      child: Icon(Icons.person_rounded,
           size: 40, color: AppColors.textSecondary),
     );
   }
@@ -264,10 +266,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F8),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFF3F3F8),
         borderRadius: BorderRadius.circular(8),
         border:
-            Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+            Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.3)),
       ),
       child: Text(
         email,
@@ -334,7 +338,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         hintText: hint,
         isDense: true,
         filled: true,
-        fillColor: const Color(0xFFF3F3F8),
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFF3F3F8),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
@@ -351,14 +357,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: theme.dividerColor.withValues(alpha: 0.3),
           height: 1,
         ),
       ),
@@ -370,8 +377,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             context.goNamed(AppRoutes.profile);
           }
         },
-        icon: const Icon(Icons.arrow_back_rounded,
-            color: AppColors.textPrimary, size: 24),
+        icon: Icon(Icons.arrow_back_rounded,
+            color: theme.colorScheme.onSurface, size: 24),
       ),
       title: Align(
         alignment: Alignment.centerLeft,
@@ -400,7 +407,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 IconButton(
                   onPressed: () => context.goNamed(AppRoutes.chatList),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.chat_bubble_outline_rounded,
                     color: AppColors.primary,
                     size: 24,
@@ -417,7 +424,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         shape: BoxShape.circle,
                       ),
                       constraints:
-                          const BoxConstraints(minWidth: 16, minHeight: 16),
+                          BoxConstraints(minWidth: 16, minHeight: 16),
                       child: Text(
                         '$unreadCount',
                         textAlign: TextAlign.center,
@@ -434,7 +441,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             );
           },
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
       ],
     );
   }

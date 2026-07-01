@@ -36,7 +36,7 @@ class ProductGrid extends StatelessWidget {
       itemCount: products.length + (isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == products.length) {
-          return const Center(
+          return Center(
             child: Padding(
               padding: EdgeInsets.all(AppSizes.paddingMd),
               child: AppLoadingView(size: AppSizes.paddingXl),
@@ -62,13 +62,13 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.search_off_rounded,
               size: AppSizes.iconXl,
               color: AppColors.textHint,
             ),
             AppSizes.spacingMd,
-            const Text(
+            Text(
               AppStrings.productCatalogEmpty,
               style: TextStyle(
                 fontSize: AppSizes.fontXl,
@@ -80,7 +80,7 @@ class _EmptyState extends StatelessWidget {
               AppSizes.spacingMd,
               TextButton(
                 onPressed: onClear,
-                child: const Text(AppStrings.productCatalogClearFilter),
+                child: Text(AppStrings.productCatalogClearFilter),
               ),
             ],
           ],

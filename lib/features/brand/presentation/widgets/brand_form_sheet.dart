@@ -97,7 +97,7 @@ class _BrandFormSheetState extends State<BrandFormSheet> {
               onClose: () => Navigator.pop(context),
             ),
             const Divider(),
-            const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
+            SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
             const _FieldLabel(AppStrings.adminBrandNameLabel),
             _BrandTextField(
               controller: _nameController,
@@ -188,7 +188,7 @@ class _SheetHeader extends StatelessWidget {
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.close_rounded),
+          icon: Icon(Icons.close_rounded),
           onPressed: onClose,
         ),
       ],

@@ -91,7 +91,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     final appBarHeight = statusBarHeight + _glassAppBarContentHeight;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       extendBody: true,
       bottomNavigationBar: const GlassBottomBar(currentTab: 'shop'),
       body: Stack(
@@ -217,7 +217,7 @@ class _CatalogErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.error_outline,
             size: AppSizes.iconXl,
             color: AppColors.error,
@@ -226,12 +226,12 @@ class _CatalogErrorView extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: AppColors.textSecondary),
           ),
           AppSizes.spacingMd,
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text(AppStrings.retry),
+            child: Text(AppStrings.retry),
           ),
         ],
       ),

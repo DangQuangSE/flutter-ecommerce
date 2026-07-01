@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_item_entity.dart';
@@ -23,7 +22,7 @@ class OrderDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: const OrderDetailAppBar(),
       body: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {

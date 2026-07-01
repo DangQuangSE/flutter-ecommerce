@@ -19,7 +19,7 @@ class ProductHomeErrorView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline_rounded,
               size: AppSizes.buttonMinHeight,
               color: AppColors.error,
@@ -54,7 +54,7 @@ class ProductHomeErrorView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSizes.paddingSm),
                 ),
               ),
-              child: const Text(AppStrings.retry),
+              child: Text(AppStrings.retry),
             ),
           ],
         ),

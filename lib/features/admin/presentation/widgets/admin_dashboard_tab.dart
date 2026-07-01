@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
@@ -33,7 +34,7 @@ class AdminDashboardTab extends StatelessWidget {
                 transform: Matrix4.skewX(-0.12),
                 alignment: Alignment.center,
                 child: Text(
-                  'Sport Pro',
+                  AppStrings.adminDashboardAppName,
                   style: GoogleFonts.lexend(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
@@ -56,7 +57,7 @@ class AdminDashboardTab extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -71,7 +72,7 @@ class AdminDashboardTab extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // Revenue block
           Container(
@@ -98,7 +99,7 @@ class AdminDashboardTab extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'DOANH THU',
+                      AppStrings.adminRevenueLabel,
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -106,7 +107,7 @@ class AdminDashboardTab extends StatelessWidget {
                         letterSpacing: 1.0,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       stats.totalRevenue >= 1000000
                           ? '${(stats.totalRevenue / 1000000).toStringAsFixed(1)}M'
@@ -117,13 +118,13 @@ class AdminDashboardTab extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(Icons.arrow_upward_rounded,
                             size: 12,
                             color: Colors.white.withValues(alpha: 0.9)),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2),
                         Text(
                           '+${stats.revenueGrowth}% so với tuần trước',
                           style: GoogleFonts.inter(
@@ -142,29 +143,31 @@ class AdminDashboardTab extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.account_balance_wallet_rounded,
+                  child: Icon(Icons.account_balance_wallet_rounded,
                       size: 28, color: Colors.white),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // KPI row
           Row(
             children: [
               Expanded(
                   child: _kpiCard(
-                label: 'ĐƠN HÀNG',
+                context: context,
+                label: AppStrings.adminOrdersCountLabel,
                 value: '${stats.totalOrders}',
                 growth: '+${stats.ordersGrowth}% tuần này',
                 icon: Icons.local_shipping_outlined,
                 iconColor: AppColors.primary,
               )),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                   child: _kpiCard(
-                label: 'KHÁCH MỚI',
+                context: context,
+                label: AppStrings.adminNewCustomersLabel,
                 value: '${stats.newCustomers}',
                 growth: '+${stats.customersGrowth}%',
                 icon: Icons.people_alt_outlined,
@@ -172,7 +175,7 @@ class AdminDashboardTab extends StatelessWidget {
               )),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Traffic chart removed as requested
         ],
@@ -191,7 +194,7 @@ class AdminDashboardTab extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () => context.pushNamed(AppRoutes.chatList),
-              icon: const Icon(Icons.chat_bubble_outline_rounded,
+              icon: Icon(Icons.chat_bubble_outline_rounded,
                   color: AppColors.textPrimary),
             ),
             if (unread > 0)
@@ -202,7 +205,7 @@ class AdminDashboardTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                   constraints:
-                      const BoxConstraints(minWidth: 16, minHeight: 16),
+                      BoxConstraints(minWidth: 16, minHeight: 16),
                   decoration: const BoxDecoration(
                       color: AppColors.error, shape: BoxShape.circle),
                   child: Text(
@@ -222,6 +225,7 @@ class AdminDashboardTab extends StatelessWidget {
   }
 
   Widget _kpiCard({
+    required BuildContext context,
     required String label,
     required String value,
     required String growth,
@@ -231,9 +235,9 @@ class AdminDashboardTab extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,13 +254,13 @@ class AdminDashboardTab extends StatelessWidget {
               Icon(icon, size: 16, color: iconColor),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(value,
               style: GoogleFonts.lexend(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary)),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(growth,
               style: GoogleFonts.inter(
                   fontSize: 10,
@@ -281,7 +285,7 @@ class AdminDashboardTab extends StatelessWidget {
                 context.read<AdminNotificationCubit>().markAllAsRead();
                 _showNotificationsSheet(context, state);
               },
-              icon: const Icon(Icons.notifications_none_rounded,
+              icon: Icon(Icons.notifications_none_rounded,
                   color: AppColors.textPrimary),
             ),
             if (unread > 0)
@@ -321,15 +325,15 @@ class AdminDashboardTab extends StatelessWidget {
       builder: (sheetContext) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Thông báo đơn hàng mới',
+                AppStrings.adminNotificationSheetTitle,
                 style: GoogleFonts.lexend(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -341,7 +345,7 @@ class AdminDashboardTab extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Text(
-                    'Chưa có thông báo nào',
+                    AppStrings.adminNotificationEmpty,
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       color: AppColors.textSecondary,
@@ -398,7 +402,7 @@ class AdminDashboardTab extends StatelessWidget {
                             ),
                           ),
                           subtitle: Text(
-                            'Đơn hàng #${notif.orderId} • ${notif.createdAt}',
+                            AppStrings.adminNotificationOrderText(notif.orderId, notif.createdAt),
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               color: AppColors.textSecondary,

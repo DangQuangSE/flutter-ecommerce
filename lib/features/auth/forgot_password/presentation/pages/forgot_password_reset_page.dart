@@ -51,12 +51,12 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => context.pop(),
         ),
       ),
@@ -92,7 +92,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
                         color: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Tạo mật khẩu mới cho ${widget.extra.email}',
                       style: GoogleFonts.inter(
@@ -100,7 +100,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     _passwordField(
                       label: 'MẬT KHẨU MỚI',
                       controller: _passwordController,
@@ -118,7 +118,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     _passwordField(
                       label: 'NHẬP LẠI MẬT KHẨU',
                       controller: _confirmController,
@@ -137,7 +137,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
                       },
                     ),
                     if (apiError != null) ...[
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Text(
                         apiError,
                         style: GoogleFonts.inter(
@@ -146,7 +146,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     ElevatedButton(
                       onPressed: isLoading ? null : _onSubmit,
                       style: ElevatedButton.styleFrom(
@@ -199,7 +199,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextFormField(
           controller: controller,
           obscureText: obscure,

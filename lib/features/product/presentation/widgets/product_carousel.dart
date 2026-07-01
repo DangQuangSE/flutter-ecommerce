@@ -28,7 +28,7 @@ class _ProductCarouselState extends State<ProductCarousel> {
         aspectRatio: 0.8,
         child: Container(
           color: const Color(0xFFF3F3F8),
-          child: const Icon(
+          child: Icon(
             Icons.image_not_supported_outlined,
             size: 48,
             color: AppColors.textSecondary,
@@ -50,8 +50,8 @@ class _ProductCarouselState extends State<ProductCarousel> {
               fit: BoxFit.cover,
               placeholder: (_, __) =>
                   const ColoredBox(color: Color(0xFFF3F3F8)),
-              errorWidget: (_, __, ___) => const ColoredBox(
-                color: Color(0xFFF3F3F8),
+              errorWidget: (_, __, ___) => ColoredBox(
+                color: const Color(0xFFF3F3F8),
                 child: Icon(
                   Icons.image_not_supported_outlined,
                   size: 48,

@@ -34,7 +34,7 @@ class AddressOptionsSection extends StatelessWidget {
             icon: Icons.label_outline,
           ),
         ),
-        const SizedBox(height: AppSizes.paddingSm),
+        SizedBox(height: AppSizes.paddingSm),
         _DefaultToggle(isDefault: isDefault, onToggle: onToggleDefault),
       ],
     );
@@ -71,7 +71,7 @@ class _DefaultToggle extends StatelessWidget {
               size: 18,
               color: isDefault ? AppColors.primary : AppColors.textSecondary,
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +107,7 @@ class _DefaultToggle extends StatelessWidget {
                 ),
               ),
               child: isDefault
-                  ? const Icon(Icons.check_rounded, size: 14, color: Colors.white)
+                  ? Icon(Icons.check_rounded, size: 14, color: Colors.white)
                   : null,
             ),
           ],

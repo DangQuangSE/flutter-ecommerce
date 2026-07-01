@@ -82,10 +82,16 @@ class _PriceField extends StatelessWidget {
         labelText: label,
         suffixText: AppStrings.productFilterCurrencySuffix,
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : AppColors.background,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF334155)
+                : Colors.transparent,
+          ),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSizes.paddingMd,

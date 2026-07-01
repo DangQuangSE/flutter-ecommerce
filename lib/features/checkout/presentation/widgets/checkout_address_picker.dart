@@ -65,12 +65,12 @@ class CheckoutAddressPicker extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.location_off_outlined,
                 size: AppSizes.fontXxl,
                 color: AppColors.textSecondary,
               ),
-              const SizedBox(width: AppSizes.paddingSm),
+              SizedBox(width: AppSizes.paddingSm),
               Text(
                 AppStrings.checkoutNoAddressTitle,
                 style: GoogleFonts.inter(
@@ -82,7 +82,7 @@ class CheckoutAddressPicker extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSizes.radiusLg),
+          SizedBox(height: AppSizes.radiusLg),
           Text(
             AppStrings.checkoutNoAddressMessage,
             style: GoogleFonts.inter(
@@ -90,10 +90,10 @@ class CheckoutAddressPicker extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: AppSizes.radiusLg),
+          SizedBox(height: AppSizes.radiusLg),
           ElevatedButton.icon(
             onPressed: () => context.pushNamed(AppRoutes.addressForm),
-            icon: const Icon(Icons.add, size: AppSizes.iconSm),
+            icon: Icon(Icons.add, size: AppSizes.iconSm),
             label: Text(
               AppStrings.checkoutAddAddress,
               style: GoogleFonts.inter(
@@ -141,12 +141,12 @@ class CheckoutAddressPicker extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.location_on_rounded,
                 size: AppSizes.iconSm,
                 color: AppColors.primary,
               ),
-              const SizedBox(width: AppSizes.radiusSm),
+              SizedBox(width: AppSizes.radiusSm),
               Text(
                 displayAddress.fullName,
                 style: GoogleFonts.lexend(
@@ -191,7 +191,7 @@ class CheckoutAddressPicker extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           Text(
             displayAddress.phoneNumber,
             style: GoogleFonts.inter(
@@ -200,7 +200,7 @@ class CheckoutAddressPicker extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: AppSizes.paddingXs),
+          SizedBox(height: AppSizes.paddingXs),
           Text(
             displayAddress.formattedAddress,
             style: GoogleFonts.inter(
@@ -211,7 +211,7 @@ class CheckoutAddressPicker extends StatelessWidget {
           ),
           if (displayAddress.label != null &&
               displayAddress.label!.isNotEmpty) ...[
-            const SizedBox(height: AppSizes.radiusSm),
+            SizedBox(height: AppSizes.radiusSm),
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSizes.radiusSm,
@@ -310,7 +310,7 @@ class _AddressPickerSheet extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, size: AppSizes.iconMd),
+                  icon: Icon(Icons.close, size: AppSizes.iconMd),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -322,7 +322,7 @@ class _AddressPickerSheet extends StatelessWidget {
               padding: const EdgeInsets.all(AppSizes.paddingMd),
               itemCount: addresses.length,
               separatorBuilder: (_, __) =>
-                  const SizedBox(height: AppSizes.radiusLg),
+                  SizedBox(height: AppSizes.radiusLg),
               itemBuilder: (_, index) {
                 final addr = addresses[index];
                 final isSelected = addr.id == selectedAddress?.id;
@@ -346,7 +346,7 @@ class _AddressPickerSheet extends StatelessWidget {
                   Navigator.pop(context);
                   context.pushNamed(AppRoutes.addressForm);
                 },
-                icon: const Icon(Icons.add, size: AppSizes.iconSm),
+                icon: Icon(Icons.add, size: AppSizes.iconSm),
                 label: Text(
                   AppStrings.checkoutAddNewAddress,
                   style: GoogleFonts.inter(
@@ -446,7 +446,7 @@ class _AddressPickerTile extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: AppSizes.paddingXs),
+                  SizedBox(height: AppSizes.paddingXs),
                   Text(
                     address.phoneNumber,
                     style: GoogleFonts.inter(
@@ -455,7 +455,7 @@ class _AddressPickerTile extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     address.formattedAddress,
                     style: GoogleFonts.inter(
@@ -467,12 +467,12 @@ class _AddressPickerTile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: AppSizes.paddingSm),
+            SizedBox(width: AppSizes.paddingSm),
             if (isSelected)
-              const Icon(Icons.check_circle_rounded,
+              Icon(Icons.check_circle_rounded,
                   size: AppSizes.iconMd, color: AppColors.primary)
             else
-              const Icon(Icons.radio_button_unchecked_rounded,
+              Icon(Icons.radio_button_unchecked_rounded,
                   size: AppSizes.iconMd, color: AppColors.textHint),
           ],
         ),

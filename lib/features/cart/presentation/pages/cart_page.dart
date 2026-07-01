@@ -41,15 +41,15 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 1,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
             height: 1,
           ),
         ),
@@ -61,9 +61,9 @@ class _CartPageState extends State<CartPage> {
               context.goNamed(AppRoutes.productList);
             }
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             size: AppSizes.iconMd,
           ),
         ),
@@ -72,7 +72,7 @@ class _CartPageState extends State<CartPage> {
           style: GoogleFonts.lexend(
             fontSize: AppSizes.fontXxl,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         centerTitle: true,
@@ -124,29 +124,29 @@ class _CartPageState extends State<CartPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildSelectAllHeader(state),
-                const SizedBox(height: AppSizes.paddingLg),
+                SizedBox(height: AppSizes.paddingLg),
                 _buildSectionHeader(
                   AppStrings.cartListTitle,
                   Icons.shopping_bag_outlined,
                 ),
-                const SizedBox(height: AppSizes.radiusLg),
+                SizedBox(height: AppSizes.radiusLg),
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: state.items.length,
                   separatorBuilder: (context, index) =>
-                      const SizedBox(height: AppSizes.radiusLg),
+                      SizedBox(height: AppSizes.radiusLg),
                   itemBuilder: (context, index) {
                     final item = state.items[index];
                     return _buildCartItemCard(context, item);
                   },
                 ),
-                const SizedBox(height: AppSizes.iconLg),
+                SizedBox(height: AppSizes.iconLg),
                 CartOrderSummary(
                   selectedTotalItems: selectedTotalItems,
                   selectedTotalPrice: selectedTotalPrice,
                 ),
-                const SizedBox(height: AppSizes.fontDisplay),
+                SizedBox(height: AppSizes.fontDisplay),
               ],
             ),
           ),
@@ -169,7 +169,7 @@ class _CartPageState extends State<CartPage> {
     return Row(
       children: [
         Icon(icon, size: AppSizes.iconSm + 2, color: AppColors.textSecondary),
-        const SizedBox(width: AppSizes.paddingSm),
+        SizedBox(width: AppSizes.paddingSm),
         Text(
           title,
           style: GoogleFonts.inter(
@@ -190,10 +190,10 @@ class _CartPageState extends State<CartPage> {
         vertical: AppSizes.radiusLg,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -220,7 +220,7 @@ class _CartPageState extends State<CartPage> {
               },
             ),
           ),
-          const SizedBox(width: AppSizes.radiusLg),
+          SizedBox(width: AppSizes.radiusLg),
           Text(
             AppStrings.cartSelectAll(
               _selectedItemIds.length,
@@ -229,7 +229,7 @@ class _CartPageState extends State<CartPage> {
             style: GoogleFonts.lexend(
               fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],

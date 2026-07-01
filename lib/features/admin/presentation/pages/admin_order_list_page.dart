@@ -95,14 +95,14 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
                 decoration: InputDecoration(
                   hintText: AppStrings.adminOrderSearchHint,
                   prefixIcon:
-                      const Icon(Icons.search_rounded, size: AppSizes.iconMd),
+                      Icon(Icons.search_rounded, size: AppSizes.iconMd),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: AppSizes.spacing12),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderSide: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -120,10 +120,9 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: widget.showAppBar
           ? AppBar(
-              backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
               title: Text(
@@ -134,7 +133,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
                   fontSize: AppSizes.fontXxl,
                 ),
               ),
-              iconTheme: const IconThemeData(color: AppColors.textPrimary),
+              iconTheme: IconThemeData(color: AppColors.textPrimary),
             )
           : null,
       body: widget.showAppBar ? content : SafeArea(child: content),
@@ -220,7 +219,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
               child: OutlinedButton.icon(
                 onPressed: () => _selectDateRange(context, startDate, endDate),
                 icon:
-                    const Icon(Icons.date_range_rounded, size: AppSizes.iconSm),
+                    Icon(Icons.date_range_rounded, size: AppSizes.iconSm),
                 label: Text(
                   label,
                   overflow: TextOverflow.ellipsis,
@@ -229,7 +228,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
             ),
           ),
           if (startDate != null || endDate != null) ...[
-            const SizedBox(width: AppSizes.paddingSm),
+            SizedBox(width: AppSizes.paddingSm),
             IconButton(
               tooltip: AppStrings.adminOrderDateRangeClear,
               onPressed: () => context.read<AdminOrderCubit>().applyFilters(
@@ -240,7 +239,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
                     clearStartDate: true,
                     clearEndDate: true,
                   ),
-              icon: const Icon(Icons.close_rounded),
+              icon: Icon(Icons.close_rounded),
             ),
           ],
         ],
@@ -279,7 +278,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
     NumberFormat currencyFormat,
   ) {
     if (state is AdminOrderListLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
         ),
@@ -292,10 +291,10 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(state.message, textAlign: TextAlign.center),
-            const SizedBox(height: AppSizes.spacing12),
+            SizedBox(height: AppSizes.spacing12),
             FilledButton(
               onPressed: () => context.read<AdminOrderCubit>().refreshList(),
-              child: const Text(AppStrings.retry),
+              child: Text(AppStrings.retry),
             ),
           ],
         ),
@@ -374,6 +373,7 @@ class _StatusChip extends StatelessWidget {
         label: Text(label),
         selected: isSelected,
         onSelected: (_) => onTap(),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         selectedColor: AppColors.primary.withValues(alpha: 0.12),
         checkmarkColor: AppColors.primary,
         labelStyle: GoogleFonts.inter(

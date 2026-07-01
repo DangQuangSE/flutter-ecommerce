@@ -23,10 +23,10 @@ class ProductDetailBottomActionBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         border: Border(
           top: BorderSide(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -46,7 +46,7 @@ class ProductDetailBottomActionBar extends StatelessWidget {
               isFavorited: isFavorited,
               onPressed: onToggleFavorite,
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
                 onPressed: isInStock ? onAddToCart : null,
@@ -71,7 +71,7 @@ class ProductDetailBottomActionBar extends StatelessWidget {
                           : Icons.remove_shopping_cart_outlined,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       isInStock ? AppStrings.addToCart : AppStrings.outOfStock,
                       style: GoogleFonts.lexend(
@@ -108,10 +108,10 @@ class _FavoriteButton extends StatelessWidget {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isFavorited ? Colors.red : const Color(0xFFC1C6D7),
+            color: isFavorited ? Colors.red : Theme.of(context).dividerColor,
             width: 1.5,
           ),
         ),

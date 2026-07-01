@@ -27,10 +27,10 @@ class GlassBottomBar extends StatelessWidget {
           // Flat bottom layout stretching completely, incorporating unified notch safe padding
           padding: EdgeInsets.fromLTRB(12, 10, 12, bottomPadding),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.85),
+            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
             border: Border(
               top: BorderSide(
-                color: const Color(0xFFE2E8F0).withValues(alpha: 0.8),
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.8),
                 width: 1.0,
               ),
             ),
@@ -109,7 +109,10 @@ class GlassBottomBar extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     const activeColor = AppColors.accent;
-    final inactiveColor = AppColors.textSecondary.withValues(alpha: 0.7);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inactiveColor = isDark
+        ? Colors.white.withValues(alpha: 0.5)
+        : AppColors.textSecondary.withValues(alpha: 0.7);
 
     return InkWell(
       onTap: onTap,
@@ -124,7 +127,7 @@ class GlassBottomBar extends StatelessWidget {
               color: isActive ? activeColor : inactiveColor,
               size: 22,
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               label,
               style: GoogleFonts.lexend(

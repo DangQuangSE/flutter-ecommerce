@@ -40,12 +40,12 @@ class OrderDetailSummary extends StatelessWidget {
               label: 'T\u1ea1m t\u00ednh',
               value: formatOrderPrice(order.subtotal),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
               height: 1,
               color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,

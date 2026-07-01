@@ -51,7 +51,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline_rounded,
                 size: 48,
                 color: AppColors.error,
@@ -74,7 +74,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: AppSizes.paddingLg),
+              SizedBox(height: AppSizes.paddingLg),
               ElevatedButton(
                 onPressed: () =>
                     context.read<CustomizerCubit>().loadPrintingConfigs(),
@@ -85,7 +85,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
                     borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
                 ),
-                child: const Text(AppStrings.retry),
+                child: Text(AppStrings.retry),
               ),
             ],
           ),
@@ -217,7 +217,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
             context.goNamed(AppRoutes.cart);
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.close_rounded,
           color: AppColors.textPrimary,
           size: AppSizes.iconLg,
@@ -237,7 +237,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
               ),
             ),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             widget.productName,
             style: GoogleFonts.inter(

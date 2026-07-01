@@ -25,7 +25,7 @@ class CategoryTreeSheet extends StatelessWidget {
           future: treeFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(
+              return Center(
                 child: Padding(
                   padding: EdgeInsets.all(AppSizes.fontDisplay + 8),
                   child: AppLoadingView(),
@@ -51,7 +51,7 @@ class CategoryTreeSheet extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
+                SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
                 if (nodes.isEmpty)
                   Text(
                     AppStrings.adminCategoryTreeEmpty,
@@ -108,7 +108,7 @@ class _TreeTile extends StatelessWidget {
             size: AppSizes.iconSm + 2,
             color: AppColors.primary,
           ),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
           Expanded(
             child: Text(
               node.name,
@@ -120,7 +120,7 @@ class _TreeTile extends StatelessWidget {
             ),
           ),
           if (node.isCustomizable)
-            const Icon(
+            Icon(
               Icons.brush_rounded,
               size: AppSizes.forgotPasswordFontSize,
               color: AppColors.accent,

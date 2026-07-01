@@ -110,12 +110,12 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: _onBackToEmail,
         ),
       ),
@@ -160,7 +160,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       color: AppColors.primary,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     AppStrings.otpSentToEmail(
                       _maskEmail(widget.extra.email),
@@ -171,7 +171,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                     ),
                   ),
                   if (widget.extra.neutralMessage.isNotEmpty) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       widget.extra.neutralMessage,
                       style: GoogleFonts.inter(
@@ -181,7 +181,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     AppStrings.forgotPasswordOtpHelp,
                     style: GoogleFonts.inter(
@@ -189,7 +189,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                   Pinput(
                     controller: _pinController,
                     length: 6,
@@ -207,7 +207,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                     onCompleted: (_) => _onVerify(),
                   ),
                   if (_inlineError != null) ...[
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       _inlineError!,
                       style: GoogleFonts.inter(
@@ -216,7 +216,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
                   ElevatedButton(
                     onPressed: canVerify ? _onVerify : null,
                     style: ElevatedButton.styleFrom(
@@ -239,7 +239,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                             ),
                           ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   TextButton(
                     onPressed:
                         _resendSeconds > 0 || isLoading ? null : _onResend,

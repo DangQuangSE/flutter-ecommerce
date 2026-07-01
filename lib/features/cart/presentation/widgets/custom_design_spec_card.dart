@@ -111,22 +111,22 @@ class _CustomDesignSpecContent extends StatelessWidget {
           value: materialValueText,
           isBoldValue: true,
         ),
-        const SizedBox(height: AppSizes.paddingXs),
+        SizedBox(height: AppSizes.paddingXs),
         _SpecRow(
           label: AppStrings.customDesignSpecTextLinesLabel,
           value: textValueText,
         ),
-        const SizedBox(height: AppSizes.paddingXs),
+        SizedBox(height: AppSizes.paddingXs),
         _SpecRow(
           label: AppStrings.customDesignSpecImagesLabel,
           value: imageValueText,
         ),
-        const SizedBox(height: AppSizes.paddingXs),
+        SizedBox(height: AppSizes.paddingXs),
         Container(
           height: 1,
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.15),
         ),
-        const SizedBox(height: AppSizes.paddingXs),
+        SizedBox(height: AppSizes.paddingXs),
         _SpecRow(
           label: AppStrings.customDesignSpecTotalLabel,
           value: '+${formatPrice(printingPrice)}',
@@ -134,7 +134,7 @@ class _CustomDesignSpecContent extends StatelessWidget {
           isBoldValue: true,
         ),
         if (textUnitPrice > 0 && imageUnitPrice > 0) ...[
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           _PricingFormulaHint(
             textUnitPrice: textUnitPrice,
             imageUnitPrice: imageUnitPrice,
@@ -165,12 +165,12 @@ class _PricingFormulaHint extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline_rounded,
             size: AppSizes.fontMd,
             color: AppColors.primary,
           ),
-          const SizedBox(width: AppSizes.radiusSm),
+          SizedBox(width: AppSizes.radiusSm),
           Expanded(
             child: Text(
               AppStrings.customDesignSpecPricingFormula(
@@ -217,7 +217,7 @@ class _SpecRow extends StatelessWidget {
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(width: AppSizes.paddingSm),
+        SizedBox(width: AppSizes.paddingSm),
         Expanded(
           child: Text(
             value,

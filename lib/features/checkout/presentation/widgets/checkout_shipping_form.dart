@@ -33,9 +33,9 @@ class CheckoutShippingForm extends StatelessWidget {
           onAddressSelected: onAddressSelected,
         ),
         if (selectedAddress != null) ...[
-          const SizedBox(height: AppSizes.radiusLg),
+          SizedBox(height: AppSizes.radiusLg),
           const _ShippingEditHint(),
-          const SizedBox(height: AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingMd),
           _CheckoutTextField(
             label: AppStrings.checkoutFullNameLabel,
             controller: nameController,
@@ -43,7 +43,7 @@ class CheckoutShippingForm extends StatelessWidget {
                 ? AppStrings.checkoutFullNameRequired
                 : null,
           ),
-          const SizedBox(height: AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingMd),
           _CheckoutTextField(
             label: AppStrings.checkoutPhoneLabel,
             controller: phoneController,
@@ -59,7 +59,7 @@ class CheckoutShippingForm extends StatelessWidget {
               return null;
             },
           ),
-          const SizedBox(height: AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingMd),
           _CheckoutTextField(
             label: AppStrings.checkoutShippingAddressLabel,
             controller: addressController,
@@ -96,7 +96,7 @@ class _ShippingEditHint extends StatelessWidget {
             size: AppSizes.fontLg,
             color: AppColors.primary.withValues(alpha: 0.7),
           ),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
           Expanded(
             child: Text(
               AppStrings.checkoutShippingEditHint,
@@ -142,7 +142,7 @@ class _CheckoutTextField extends StatelessWidget {
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: AppSizes.radiusSm),
+        SizedBox(height: AppSizes.radiusSm),
         TextFormField(
           controller: controller,
           maxLines: maxLines,
