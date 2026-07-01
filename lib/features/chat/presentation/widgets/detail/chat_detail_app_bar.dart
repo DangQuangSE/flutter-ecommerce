@@ -11,6 +11,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/widgets/detail/chat_detail_skeleton.dart';
 
 class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ChatEntity? chat;
@@ -25,14 +26,10 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = chat?.senderName ?? AppStrings.chatDefaultSupportName;
-    final avatar = chat?.senderAvatar ??
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs';
-    final isOnline = chat?.isOnline ?? true;
-
     final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+      backgroundColor:
+          theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
@@ -53,17 +50,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: Row(
         children: [
-          _ChatAvatar(
-            avatar: avatar,
-            isOnline: isOnline,
-          ),
-          SizedBox(width: AppSizes.radiusLg),
-          Expanded(
-            child: _ChatTitle(
-              title: title,
-              isOnline: isOnline,
-            ),
-          ),
+          Expanded(child: _ChatHeaderContent(chat: chat)),
         ],
       ),
       actions: [
@@ -104,6 +91,36 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
+class _ChatHeaderContent extends StatelessWidget {
+  final ChatEntity? chat;
+
+  const _ChatHeaderContent({required this.chat});
+
+  @override
+  Widget build(BuildContext context) {
+    final currentChat = chat;
+    if (currentChat == null) {
+      return const ChatHeaderSkeleton();
+    }
+
+    return Row(
+      children: [
+        _ChatAvatar(
+          avatar: currentChat.senderAvatar,
+          isOnline: currentChat.isOnline,
+        ),
+        SizedBox(width: AppSizes.radiusLg),
+        Expanded(
+          child: _ChatTitle(
+            title: currentChat.senderName,
+            isOnline: currentChat.isOnline,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ChatAvatar extends StatelessWidget {
   final String avatar;
   final bool isOnline;
@@ -140,7 +157,8 @@ class _ChatAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.success,
                 shape: BoxShape.circle,
-                border: Border.all(color: Theme.of(context).colorScheme.surface, width: 1.5),
+                border: Border.all(
+                    color: Theme.of(context).colorScheme.surface, width: 1.5),
               ),
             ),
           ),
