@@ -81,8 +81,17 @@ No feature imports should remain in `core/widgets`, `core/utils`, or `core/netwo
   - `color_product_form_sheet` and `color_printing_form_sheet`: validation feedback now uses `AppSnackBar`.
   - Removed unused `color_delete_dialog.dart` after centralizing delete confirmation.
 
+## Batch 5 Completed
+
+- Completed priority 1 management cleanup for `size`, `brand`, `category`, and `coupon`:
+  - `size`: common loading/error/empty/snackbar, confirm dialog, and safe initial load via `Future.microtask`.
+  - `brand`: centralized form strings, snackbar helper, bottom-sheet radius constant, and common delete confirmation.
+  - `category`: common delete confirmation, snackbar helper, category tree/list constants, and common loading for tree/list mutation states.
+  - `coupon`: common snackbar in form flow, centralized coupon list/submit strings, common mutation loading, and cleaned mojibake labels in management list.
+- Removed obsolete feature-specific delete dialogs for brand/category.
+
 ## Next Recommended Batches
 
-1. Management modules: migrate remaining `size`, `brand`, `category`, `coupon` forms/dialogs to common form/dialog helpers.
-2. Commerce modules: migrate cart/checkout/product repeated state, image, and card primitives.
-3. User/support modules: migrate auth/profile/address/notification/chat repeated form, state, snackbar, and dialog primitives.
+1. Commerce modules: migrate cart/checkout/product/order/payment repeated state, dialog, snackbar, image, and card primitives.
+2. User/support modules: migrate auth/profile/address/notification/chat repeated form, state, snackbar, and dialog primitives.
+3. Admin order/dashboard and settings/shop cleanup: align remaining loading/snackbar/dialog patterns.

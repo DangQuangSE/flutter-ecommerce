@@ -7,12 +7,12 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_state.dart';
 import 'package:flutter_ecommerce/features/category/presentation/models/category_form_extra.dart';
-import 'package:flutter_ecommerce/features/category/presentation/widgets/management/category_delete_dialog.dart';
 import 'package:flutter_ecommerce/features/category/presentation/widgets/management/category_detail_sheet.dart';
 import 'package:flutter_ecommerce/features/category/presentation/widgets/management/category_management_app_bar.dart';
 import 'package:flutter_ecommerce/features/category/presentation/widgets/management/category_management_list.dart';
@@ -62,12 +62,14 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
   }
 
   Future<void> _confirmDelete(CategoryEntity category) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => CategoryDeleteDialog(category: category),
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.adminCategoryDeleteTitle,
+      message: AppStrings.adminCategoryDeleteMessage(category.name),
+      confirmLabel: AppStrings.delete,
     );
 
-    if (confirmed != true || category.id == null) return;
+    if (!confirmed || category.id == null) return;
     final error = await _cubit.delete(category.id!);
     if (!mounted) return;
     _showSnack(

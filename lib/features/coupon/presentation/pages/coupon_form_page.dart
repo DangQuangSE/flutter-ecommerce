@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/enums/discount_type.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/enums/user_tier.dart';
@@ -125,7 +128,7 @@ class _CouponFormPageState extends State<CouponFormPage> {
     if (_startDate != null &&
         _endDate != null &&
         _endDate!.isBefore(_startDate!)) {
-      _showSnack('Ngày kết thúc phải sau ngày bắt đầu', isError: true);
+      _showSnack(AppStrings.adminCouponEndDateAfterStart, isError: true);
       return;
     }
 
@@ -157,7 +160,9 @@ class _CouponFormPageState extends State<CouponFormPage> {
 
     if (error == null) {
       _showSnack(
-        widget.isEditing ? 'Đã cập nhật mã giảm giá' : 'Đã tạo mã giảm giá',
+        widget.isEditing
+            ? AppStrings.adminCouponUpdated
+            : AppStrings.adminCouponCreated,
       );
       Navigator.of(context).pop();
     } else {
@@ -166,14 +171,11 @@ class _CouponFormPageState extends State<CouponFormPage> {
   }
 
   void _showSnack(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? AppColors.error : AppColors.success,
-        ),
-      );
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: isError ? AppSnackBarType.error : AppSnackBarType.success,
+    );
   }
 
   Future<void> _pickStartDate() async {
@@ -194,7 +196,12 @@ class _CouponFormPageState extends State<CouponFormPage> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          padding: const EdgeInsets.fromLTRB(
+            AppSizes.paddingMd,
+            AppSizes.paddingMd,
+            AppSizes.paddingMd,
+            AppSizes.fontDisplay,
+          ),
           children: [
             CouponFormFields(
               codeController: _codeController,
@@ -219,7 +226,7 @@ class _CouponFormPageState extends State<CouponFormPage> {
               onClearEndDate: () => setState(() => _endDate = null),
               onActiveChanged: (value) => setState(() => _isActive = value),
             ),
-            const SizedBox(height: 24),
+            AppSizes.spacingLg,
             CouponSubmitButton(
               isEditing: widget.isEditing,
               isSubmitting: _submitting,

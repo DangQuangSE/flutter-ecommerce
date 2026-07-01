@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
 
@@ -23,7 +24,8 @@ class SizeGroupCard extends StatelessWidget {
 
     return Card(
       elevation: 0,
-      margin: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd, vertical: 6),
+      margin: const EdgeInsets.symmetric(
+          horizontal: AppSizes.paddingMd, vertical: 6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         side: const BorderSide(color: AppColors.divider),
@@ -110,30 +112,15 @@ class _CardActions extends StatelessWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context) {
-    showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text(AppStrings.adminSizeGroupDeleteTitle),
-        content: Text(AppStrings.adminSizeGroupDeleteBody(group.name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              AppStrings.delete,
-              style: TextStyle(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
-    ).then((confirmed) {
-      if (confirmed == true && context.mounted) {
-        context.read<SizeGroupCubit>().deleteSizeGroup(group.id!);
-      }
-    });
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.adminSizeGroupDeleteTitle,
+      message: AppStrings.adminSizeGroupDeleteBody(group.name),
+      confirmLabel: AppStrings.delete,
+    );
+    if (confirmed && context.mounted) {
+      context.read<SizeGroupCubit>().deleteSizeGroup(group.id!);
+    }
   }
 }

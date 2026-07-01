@@ -6,13 +6,31 @@ import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_empty_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_error_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_state.dart';
 import 'package:flutter_ecommerce/features/size/presentation/widgets/size_group_card.dart';
 
-class AdminSizeGroupListPage extends StatelessWidget {
+class AdminSizeGroupListPage extends StatefulWidget {
   const AdminSizeGroupListPage({super.key});
+
+  @override
+  State<AdminSizeGroupListPage> createState() => _AdminSizeGroupListPageState();
+}
+
+class _AdminSizeGroupListPageState extends State<AdminSizeGroupListPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<SizeGroupCubit>().loadSizeGroups();
+    });
+  }
 
   Future<void> _navigateToCreate(BuildContext context) async {
     await context.pushNamed(AppRoutes.adminSizeGroupCreate);
@@ -71,52 +89,28 @@ class AdminSizeGroupListPage extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, SizeGroupState state) {
     return switch (state) {
-      SizeGroupLoading() => const Center(child: CircularProgressIndicator()),
+      SizeGroupLoading() => const AppLoadingView(),
       SizeGroupError(:final message) => _buildError(context, message),
       SizeGroupEmpty() => _buildEmpty(context),
       SizeGroupSuccess(:final groups) => _buildList(context, groups),
-      SizeGroupInitial() => const Center(child: CircularProgressIndicator()),
+      SizeGroupInitial() => const AppLoadingView(),
     };
   }
 
   Widget _buildError(BuildContext context, String message) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(message, textAlign: TextAlign.center),
-          AppSizes.spacingSm,
-          ElevatedButton(
-            onPressed: () => context.read<SizeGroupCubit>().loadSizeGroups(),
-            child: const Text(AppStrings.retry),
-          ),
-        ],
-      ),
+    return AppErrorView(
+      title: AppStrings.genericLoadError,
+      message: message,
+      onRetry: () => context.read<SizeGroupCubit>().loadSizeGroups(),
     );
   }
 
   Widget _buildEmpty(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.straighten_rounded,
-            size: 48,
-            color: AppColors.textHint,
-          ),
-          AppSizes.spacingSm,
-          Text(
-            AppStrings.adminSizeGroupEmpty,
-            style: GoogleFonts.inter(color: AppColors.textSecondary),
-          ),
-          AppSizes.spacingSm,
-          ElevatedButton(
-            onPressed: () => _navigateToCreate(context),
-            child: const Text(AppStrings.adminSizeGroupCreateAction),
-          ),
-        ],
-      ),
+    return AppEmptyView(
+      icon: Icons.straighten_rounded,
+      title: AppStrings.adminSizeGroupEmpty,
+      actionLabel: AppStrings.adminSizeGroupCreateAction,
+      onAction: () => _navigateToCreate(context),
     );
   }
 
@@ -136,20 +130,16 @@ class AdminSizeGroupListPage extends StatelessWidget {
 
   void _onStateChange(BuildContext context, SizeGroupState state) {
     if (state is SizeGroupSuccess && state.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message!),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-        ),
+      AppSnackBar.show(
+        context,
+        message: state.message!,
+        type: AppSnackBarType.success,
       );
     } else if (state is SizeGroupError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
+      AppSnackBar.show(
+        context,
+        message: state.message,
+        type: AppSnackBarType.error,
       );
     }
   }

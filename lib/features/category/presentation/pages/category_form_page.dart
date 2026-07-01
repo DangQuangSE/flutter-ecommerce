@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
 import 'package:flutter_ecommerce/features/category/presentation/widgets/form/category_form_app_bar.dart';
@@ -44,8 +47,9 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
     _descriptionController =
         TextEditingController(text: category?.description ?? '');
     _imageUrlController = TextEditingController(text: category?.imageUrl ?? '');
-    _displayOrderController =
-        TextEditingController(text: category?.displayOrder?.toString() ?? '');
+    _displayOrderController = TextEditingController(
+      text: category?.displayOrder?.toString() ?? '',
+    );
     _parentId = category?.parentId;
     _isActive = category?.isActive ?? true;
     _isCustomizable = category?.isCustomizable ?? false;
@@ -90,7 +94,9 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
 
     if (error == null) {
       _showSnack(
-        widget.isEditing ? 'Đã cập nhật danh mục' : 'Đã tạo danh mục',
+        widget.isEditing
+            ? AppStrings.adminCategoryUpdated
+            : AppStrings.adminCategoryCreated,
       );
       Navigator.of(context).pop();
     } else {
@@ -104,14 +110,11 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
   }
 
   void _showSnack(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? AppColors.error : AppColors.success,
-        ),
-      );
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: isError ? AppSnackBarType.error : AppSnackBarType.success,
+    );
   }
 
   @override
@@ -122,7 +125,12 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          padding: const EdgeInsets.fromLTRB(
+            AppSizes.paddingMd,
+            AppSizes.paddingMd,
+            AppSizes.paddingMd,
+            AppSizes.fontDisplay,
+          ),
           children: [
             CategoryFormFields(
               nameController: _nameController,
@@ -139,7 +147,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                 setState(() => _isCustomizable = value);
               },
             ),
-            const SizedBox(height: 24),
+            AppSizes.spacingLg,
             CategorySubmitButton(
               isEditing: widget.isEditing,
               isSubmitting: _submitting,

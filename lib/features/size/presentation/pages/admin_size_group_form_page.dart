@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_option_entity.dart';
 import 'package:flutter_ecommerce/features/size/presentation/cubit/size_group_cubit.dart';
@@ -92,7 +93,9 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
       centerTitle: true,
       iconTheme: const IconThemeData(color: AppColors.textPrimary),
       title: Text(
-        _isEdit ? AppStrings.adminSizeGroupEditTitle : AppStrings.adminSizeGroupCreateTitle,
+        _isEdit
+            ? AppStrings.adminSizeGroupEditTitle
+            : AppStrings.adminSizeGroupCreateTitle,
         style: GoogleFonts.lexend(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w700,
@@ -152,12 +155,10 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
     if (state is SizeGroupSuccess && state.message != null) {
       Navigator.of(context).pop();
     } else if (state is SizeGroupError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
+      AppSnackBar.show(
+        context,
+        message: state.message,
+        type: AppSnackBarType.error,
       );
     }
   }

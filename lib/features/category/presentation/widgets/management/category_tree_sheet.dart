@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_tree_node.dart';
 
 class CategoryTreeSheet extends StatelessWidget {
@@ -24,11 +27,8 @@ class CategoryTreeSheet extends StatelessWidget {
             if (snapshot.connectionState != ConnectionState.done) {
               return const Center(
                 child: Padding(
-                  padding: EdgeInsets.all(40),
-                  child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  ),
+                  padding: EdgeInsets.all(AppSizes.fontDisplay + 8),
+                  child: AppLoadingView(),
                 ),
               );
             }
@@ -36,22 +36,27 @@ class CategoryTreeSheet extends StatelessWidget {
             final nodes = snapshot.data ?? const <CategoryTreeNode>[];
             return ListView(
               controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.paddingMd,
+                AppSizes.paddingMd,
+                AppSizes.paddingMd,
+                AppSizes.paddingXl,
+              ),
               children: [
                 Text(
-                  'Cây danh mục',
+                  AppStrings.adminCategoryTreeTitle,
                   style: GoogleFonts.lexend(
-                    fontSize: 16,
+                    fontSize: AppSizes.fontXl,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
                 if (nodes.isEmpty)
                   Text(
-                    'Không có dữ liệu.',
+                    AppStrings.adminCategoryTreeEmpty,
                     style: GoogleFonts.inter(
-                      fontSize: 13,
+                      fontSize: AppSizes.forgotPasswordFontSize,
                       color: AppColors.textSecondary,
                     ),
                   )
@@ -89,22 +94,26 @@ class _TreeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: depth * 20.0, top: 6, bottom: 6),
+      padding: EdgeInsets.only(
+        left: depth * AppSizes.paddingLg,
+        top: AppSizes.radiusSm,
+        bottom: AppSizes.radiusSm,
+      ),
       child: Row(
         children: [
           Icon(
             depth == 0
                 ? Icons.folder_rounded
                 : Icons.subdirectory_arrow_right_rounded,
-            size: 18,
+            size: AppSizes.iconSm + 2,
             color: AppColors.primary,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.paddingSm),
           Expanded(
             child: Text(
               node.name,
               style: GoogleFonts.inter(
-                fontSize: 13,
+                fontSize: AppSizes.forgotPasswordFontSize,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),
@@ -113,7 +122,7 @@ class _TreeTile extends StatelessWidget {
           if (node.isCustomizable)
             const Icon(
               Icons.brush_rounded,
-              size: 13,
+              size: AppSizes.forgotPasswordFontSize,
               color: AppColors.accent,
             ),
         ],

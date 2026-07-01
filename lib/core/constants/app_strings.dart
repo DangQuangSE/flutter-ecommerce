@@ -266,12 +266,43 @@ abstract final class AppStrings {
   static const String adminBrandEmptyTitle = 'Không tìm thấy thương hiệu nào';
   static const String adminBrandLoadFallback =
       'Đã xảy ra lỗi khi tải thương hiệu.';
+  static const String adminBrandDeleteTitle = 'Xóa thương hiệu?';
+  static String adminBrandDeleteMessage(String name) =>
+      'Bạn có chắc chắn muốn xóa thương hiệu "$name"? Hành động này không thể hoàn tác.';
+  static const String adminBrandNameLabel = 'TÊN THƯƠNG HIỆU';
+  static const String adminBrandNameHint = 'Nhập tên thương hiệu (ví dụ: Nike)';
+  static const String adminBrandNameInvalid =
+      'Tên thương hiệu phải từ 2 đến 100 ký tự!';
+  static const String adminBrandCountryLabel = 'QUỐC GIA';
+  static const String adminBrandCountryHint = 'Ví dụ: USA, Vietnam';
+  static const String adminBrandWebsiteLabel = 'WEBSITE';
+  static const String adminBrandWebsiteHint = 'Ví dụ: https://www.nike.com';
+  static const String adminBrandLogoLabel = 'LOGO URL';
+  static const String adminBrandLogoHint = 'Nhập URL hình ảnh logo';
+  static const String adminBrandDescriptionLabel = 'MÔ TẢ';
+  static const String adminBrandDescriptionHint =
+      'Nhập mô tả về thương hiệu...';
+  static const String adminBrandActiveStatusLabel = 'TRẠNG THÁI HOẠT ĐỘNG';
+  static const String adminBrandFormEditTitle = 'Chỉnh sửa thương hiệu';
+  static const String adminBrandFormCreateTitle = 'Thêm thương hiệu mới';
+  static const String adminBrandSaveChanges = 'LƯU THAY ĐỔI';
+  static const String adminBrandCreateAction = 'THÊM THƯƠNG HIỆU';
   static const String adminCategorySearchHint = 'Tìm danh mục...';
+  static const String adminCategoryManagementTitle = 'Quản lý danh mục';
+  static const String adminCategoryViewTree = 'Xem cây danh mục';
   static const String adminCategoryEmptyTitle = 'Chưa có danh mục nào';
   static const String adminCategoryEmptyMessage =
       'Nhấn "Thêm" để tạo danh mục đầu tiên.';
   static const String adminCategoryLoadErrorTitle = 'Không tải được danh mục';
   static const String adminCategoryDeleted = 'Đã xóa danh mục';
+  static const String adminCategoryCreated = 'Đã tạo danh mục';
+  static const String adminCategoryUpdated = 'Đã cập nhật danh mục';
+  static const String adminCategoryDeleteTitle = 'Xóa danh mục';
+  static String adminCategoryDeleteMessage(String name) =>
+      'Bạn có chắc muốn xóa "$name"?';
+  static const String adminCategoryTreeTitle = 'Cây danh mục';
+  static const String adminCategoryTreeEmpty = 'Không có dữ liệu.';
+  static String adminCategoryCount(int count) => '$count danh mục';
   static const String adminCouponSearchHint = 'Tìm theo mã giảm giá...';
   static const String adminCouponEmptyTitle = 'Chưa có mã giảm giá nào';
   static const String adminCouponEmptyMessage =
@@ -282,6 +313,23 @@ abstract final class AppStrings {
   static const String adminCouponDeleted = 'Đã xóa mã giảm giá';
   static String adminCouponDeleteMessage(String code) =>
       'Bạn có chắc muốn xóa mã "$code"?';
+  static const String adminCouponCreated = 'Đã tạo mã giảm giá';
+  static const String adminCouponUpdated = 'Đã cập nhật mã giảm giá';
+  static const String adminCouponEndDateAfterStart =
+      'Ngày kết thúc phải sau ngày bắt đầu';
+  static const String adminCouponCreateSubmit = 'Tạo mã giảm giá';
+  static const String adminCouponSaveSubmit = 'Lưu thay đổi';
+  static String adminCouponTotalCount(int count) => '$count mã giảm giá';
+  static String adminCouponFilteredCount(int filtered, int total) =>
+      '$filtered/$total mã';
+  static String adminCouponNoMatches(String query) =>
+      'Không có mã nào khớp "$query".';
+  static String adminCouponUsedWithLimit(int used, int limit) =>
+      'Đã dùng $used/$limit';
+  static String adminCouponUsed(int used) => 'Đã dùng $used';
+  static String adminCouponExpires(String date) => 'HSD $date';
+  static const String adminCouponExpired = 'Hết hạn';
+  static const String adminCouponUsedUp = 'Hết lượt';
 
   // Admin product - basic info form
   static const String adminProductBasicNameLabel = 'Tên sản phẩm *';

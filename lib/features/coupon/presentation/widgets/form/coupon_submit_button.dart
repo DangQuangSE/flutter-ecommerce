@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class CouponSubmitButton extends StatelessWidget {
   final bool isEditing;
@@ -25,22 +27,23 @@ class CouponSubmitButton extends StatelessWidget {
           foregroundColor: Colors.white,
           disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
         ),
         child: isSubmitting
-            ? const SizedBox(
-                width: 22,
-                height: 22,
+            ? const SizedBox.square(
+                dimension: AppSizes.iconMd + 2,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
             : Text(
-                isEditing ? 'Lưu thay đổi' : 'Tạo mã giảm giá',
+                isEditing
+                    ? AppStrings.adminCouponSaveSubmit
+                    : AppStrings.adminCouponCreateSubmit,
                 style: GoogleFonts.lexend(
-                  fontSize: 16,
+                  fontSize: AppSizes.fontXl,
                   fontWeight: FontWeight.w700,
                 ),
               ),

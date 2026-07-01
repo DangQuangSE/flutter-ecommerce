@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/enums/discount_type.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_state.dart';
@@ -35,9 +38,14 @@ class CouponManagementList extends StatelessWidget {
       onRefresh: onRefresh,
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.paddingMd,
+          AppSizes.paddingXs,
+          AppSizes.paddingMd,
+          96,
+        ),
         itemCount: filtered.isEmpty ? 2 : filtered.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, __) => const SizedBox(height: AppSizes.radiusMd),
         itemBuilder: (context, index) {
           if (index == 0) {
             return _CouponListHeader(
@@ -78,28 +86,27 @@ class _CouponListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: AppSizes.paddingXs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             query.isEmpty
-                ? '${state.totalElements} mã giảm giá'
-                : '$filteredCount/${state.coupons.length} mã',
+                ? AppStrings.adminCouponTotalCount(state.totalElements)
+                : AppStrings.adminCouponFilteredCount(
+                    filteredCount,
+                    state.coupons.length,
+                  ),
             style: GoogleFonts.inter(
-              fontSize: 12,
+              fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
             ),
           ),
           if (state.isMutating)
-            const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
+            const SizedBox.square(
+              dimension: AppSizes.iconSm,
+              child: AppLoadingView(size: AppSizes.iconSm),
             ),
         ],
       ),
@@ -115,12 +122,12 @@ class _CouponNoMatches extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 40),
+      padding: const EdgeInsets.only(top: AppSizes.fontDisplay + 8),
       child: Center(
         child: Text(
-          'Không có mã nào khớp "$query".',
+          AppStrings.adminCouponNoMatches(query),
           style: GoogleFonts.inter(
-            fontSize: 13,
+            fontSize: AppSizes.forgotPasswordFontSize,
             color: AppColors.textSecondary,
           ),
         ),
@@ -153,16 +160,19 @@ class _CouponTile extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
             color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
           ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.paddingLg - 6,
+          vertical: AppSizes.paddingSm + 2,
+        ),
         child: Row(
           children: [
             _CouponIcon(inactive: inactive),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSizes.paddingSm + AppSizes.paddingXs),
             Expanded(child: _CouponSummary(coupon: coupon)),
             Switch.adaptive(
               value: coupon.isActive,
@@ -179,8 +189,8 @@ class _CouponTile extends StatelessWidget {
                 if (value == 'delete') onDelete(coupon);
               },
               itemBuilder: (_) => const [
-                PopupMenuItem(value: 'edit', child: Text('Sửa')),
-                PopupMenuItem(value: 'delete', child: Text('Xóa')),
+                PopupMenuItem(value: 'edit', child: Text(AppStrings.edit)),
+                PopupMenuItem(value: 'delete', child: Text(AppStrings.delete)),
               ],
             ),
           ],
@@ -203,7 +213,7 @@ class _CouponIcon extends StatelessWidget {
       decoration: BoxDecoration(
         color: (inactive ? AppColors.textSecondary : AppColors.primary)
             .withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       child: Icon(
         Icons.local_offer_rounded,
@@ -231,17 +241,17 @@ class _CouponSummary extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.lexend(
-                  fontSize: 14,
+                  fontSize: AppSizes.fontLg,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                 ),
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppSizes.radiusSm),
             _DiscountChip(coupon: coupon),
           ],
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: AppSizes.paddingXs - 1),
         _CouponSubtitle(coupon: coupon),
       ],
     );
@@ -256,15 +266,18 @@ class _DiscountChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.paddingSm,
+        vertical: AppSizes.paddingXs / 2,
+      ),
       decoration: BoxDecoration(
         color: AppColors.accent.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
       ),
       child: Text(
         '-${_discountText(coupon)}',
         style: GoogleFonts.lexend(
-          fontSize: 11,
+          fontSize: AppSizes.fontSm,
           fontWeight: FontWeight.w800,
           color: AppColors.accent,
         ),
@@ -293,12 +306,19 @@ class _CouponSubtitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final parts = <String>[
       coupon.usageLimit != null
-          ? 'Đã dùng ${coupon.usedCount}/${coupon.usageLimit}'
-          : 'Đã dùng ${coupon.usedCount}',
+          ? AppStrings.adminCouponUsedWithLimit(
+              coupon.usedCount,
+              coupon.usageLimit!,
+            )
+          : AppStrings.adminCouponUsed(coupon.usedCount),
     ];
 
     if (coupon.endDate != null) {
-      parts.add('HSD ${DateFormat('dd/MM/yyyy').format(coupon.endDate!)}');
+      parts.add(
+        AppStrings.adminCouponExpires(
+          DateFormat('dd/MM/yyyy').format(coupon.endDate!),
+        ),
+      );
     }
 
     final tag = _statusTag(coupon);
@@ -311,13 +331,13 @@ class _CouponSubtitle extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
-              fontSize: 11,
+              fontSize: AppSizes.fontSm,
               color: AppColors.textSecondary,
             ),
           ),
         ),
         if (tag != null) ...[
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSizes.radiusSm),
           _CouponStatusTag(tag: tag),
         ],
       ],
@@ -326,10 +346,12 @@ class _CouponSubtitle extends StatelessWidget {
 
   _CouponStatus? _statusTag(CouponEntity coupon) {
     if (coupon.isExpired) {
-      return const _CouponStatus('Hết hạn', AppColors.error);
+      return const _CouponStatus(
+          AppStrings.adminCouponExpired, AppColors.error);
     }
     if (coupon.isUsedUp) {
-      return const _CouponStatus('Hết lượt', AppColors.warning);
+      return const _CouponStatus(
+          AppStrings.adminCouponUsedUp, AppColors.warning);
     }
 
     return null;
@@ -344,15 +366,18 @@ class _CouponStatusTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.radiusSm,
+        vertical: 1,
+      ),
       decoration: BoxDecoration(
         color: tag.color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(AppSizes.paddingXs),
       ),
       child: Text(
         tag.label,
         style: GoogleFonts.inter(
-          fontSize: 9,
+          fontSize: AppSizes.fontXs,
           fontWeight: FontWeight.w700,
           color: tag.color,
         ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/brand/domain/entities/brand_entity.dart';
 
 class BrandFormSheet extends StatefulWidget {
@@ -52,11 +55,10 @@ class _BrandFormSheetState extends State<BrandFormSheet> {
   void _submit() {
     final name = _nameController.text.trim();
     if (name.length < 2 || name.length > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tên thương hiệu phải từ 2 đến 100 ký tự!'),
-          backgroundColor: AppColors.error,
-        ),
+      AppSnackBar.show(
+        context,
+        message: AppStrings.adminBrandNameInvalid,
+        type: AppSnackBarType.error,
       );
       return;
     }
@@ -80,10 +82,10 @@ class _BrandFormSheetState extends State<BrandFormSheet> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        left: AppSizes.paddingLg,
+        right: AppSizes.paddingLg,
+        top: AppSizes.paddingXl,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSizes.paddingXl,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -95,59 +97,62 @@ class _BrandFormSheetState extends State<BrandFormSheet> {
               onClose: () => Navigator.pop(context),
             ),
             const Divider(),
-            const SizedBox(height: 12),
-            const _FieldLabel('TÊN THƯƠNG HIỆU'),
+            const SizedBox(height: AppSizes.paddingSm + AppSizes.paddingXs),
+            const _FieldLabel(AppStrings.adminBrandNameLabel),
             _BrandTextField(
               controller: _nameController,
-              hintText: 'Nhập tên thương hiệu (ví dụ: Nike)',
+              hintText: AppStrings.adminBrandNameHint,
             ),
-            const SizedBox(height: 16),
-            const _FieldLabel('QUỐC GIA'),
+            AppSizes.spacingMd,
+            const _FieldLabel(AppStrings.adminBrandCountryLabel),
             _BrandTextField(
               controller: _countryController,
-              hintText: 'Ví dụ: USA, Vietnam',
+              hintText: AppStrings.adminBrandCountryHint,
             ),
-            const SizedBox(height: 16),
-            const _FieldLabel('WEBSITE'),
+            AppSizes.spacingMd,
+            const _FieldLabel(AppStrings.adminBrandWebsiteLabel),
             _BrandTextField(
               controller: _webController,
-              hintText: 'Ví dụ: https://www.nike.com',
+              hintText: AppStrings.adminBrandWebsiteHint,
             ),
-            const SizedBox(height: 16),
-            const _FieldLabel('LOGO URL'),
+            AppSizes.spacingMd,
+            const _FieldLabel(AppStrings.adminBrandLogoLabel),
             _BrandTextField(
               controller: _logoController,
-              hintText: 'Nhập URL hình ảnh logo',
+              hintText: AppStrings.adminBrandLogoHint,
             ),
-            const SizedBox(height: 16),
-            const _FieldLabel('MÔ TẢ'),
+            AppSizes.spacingMd,
+            const _FieldLabel(AppStrings.adminBrandDescriptionLabel),
             _BrandTextField(
               controller: _descController,
-              hintText: 'Nhập mô tả về thương hiệu...',
+              hintText: AppStrings.adminBrandDescriptionHint,
               maxLines: 3,
             ),
-            const SizedBox(height: 16),
+            AppSizes.spacingMd,
             _ActiveSwitch(
               value: _isActive,
               onChanged: (value) => setState(() => _isActive = value),
             ),
-            const SizedBox(height: 24),
+            AppSizes.spacingLg,
             ElevatedButton(
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                    vertical: AppSizes.paddingLg - 6),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 1,
               ),
               child: Text(
-                _isEditing ? 'LƯU THAY ĐỔI' : 'THÊM THƯƠNG HIỆU',
+                _isEditing
+                    ? AppStrings.adminBrandSaveChanges
+                    : AppStrings.adminBrandCreateAction,
                 style: GoogleFonts.lexend(
                   fontWeight: FontWeight.w700,
-                  fontSize: 13,
+                  fontSize: AppSizes.forgotPasswordFontSize,
                 ),
               ),
             ),
@@ -173,9 +178,11 @@ class _SheetHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          isEditing ? 'Chỉnh sửa thương hiệu' : 'Thêm thương hiệu mới',
+          isEditing
+              ? AppStrings.adminBrandFormEditTitle
+              : AppStrings.adminBrandFormCreateTitle,
           style: GoogleFonts.lexend(
-            fontSize: 18,
+            fontSize: AppSizes.fontXxl,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           ),
@@ -197,11 +204,11 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: AppSizes.paddingXs + 2),
       child: Text(
         text,
         style: GoogleFonts.inter(
-          fontSize: 10,
+          fontSize: AppSizes.fontSm - 1,
           fontWeight: FontWeight.w700,
           color: AppColors.textSecondary,
         ),
@@ -230,8 +237,11 @@ class _BrandTextField extends StatelessWidget {
         hintText: hintText,
         border: const OutlineInputBorder(),
         contentPadding: maxLines > 1
-            ? const EdgeInsets.all(12)
-            : const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            ? const EdgeInsets.all(AppSizes.paddingSm + AppSizes.paddingXs)
+            : const EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingSm + AppSizes.paddingXs,
+                vertical: AppSizes.paddingSm + 2,
+              ),
       ),
     );
   }
@@ -251,7 +261,7 @@ class _ActiveSwitch extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const _FieldLabel('TRẠNG THÁI HOẠT ĐỘNG'),
+        const _FieldLabel(AppStrings.adminBrandActiveStatusLabel),
         Switch.adaptive(
           value: value,
           activeThumbColor: AppColors.primary,

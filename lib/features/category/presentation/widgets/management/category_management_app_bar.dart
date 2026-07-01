@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class CategoryManagementAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -25,16 +27,16 @@ class CategoryManagementAppBar extends StatelessWidget
         icon: const Icon(
           Icons.arrow_back_ios_new_rounded,
           color: AppColors.textPrimary,
-          size: 20,
+          size: AppSizes.iconMd,
         ),
         onPressed: () {
           if (context.canPop()) context.pop();
         },
       ),
       title: Text(
-        'Quản lý danh mục',
+        AppStrings.adminCategoryManagementTitle,
         style: GoogleFonts.lexend(
-          fontSize: 18,
+          fontSize: AppSizes.fontXxl,
           fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
         ),
@@ -42,11 +44,11 @@ class CategoryManagementAppBar extends StatelessWidget
       centerTitle: true,
       actions: [
         IconButton(
-          tooltip: 'Xem cây danh mục',
+          tooltip: AppStrings.adminCategoryViewTree,
           icon: const Icon(
             Icons.account_tree_outlined,
             color: AppColors.textPrimary,
-            size: 22,
+            size: AppSizes.iconMd + 2,
           ),
           onPressed: onOpenTree,
         ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_state.dart';
 
@@ -29,9 +32,14 @@ class CategoryManagementList extends StatelessWidget {
       onRefresh: onRefresh,
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.paddingMd,
+          AppSizes.paddingXs,
+          AppSizes.paddingMd,
+          96,
+        ),
         itemCount: state.categories.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, __) => const SizedBox(height: AppSizes.radiusMd),
         itemBuilder: (context, index) {
           if (index == 0) {
             return _CategoryListHeader(state: state);
@@ -59,26 +67,22 @@ class _CategoryListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: AppSizes.paddingXs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '${state.totalElements} danh mục',
+            AppStrings.adminCategoryCount(state.totalElements),
             style: GoogleFonts.inter(
-              fontSize: 12,
+              fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
             ),
           ),
           if (state.isMutating)
-            const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
+            const SizedBox.square(
+              dimension: AppSizes.iconSm,
+              child: AppLoadingView(size: AppSizes.iconSm),
             ),
         ],
       ),
@@ -108,16 +112,19 @@ class _CategoryTile extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
             color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
           ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.paddingLg - 6,
+          vertical: AppSizes.paddingSm + 2,
+        ),
         child: Row(
           children: [
             _CategoryImage(category: category),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSizes.paddingSm + AppSizes.paddingXs),
             Expanded(child: _CategorySummary(category: category)),
             Switch.adaptive(
               value: category.isActive,
@@ -134,8 +141,8 @@ class _CategoryTile extends StatelessWidget {
                 if (value == 'delete') onDelete(category);
               },
               itemBuilder: (_) => const [
-                PopupMenuItem(value: 'edit', child: Text('Sửa')),
-                PopupMenuItem(value: 'delete', child: Text('Xóa')),
+                PopupMenuItem(value: 'edit', child: Text(AppStrings.edit)),
+                PopupMenuItem(value: 'delete', child: Text(AppStrings.delete)),
               ],
             ),
           ],
@@ -159,7 +166,7 @@ class _CategoryImage extends StatelessWidget {
       height: 44,
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       clipBehavior: Clip.antiAlias,
       child: imageUrl != null && imageUrl.isNotEmpty
@@ -197,29 +204,29 @@ class _CategorySummary extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.lexend(
-                  fontSize: 14,
+                  fontSize: AppSizes.fontLg,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                 ),
               ),
             ),
             if (category.isCustomizable) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: AppSizes.radiusSm),
               const Icon(
                 Icons.brush_rounded,
-                size: 14,
+                size: AppSizes.fontLg,
                 color: AppColors.accent,
               ),
             ],
           ],
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: AppSizes.paddingXs / 2),
         Text(
-          category.slug ?? '—',
+          category.slug ?? '-',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: GoogleFonts.inter(
-            fontSize: 11,
+            fontSize: AppSizes.fontSm,
             color: AppColors.textSecondary,
           ),
         ),
