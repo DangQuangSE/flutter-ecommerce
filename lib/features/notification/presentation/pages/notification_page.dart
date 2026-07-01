@@ -26,13 +26,13 @@ class _NotificationPageState extends State<NotificationPage> {
     return Scaffold(
       
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 1,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
             height: 1,
           ),
         ),
@@ -46,7 +46,7 @@ class _NotificationPageState extends State<NotificationPage> {
           },
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             size: AppSizes.iconMd,
           ),
         ),
@@ -55,7 +55,7 @@ class _NotificationPageState extends State<NotificationPage> {
           style: GoogleFonts.lexend(
             fontSize: AppSizes.fontXxl,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.5,
           ),
         ),
@@ -181,7 +181,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+                    color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
                   ),
                 ),
                 Padding(
@@ -199,7 +199,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+                    color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
                   ),
                 ),
               ],
@@ -243,13 +243,17 @@ class _NotificationPageState extends State<NotificationPage> {
       case 'product':
         iconData = Icons.checkroom_rounded;
         iconColor = AppColors.textPrimary;
-        iconBgColor = const Color(0xFFE8E8ED);
+        iconBgColor = Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF0F172A)
+            : const Color(0xFFE8E8ED);
         break;
       case 'system':
       default:
         iconData = Icons.system_update_alt_rounded;
         iconColor = AppColors.textSecondary;
-        iconBgColor = const Color(0xFFF3F3F8);
+        iconBgColor = Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF0F172A)
+            : const Color(0xFFF3F3F8);
         break;
     }
 
@@ -261,10 +265,10 @@ class _NotificationPageState extends State<NotificationPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color ?? Colors.white,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
           ),
           boxShadow: [
             BoxShadow(

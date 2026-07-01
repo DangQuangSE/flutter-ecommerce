@@ -20,18 +20,19 @@ class ShopInfoPage extends StatelessWidget {
     return Scaffold(
       
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ??
+            Theme.of(context).colorScheme.surface,
         elevation: 0,
         centerTitle: true,
         title: Text(
           AppStrings.shopInfoTitle,
           style: GoogleFonts.lexend(
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w700,
-            fontSize: AppSizes.fontXl,
+            fontSize: AppSizes.fontXxl,
           ),
         ),
-        iconTheme: IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SafeArea(
         child: BlocBuilder<ShopCubit, ShopState>(

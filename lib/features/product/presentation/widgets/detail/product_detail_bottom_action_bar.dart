@@ -23,10 +23,10 @@ class ProductDetailBottomActionBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         border: Border(
           top: BorderSide(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -108,10 +108,10 @@ class _FavoriteButton extends StatelessWidget {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isFavorited ? Colors.red : const Color(0xFFC1C6D7),
+            color: isFavorited ? Colors.red : Theme.of(context).dividerColor,
             width: 1.5,
           ),
         ),

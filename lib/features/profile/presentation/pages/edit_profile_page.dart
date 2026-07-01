@@ -253,7 +253,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget _avatarFallback() {
     return Container(
-      color: const Color(0xFFF3F3F8),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF1E293B)
+          : const Color(0xFFF3F3F8),
       child: Icon(Icons.person_rounded,
           size: 40, color: AppColors.textSecondary),
     );
@@ -264,10 +266,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F8),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFF3F3F8),
         borderRadius: BorderRadius.circular(8),
         border:
-            Border.all(color: const Color(0xFFC1C6D7).withValues(alpha: 0.3)),
+            Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.3)),
       ),
       child: Text(
         email,
@@ -334,7 +338,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         hintText: hint,
         isDense: true,
         filled: true,
-        fillColor: const Color(0xFFF3F3F8),
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFF3F3F8),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
@@ -351,14 +357,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: theme.dividerColor.withValues(alpha: 0.3),
           height: 1,
         ),
       ),
@@ -371,7 +378,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           }
         },
         icon: Icon(Icons.arrow_back_rounded,
-            color: AppColors.textPrimary, size: 24),
+            color: theme.colorScheme.onSurface, size: 24),
       ),
       title: Align(
         alignment: Alignment.centerLeft,

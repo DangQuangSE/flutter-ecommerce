@@ -46,7 +46,7 @@ abstract final class AppStrings {
   static const String genericLoadError = 'Đã xảy ra lỗi khi tải dữ liệu.';
   static const String networkConnectionError = 'Lỗi kết nối mạng';
   static const String viewCart = 'XEM GIỎ';
-  static const String addToCart = 'ADD TO CART';
+  static const String addToCart = 'THÊM VÀO GIỎ HÀNG';
   static const String outOfStock = 'HẾT HÀNG';
 
   // Commerce common

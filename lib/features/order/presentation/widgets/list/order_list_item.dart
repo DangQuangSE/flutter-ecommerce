@@ -25,9 +25,9 @@ class OrdersList extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.01),
@@ -41,9 +41,9 @@ class OrdersList extends StatelessWidget {
         padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: orders.length,
-        separatorBuilder: (context, index) => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12),
-          child: Divider(color: Color(0xFFF1F5F9), height: 1, thickness: 1),
+        separatorBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Divider(color: Theme.of(context).dividerColor, height: 1, thickness: 1),
         ),
         itemBuilder: (context, index) {
           return OrderListItem(order: orders[index]);
@@ -173,15 +173,15 @@ class _OrderThumb extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Container(
         width: 68,
         height: 74,
         decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
+          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
         ),
         clipBehavior: Clip.antiAlias,

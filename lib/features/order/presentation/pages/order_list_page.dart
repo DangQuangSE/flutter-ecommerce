@@ -84,12 +84,12 @@ class _OrderListPageState extends State<OrderListPage> {
                 );
               },
             ),
-            const Positioned(
+            Positioned(
               top: 0,
               left: 0,
               right: 0,
               child: GlassAppBar(
-                showBackButton: false,
+                showBackButton: context.canPop(),
                 customTitle: 'Sport Pro',
               ),
             ),

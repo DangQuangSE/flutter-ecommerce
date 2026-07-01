@@ -44,12 +44,14 @@ class OrderFilterPillsRow extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.textPrimary : Colors.white,
+                  color: isSelected
+                      ? (Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.textPrimary)
+                      : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E293B) : Colors.white),
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
                     color: isSelected
-                        ? AppColors.textPrimary
-                        : const Color(0xFFE2E8F0),
+                        ? (Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.textPrimary)
+                        : Theme.of(context).dividerColor,
                     width: 1,
                   ),
                   boxShadow: isSelected
@@ -69,8 +71,9 @@ class OrderFilterPillsRow extends StatelessWidget {
                       fontSize: 11,
                       fontWeight:
                           isSelected ? FontWeight.w800 : FontWeight.w600,
-                      color:
-                          isSelected ? Colors.white : AppColors.textSecondary,
+                      color: isSelected
+                          ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white)
+                          : AppColors.textSecondary,
                       letterSpacing: 0.2,
                     ),
                   ),
