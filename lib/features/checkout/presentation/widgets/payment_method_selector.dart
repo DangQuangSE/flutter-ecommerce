@@ -16,10 +16,11 @@ class PaymentMethodSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(AppSizes.radiusLg),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
@@ -68,6 +69,7 @@ class _PaymentOptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -81,7 +83,7 @@ class _PaymentOptionTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected
                 ? AppColors.primary.withValues(alpha: 0.04)
-                : const Color(0xFFF3F3F8),
+                : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppSizes.paddingSm),
             border: Border.all(
               color: selected
@@ -107,7 +109,7 @@ class _PaymentOptionTile extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: AppSizes.forgotPasswordFontSize,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     SizedBox(height: 2),
@@ -116,7 +118,7 @@ class _PaymentOptionTile extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: AppSizes.fontSm,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

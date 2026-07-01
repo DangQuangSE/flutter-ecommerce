@@ -21,6 +21,7 @@ class MaterialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -28,7 +29,7 @@ class MaterialCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary.withValues(alpha: 0.02)
-              : Colors.white,
+              : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.radiusXl),
           border: Border.all(
             color: isSelected
@@ -65,7 +66,7 @@ class MaterialCard extends StatelessWidget {
                           style: GoogleFonts.inter(
                               fontSize: AppSizes.fontLg - 1,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.textPrimary)),
+                              color: theme.colorScheme.onSurface)),
                       Text(priceAdd,
                           style: GoogleFonts.lexend(
                               fontSize: AppSizes.fontMd,
@@ -77,7 +78,7 @@ class MaterialCard extends StatelessWidget {
                   Text(desc,
                       style: GoogleFonts.inter(
                           fontSize: AppSizes.fontSm,
-                          color: AppColors.textSecondary,
+                          color: theme.colorScheme.onSurfaceVariant,
                           height: 1.4)),
                 ],
               ),

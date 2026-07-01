@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class CheckoutAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -14,8 +13,10 @@ class CheckoutAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor:
+          theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
@@ -35,7 +36,7 @@ class CheckoutAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
         icon: Icon(
           Icons.arrow_back_ios_new_rounded,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
           size: 20,
         ),
       ),
@@ -44,7 +45,7 @@ class CheckoutAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: GoogleFonts.lexend(
           fontSize: 18,
           fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
           letterSpacing: -0.5,
         ),
       ),

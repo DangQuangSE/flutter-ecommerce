@@ -18,8 +18,9 @@ import 'package:flutter_ecommerce/features/customizer/presentation/widgets/prici
 
 extension CustomizerViewHelpers on CustomizerPageState {
   Widget buildLoading() {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.canvasLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: buildAppBar(context),
       body: Center(
         child: Column(
@@ -42,8 +43,9 @@ extension CustomizerViewHelpers on CustomizerPageState {
   }
 
   Widget buildError(String message) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.canvasLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: buildAppBar(context),
       body: Center(
         child: Padding(
@@ -95,10 +97,11 @@ extension CustomizerViewHelpers on CustomizerPageState {
   }
 
   Widget buildLoaded({bool isSaving = false}) {
+    final theme = Theme.of(context);
     return Stack(
       children: [
         Scaffold(
-          backgroundColor: AppColors.canvasLight,
+          backgroundColor: theme.scaffoldBackgroundColor,
           appBar: buildAppBar(context),
           body: SafeArea(
             child: Column(
@@ -198,8 +201,10 @@ extension CustomizerViewHelpers on CustomizerPageState {
   }
 
   PreferredSizeWidget buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: AppColors.white,
+      backgroundColor:
+          theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
@@ -219,7 +224,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
         },
         icon: Icon(
           Icons.close_rounded,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
           size: AppSizes.iconLg,
         ),
       ),
@@ -233,7 +238,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
                 fontSize: AppSizes.fontXl,
                 fontWeight: FontWeight.w900,
                 fontStyle: FontStyle.italic,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -243,7 +248,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
             style: GoogleFonts.inter(
               fontSize: AppSizes.fontSm,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ],

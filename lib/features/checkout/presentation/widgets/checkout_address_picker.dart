@@ -26,7 +26,7 @@ class CheckoutAddressPicker extends StatelessWidget {
     return BlocBuilder<AddressCubit, AddressState>(
       builder: (context, state) {
         return switch (state) {
-          AddressInitial() || AddressLoading() => _buildLoadingCard(),
+          AddressInitial() || AddressLoading() => _buildLoadingCard(context),
           AddressLoaded(:final addresses) => addresses.isEmpty
               ? _buildNoAddressCard(context)
               : _buildAddressCard(context, addresses),
@@ -36,11 +36,12 @@ class CheckoutAddressPicker extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingCard() {
+  Widget _buildLoadingCard(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
@@ -51,10 +52,11 @@ class CheckoutAddressPicker extends StatelessWidget {
   }
 
   Widget _buildNoAddressCard(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
@@ -68,7 +70,7 @@ class CheckoutAddressPicker extends StatelessWidget {
               Icon(
                 Icons.location_off_outlined,
                 size: AppSizes.fontXxl,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
               SizedBox(width: AppSizes.paddingSm),
               Text(
@@ -76,7 +78,7 @@ class CheckoutAddressPicker extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: AppSizes.fontSm,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -87,7 +89,7 @@ class CheckoutAddressPicker extends StatelessWidget {
             AppStrings.checkoutNoAddressMessage,
             style: GoogleFonts.inter(
               fontSize: AppSizes.fontMd,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           SizedBox(height: AppSizes.radiusLg),
@@ -118,12 +120,13 @@ class CheckoutAddressPicker extends StatelessWidget {
 
   Widget _buildAddressCard(
       BuildContext context, List<AddressEntity> addresses) {
+    final theme = Theme.of(context);
     final displayAddress = selectedAddress ?? _findDefaultOrFirst(addresses);
 
     return Container(
       padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
@@ -152,7 +155,7 @@ class CheckoutAddressPicker extends StatelessWidget {
                 style: GoogleFonts.lexend(
                   fontSize: AppSizes.forgotPasswordFontSize,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               if (displayAddress.isDefault)
@@ -197,7 +200,7 @@ class CheckoutAddressPicker extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           SizedBox(height: AppSizes.paddingXs),
@@ -205,7 +208,7 @@ class CheckoutAddressPicker extends StatelessWidget {
             displayAddress.formattedAddress,
             style: GoogleFonts.inter(
               fontSize: AppSizes.fontMd,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
               height: 1.4,
             ),
           ),
@@ -247,7 +250,7 @@ class CheckoutAddressPicker extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppSizes.radiusRound),
@@ -278,6 +281,7 @@ class _AddressPickerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.6,
       child: Column(
@@ -306,7 +310,7 @@ class _AddressPickerSheet extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: AppSizes.submitButtonFontSize,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 IconButton(
@@ -321,8 +325,7 @@ class _AddressPickerSheet extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.all(AppSizes.paddingMd),
               itemCount: addresses.length,
-              separatorBuilder: (_, __) =>
-                  SizedBox(height: AppSizes.radiusLg),
+              separatorBuilder: (_, __) => SizedBox(height: AppSizes.radiusLg),
               itemBuilder: (_, index) {
                 final addr = addresses[index];
                 final isSelected = addr.id == selectedAddress?.id;
@@ -387,6 +390,7 @@ class _AddressPickerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppSizes.radiusLg),
@@ -395,7 +399,7 @@ class _AddressPickerTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary.withValues(alpha: 0.05)
-              : Colors.white,
+              : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
             color: isSelected
@@ -418,7 +422,7 @@ class _AddressPickerTile extends StatelessWidget {
                         style: GoogleFonts.lexend(
                           fontSize: AppSizes.forgotPasswordFontSize,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       if (address.isDefault)
@@ -452,7 +456,7 @@ class _AddressPickerTile extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: AppSizes.fontSm,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   SizedBox(height: 2),
@@ -460,7 +464,7 @@ class _AddressPickerTile extends StatelessWidget {
                     address.formattedAddress,
                     style: GoogleFonts.inter(
                       fontSize: AppSizes.fontSm,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                       height: 1.3,
                     ),
                   ),

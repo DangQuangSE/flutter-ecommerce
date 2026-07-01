@@ -128,19 +128,20 @@ class CanvasWorkspace extends StatelessWidget {
             ),
           ),
         ),
-        _buildZoomPanel(),
-        _buildFrontBackSwitch(),
+        _buildZoomPanel(context),
+        _buildFrontBackSwitch(context),
       ],
     );
   }
 
-  Widget _buildZoomPanel() {
+  Widget _buildZoomPanel(BuildContext context) {
+    final theme = Theme.of(context);
     return Positioned(
       top: AppSizes.paddingMd,
       right: AppSizes.paddingMd,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           boxShadow: const [
             BoxShadow(
@@ -151,27 +152,27 @@ class CanvasWorkspace extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(Icons.zoom_in_rounded),
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onSurface,
               onPressed: () {
                 if (zoomScale < AppSizes.canvasMaxZoom) {
                   onZoomChanged(zoomScale + AppSizes.canvasZoomStep);
                 }
               },
             ),
-            Container(width: 20, height: 1, color: AppColors.selectedBg),
+            Container(width: 20, height: 1, color: theme.dividerColor),
             IconButton(
               icon: Icon(Icons.zoom_out_rounded),
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onSurface,
               onPressed: () {
                 if (zoomScale > AppSizes.canvasMinZoom) {
                   onZoomChanged(zoomScale - AppSizes.canvasZoomStep);
                 }
               },
             ),
-            Container(width: 20, height: 1, color: AppColors.selectedBg),
+            Container(width: 20, height: 1, color: theme.dividerColor),
             IconButton(
               icon: Icon(Icons.restart_alt_rounded),
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onSurface,
               onPressed: () => onZoomChanged(1.0),
             ),
           ],
@@ -180,7 +181,8 @@ class CanvasWorkspace extends StatelessWidget {
     );
   }
 
-  Widget _buildFrontBackSwitch() {
+  Widget _buildFrontBackSwitch(BuildContext context) {
+    final theme = Theme.of(context);
     return Positioned(
       bottom: AppSizes.paddingMd,
       left: 0,
@@ -189,7 +191,7 @@ class CanvasWorkspace extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(AppSizes.paddingXs),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppSizes.radiusRound),
             boxShadow: const [
               BoxShadow(
@@ -200,10 +202,18 @@ class CanvasWorkspace extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildViewButton(
-                  'MẶT TRƯỚC', isFrontView, () => onFrontViewChanged(true)),
+                context,
+                'MẶT TRƯỚC',
+                isFrontView,
+                () => onFrontViewChanged(true),
+              ),
               SizedBox(width: AppSizes.paddingXs),
               _buildViewButton(
-                  'MẶT SAU', !isFrontView, () => onFrontViewChanged(false)),
+                context,
+                'MẶT SAU',
+                !isFrontView,
+                () => onFrontViewChanged(false),
+              ),
             ],
           ),
         ),
@@ -211,7 +221,13 @@ class CanvasWorkspace extends StatelessWidget {
     );
   }
 
-  Widget _buildViewButton(String label, bool isActive, VoidCallback onTap) {
+  Widget _buildViewButton(
+    BuildContext context,
+    String label,
+    bool isActive,
+    VoidCallback onTap,
+  ) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -226,7 +242,7 @@ class CanvasWorkspace extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontXs + 1,
             fontWeight: FontWeight.w800,
-            color: isActive ? Colors.white : AppColors.textSecondary,
+            color: isActive ? Colors.white : theme.colorScheme.onSurfaceVariant,
           ),
         ),
       ),
