@@ -34,7 +34,7 @@ class AdminDashboardTab extends StatelessWidget {
                 transform: Matrix4.skewX(-0.12),
                 alignment: Alignment.center,
                 child: Text(
-                  'Sport Pro',
+                  AppStrings.adminDashboardAppName,
                   style: GoogleFonts.lexend(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
@@ -75,7 +75,7 @@ class AdminDashboardTab extends StatelessWidget {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    'Hôm nay, 01 Tháng 6',
+                    'Hôm nay, ${DateTime.now().day} Tháng ${DateTime.now().month}',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -370,7 +370,7 @@ class AdminDashboardTab extends StatelessWidget {
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content:
-                          Text('Lưu lượng ${days[index]}: ${val.toInt()}%'),
+                          Text(AppStrings.adminDashboardChartTooltip(days[index], val.toInt())),
                       duration: const Duration(milliseconds: 600),
                       backgroundColor: AppColors.primary,
                     ));
@@ -538,7 +538,7 @@ class AdminDashboardTab extends StatelessWidget {
                             ),
                           ),
                           subtitle: Text(
-                            'Đơn hàng #${notif.orderId} • ${notif.createdAt}',
+                            AppStrings.adminNotificationOrderText(notif.orderId, notif.createdAt),
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               color: AppColors.textSecondary,

@@ -70,9 +70,9 @@ class AdminVariantNavigation extends StatelessWidget {
           AppSizes.paddingMd,
           AppSizes.paddingMd,
         ),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.divider)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
         ),
         child: Row(
           children: [

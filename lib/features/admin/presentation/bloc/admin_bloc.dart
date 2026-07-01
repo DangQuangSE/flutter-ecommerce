@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/admin_stats_entity.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_stats_usecase.dart';
@@ -56,7 +57,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     } else if (productsResult is ResultFailure) {
       emit(AdminError((productsResult as ResultFailure).failure.message));
     } else {
-      emit(const AdminError('Đã xảy ra lỗi không xác định.'));
+      emit(const AdminError(AppStrings.adminBlocUnknownError));
     }
   }
 
@@ -72,7 +73,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           final updatedProducts = List.of(currentState.products)..add(data);
           emit(currentState.copyWith(
             products: updatedProducts,
-            message: 'Đã thêm sản phẩm thành công!',
+            message: AppStrings.adminBlocCreateSuccess,
           ));
         case ResultFailure(:final failure):
           emit(AdminError(failure.message));
@@ -94,7 +95,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           }).toList();
           emit(currentState.copyWith(
             products: updatedProducts,
-            message: 'Đã cập nhật sản phẩm thành công!',
+            message: AppStrings.adminBlocUpdateSuccess,
           ));
         case ResultFailure(:final failure):
           emit(AdminError(failure.message));
@@ -117,11 +118,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
                 .toList();
             emit(currentState.copyWith(
               products: updatedProducts,
-              message: 'Đã xóa sản phẩm thành công!',
+              message: AppStrings.adminBlocDeleteSuccess,
             ));
           } else {
             emit(currentState.copyWith(
-                message: 'Không tìm thấy sản phẩm để xóa.'));
+                message: AppStrings.adminBlocDeleteNotFound));
           }
         case ResultFailure(:final failure):
           emit(AdminError(failure.message));

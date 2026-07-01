@@ -56,7 +56,7 @@ class AdminProfileTab extends StatelessWidget {
             SizedBox(height: 16),
             Center(
               child: Text(
-                user?.name ?? 'Admin Sport Pro',
+                user?.name ?? AppStrings.adminProfileFallbackName,
                 style: GoogleFonts.lexend(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,

@@ -44,7 +44,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppSizes.radiusRound),
@@ -67,7 +67,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppSizes.radiusRound),
@@ -111,9 +111,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
-        backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
         title: Text(

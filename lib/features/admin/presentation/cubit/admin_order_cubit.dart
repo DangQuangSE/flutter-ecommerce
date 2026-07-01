@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/admin_order_entity.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_order_detail_usecase.dart';
@@ -220,7 +221,7 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
           case Success(:final data):
             emit(AdminOrderDetailLoaded(
               order: data,
-              message: 'Đã cập nhật trạng thái đơn hàng!',
+              message: AppStrings.adminOrderUpdateStatusSuccess,
             ));
           case ResultFailure(:final failure):
             emit(current.copyWith(
