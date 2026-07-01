@@ -45,6 +45,8 @@ abstract final class AppStrings {
   static const String clearSearch = 'Xóa tìm kiếm';
   static const String genericLoadError = 'Đã xảy ra lỗi khi tải dữ liệu.';
   static const String networkConnectionError = 'Lỗi kết nối mạng';
+  static const String loading = 'Đang tải...';
+  static const String truckLoaderBrand = 'SPORT PRO';
   static const String viewCart = 'XEM GIỎ';
   static const String addToCart = 'THÊM VÀO GIỎ HÀNG';
   static const String outOfStock = 'HẾT HÀNG';
