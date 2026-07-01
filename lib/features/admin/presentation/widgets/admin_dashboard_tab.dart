@@ -180,6 +180,7 @@ class AdminDashboardTab extends StatelessWidget {
             children: [
               Expanded(
                   child: _kpiCard(
+                context: context,
                 label: 'ĐƠN HÀNG',
                 value: '${stats.totalOrders}',
                 growth: '+${stats.ordersGrowth}% tuần này',
@@ -189,6 +190,7 @@ class AdminDashboardTab extends StatelessWidget {
               SizedBox(width: 12),
               Expanded(
                   child: _kpiCard(
+                context: context,
                 label: 'KHÁCH MỚI',
                 value: '${stats.newCustomers}',
                 growth: '+${stats.customersGrowth}%',
@@ -299,6 +301,7 @@ class AdminDashboardTab extends StatelessWidget {
   }
 
   Widget _kpiCard({
+    required BuildContext context,
     required String label,
     required String value,
     required String growth,
@@ -417,7 +420,7 @@ class AdminDashboardTab extends StatelessWidget {
                 context.read<AdminNotificationCubit>().markAllAsRead();
                 _showNotificationsSheet(context, state);
               },
-              icon: const Icon(Icons.notifications_none_rounded,
+              icon: Icon(Icons.notifications_none_rounded,
                   color: AppColors.textPrimary),
             ),
             if (unread > 0)
