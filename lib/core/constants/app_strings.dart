@@ -3,17 +3,14 @@
 /// only touches this file.
 abstract final class AppStrings {
   // Checkout
-  static const String checkoutTitle = 'THANH TO\u00c1N';
-  static const String checkoutShippingSectionTitle =
-      'TH\u00d4NG TIN GIAO H\u00c0NG';
-  static const String checkoutPaymentSectionTitle =
-      'PH\u01af\u01a0NG TH\u1ee8C THANH TO\u00c1N';
-  static const String checkoutCouponSectionTitle =
-      'M\u00c3 GI\u1ea2M GI\u00c1 (COUPON)';
+  static const String checkoutTitle = 'THANH TOÁN';
+  static const String checkoutShippingSectionTitle = 'THÔNG TIN GIAO HÀNG';
+  static const String checkoutPaymentSectionTitle = 'PHƯƠNG THỨC THANH TOÁN';
+  static const String checkoutCouponSectionTitle = 'MÃ GIẢM GIÁ (COUPON)';
   static const String checkoutAddressRequired =
-      'Vui l\u00f2ng ch\u1ecdn \u0111\u1ecba ch\u1ec9 giao h\u00e0ng!';
+      'Vui lòng chọn địa chỉ giao hàng!';
   static const String checkoutShippingInfoRequired =
-      'Vui l\u00f2ng \u0111i\u1ec1n \u0111\u1ea7y \u0111\u1ee7 th\u00f4ng tin giao h\u00e0ng!';
+      'Vui lòng điền đầy đủ thông tin giao hàng!';
   static const String checkoutFullNameLabel = 'HỌ VÀ TÊN';
   static const String checkoutFullNameRequired = 'Vui lòng nhập họ và tên';
   static const String checkoutPhoneLabel = 'SỐ ĐIỆN THOẠI';
@@ -843,12 +840,16 @@ abstract final class AppStrings {
       'Đã xảy ra lỗi khi tải dữ liệu Admin.';
   static const String adminNavOverview = 'Tổng quan';
   static const String adminNavManagement = 'Quản lý';
+  static const String adminNavOrders = 'Đơn hàng';
   static const String adminNavStore = 'Cửa hàng';
   static const String adminNavProfile = 'Cá nhân';
 
   // Admin order management
   static const String adminOrderManagementTitle = 'Quản lý đơn hàng';
   static const String adminOrderSearchHint = 'Tìm mã đơn, SĐT...';
+  static const String adminOrderDateRangeAll = 'Tất cả ngày';
+  static const String adminOrderDateRangeAction = 'Lọc ngày';
+  static const String adminOrderDateRangeClear = 'Xóa lọc ngày';
   static const String adminOrderEmpty = 'Không có đơn hàng nào.';
   static const String adminOrderDetailTitle = 'Chi tiết đơn hàng';
   static const String adminOrderStatusUpdated =

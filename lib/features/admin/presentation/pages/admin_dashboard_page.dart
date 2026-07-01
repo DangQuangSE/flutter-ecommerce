@@ -5,8 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_order_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_dashboard_tab.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_management_tab.dart';
@@ -22,6 +25,11 @@ class AdminDashboardPage extends StatefulWidget {
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   int _currentIndex = 0;
+  AdminOrderCubit? _adminOrderCubit;
+
+  AdminOrderCubit get _ordersCubit {
+    return _adminOrderCubit ??= sl<AdminOrderCubit>()..loadOrders();
+  }
 
   @override
   void initState() {
@@ -30,6 +38,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       if (!mounted) return;
       context.read<ChatCubit>().loadChats();
     });
+  }
+
+  @override
+  void dispose() {
+    _adminOrderCubit?.close();
+    super.dispose();
   }
 
   @override
@@ -66,6 +80,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               children: [
                 AdminDashboardTab(state: state),
                 const AdminManagementTab(),
+                BlocProvider.value(
+                  value: _ordersCubit,
+                  child: const AdminOrderListPage(showAppBar: false),
+                ),
                 AdminLocationTab(
                     onBackToDashboard: () => setState(() => _currentIndex = 0)),
                 const AdminProfileTab(),
@@ -73,8 +91,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             );
           }
 
-          return const Center(
-              child: Text(AppStrings.adminDashboardLoadError));
+          return const Center(child: Text(AppStrings.adminDashboardLoadError));
         },
       ),
       bottomNavigationBar: Container(
@@ -108,6 +125,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 activeIcon:
                     Icon(Icons.tune_rounded, size: AppSizes.iconNavActive),
                 label: AppStrings.adminNavManagement),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.receipt_long_rounded, size: AppSizes.iconNav),
+                activeIcon: Icon(Icons.receipt_long_rounded,
+                    size: AppSizes.iconNavActive),
+                label: AppStrings.adminNavOrders),
             BottomNavigationBarItem(
                 icon: Icon(Icons.location_on_rounded, size: AppSizes.iconNav),
                 activeIcon: Icon(Icons.location_on_rounded,
