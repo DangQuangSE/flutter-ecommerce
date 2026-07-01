@@ -21,13 +21,15 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
     required int numTextLines,
     required int numImages,
     required String metadata,
+    required String backMetadata,
     required Uint8List imageBytes,
+    Uint8List? backImageBytes,
   }) async {
     try {
-      final formData = FormData.fromMap({
+      final formDataMap = <String, dynamic>{
         'file': MultipartFile.fromBytes(
           imageBytes,
-          filename: 'design.png',
+          filename: 'design_front.png',
           contentType: MediaType('image', 'png'),
         ),
         'data': MultipartFile.fromString(
@@ -36,10 +38,19 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
             'numTextLines': numTextLines,
             'numImages': numImages,
             'metadata': metadata,
+            'backMetadata': backMetadata,
           }),
           contentType: MediaType('application', 'json'),
         ),
-      });
+      };
+      if (backImageBytes != null) {
+        formDataMap['backFile'] = MultipartFile.fromBytes(
+          backImageBytes,
+          filename: 'design_back.png',
+          contentType: MediaType('image', 'png'),
+        );
+      }
+      final formData = FormData.fromMap(formDataMap);
 
       final response = await _dioClient.dio.post(
         ApiConstants.customDesigns,
@@ -63,6 +74,7 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
   Future<
       ({
         String designMetadata,
+        String backDesignMetadata,
         String printingMaterialName,
         int? printingMaterialId,
         int numTextLines,
@@ -76,6 +88,8 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
       final data = body['data'] as Map<String, dynamic>;
       return (
         designMetadata: data['designMetadata'] as String? ?? '',
+        backDesignMetadata:
+            data['backDesignMetadata'] as String? ?? '',
         printingMaterialName:
             data['printingMaterialName'] as String? ?? 'In chuyển nhiệt',
         printingMaterialId: (data['printingMaterialId'] as num?)?.toInt(),

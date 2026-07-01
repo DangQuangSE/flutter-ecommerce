@@ -501,7 +501,7 @@ class AppRouter {
             BlocProvider(create: (_) => sl<CheckoutBloc>()),
             BlocProvider(
                 create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
-            BlocProvider(create: (_) => sl<AddressCubit>()..loadAddresses()),
+            BlocProvider.value(value: sl<AddressCubit>()..loadAddresses()),
           ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),
@@ -594,8 +594,8 @@ class AppRouter {
       GoRoute(
         path: '/addresses',
         name: AppRoutes.addressList,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<AddressCubit>()..loadAddresses(),
+        builder: (context, state) => BlocProvider.value(
+          value: sl<AddressCubit>()..loadAddresses(),
           child: const AddressListPage(),
         ),
         routes: [
@@ -606,7 +606,7 @@ class AppRouter {
               final address = state.extra as AddressEntity?;
               return MultiBlocProvider(
                 providers: [
-                  BlocProvider(create: (_) => sl<AddressCubit>()),
+                  BlocProvider.value(value: sl<AddressCubit>()),
                   BlocProvider(create: (_) => sl<LocationCubit>()),
                 ],
                 child: AddressFormPage(initialAddress: address),

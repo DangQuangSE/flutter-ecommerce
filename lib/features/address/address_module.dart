@@ -14,7 +14,7 @@ void setupAddressModule(GetIt sl) {
   sl.registerLazySingleton<AddressRepository>(
     () => AddressRepositoryImpl(sl<AddressRemoteDataSource>()),
   );
-  sl.registerFactory<AddressCubit>(
+  sl.registerLazySingleton<AddressCubit>(
     () => AddressCubit(sl<AddressRepository>()),
   );
 }

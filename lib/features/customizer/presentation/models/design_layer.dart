@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 enum LayerType { text, logo }
 
+enum LayerView { front, back }
+
 class DesignLayer {
   final String id;
   final LayerType type;
+  final LayerView view;
   final String text;
   final String font;
   final Color color;
@@ -16,6 +19,7 @@ class DesignLayer {
   DesignLayer({
     required this.id,
     required this.type,
+    this.view = LayerView.front,
     this.text = '',
     this.font = 'Lexend',
     this.color = const Color(0xFF0058BC),
@@ -33,10 +37,12 @@ class DesignLayer {
     double? x,
     double? y,
     String? logoPath,
+    LayerView? view,
   }) {
     return DesignLayer(
       id: id,
       type: type,
+      view: view ?? this.view,
       text: text ?? this.text,
       font: font ?? this.font,
       color: color ?? this.color,
@@ -50,6 +56,7 @@ class DesignLayer {
   Map<String, dynamic> toJson() => {
         'id': id,
         'type': type.name,
+        'view': view.name,
         'text': text,
         'font': font,
         'color': color.toARGB32(),
@@ -62,6 +69,9 @@ class DesignLayer {
   factory DesignLayer.fromJson(Map<String, dynamic> json) => DesignLayer(
         id: json['id'] as String,
         type: LayerType.values.byName(json['type'] as String),
+        view: json['view'] != null
+            ? LayerView.values.byName(json['view'] as String)
+            : LayerView.front,
         text: json['text'] as String? ?? '',
         font: json['font'] as String? ?? 'Lexend',
         color: Color(json['color'] as int),

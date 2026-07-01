@@ -94,7 +94,7 @@ extension CustomizerLayerHandlers on CustomizerPageState {
 
   void onPanelLayerDeleted(int index, String id) {
     updateState(() {
-      layers.removeAt(index);
+      layers.removeWhere((l) => l.id == id);
       if (activeLayer?.id == id) {
         activeLayer = null;
         textController.clear();

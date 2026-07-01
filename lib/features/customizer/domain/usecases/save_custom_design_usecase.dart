@@ -12,14 +12,18 @@ class SaveCustomDesignUseCase {
     required int numTextLines,
     required int numImages,
     required String metadata,
+    required String backMetadata,
     required Uint8List imageBytes,
+    Uint8List? backImageBytes,
   }) {
     return _repository.saveDesign(
       materialId: materialId,
       numTextLines: numTextLines,
       numImages: numImages,
       metadata: metadata,
+      backMetadata: backMetadata,
       imageBytes: imageBytes,
+      backImageBytes: backImageBytes,
     );
   }
 }

@@ -215,7 +215,7 @@ class ProfilePage extends StatelessWidget {
         ProfileMenuRow(
           icon: Icons.location_on_outlined,
           label: AppStrings.profileShippingAddresses,
-          onTap: () => context.goNamed(AppRoutes.orderList),
+          onTap: () => context.goNamed(AppRoutes.addressList),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(

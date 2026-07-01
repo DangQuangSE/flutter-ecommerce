@@ -9,7 +9,9 @@ abstract interface class CustomDesignRepository {
     required int numTextLines,
     required int numImages,
     required String metadata,
+    required String backMetadata,
     required Uint8List imageBytes,
+    Uint8List? backImageBytes,
   });
 
   Future<Result<PrintingConfigEntity>> getPrintingConfigs();
