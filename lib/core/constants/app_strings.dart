@@ -857,6 +857,8 @@ abstract final class AppStrings {
   static const String adminOrderSelectStatus = 'Chọn trạng thái mới';
   static const String adminOrderUpdating = 'Đang cập nhật...';
   static const String adminOrderUpdateStatus = 'Cập nhật trạng thái';
+  static String adminOrderStatusChangeConfirm(String status) =>
+      'Đổi trạng thái sang "$status"?';
   static const String filterAll = 'Tất cả';
 
   // Admin management tab

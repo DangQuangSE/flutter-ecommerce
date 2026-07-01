@@ -36,6 +36,7 @@ abstract final class AppSizes {
   static const double canvasWidthRatio = 0.85;
   static const double canvasHeightRatio = 0.42;
   static const double canvasMaxOffsetRatio = 0.40;
+  static const double bottomSheetMaxHeightRatio = 0.75;
   static const double canvasMinZoom = 0.7;
   static const double canvasMaxZoom = 1.6;
   static const double canvasZoomStep = 0.1;
