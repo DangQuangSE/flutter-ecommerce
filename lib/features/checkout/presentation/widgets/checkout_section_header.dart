@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-
 class CheckoutSectionHeader extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -15,9 +13,10 @@ class CheckoutSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppColors.textSecondary),
+        Icon(icon, size: 18, color: color),
         SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -25,7 +24,7 @@ class CheckoutSectionHeader extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
+              color: color,
               letterSpacing: 1.0,
             ),
             overflow: TextOverflow.ellipsis,

@@ -22,7 +22,7 @@ class AddressListPage extends StatelessWidget {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: BlocConsumer<AddressCubit, AddressState>(
         listener: (context, state) {
@@ -74,10 +74,10 @@ class _AddressAppBar extends StatelessWidget {
         12,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
         border: Border(
           bottom: BorderSide(
-            color: const Color(0xFFE2E8F0).withValues(alpha: 0.7),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.7),
           ),
         ),
         boxShadow: [
@@ -98,7 +98,7 @@ class _AddressAppBar extends StatelessWidget {
                 context.goNamed(AppRoutes.profile);
               }
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new_rounded,
               color: AppColors.textPrimary,
               size: AppSizes.iconMd,
@@ -117,9 +117,7 @@ class _AddressAppBar extends StatelessWidget {
           ),
           BlocBuilder<AddressCubit, AddressState>(
             builder: (context, state) {
-              final count = state is AddressLoaded
-                  ? state.addresses.length
-                  : 0;
+              final count = state is AddressLoaded ? state.addresses.length : 0;
               if (count == 0) return const SizedBox.shrink();
               return Container(
                 padding: const EdgeInsets.symmetric(
@@ -158,8 +156,7 @@ class _BodyContent extends StatelessWidget {
     return switch (state) {
       AddressInitial() || AddressLoading() => _LoadingState(),
       AddressError(:final message) => _ErrorState(message: message),
-      AddressLoaded(:final addresses, :final isSubmitting) =>
-        _AddressListView(
+      AddressLoaded(:final addresses, :final isSubmitting) => _AddressListView(
           addresses: addresses,
           isSubmitting: isSubmitting,
           topPadding: topPadding,
@@ -302,8 +299,7 @@ class _AddressListView extends StatelessWidget {
             },
           ),
         ),
-        if (isSubmitting)
-          const Positioned.fill(child: AppLoadingView()),
+        if (isSubmitting) const Positioned.fill(child: AppLoadingView()),
       ],
     );
   }

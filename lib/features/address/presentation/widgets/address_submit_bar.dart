@@ -22,6 +22,7 @@ class AddressSubmitBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AddressCubit, AddressState>(
       builder: (context, state) {
+        final theme = Theme.of(context);
         final isSubmitting = state is AddressLoaded && state.isSubmitting;
         return Container(
           padding: EdgeInsets.fromLTRB(
@@ -30,9 +31,9 @@ class AddressSubmitBar extends StatelessWidget {
             AppSizes.paddingMd,
             MediaQuery.of(context).padding.bottom + AppSizes.radiusLg,
           ),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            border: Border(top: BorderSide(color: theme.dividerColor)),
           ),
           child: SizedBox(
             height: AppSizes.buttonMinHeight,

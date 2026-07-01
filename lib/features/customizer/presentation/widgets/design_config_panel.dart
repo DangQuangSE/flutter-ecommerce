@@ -56,10 +56,11 @@ class DesignConfigPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(AppSizes.iconLg),
           topRight: Radius.circular(AppSizes.iconLg),
         ),
@@ -82,7 +83,7 @@ class DesignConfigPanel extends StatelessWidget {
               style: GoogleFonts.lexend(
                 fontSize: AppSizes.fontXxl,
                 fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             AppSizes.spacingXs,
@@ -90,7 +91,7 @@ class DesignConfigPanel extends StatelessWidget {
               AppStrings.customizerPanelSubtitle,
               style: GoogleFonts.inter(
                 fontSize: AppSizes.fontSm,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
                 height: 1.4,
               ),
             ),
@@ -144,6 +145,7 @@ class _MaterialSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final list = materials;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -153,7 +155,7 @@ class _MaterialSection extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         AppSizes.spacingSm,
@@ -211,6 +213,7 @@ class _LogoUploadSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -219,7 +222,7 @@ class _LogoUploadSection extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         AppSizes.spacingSm,
@@ -249,7 +252,7 @@ class _LogoUploadSection extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: AppSizes.fontMd,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 AppSizes.spacingXs,
@@ -257,7 +260,7 @@ class _LogoUploadSection extends StatelessWidget {
                   AppStrings.customizerUploadLogoHint,
                   style: GoogleFonts.inter(
                     fontSize: AppSizes.fontXs,
-                    color: AppColors.textSecondary,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

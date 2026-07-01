@@ -21,10 +21,10 @@ class OrderDetailSection extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor,
           ),
           boxShadow: [
             BoxShadow(

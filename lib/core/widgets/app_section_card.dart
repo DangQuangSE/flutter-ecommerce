@@ -18,9 +18,10 @@ class AppSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusXl),
         boxShadow: [
           BoxShadow(
@@ -61,15 +62,15 @@ class AppSectionCard extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: AppSizes.forgotPasswordFontSize,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: AppSizes.radiusLg),
-            child: Divider(height: 1, color: Color(0xFFF0F0F0)),
+          Padding(
+            padding: const EdgeInsets.only(top: AppSizes.radiusLg),
+            child: Divider(height: 1, color: theme.dividerColor),
           ),
           Padding(
             padding: const EdgeInsets.all(AppSizes.paddingMd),

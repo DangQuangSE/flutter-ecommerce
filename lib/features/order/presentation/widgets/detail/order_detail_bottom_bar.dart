@@ -20,10 +20,10 @@ class OrderDetailBottomBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor,
             width: 1,
           ),
         ),
@@ -76,7 +76,7 @@ class OrderDetailBottomBar extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'THEO D\u00d5I \u0110\u01a0N',
+                    AppStrings.orderTrackOrder,
                     style: GoogleFonts.lexend(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,

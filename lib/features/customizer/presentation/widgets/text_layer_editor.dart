@@ -36,6 +36,7 @@ class TextLayerEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -47,7 +48,7 @@ class TextLayerEditor extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: AppSizes.fontSm,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             TextButton.icon(
@@ -76,7 +77,7 @@ class TextLayerEditor extends StatelessWidget {
             onChanged: onTextChanged,
             decoration: InputDecoration(
               filled: true,
-              fillColor: AppColors.canvasLight,
+              fillColor: theme.colorScheme.surfaceContainerHighest,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: AppSizes.paddingMd,
                 vertical: AppSizes.paddingMd - 4,
@@ -89,7 +90,7 @@ class TextLayerEditor extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: AppSizes.fontLg - 1,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           SizedBox(height: AppSizes.paddingMd),
@@ -120,7 +121,7 @@ class TextLayerEditor extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: AppSizes.fontSm,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -130,21 +131,21 @@ class TextLayerEditor extends StatelessWidget {
             min: 12,
             max: 60,
             activeColor: AppColors.primary,
-            inactiveColor: AppColors.canvasLight,
+            inactiveColor: theme.colorScheme.surfaceContainerHighest,
             onChanged: onFontSizeChanged,
           ),
         ] else ...[
           Container(
             padding: const EdgeInsets.all(AppSizes.paddingMd - 4),
             decoration: BoxDecoration(
-              color: AppColors.canvasLight,
+              color: theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             ),
             child: Text(
               AppStrings.customizerNoTextLayerSelected,
               style: GoogleFonts.inter(
                 fontSize: AppSizes.fontMd,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
@@ -162,12 +163,13 @@ class _FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Text(
       text,
       style: GoogleFonts.inter(
         fontSize: AppSizes.fontXs + 1,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
   }
@@ -188,10 +190,11 @@ class _FontDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
       decoration: BoxDecoration(
-        color: AppColors.canvasLight,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       child: DropdownButtonHideUnderline(

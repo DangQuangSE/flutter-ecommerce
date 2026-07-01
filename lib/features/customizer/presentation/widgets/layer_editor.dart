@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
@@ -21,6 +20,7 @@ class LayerEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -29,7 +29,7 @@ class LayerEditor extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         AppSizes.spacingSm,
@@ -37,7 +37,9 @@ class LayerEditor extends StatelessWidget {
           Text(
             'Chưa có lớp thiết kế nào được tạo.',
             style: GoogleFonts.inter(
-                fontSize: AppSizes.fontMd, color: AppColors.textSecondary),
+              fontSize: AppSizes.fontMd,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           )
         else
           ListView.separated(
@@ -57,7 +59,7 @@ class LayerEditor extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isActive
                         ? AppColors.primary.withValues(alpha: 0.05)
-                        : AppColors.canvasLight,
+                        : theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                     border: Border.all(
                       color: isActive ? AppColors.primary : Colors.transparent,
@@ -72,7 +74,7 @@ class LayerEditor extends StatelessWidget {
                             : Icons.image_rounded,
                         color: isActive
                             ? AppColors.primary
-                            : AppColors.textSecondary,
+                            : theme.colorScheme.onSurfaceVariant,
                         size: 18,
                       ),
                       SizedBox(width: 12),
@@ -87,7 +89,7 @@ class LayerEditor extends StatelessWidget {
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: theme.colorScheme.onSurface,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -98,7 +100,9 @@ class LayerEditor extends StatelessWidget {
                                   ? '${layer.font} | ${layer.fontSize.toInt()}px'
                                   : 'Ảnh Tải Lên',
                               style: GoogleFonts.inter(
-                                  fontSize: 10, color: AppColors.textSecondary),
+                                fontSize: 10,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           ],
                         ),

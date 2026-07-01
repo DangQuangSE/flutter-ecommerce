@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
@@ -21,6 +23,11 @@ class ShopRepositoryImpl implements ShopRepository {
     return _guard(
       () => _remoteDataSource.updateShop(ShopModel.fromEntity(shop)),
     );
+  }
+
+  @override
+  Future<Result<String>> uploadShopImage(File file, String type) {
+    return _guard(() => _remoteDataSource.uploadShopImage(file, type));
   }
 
   /// Maps known [AppException] subtypes to the corresponding [Failure].

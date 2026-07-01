@@ -45,6 +45,8 @@ abstract final class AppStrings {
   static const String clearSearch = 'Xóa tìm kiếm';
   static const String genericLoadError = 'Đã xảy ra lỗi khi tải dữ liệu.';
   static const String networkConnectionError = 'Lỗi kết nối mạng';
+  static const String loading = 'Đang tải...';
+  static const String truckLoaderBrand = 'SPORT PRO';
   static const String viewCart = 'XEM GIỎ';
   static const String addToCart = 'THÊM VÀO GIỎ HÀNG';
   static const String outOfStock = 'HẾT HÀNG';
@@ -144,6 +146,10 @@ abstract final class AppStrings {
   static const String editProfileLastNameRequired = 'Vui lòng nhập họ';
   static const String editProfileSaveChanges = 'LƯU THAY ĐỔI';
   static const String chatListTitle = 'Hộp thư thoại';
+  static const String chatLoadErrorTitle = 'Không thể mở cuộc trò chuyện.';
+  static const String chatEmptyTitle = 'Chưa có cuộc trò chuyện';
+  static const String chatEmptyMessage =
+      'Cuộc trò chuyện với cửa hàng sẽ xuất hiện tại đây khi khởi tạo thành công.';
   static const String chatHotlineMessage = 'Hotline CSKH: 1900-SPORT-PRO';
   static const String chatAttachmentMessage = 'Tải lên ảnh đính kèm.';
   static const String chatMessageHint = 'Nhập tin nhắn...';
@@ -593,6 +599,8 @@ abstract final class AppStrings {
   static const String orderSizeLabel = 'Size';
   static const String orderTotalLabel = 'TỔNG THANH TOÁN';
   static const String orderContinueShopping = 'TIẾP TỤC MUA SẮM';
+  static const String orderTrackOrder = 'THEO DÕI ĐƠN';
+  static const String orderSubtotal = 'Tạm tính';
   static const String orderWriteReviewAction = 'Đánh giá';
   static const String orderReviewedLabel = 'Đã đánh giá';
 
@@ -693,6 +701,10 @@ abstract final class AppStrings {
       'Đã cập nhật thông tin cửa hàng thành công!';
   static const String shopUpdateError =
       'Cập nhật cửa hàng thất bại. Vui lòng thử lại.';
+  static const String shopImageUploadError =
+      'Tải ảnh lên thất bại. Vui lòng thử lại.';
+  static const String shopCoverPickerLabel = 'Ảnh bìa cửa hàng';
+  static const String shopLogoPickerLabel = 'Logo cửa hàng';
 
   // Shop form field labels
   static const String shopFieldName = 'Tên cửa hàng *';
@@ -965,19 +977,23 @@ abstract final class AppStrings {
   // Admin product form cubit
   static const String adminProductLoadListError =
       'Không thể tải danh sách. Vui lòng thử lại.';
-  static const String adminProductFillRequired = 'Vui lòng điền đầy đủ thông tin bắt buộc';
+  static const String adminProductFillRequired =
+      'Vui lòng điền đầy đủ thông tin bắt buộc';
   static String adminProductDeleteError(String msg) =>
       'Không thể xóa sản phẩm: $msg';
 
   // Admin bloc messages
   static const String adminBlocUnknownError = 'Đã xảy ra lỗi không xác định.';
   static const String adminBlocCreateSuccess = 'Đã thêm sản phẩm thành công!';
-  static const String adminBlocUpdateSuccess = 'Đã cập nhật sản phẩm thành công!';
+  static const String adminBlocUpdateSuccess =
+      'Đã cập nhật sản phẩm thành công!';
   static const String adminBlocDeleteSuccess = 'Đã xóa sản phẩm thành công!';
-  static const String adminBlocDeleteNotFound = 'Không tìm thấy sản phẩm để xóa.';
+  static const String adminBlocDeleteNotFound =
+      'Không tìm thấy sản phẩm để xóa.';
 
   // Admin order cubit
-  static const String adminOrderUpdateStatusSuccess = 'Đã cập nhật trạng thái đơn hàng!';
+  static const String adminOrderUpdateStatusSuccess =
+      'Đã cập nhật trạng thái đơn hàng!';
 
   // Admin order entity
   static const String adminOrderNoProduct = 'Không có sản phẩm';

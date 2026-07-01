@@ -79,10 +79,11 @@ class _ShippingEditHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(AppSizes.radiusLg),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F7FF),
+        color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppSizes.paddingSm),
         border: Border.all(
           color: AppColors.primary.withValues(alpha: 0.2),
@@ -102,7 +103,7 @@ class _ShippingEditHint extends StatelessWidget {
               AppStrings.checkoutShippingEditHint,
               style: GoogleFonts.inter(
                 fontSize: AppSizes.fontSm,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
                 height: 1.3,
               ),
             ),
@@ -130,6 +131,7 @@ class _CheckoutTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -138,7 +140,7 @@ class _CheckoutTextField extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontSm - 1,
             fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
+            color: theme.colorScheme.onSurfaceVariant,
             letterSpacing: 0.5,
           ),
         ),
@@ -151,12 +153,12 @@ class _CheckoutTextField extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
           ),
           decoration: InputDecoration(
             isDense: true,
             filled: true,
-            fillColor: const Color(0xFFF3F3F8),
+            fillColor: theme.colorScheme.surfaceContainerHighest,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: AppSizes.radiusLg,
               vertical: AppSizes.radiusLg,

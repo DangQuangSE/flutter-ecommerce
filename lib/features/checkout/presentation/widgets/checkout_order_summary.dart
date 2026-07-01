@@ -20,6 +20,7 @@ class CheckoutOrderSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final totalItems = checkoutItems.fold(0, (sum, e) => sum + e.quantity);
     final subtotal = checkoutItems.fold(
       0.0,
@@ -30,7 +31,7 @@ class CheckoutOrderSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
@@ -79,7 +80,7 @@ class CheckoutOrderSummary extends StatelessWidget {
                 style: GoogleFonts.lexend(
                   fontSize: AppSizes.forgotPasswordFontSize,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -119,7 +120,8 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = color ?? AppColors.textSecondary;
+    final theme = Theme.of(context);
+    final textColor = color ?? theme.colorScheme.onSurfaceVariant;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -136,7 +138,7 @@ class _SummaryRow extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontMd,
             fontWeight: FontWeight.w700,
-            color: valueColor ?? color ?? AppColors.textPrimary,
+            color: valueColor ?? color ?? theme.colorScheme.onSurface,
           ),
         ),
       ],

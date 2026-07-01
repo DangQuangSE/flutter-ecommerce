@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
-import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
@@ -53,27 +50,7 @@ class _SplashPageState extends State<SplashPage> {
             break;
         }
       },
-      child: const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.shopping_bag_outlined,
-                size: AppSizes.shopLogoSize,
-                color: AppColors.primary,
-              ),
-              SizedBox(height: AppSizes.paddingMd),
-              Text(
-                AppStrings.appDisplayName,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: AppSizes.fontDisplay),
-              AppLoadingView(),
-            ],
-          ),
-        ),
-      ),
+      child: const Scaffold(body: AppLoadingView()),
     );
   }
 }
