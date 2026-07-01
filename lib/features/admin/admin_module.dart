@@ -19,6 +19,9 @@ import 'package:flutter_ecommerce/features/product/domain/usecases/add_product_u
 import 'package:flutter_ecommerce/features/product/domain/usecases/delete_product_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:flutter_ecommerce/features/product/domain/usecases/update_product_usecase.dart';
+import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
+import 'package:flutter_ecommerce/features/admin/data/datasources/admin_socket_client.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
 
 void setupAdminModule(GetIt sl) {
   sl.registerLazySingleton<AdminRemoteDataSource>(
@@ -61,5 +64,12 @@ void setupAdminModule(GetIt sl) {
       updateProductUseCase: sl<UpdateProductUseCase>(),
       deleteProductUseCase: sl<DeleteProductUseCase>(),
     ),
+  );
+  
+  sl.registerLazySingleton<AdminSocketClient>(
+    () => AdminSocketClient(sl<AuthTokenStorage>()),
+  );
+  sl.registerFactory<AdminNotificationCubit>(
+    () => AdminNotificationCubit(sl<AdminSocketClient>()),
   );
 }

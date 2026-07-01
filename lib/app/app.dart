@@ -11,6 +11,10 @@ import 'package:flutter_ecommerce/features/notification/presentation/cubit/notif
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_state.dart';
+import 'package:flutter_ecommerce/core/utils/notification_service.dart';
+
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -30,13 +34,30 @@ class App extends StatelessWidget {
         BlocProvider<CustomizerCubit>(
           create: (_) => sl<CustomizerCubit>(),
         ),
+        BlocProvider<AdminNotificationCubit>(
+          create: (_) => sl<AdminNotificationCubit>(),
+        ),
       ],
-      child: MaterialApp.router(
-        title: AppConstants.appName,
-        theme: AppTheme.light(),
-        routerConfig: AppRouter.router,
-        debugShowCheckedModeBanner: false,
+      child: BlocListener<AdminNotificationCubit, AdminNotificationState>(
+        listenWhen: (previous, current) =>
+            previous.latestNotification != current.latestNotification &&
+            current.latestNotification != null,
+        listener: (context, state) {
+          final notification = state.latestNotification!;
+          sl<NotificationService>().showNotification(
+            id: notification.orderId,
+            title: 'New Order: #${notification.orderId}',
+            body: notification.message,
+          );
+        },
+        child: MaterialApp.router(
+          title: AppConstants.appName,
+          theme: AppTheme.light(),
+          routerConfig: AppRouter.router,
+          debugShowCheckedModeBanner: false,
+        ),
       ),
     );
   }
 }
+
