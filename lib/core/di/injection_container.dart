@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
+import 'package:flutter_ecommerce/core/storage/app_settings_storage.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/features/address/address_module.dart';
@@ -42,6 +43,9 @@ Future<void> configureDependencies() async {
   );
   sl.registerLazySingleton<AuthTokenStorage>(
     () => AuthTokenStorage(sl<LocalStorage>()),
+  );
+  sl.registerLazySingleton<AppSettingsStorage>(
+    () => AppSettingsStorage(sl<LocalStorage>()),
   );
 
   final CookieJar cookieJar;

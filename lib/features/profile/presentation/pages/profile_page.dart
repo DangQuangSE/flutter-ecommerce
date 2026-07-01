@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/di/injection_container.dart';
+import 'package:flutter_ecommerce/core/storage/app_settings_storage.dart';
+import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/app/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
@@ -249,9 +252,19 @@ class ProfilePage extends StatelessWidget {
         ProfileMenuRow(
           icon: Icons.settings_outlined,
           label: AppStrings.profileSystemSettings,
-          onTap: () => context.goNamed(AppRoutes.home),
+          onTap: () => _showSystemSettingsSheet(context),
         ),
       ],
+    );
+  }
+
+  void _showSystemSettingsSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _SystemSettingsSheet(
+        settingsStorage: AppSettingsStorage(sl<LocalStorage>()),
+      ),
     );
   }
 
@@ -348,6 +361,88 @@ class _AvatarFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Icon(Icons.person_rounded,
         size: 32, color: AppColors.textSecondary);
+  }
+}
+
+class _SystemSettingsSheet extends StatefulWidget {
+  final AppSettingsStorage settingsStorage;
+
+  const _SystemSettingsSheet({required this.settingsStorage});
+
+  @override
+  State<_SystemSettingsSheet> createState() => _SystemSettingsSheetState();
+}
+
+class _SystemSettingsSheetState extends State<_SystemSettingsSheet> {
+  late bool _notificationSoundEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationSoundEnabled =
+        widget.settingsStorage.isNotificationSoundEnabled;
+  }
+
+  Future<void> _setNotificationSoundEnabled(bool value) async {
+    setState(() => _notificationSoundEnabled = value);
+    await widget.settingsStorage.setNotificationSoundEnabled(value: value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              AppStrings.systemSettingsTitle,
+              style: GoogleFonts.lexend(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              secondary: const Icon(
+                Icons.volume_up_outlined,
+                color: AppColors.textPrimary,
+              ),
+              title: Text(
+                AppStrings.notificationSoundTitle,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              subtitle: Text(
+                AppStrings.notificationSoundSubtitle,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              activeThumbColor: AppColors.accent,
+              activeTrackColor: AppColors.accent.withValues(alpha: 0.35),
+              value: _notificationSoundEnabled,
+              onChanged: _setNotificationSoundEnabled,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

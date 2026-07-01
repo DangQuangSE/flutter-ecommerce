@@ -122,6 +122,10 @@ abstract final class AppStrings {
   static const String profileAppNotifications = 'Thông báo ứng dụng';
   static const String profileInbox = 'Hộp thư tin nhắn';
   static const String profileSystemSettings = 'Cài đặt hệ thống';
+  static const String systemSettingsTitle = 'Cài đặt hệ thống';
+  static const String notificationSoundTitle = 'Âm thông báo';
+  static const String notificationSoundSubtitle =
+      'Phát âm thanh khi có thông báo mới';
   static const String profileLogout = 'Đăng xuất';
   static const String profileLogoutConfirm = 'Bạn có chắc muốn đăng xuất?';
   static String profileTier(String tier) => 'HẠNG ${tier.toUpperCase()}';
