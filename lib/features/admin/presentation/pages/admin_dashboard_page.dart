@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
@@ -72,7 +74,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           }
 
           return const Center(
-              child: Text('Đã xảy ra lỗi khi tải dữ liệu Admin.'));
+              child: Text(AppStrings.adminDashboardLoadError));
         },
       ),
       bottomNavigationBar: Container(
@@ -91,27 +93,31 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textSecondary.withValues(alpha: 0.7),
-          selectedLabelStyle:
-              GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11),
-          unselectedLabelStyle:
-              GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 11),
+          selectedLabelStyle: GoogleFonts.inter(
+              fontWeight: FontWeight.w600, fontSize: AppSizes.fontSm),
+          unselectedLabelStyle: GoogleFonts.inter(
+              fontWeight: FontWeight.w500, fontSize: AppSizes.fontSm),
           items: const [
             BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard_rounded, size: 22),
-                activeIcon: Icon(Icons.dashboard_rounded, size: 24),
-                label: 'Tổng quan'),
+                icon: Icon(Icons.dashboard_rounded, size: AppSizes.iconNav),
+                activeIcon:
+                    Icon(Icons.dashboard_rounded, size: AppSizes.iconNavActive),
+                label: AppStrings.adminNavOverview),
             BottomNavigationBarItem(
-                icon: Icon(Icons.tune_rounded, size: 22),
-                activeIcon: Icon(Icons.tune_rounded, size: 24),
-                label: 'Quản lý'),
+                icon: Icon(Icons.tune_rounded, size: AppSizes.iconNav),
+                activeIcon:
+                    Icon(Icons.tune_rounded, size: AppSizes.iconNavActive),
+                label: AppStrings.adminNavManagement),
             BottomNavigationBarItem(
-                icon: Icon(Icons.location_on_rounded, size: 22),
-                activeIcon: Icon(Icons.location_on_rounded, size: 24),
-                label: 'Cửa hàng'),
+                icon: Icon(Icons.location_on_rounded, size: AppSizes.iconNav),
+                activeIcon: Icon(Icons.location_on_rounded,
+                    size: AppSizes.iconNavActive),
+                label: AppStrings.adminNavStore),
             BottomNavigationBarItem(
-                icon: Icon(Icons.person_rounded, size: 22),
-                activeIcon: Icon(Icons.person_rounded, size: 24),
-                label: 'Cá nhân'),
+                icon: Icon(Icons.person_rounded, size: AppSizes.iconNav),
+                activeIcon:
+                    Icon(Icons.person_rounded, size: AppSizes.iconNavActive),
+                label: AppStrings.adminNavProfile),
           ],
         ),
       ),

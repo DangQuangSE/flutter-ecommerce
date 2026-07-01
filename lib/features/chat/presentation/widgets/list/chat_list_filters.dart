@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class ChatListFilters extends StatelessWidget {
   final TextEditingController searchController;
@@ -57,21 +59,22 @@ class _ChatSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: const EdgeInsets.fromLTRB(AppSizes.paddingMd,
+          AppSizes.spacing12, AppSizes.paddingMd, AppSizes.paddingSm),
       child: TextField(
         controller: controller,
         onChanged: (value) => onChanged(value.trim().toLowerCase()),
         decoration: InputDecoration(
-          hintText: 'Tìm kiếm cuộc hội thoại...',
+          hintText: AppStrings.chatSearchHint,
           hintStyle: GoogleFonts.inter(
-            fontSize: 13,
+            fontSize: AppSizes.font13,
             color: AppColors.textHint,
             fontWeight: FontWeight.w500,
           ),
           prefixIcon: const Icon(
             Icons.search_rounded,
             color: AppColors.textSecondary,
-            size: 20,
+            size: AppSizes.iconMd,
           ),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
@@ -79,21 +82,22 @@ class _ChatSearchBar extends StatelessWidget {
                   icon: const Icon(
                     Icons.close_rounded,
                     color: AppColors.textSecondary,
-                    size: 18,
+                    size: AppSizes.iconMd18,
                   ),
                 )
               : null,
           filled: true,
-          fillColor: const Color(0xFFF3F3F8),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+          fillColor: AppColors.canvasLight,
+          contentPadding: const EdgeInsets.symmetric(
+              vertical: 0, horizontal: AppSizes.paddingMd),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+            borderSide:
+                const BorderSide(color: AppColors.primary, width: 1.5),
           ),
         ),
       ),
@@ -114,25 +118,26 @@ class _ChatFilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      padding: const EdgeInsets.fromLTRB(AppSizes.paddingMd, AppSizes.paddingXs,
+          AppSizes.paddingMd, AppSizes.spacing12),
       child: Row(
         children: [
           _ChatFilterChip(
-            label: 'Tất cả',
+            label: AppStrings.chatFilterAll,
             filterValue: 'all',
             selectedFilter: selectedFilter,
             onFilterChanged: onFilterChanged,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.paddingSm),
           _ChatFilterChip(
-            label: 'Chưa đọc',
+            label: AppStrings.chatFilterUnread,
             filterValue: 'unread',
             selectedFilter: selectedFilter,
             onFilterChanged: onFilterChanged,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.paddingSm),
           _ChatFilterChip(
-            label: 'Hỗ trợ',
+            label: AppStrings.chatFilterSupport,
             filterValue: 'support',
             selectedFilter: selectedFilter,
             onFilterChanged: onFilterChanged,
@@ -164,10 +169,11 @@ class _ChatFilterChip extends StatelessWidget {
       onTap: () => onFilterChanged(filterValue),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.paddingMd, vertical: AppSizes.paddingSm),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : const Color(0xFFF3F3F8),
-          borderRadius: BorderRadius.circular(30),
+          color: isActive ? AppColors.primary : AppColors.canvasLight,
+          borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           border: Border.all(
             color: isActive ? AppColors.primary : Colors.transparent,
           ),
@@ -175,7 +181,7 @@ class _ChatFilterChip extends StatelessWidget {
         child: Text(
           label,
           style: GoogleFonts.inter(
-            fontSize: 12,
+            fontSize: AppSizes.fontMd,
             fontWeight: FontWeight.w700,
             color: isActive ? Colors.white : AppColors.textSecondary,
           ),
@@ -184,3 +190,4 @@ class _ChatFilterChip extends StatelessWidget {
     );
   }
 }
+

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
 
 class CategoryFormFields extends StatelessWidget {
@@ -37,33 +39,33 @@ class CategoryFormFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _FieldLabel('Tên danh mục *'),
+        const _FieldLabel(AppStrings.categoryNameLabel),
         TextFormField(
           controller: nameController,
-          decoration: _decoration('VD: Giày chạy bộ'),
+          decoration: _decoration(AppStrings.categoryNameHint),
           maxLength: 100,
           validator: (value) {
             final trimmed = value?.trim() ?? '';
-            if (trimmed.isEmpty) return 'Vui lòng nhập tên';
-            if (trimmed.length < 2) return 'Tên tối thiểu 2 ký tự';
+            if (trimmed.isEmpty) return AppStrings.categoryNameRequired;
+            if (trimmed.length < 2) return AppStrings.categoryNameMinLength;
             return null;
           },
         ),
-        const _FieldLabel('Mô tả'),
+        const _FieldLabel(AppStrings.categoryDescriptionLabel),
         TextFormField(
           controller: descriptionController,
-          decoration: _decoration('Mô tả ngắn về danh mục'),
+          decoration: _decoration(AppStrings.categoryDescriptionHint),
           maxLines: 3,
         ),
-        const SizedBox(height: 16),
-        const _FieldLabel('Danh mục cha'),
+        const SizedBox(height: AppSizes.paddingMd),
+        const _FieldLabel(AppStrings.categoryParentLabel),
         DropdownButtonFormField<int?>(
           initialValue: parentId,
-          decoration: _decoration('Không có (danh mục gốc)'),
+          decoration: _decoration(AppStrings.categoryParentNone),
           items: [
             const DropdownMenuItem<int?>(
               value: null,
-              child: Text('Không có (danh mục gốc)'),
+              child: Text(AppStrings.categoryParentNone),
             ),
             ...parentOptions.map(
               (parent) => DropdownMenuItem<int?>(
@@ -74,29 +76,29 @@ class CategoryFormFields extends StatelessWidget {
           ],
           onChanged: onParentChanged,
         ),
-        const _FieldLabel('Ảnh (URL)'),
+        const _FieldLabel(AppStrings.categoryImageLabel),
         TextFormField(
           controller: imageUrlController,
-          decoration: _decoration('https://...'),
+          decoration: _decoration(AppStrings.categoryImageHint),
           keyboardType: TextInputType.url,
         ),
-        const _FieldLabel('Thứ tự hiển thị'),
+        const _FieldLabel(AppStrings.categoryDisplayOrderLabel),
         TextFormField(
           controller: displayOrderController,
-          decoration: _decoration('VD: 1'),
+          decoration: _decoration(AppStrings.categoryDisplayOrderHint),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSizes.paddingSm),
         CategoryStatusSwitch(
-          title: 'Đang hoạt động',
-          subtitle: 'Hiển thị danh mục cho khách hàng',
+          title: AppStrings.categoryStatusActiveTitle,
+          subtitle: AppStrings.categoryStatusActiveSubtitle,
           value: isActive,
           onChanged: onActiveChanged,
         ),
         CategoryStatusSwitch(
-          title: 'Cho phép tùy chỉnh',
-          subtitle: 'Sản phẩm trong danh mục có thể tùy biến',
+          title: AppStrings.categoryCustomizableTitle,
+          subtitle: AppStrings.categoryCustomizableSubtitle,
           value: isCustomizable,
           onChanged: onCustomizableChanged,
         ),
@@ -122,12 +124,12 @@ class CategoryStatusSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.only(top: AppSizes.spacing10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: AppColors.borderGray.withValues(alpha: 0.3),
         ),
       ),
       child: SwitchListTile.adaptive(
@@ -137,7 +139,7 @@ class CategoryStatusSwitch extends StatelessWidget {
         title: Text(
           title,
           style: GoogleFonts.lexend(
-            fontSize: 14,
+            fontSize: AppSizes.fontLg,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
@@ -145,7 +147,7 @@ class CategoryStatusSwitch extends StatelessWidget {
         subtitle: Text(
           subtitle,
           style: GoogleFonts.inter(
-            fontSize: 12,
+            fontSize: AppSizes.fontMd,
             color: AppColors.textSecondary,
           ),
         ),
@@ -162,11 +164,12 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 6),
+      padding: const EdgeInsets.only(
+          top: AppSizes.spacing12, bottom: AppSizes.spacing6),
       child: Text(
         text,
         style: GoogleFonts.inter(
-          fontSize: 13,
+          fontSize: AppSizes.font13,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
@@ -178,10 +181,12 @@ class _FieldLabel extends StatelessWidget {
 InputDecoration _decoration(String hint) {
   return InputDecoration(
     hintText: hint,
-    hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textHint),
+    hintStyle:
+        GoogleFonts.inter(fontSize: AppSizes.fontLg, color: AppColors.textHint),
     filled: true,
     fillColor: Colors.white,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+    contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.spacing14, vertical: AppSizes.spacing14),
     border: _fieldBorder(),
     enabledBorder: _fieldBorder(),
     focusedBorder: _fieldBorder(color: AppColors.primary, width: 1.5),
@@ -193,7 +198,8 @@ OutlineInputBorder _fieldBorder({
   double width = 1,
 }) {
   return OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
+    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
     borderSide: BorderSide(color: color, width: width),
   );
 }
+

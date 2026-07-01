@@ -52,6 +52,26 @@ abstract final class AppSizes {
   static const double borderThick = 3.0;
   static const double letterSpacingWide = 1.0;
 
+  // Extra spacing
+  static const double spacing6 = 6.0;
+  static const double spacing10 = 10.0;
+  static const double spacing12 = 12.0;
+  static const double spacing14 = 14.0;
+
+  // Extra icon sizes
+  static const double iconMd18 = 18.0;
+  static const double iconNav = 22.0;
+  static const double iconNavActive = 24.0;
+
+  // Extra radius
+  static const double radius8 = 8.0;
+  static const double radius14 = 14.0;
+  static const double radiusFull = 30.0;
+
+  // Extra font sizes
+  static const double font13 = 13.0;
+  static const double fontTitle = 26.0;
+
   // Others
   static const double buttonMinHeight = 44.0;
   static const double tabVerticalPadding = 14.0;

@@ -837,4 +837,63 @@ abstract final class AppStrings {
   static const String andConnector = ' và ';
   static const String privacyPolicy = 'Chính sách bảo mật';
   static const String termsSuffix = ' của chúng tôi.';
+
+  // Admin dashboard
+  static const String adminDashboardLoadError =
+      'Đã xảy ra lỗi khi tải dữ liệu Admin.';
+  static const String adminNavOverview = 'Tổng quan';
+  static const String adminNavManagement = 'Quản lý';
+  static const String adminNavStore = 'Cửa hàng';
+  static const String adminNavProfile = 'Cá nhân';
+
+  // Admin order management
+  static const String adminOrderManagementTitle = 'Quản lý đơn hàng';
+  static const String adminOrderSearchHint = 'Tìm mã đơn, SĐT...';
+  static const String adminOrderEmpty = 'Không có đơn hàng nào.';
+  static const String adminOrderDetailTitle = 'Chi tiết đơn hàng';
+  static const String adminOrderStatusUpdated =
+      'Đã cập nhật trạng thái đơn hàng!';
+  static const String adminOrderSelectStatus = 'Chọn trạng thái mới';
+  static const String adminOrderUpdating = 'Đang cập nhật...';
+  static const String adminOrderUpdateStatus = 'Cập nhật trạng thái';
+  static const String filterAll = 'Tất cả';
+
+  // Admin management tab
+  static const String adminManagementTitle = 'Quản lý';
+  static const String adminManagementSubtitle =
+      'Truy cập nhanh các mục quản trị';
+  static const String adminManageProducts = 'Quản lý Sản phẩm';
+  static const String adminManageBrands = 'Quản lý Thương hiệu';
+  static const String adminManageColors = 'Quản lý Màu sắc';
+  static const String adminManageCategories = 'Quản lý Danh mục';
+  static const String adminManageCoupons = 'Quản lý Mã giảm giá';
+  static const String adminManageSizes = 'Quản lý Kích thước';
+  static const String adminSupportMessages = 'Tin nhắn hỗ trợ';
+  static const String adminReturnPolicy = 'Chính sách đổi trả & bảo hành';
+
+  // Category form
+  static const String categoryNameLabel = 'Tên danh mục *';
+  static const String categoryNameHint = 'VD: Giày chạy bộ';
+  static const String categoryNameRequired = 'Vui lòng nhập tên';
+  static const String categoryNameMinLength = 'Tên tối thiểu 2 ký tự';
+  static const String categoryDescriptionLabel = 'Mô tả';
+  static const String categoryDescriptionHint = 'Mô tả ngắn về danh mục';
+  static const String categoryParentLabel = 'Danh mục cha';
+  static const String categoryParentNone = 'Không có (danh mục gốc)';
+  static const String categoryImageLabel = 'Ảnh (URL)';
+  static const String categoryImageHint = 'https://...';
+  static const String categoryDisplayOrderLabel = 'Thứ tự hiển thị';
+  static const String categoryDisplayOrderHint = 'VD: 1';
+  static const String categoryStatusActiveTitle = 'Đang hoạt động';
+  static const String categoryStatusActiveSubtitle =
+      'Hiển thị danh mục cho khách hàng';
+  static const String categoryCustomizableTitle = 'Cho phép tùy chỉnh';
+  static const String categoryCustomizableSubtitle =
+      'Sản phẩm trong danh mục có thể tùy biến';
+
+  // Chat filters
+  static const String chatSearchHint = 'Tìm kiếm cuộc hội thoại...';
+  static const String chatFilterAll = 'Tất cả';
+  static const String chatFilterUnread = 'Chưa đọc';
+  static const String chatFilterSupport = 'Hỗ trợ';
 }
