@@ -4,6 +4,7 @@ import 'package:flutter_ecommerce/core/errors/result.dart';
 import '../datasources/admin_remote_datasource.dart';
 import '../../domain/entities/admin_stats_entity.dart';
 import '../../domain/repositories/admin_repository.dart';
+import '../models/admin_notification_model.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final AdminRemoteDataSource _remoteDataSource;
@@ -14,6 +15,29 @@ class AdminRepositoryImpl implements AdminRepository {
     try {
       final stats = await _remoteDataSource.getAdminStats();
       return Success(stats);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    } catch (e) {
+      return ResultFailure(NetworkFailure(e.toString()));
+    }
+  }
+  @override
+  Future<Result<List<AdminNotificationModel>>> getAdminNotifications() async {
+    try {
+      final notifications = await _remoteDataSource.getAdminNotifications();
+      return Success(notifications);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    } catch (e) {
+      return ResultFailure(NetworkFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> markAllAdminNotificationsAsRead() async {
+    try {
+      await _remoteDataSource.markAllNotificationsAsRead();
+      return const Success(null);
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
     } catch (e) {

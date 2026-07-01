@@ -23,8 +23,8 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   bool _hideBlocLoginError = false;
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'admin@sportpro.com');
-  final _passwordController = TextEditingController(text: 'Password123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   late final AnimationController _animationController;
 
