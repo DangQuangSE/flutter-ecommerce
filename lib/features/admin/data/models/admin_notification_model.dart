@@ -1,25 +1,31 @@
 class AdminNotificationModel {
+  final int id;
+  final String title;
+  final String message;
+  final bool isRead;
   final int orderId;
   final String customerName;
-  final double totalAmount;
   final String createdAt;
-  final String message;
 
   AdminNotificationModel({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.isRead,
     required this.orderId,
     required this.customerName,
-    required this.totalAmount,
     required this.createdAt,
-    required this.message,
   });
 
   factory AdminNotificationModel.fromJson(Map<String, dynamic> json) {
     return AdminNotificationModel(
-      orderId: json['orderId'],
-      customerName: json['customerName'] ?? 'Unknown',
-      totalAmount: (json['totalAmount'] ?? 0).toDouble(),
-      createdAt: json['createdAt'] ?? '',
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
       message: json['message'] ?? '',
+      isRead: json['isRead'] ?? false,
+      orderId: json['orderId'] ?? json['relatedId'] ?? 0,
+      customerName: json['customerName'] ?? 'Unknown',
+      createdAt: json['createdAt'] ?? '',
     );
   }
 }

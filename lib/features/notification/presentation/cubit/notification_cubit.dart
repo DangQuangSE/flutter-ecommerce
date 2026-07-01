@@ -1,19 +1,37 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/notification/domain/repositories/notification_repository.dart';
 import 'package:flutter_ecommerce/features/notification/domain/usecases/get_notifications_usecase.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_state.dart';
+import 'package:flutter_ecommerce/features/notification/data/datasources/notification_socket_client.dart';
 
 class NotificationCubit extends Cubit<NotificationState> {
   final GetNotificationsUseCase _getNotificationsUseCase;
   final NotificationRepository _repository;
+  final NotificationSocketClient _socketClient;
+  StreamSubscription? _subscription;
 
   NotificationCubit({
     required GetNotificationsUseCase getNotificationsUseCase,
     required NotificationRepository repository,
+    required NotificationSocketClient socketClient,
   })  : _getNotificationsUseCase = getNotificationsUseCase,
         _repository = repository,
-        super(const NotificationInitial());
+        _socketClient = socketClient,
+        super(const NotificationInitial()) {
+    _socketClient.connect();
+    _subscription = _socketClient.notifications.listen((notification) {
+      if (state is NotificationLoaded) {
+        final currentState = state as NotificationLoaded;
+        final updatedNotifications = [notification, ...currentState.notifications];
+        emit(NotificationLoaded(updatedNotifications));
+      } else {
+        // If not loaded yet, just load them from API
+        loadNotifications();
+      }
+    });
+  }
 
   Future<void> loadNotifications() async {
     emit(const NotificationLoading());
@@ -26,7 +44,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     }
   }
 
-  Future<void> markAsRead(String id) async {
+  Future<void> markAsRead(int id) async {
     final result = await _repository.markAsRead(id);
     if (result is Success) {
       await loadNotifications();
@@ -38,5 +56,12 @@ class NotificationCubit extends Cubit<NotificationState> {
     if (result is Success) {
       await loadNotifications();
     }
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    _socketClient.dispose();
+    return super.close();
   }
 }

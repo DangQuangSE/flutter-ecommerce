@@ -1,31 +1,48 @@
+import 'package:flutter_ecommerce/core/errors/exceptions.dart';
+import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
-import 'package:flutter_ecommerce/features/notification/data/models/notification_model.dart';
 import 'package:flutter_ecommerce/features/notification/domain/entities/notification_entity.dart';
 import 'package:flutter_ecommerce/features/notification/domain/repositories/notification_repository.dart';
+import 'package:flutter_ecommerce/features/notification/data/datasources/notification_remote_datasource.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
-  // In-memory data store for live unread updates
-  final List<NotificationEntity> _items = List.from(NotificationModel.mockList);
+  final NotificationRemoteDataSource _remoteDataSource;
+
+  NotificationRepositoryImpl(this._remoteDataSource);
 
   @override
   Future<Result<List<NotificationEntity>>> getNotifications() async {
-    return Success(List.unmodifiable(_items));
+    try {
+      final notifications = await _remoteDataSource.getNotifications();
+      return Success(notifications);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    } catch (e) {
+      return ResultFailure(NetworkFailure(e.toString()));
+    }
   }
 
   @override
-  Future<Result<void>> markAsRead(String id) async {
-    final index = _items.indexWhere((item) => item.id == id);
-    if (index >= 0) {
-      _items[index] = _items[index].copyWith(isRead: true);
+  Future<Result<void>> markAsRead(int id) async {
+    try {
+      await _remoteDataSource.markAsRead(id);
+      return const Success(null);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    } catch (e) {
+      return ResultFailure(NetworkFailure(e.toString()));
     }
-    return const Success(null);
   }
 
   @override
   Future<Result<void>> markAllAsRead() async {
-    for (int i = 0; i < _items.length; i++) {
-      _items[i] = _items[i].copyWith(isRead: true);
+    try {
+      await _remoteDataSource.markAllAsRead();
+      return const Success(null);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    } catch (e) {
+      return ResultFailure(NetworkFailure(e.toString()));
     }
-    return const Success(null);
   }
 }

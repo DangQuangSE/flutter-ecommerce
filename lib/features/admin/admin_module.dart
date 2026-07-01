@@ -22,6 +22,8 @@ import 'package:flutter_ecommerce/features/product/domain/usecases/update_produc
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/features/admin/data/datasources/admin_socket_client.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_notifications_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/mark_all_admin_notifications_as_read_usecase.dart';
 
 void setupAdminModule(GetIt sl) {
   sl.registerLazySingleton<AdminRemoteDataSource>(
@@ -69,7 +71,17 @@ void setupAdminModule(GetIt sl) {
   sl.registerLazySingleton<AdminSocketClient>(
     () => AdminSocketClient(sl<AuthTokenStorage>()),
   );
+  sl.registerFactory<GetAdminNotificationsUseCase>(
+    () => GetAdminNotificationsUseCase(sl<AdminRepository>()),
+  );
+  sl.registerFactory<MarkAllAdminNotificationsAsReadUseCase>(
+    () => MarkAllAdminNotificationsAsReadUseCase(sl<AdminRepository>()),
+  );
   sl.registerFactory<AdminNotificationCubit>(
-    () => AdminNotificationCubit(sl<AdminSocketClient>()),
+    () => AdminNotificationCubit(
+      sl<AdminSocketClient>(),
+      sl<GetAdminNotificationsUseCase>(),
+      sl<MarkAllAdminNotificationsAsReadUseCase>(),
+    ),
   );
 }

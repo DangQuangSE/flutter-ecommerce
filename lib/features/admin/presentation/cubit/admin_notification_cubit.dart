@@ -2,13 +2,24 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/data/datasources/admin_socket_client.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_state.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_notifications_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/mark_all_admin_notifications_as_read_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/data/models/admin_notification_model.dart';
+import 'package:flutter_ecommerce/core/errors/result.dart';
 
 class AdminNotificationCubit extends Cubit<AdminNotificationState> {
   final AdminSocketClient _socketClient;
+  final GetAdminNotificationsUseCase _getNotificationsUseCase;
+  final MarkAllAdminNotificationsAsReadUseCase _markAllAsReadUseCase;
   StreamSubscription? _subscription;
 
-  AdminNotificationCubit(this._socketClient)
-      : super(const AdminNotificationState()) {
+  AdminNotificationCubit(
+    this._socketClient,
+    this._getNotificationsUseCase,
+    this._markAllAsReadUseCase,
+  ) : super(const AdminNotificationState()) {
+    _loadInitialNotifications();
+
     _socketClient.connect();
     _subscription = _socketClient.notifications.listen((notification) {
       final updatedNotifications = [notification, ...state.notifications];
@@ -21,8 +32,37 @@ class AdminNotificationCubit extends Cubit<AdminNotificationState> {
     });
   }
 
-  void markAllAsRead() {
-    emit(state.copyWith(unreadCount: 0));
+  Future<void> _loadInitialNotifications() async {
+    final result = await _getNotificationsUseCase();
+    if (result is Success<List<AdminNotificationModel>>) {
+      final notifications = result.data;
+      final unreadCount = notifications.where((n) => !n.isRead).length;
+      emit(state.copyWith(
+        notifications: notifications,
+        unreadCount: unreadCount,
+        lastUpdated: DateTime.now().toIso8601String(),
+      ));
+    }
+  }
+
+  Future<void> markAllAsRead() async {
+    final result = await _markAllAsReadUseCase();
+    if (result is Success) {
+      emit(state.copyWith(unreadCount: 0));
+      // Optionally reload or locally update isRead flags:
+      final updated = state.notifications
+          .map((n) => AdminNotificationModel(
+                id: n.id,
+                title: n.title,
+                message: n.message,
+                isRead: true,
+                orderId: n.orderId,
+                customerName: n.customerName,
+                createdAt: n.createdAt,
+              ))
+          .toList();
+      emit(state.copyWith(notifications: updated));
+    }
   }
 
   @override
