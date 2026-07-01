@@ -519,6 +519,7 @@ abstract final class AppStrings {
   static const String noReviewsYet = 'Sản phẩm chưa có đánh giá nào.';
   static const String anonymousReviewer = 'Khách hàng';
   static String reviewsTitle(int count) => 'ĐÁNH GIÁ KHÁCH HÀNG ($count)';
+  static String productReviewCount(int count) => '($count)';
 
   // Product detail — return policy panel
   static const String returnPolicyTitle = 'CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH';

@@ -37,13 +37,13 @@ class ProductDetailPanels extends StatelessWidget {
               style: _bodyStyle(),
             ),
           ),
-          CollapsiblePanel(
-            title: AppStrings.reviewsTitle(product.reviewCount),
-            child: const _ProductReviewsPanel(),
-          ),
           const CollapsiblePanel(
             title: AppStrings.returnPolicyTitle,
             child: _ReturnPolicyPanel(),
+          ),
+          CollapsiblePanel(
+            title: AppStrings.reviewsTitle(product.reviewCount),
+            child: const _ProductReviewsPanel(),
           ),
         ],
       ),

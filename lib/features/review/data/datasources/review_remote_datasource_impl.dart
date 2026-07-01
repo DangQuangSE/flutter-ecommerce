@@ -34,11 +34,7 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         ApiConstants.productReviews(productId),
         queryParameters: {'page': page, 'size': size, 'sort': 'createdAt,desc'},
       );
-      final dataMap = response.data['data'] as Map<String, dynamic>;
-      final contentList = dataMap['content'] as List;
-      return contentList
-          .map((json) => ReviewModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      return _parseReviewList(response.data);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ??
@@ -152,5 +148,31 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         statusCode: e.response?.statusCode,
       );
     }
+  }
+
+  List<ReviewModel> _parseReviewList(dynamic responseData) {
+    final content = _extractReviewContent(responseData);
+    if (content == null) {
+      throw const ParseException(AppStrings.reviewListParseError);
+    }
+    return content
+        .whereType<Map<String, dynamic>>()
+        .map(ReviewModel.fromJson)
+        .toList();
+  }
+
+  List<dynamic>? _extractReviewContent(dynamic responseData) {
+    if (responseData is List<dynamic>) return responseData;
+    if (responseData is! Map<String, dynamic>) return null;
+
+    final data = responseData['data'];
+    if (data is List<dynamic>) return data;
+    if (data is Map<String, dynamic>) {
+      final content = data['content'] ?? data['items'];
+      if (content is List<dynamic>) return content;
+    }
+
+    final content = responseData['content'] ?? responseData['items'];
+    return content is List<dynamic> ? content : null;
   }
 }
