@@ -88,7 +88,6 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
       iconTheme: IconThemeData(color: AppColors.textPrimary),
