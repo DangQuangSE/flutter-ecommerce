@@ -1,5 +1,6 @@
 class ExistingDesignEntity {
   final String designMetadata;
+  final String backDesignMetadata;
   final String printingMaterialName;
   final int? printingMaterialId;
   final int numTextLines;
@@ -8,6 +9,7 @@ class ExistingDesignEntity {
 
   const ExistingDesignEntity({
     required this.designMetadata,
+    this.backDesignMetadata = '',
     required this.printingMaterialName,
     this.printingMaterialId,
     this.numTextLines = 0,

@@ -23,10 +23,15 @@ import 'package:flutter_ecommerce/features/customizer/presentation/pages/customi
 extension CustomizerActions on CustomizerPageState {
   void addNewTextLayer() {
     updateState(() {
-      final offset = (layers.length % 4) * 0.1 - 0.15;
+      final currentView =
+          isFrontView ? LayerView.front : LayerView.back;
+      final viewLayers =
+          layers.where((l) => l.view == currentView).toList();
+      final offset = (viewLayers.length % 4) * 0.1 - 0.15;
       final newLayer = DesignLayer(
         id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
         type: LayerType.text,
+        view: currentView,
         text: AppStrings.customizerDefaultTextLayer,
         color: AppColors.accentRed,
         fontSize: AppSizes.fontXxl,
@@ -46,9 +51,12 @@ extension CustomizerActions on CustomizerPageState {
       if (image == null) return;
 
       updateState(() {
+        final currentView =
+            isFrontView ? LayerView.front : LayerView.back;
         final newLayer = DesignLayer(
           id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
           type: LayerType.logo,
+          view: currentView,
           logoPath: image.path,
           y: -0.3,
         );
@@ -82,6 +90,7 @@ extension CustomizerActions on CustomizerPageState {
     final defaultLayer = DesignLayer(
       id: 'layer-default',
       type: LayerType.text,
+      view: LayerView.front,
       text: AppStrings.customizerDefaultLayerText,
       color: AppColors.accentBlue,
       fontSize: AppSizes.fontHeading,
@@ -161,9 +170,23 @@ extension CustomizerActions on CustomizerPageState {
     updateState(() => activeLayer = null);
     await Future.delayed(const Duration(milliseconds: 100));
 
-    final bytes = await captureCanvas();
-    updateState(() => activeLayer = previousActive);
-    if (bytes == null) {
+    // Capture front view
+    updateState(() => isFrontView = true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    final frontBytes = await captureCanvas();
+
+    // Capture back view
+    updateState(() => isFrontView = false);
+    await Future.delayed(const Duration(milliseconds: 100));
+    final backBytes = await captureCanvas();
+
+    // Restore previous state
+    updateState(() {
+      isFrontView = true;
+      activeLayer = previousActive;
+    });
+
+    if (frontBytes == null) {
       if (!mounted) return;
       AppSnackBar.show(
         context,
@@ -173,10 +196,18 @@ extension CustomizerActions on CustomizerPageState {
       return;
     }
 
+    // Split layers by view
+    final frontLayers =
+        layers.where((l) => l.view == LayerView.front).toList();
+    final backLayers =
+        layers.where((l) => l.view == LayerView.back).toList();
+
     final primary = extractPrimaryTextLayer();
     final hasLogo = layers.any((layer) => layer.type == LayerType.logo);
-    final layersJson =
-        jsonEncode(layers.map((layer) => layer.toJson()).toList());
+    final frontLayersJson =
+        jsonEncode(frontLayers.map((layer) => layer.toJson()).toList());
+    final backLayersJson =
+        jsonEncode(backLayers.map((layer) => layer.toJson()).toList());
     final materialId = selectedMaterial?.id ??
         (printMethod == AppStrings.customizerDefaultPrintMethod
             ? PrintingConstants.heatTransferId
@@ -191,14 +222,17 @@ extension CustomizerActions on CustomizerPageState {
       materialId: materialId,
       numTextLines: textLayersCount,
       numImages: imagesCount,
-      metadata: layersJson,
-      imageBytes: bytes,
+      metadata: frontLayersJson,
+      backMetadata: backLayersJson,
+      imageBytes: frontBytes,
+      backImageBytes: backBytes,
       activeText: primary.text,
       activeColor: primary.color,
       activeFontSize: primary.fontSize,
       hasLogo: hasLogo,
       printMethod: printMethod,
-      layersJson: layersJson,
+      layersJson: frontLayersJson,
+      backLayersJson: backLayersJson,
     );
 
     if (!mounted) return;

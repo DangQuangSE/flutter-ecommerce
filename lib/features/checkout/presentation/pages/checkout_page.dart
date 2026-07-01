@@ -24,6 +24,7 @@ import 'package:flutter_ecommerce/features/checkout/presentation/widgets/coupon_
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/enums/discount_type.dart';
 import 'package:flutter_ecommerce/features/payment/domain/entities/vnpay_payment_result.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -181,6 +182,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
               await _openVnpayWebView(context, checkoutState);
             } else if (checkoutState is CheckoutSuccess) {
               await context.read<CartCubit>().loadCart();
+              if (!context.mounted) return;
+              await context.read<CustomizerCubit>().clearAllCustomizations();
               if (!context.mounted) return;
               context.goNamed(AppRoutes.checkoutSuccess);
             } else if (checkoutState is CheckoutFailure) {

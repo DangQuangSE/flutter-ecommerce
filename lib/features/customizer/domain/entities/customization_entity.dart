@@ -9,6 +9,7 @@ class CustomizationEntity extends Equatable {
   final bool logoEnabled;
   final double textScale;
   final String layersJson;
+  final String backLayersJson;
   final int? customDesignId;
 
   const CustomizationEntity({
@@ -20,6 +21,7 @@ class CustomizationEntity extends Equatable {
     required this.logoEnabled,
     this.textScale = 1.0,
     this.layersJson = '',
+    this.backLayersJson = '',
     this.customDesignId,
   });
 
@@ -32,6 +34,7 @@ class CustomizationEntity extends Equatable {
     bool? logoEnabled,
     double? textScale,
     String? layersJson,
+    String? backLayersJson,
     int? customDesignId,
   }) {
     return CustomizationEntity(
@@ -43,6 +46,7 @@ class CustomizationEntity extends Equatable {
       logoEnabled: logoEnabled ?? this.logoEnabled,
       textScale: textScale ?? this.textScale,
       layersJson: layersJson ?? this.layersJson,
+      backLayersJson: backLayersJson ?? this.backLayersJson,
       customDesignId: customDesignId ?? this.customDesignId,
     );
   }
@@ -57,6 +61,7 @@ class CustomizationEntity extends Equatable {
         logoEnabled,
         textScale,
         layersJson,
+        backLayersJson,
         customDesignId,
       ];
 }

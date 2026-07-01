@@ -41,66 +41,80 @@ class LayerOverlayStack extends StatelessWidget {
       top: (canvasHeight / 2) + layer.y,
       child: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
-        child: GestureDetector(
-          onTapDown: (_) => onLayerActivated(layer),
-          onPanStart: (_) => onLayerActivated(layer),
-          onPanUpdate: (details) => onLayerDragged(layer.id, details.delta),
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: isActive ? AppColors.primary : Colors.transparent,
-                width: 1.5,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                if (layer.type == LayerType.text)
-                  Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.skewX(-0.15),
-                    child: Text(
-                      layer.text.toUpperCase(),
-                      style: getFontFamily(layer.font).copyWith(
-                        fontSize: layer.fontSize,
-                        fontWeight: FontWeight.w900,
-                        fontStyle: FontStyle.italic,
-                        color: layer.color,
-                        letterSpacing: -0.5,
-                      ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Listener(
+              onPointerDown: (_) => onLayerActivated(layer),
+              child: GestureDetector(
+                onPanStart: (_) => onLayerActivated(layer),
+                onPanUpdate: (details) =>
+                    onLayerDragged(layer.id, details.delta),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isActive ? AppColors.primary : Colors.transparent,
+                      width: 1.5,
                     ),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                if (layer.type == LayerType.logo)
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: const BoxDecoration(shape: BoxShape.circle),
-                    clipBehavior: Clip.antiAlias,
-                    child: layer.logoPath != null
-                        ? (kIsWeb
-                            ? Image.network(
-                                layer.logoPath!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.sports_soccer_rounded,
-                                        size: 28),
-                              )
-                            : Image.file(
-                                File(layer.logoPath!),
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.sports_soccer_rounded,
-                                        size: 28),
-                              ))
-                        : const Icon(Icons.sports_soccer_rounded, size: 28),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      if (layer.type == LayerType.text)
+                        Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.skewX(-0.15),
+                          child: Text(
+                            layer.text.toUpperCase(),
+                            style: getFontFamily(layer.font).copyWith(
+                              fontSize: layer.fontSize,
+                              fontWeight: FontWeight.w900,
+                              fontStyle: FontStyle.italic,
+                              color: layer.color,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ),
+                      if (layer.type == LayerType.logo)
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration:
+                              const BoxDecoration(shape: BoxShape.circle),
+                          clipBehavior: Clip.antiAlias,
+                          child: layer.logoPath != null
+                              ? (kIsWeb
+                                  ? Image.network(
+                                      layer.logoPath!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(
+                                                  Icons.sports_soccer_rounded,
+                                                  size: 28),
+                                    )
+                                  : Image.file(
+                                      File(layer.logoPath!),
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(
+                                                  Icons.sports_soccer_rounded,
+                                                  size: 28),
+                                    ))
+                              : const Icon(Icons.sports_soccer_rounded,
+                                  size: 28),
+                        ),
+                    ],
                   ),
-                if (isActive) _buildDeleteHandle(layer.id),
-                if (isActive) _buildResizeHandle(),
-              ],
+                ),
+              ),
             ),
-          ),
+            if (isActive) _buildDeleteHandle(layer.id),
+            if (isActive) _buildResizeHandle(),
+          ],
         ),
       ),
     );
@@ -110,9 +124,10 @@ class LayerOverlayStack extends StatelessWidget {
         top: -16,
         right: -16,
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () => onLayerDeleted(layerId),
           child: Container(
-            padding: const EdgeInsets.all(2),
+            padding: const EdgeInsets.all(4),
             decoration: const BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,

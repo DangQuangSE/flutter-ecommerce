@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
@@ -20,42 +21,108 @@ class AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: AppSizes.paddingMd),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+        border: Border.all(
+          color: address.isDefault
+              ? AppColors.primary.withValues(alpha: 0.3)
+              : const Color(0xFFE2E8F0),
+          width: address.isDefault ? 1.5 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSizes.paddingMd),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppSizes.radiusXl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeaderRow(),
-            SizedBox(height: AppSizes.paddingSm),
-            _buildInfoRow(Icons.person_outline, address.fullName),
-            _buildInfoRow(Icons.phone_outlined, address.phoneNumber),
-            _buildInfoRow(Icons.location_on_outlined, address.formattedAddress),
-            if (address.label != null && address.label!.isNotEmpty)
-              _buildLabelChip(),
-            const Divider(height: AppSizes.paddingXl),
-            _buildActionRow(),
+            if (address.isDefault) _buildDefaultAccent(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 12),
+                  _buildInfoRow(
+                    Icons.person_outline_rounded,
+                    address.fullName,
+                  ),
+                  const SizedBox(height: 6),
+                  _buildInfoRow(
+                    Icons.phone_outlined,
+                    address.phoneNumber,
+                  ),
+                  const SizedBox(height: 6),
+                  _buildInfoRow(
+                    Icons.location_on_outlined,
+                    address.formattedAddress,
+                  ),
+                  if (address.label != null && address.label!.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    _buildLabelChip(),
+                  ],
+                  const SizedBox(height: 12),
+                  _buildActionRow(),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeaderRow() {
+  Widget _buildDefaultAccent() {
+    return Container(
+      height: 3,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary,
+            AppColors.primaryLight,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
     return Row(
       children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          ),
+          child: const Icon(
+            Icons.location_on_rounded,
+            size: 20,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             address.fullName,
-            style: TextStyle(
-              fontSize: AppSizes.fontXxl,
-              fontWeight: FontWeight.bold,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.lexend(
+              fontSize: AppSizes.fontXl,
+              fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
+              letterSpacing: -0.3,
             ),
           ),
         ),
@@ -66,62 +133,61 @@ class AddressCard extends StatelessWidget {
 
   Widget _buildDefaultBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.paddingSm,
-        vertical: 2,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppSizes.radiusFull),
       ),
       child: Text(
         AppStrings.addressDefaultLabel,
-        style: TextStyle(
-          fontSize: AppSizes.fontSm,
-          color: AppColors.primary,
-          fontWeight: FontWeight.w500,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: AppSizes.fontXs,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          letterSpacing: 0.3,
         ),
       ),
     );
   }
 
   Widget _buildInfoRow(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: AppSizes.iconSm, color: AppColors.textSecondary),
-          SizedBox(width: AppSizes.paddingSm),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: AppSizes.fontLg,
-                color: AppColors.textSecondary,
-              ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 15, color: AppColors.textHint),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: AppSizes.fontLg,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+              height: 1.4,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildLabelChip() {
     return Container(
-      margin: const EdgeInsets.only(top: AppSizes.paddingSm),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.paddingSm,
-        vertical: 2,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.accent.withValues(alpha: 0.1),
+        color: AppColors.accent.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        border: Border.all(
+          color: AppColors.accent.withValues(alpha: 0.2),
+        ),
       ),
       child: Text(
         address.label!,
-        style: TextStyle(
-          fontSize: AppSizes.fontSm,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: AppSizes.fontXs,
+          fontWeight: FontWeight.w700,
           color: AppColors.accent,
         ),
       ),
@@ -130,45 +196,104 @@ class AddressCard extends StatelessWidget {
 
   Widget _buildActionRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         if (!address.isDefault)
-          _ActionButton(
-            label: AppStrings.addressSetDefault,
-            onTap: onSetDefault,
+          Expanded(
+            child: _ActionButton(
+              icon: Icons.star_outline_rounded,
+              label: AppStrings.addressSetDefault,
+              onTap: onSetDefault,
+              isPrimary: true,
+            ),
           ),
-        SizedBox(width: AppSizes.paddingSm),
-        _ActionButton(label: AppStrings.addressEdit, onTap: onEdit),
-        SizedBox(width: AppSizes.paddingSm),
-        _ActionButton(label: AppStrings.addressDelete, onTap: onDelete),
+        if (!address.isDefault) const SizedBox(width: 8),
+        _IconActionButton(
+          icon: Icons.edit_outlined,
+          onTap: onEdit,
+        ),
+        const SizedBox(width: 8),
+        _IconActionButton(
+          icon: Icons.delete_outline_rounded,
+          onTap: onDelete,
+          isDanger: true,
+        ),
       ],
     );
   }
 }
 
 class _ActionButton extends StatelessWidget {
+  final IconData icon;
   final String label;
   final VoidCallback? onTap;
+  final bool isPrimary;
 
-  const _ActionButton({required this.label, this.onTap});
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    this.onTap,
+    this.isPrimary = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.paddingSm,
-          vertical: 4,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: AppSizes.fontMd,
-            color: onTap != null ? AppColors.primary : AppColors.textHint,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 15, color: AppColors.primary),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: AppSizes.fontMd,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _IconActionButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+  final bool isDanger;
+
+  const _IconActionButton({
+    required this.icon,
+    this.onTap,
+    this.isDanger = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDanger ? AppColors.error : AppColors.textSecondary;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        ),
+        child: Icon(icon, size: 18, color: color),
       ),
     );
   }
