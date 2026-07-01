@@ -17,7 +17,6 @@ class BrandManagementAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
       title: Text(

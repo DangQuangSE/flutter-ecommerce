@@ -45,7 +45,7 @@ class AppSearchField extends StatelessWidget {
             hintText: hintText,
             hintStyle: GoogleFonts.inter(
               fontSize: AppSizes.fontLg,
-              color: AppColors.textHint,
+              color: Theme.of(context).hintColor,
             ),
             prefixIcon: Icon(
               Icons.search_rounded,
@@ -61,12 +61,12 @@ class AppSearchField extends StatelessWidget {
                   )
                 : null,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Theme.of(context).inputDecorationTheme.fillColor,
             contentPadding: const EdgeInsets.symmetric(
                 vertical: AppSizes.paddingSm + AppSizes.paddingXs),
-            enabledBorder: _border(AppColors.divider),
+            enabledBorder: _border(Theme.of(context).dividerColor),
             focusedBorder: _border(AppColors.primary, width: 1.5),
-            border: _border(AppColors.divider),
+            border: _border(Theme.of(context).dividerColor),
           ),
         ),
       );

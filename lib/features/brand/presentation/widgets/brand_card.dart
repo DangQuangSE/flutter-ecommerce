@@ -22,9 +22,9 @@ class BrandCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.015),
@@ -91,7 +91,7 @@ class _BrandAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
@@ -154,7 +154,7 @@ class _BrandSummary extends StatelessWidget {
             Icon(
               Icons.public_rounded,
               size: 12,
-              color: Colors.grey.shade400,
+              color: AppColors.textSecondary,
             ),
             SizedBox(width: 4),
             Expanded(
