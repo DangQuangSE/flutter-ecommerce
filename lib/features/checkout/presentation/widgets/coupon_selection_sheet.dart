@@ -79,89 +79,99 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final listMaxHeight = MediaQuery.sizeOf(context).height * 0.4;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSizes.paddingMd,
-            AppSizes.radiusLg,
-            AppSizes.paddingXs,
-            AppSizes.paddingXs,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  AppStrings.checkoutCouponPickerTitle,
-                  style: GoogleFonts.lexend(
-                    fontSize: AppSizes.fontXl,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+    return ColoredBox(
+      color: theme.colorScheme.surface,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.paddingMd,
+              AppSizes.radiusLg,
+              AppSizes.paddingXs,
+              AppSizes.paddingXs,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    AppStrings.checkoutCouponPickerTitle,
+                    style: GoogleFonts.lexend(
+                      fontSize: AppSizes.fontXl,
+                      fontWeight: FontWeight.w800,
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.close, size: AppSizes.iconMd),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1),
-        CouponManualCodeForm(
-          controller: _codeController,
-          errorMessage: _errorMessage,
-          onApply: _applyManualCode,
-        ),
-        const Divider(height: 1),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: listMaxHeight),
-          child: _buildCouponList(),
-        ),
-        Container(
-          padding: const EdgeInsets.all(AppSizes.paddingMd),
-          decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
-          ),
-          child: ElevatedButton(
-            onPressed: () => widget.onCouponSelected(_tempSelectedCoupon),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
-              minimumSize: const Size.fromHeight(48),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.paddingSm),
-              ),
-            ),
-            child: Text(
-              AppStrings.ok,
-              style: GoogleFonts.lexend(
-                fontSize: AppSizes.fontLg,
-                fontWeight: FontWeight.w800,
-              ),
+                IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    size: AppSizes.iconMd,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
+          Divider(height: 1, color: theme.dividerColor),
+          CouponManualCodeForm(
+            controller: _codeController,
+            errorMessage: _errorMessage,
+            onApply: _applyManualCode,
+          ),
+          Divider(height: 1, color: theme.dividerColor),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: listMaxHeight),
+            child: _buildCouponList(),
+          ),
+          Container(
+            padding: const EdgeInsets.all(AppSizes.paddingMd),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: theme.dividerColor)),
+            ),
+            child: ElevatedButton(
+              onPressed: () => widget.onCouponSelected(_tempSelectedCoupon),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.paddingSm),
+                ),
+              ),
+              child: Text(
+                AppStrings.ok,
+                style: GoogleFonts.lexend(
+                  fontSize: AppSizes.fontLg,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildSectionLabel(String text) {
+    final theme = Theme.of(context);
     return Text(
       text,
       style: GoogleFonts.inter(
         fontSize: AppSizes.fontSm,
         fontWeight: FontWeight.w700,
-        color: AppColors.textSecondary,
+        color: theme.colorScheme.onSurfaceVariant,
         letterSpacing: 0.5,
       ),
     );
   }
 
   Widget _buildEmptyVouchers() {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSizes.paddingXl),
@@ -179,7 +189,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
               style: GoogleFonts.inter(
                 fontSize: AppSizes.forgotPasswordFontSize,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],

@@ -23,6 +23,7 @@ class CouponVoucherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Opacity(
       opacity: isEligible ? 1.0 : 0.6,
       child: Container(
@@ -35,7 +36,9 @@ class CouponVoucherCard extends StatelessWidget {
             width: isSelected ? 1.5 : 1,
           ),
           borderRadius: BorderRadius.circular(10),
-          color: isEligible ? Colors.white : const Color(0xFFF9FAFB),
+          color: isEligible
+              ? theme.colorScheme.surface
+              : theme.colorScheme.surfaceContainerHighest,
         ),
         child: Row(
           children: [
@@ -103,6 +106,7 @@ class _VoucherText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final description = _description();
     final minOrderText = coupon.minOrderAmount == null
         ? ''
@@ -119,7 +123,7 @@ class _VoucherText extends StatelessWidget {
           style: GoogleFonts.lexend(
             fontSize: 13,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         SizedBox(height: 2),
@@ -128,7 +132,9 @@ class _VoucherText extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: isEligible ? AppColors.primary : AppColors.textSecondary,
+            color: isEligible
+                ? AppColors.primary
+                : theme.colorScheme.onSurfaceVariant,
           ),
         ),
         if (minOrderText.isNotEmpty) ...[
@@ -137,7 +143,7 @@ class _VoucherText extends StatelessWidget {
             minOrderText,
             style: GoogleFonts.inter(
               fontSize: 11,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ],

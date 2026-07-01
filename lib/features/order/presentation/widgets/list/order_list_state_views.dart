@@ -116,9 +116,9 @@ class _MessageCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSizes.paddingXl),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(AppSizes.paddingXl),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

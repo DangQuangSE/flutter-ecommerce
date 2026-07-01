@@ -22,7 +22,7 @@ class AddressListPage extends StatelessWidget {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: BlocConsumer<AddressCubit, AddressState>(
         listener: (context, state) {
@@ -74,10 +74,10 @@ class _AddressAppBar extends StatelessWidget {
         12,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
         border: Border(
           bottom: BorderSide(
-            color: const Color(0xFFE2E8F0).withValues(alpha: 0.7),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.7),
           ),
         ),
         boxShadow: [

@@ -599,6 +599,8 @@ abstract final class AppStrings {
   static const String orderSizeLabel = 'Size';
   static const String orderTotalLabel = 'TỔNG THANH TOÁN';
   static const String orderContinueShopping = 'TIẾP TỤC MUA SẮM';
+  static const String orderTrackOrder = 'THEO DÕI ĐƠN';
+  static const String orderSubtotal = 'Tạm tính';
   static const String orderWriteReviewAction = 'Đánh giá';
   static const String orderReviewedLabel = 'Đã đánh giá';
 
