@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/shop/domain/entities/shop_entity.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_state.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_cover_picker.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_error_view.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_logo_picker.dart';
 
 class AdminShopConfigPage extends StatelessWidget {
   const AdminShopConfigPage({super.key});
@@ -15,7 +20,6 @@ class AdminShopConfigPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
@@ -32,13 +36,7 @@ class AdminShopConfigPage extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<ShopCubit, ShopState>(
           builder: (context, state) => switch (state) {
-            ShopInitial() => Center(
-                child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              ),
-            ShopLoading() => Center(
+            ShopInitial() || ShopLoading() => const Center(
                 child: CircularProgressIndicator(
                   valueColor:
                       AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -67,49 +65,41 @@ class _AdminShopForm extends StatefulWidget {
 
 class _AdminShopFormState extends State<_AdminShopForm> {
   final _formKey = GlobalKey<FormState>();
+  final _picker = ImagePicker();
+
   bool _isSaving = false;
+  bool _isUploadingLogo = false;
+  bool _isUploadingCover = false;
+
+  late String? _logoUrl;
+  late String? _coverUrl;
 
   late final TextEditingController _nameCtrl;
   late final TextEditingController _addressCtrl;
-  late final TextEditingController _ratingCtrl;
-  late final TextEditingController _ratingCountCtrl;
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _openingHoursCtrl;
   late final TextEditingController _descriptionCtrl;
-  late final TextEditingController _logoUrlCtrl;
-  late final TextEditingController _coverUrlCtrl;
 
   @override
   void initState() {
     super.initState();
     final s = widget.initialShop;
+    _logoUrl = s.logoUrl;
+    _coverUrl = s.coverUrl;
     _nameCtrl = TextEditingController(text: s.name);
     _addressCtrl = TextEditingController(text: s.address ?? '');
-    _ratingCtrl = TextEditingController(
-      text: s.rating != null ? s.rating!.toString() : '',
-    );
-    _ratingCountCtrl =
-        TextEditingController(text: s.ratingCount.toString());
     _phoneCtrl = TextEditingController(text: s.phone ?? '');
-    _openingHoursCtrl =
-        TextEditingController(text: s.openingHours ?? '');
-    _descriptionCtrl =
-        TextEditingController(text: s.description ?? '');
-    _logoUrlCtrl = TextEditingController(text: s.logoUrl ?? '');
-    _coverUrlCtrl = TextEditingController(text: s.coverUrl ?? '');
+    _openingHoursCtrl = TextEditingController(text: s.openingHours ?? '');
+    _descriptionCtrl = TextEditingController(text: s.description ?? '');
   }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
     _addressCtrl.dispose();
-    _ratingCtrl.dispose();
-    _ratingCountCtrl.dispose();
     _phoneCtrl.dispose();
     _openingHoursCtrl.dispose();
     _descriptionCtrl.dispose();
-    _logoUrlCtrl.dispose();
-    _coverUrlCtrl.dispose();
     super.dispose();
   }
 
@@ -118,83 +108,137 @@ class _AdminShopFormState extends State<_AdminShopForm> {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: AppSizes.screenPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: _buildFormChildren(context),
+          children: [
+            _buildHeaderPicker(context),
+            const SizedBox(height: AppSizes.shopLogoSize / 2 + AppSizes.paddingMd),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildField(
+                    controller: _nameCtrl,
+                    label: AppStrings.shopFieldName,
+                    hint: AppStrings.shopFieldNameHint,
+                    validator: _validateRequired,
+                  ),
+                  AppSizes.spacingMd,
+                  _buildField(
+                    controller: _addressCtrl,
+                    label: AppStrings.shopFieldAddress,
+                    hint: AppStrings.shopFieldAddressHint,
+                  ),
+                  AppSizes.spacingMd,
+                  _buildField(
+                    controller: _phoneCtrl,
+                    label: AppStrings.shopFieldPhone,
+                    hint: AppStrings.shopFieldPhoneHint,
+                    keyboardType: TextInputType.phone,
+                  ),
+                  AppSizes.spacingMd,
+                  _buildField(
+                    controller: _openingHoursCtrl,
+                    label: AppStrings.shopFieldOpeningHours,
+                    hint: AppStrings.shopFieldOpeningHoursHint,
+                  ),
+                  AppSizes.spacingMd,
+                  _buildField(
+                    controller: _descriptionCtrl,
+                    label: AppStrings.shopFieldDescription,
+                    hint: AppStrings.shopFieldDescriptionHint,
+                    maxLines: 4,
+                  ),
+                  AppSizes.spacingLg,
+                  _SubmitButton(
+                    isSaving: _isSaving,
+                    onPressed: _submit,
+                  ),
+                  AppSizes.spacingLg,
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildFormChildren(BuildContext context) {
-    return [
-      _buildField(
-        controller: _nameCtrl,
-        label: AppStrings.shopFieldName,
-        hint: AppStrings.shopFieldNameHint,
-        validator: _validateRequired,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _addressCtrl,
-        label: AppStrings.shopFieldAddress,
-        hint: AppStrings.shopFieldAddressHint,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _ratingCtrl,
-        label: AppStrings.shopFieldRating,
-        hint: AppStrings.shopFieldRatingHint,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        validator: _validateRating,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _ratingCountCtrl,
-        label: AppStrings.shopFieldRatingCount,
-        hint: AppStrings.shopFieldRatingCountHint,
-        keyboardType: TextInputType.number,
-        validator: _validateRatingCount,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _phoneCtrl,
-        label: AppStrings.shopFieldPhone,
-        hint: AppStrings.shopFieldPhoneHint,
-        keyboardType: TextInputType.phone,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _openingHoursCtrl,
-        label: AppStrings.shopFieldOpeningHours,
-        hint: AppStrings.shopFieldOpeningHoursHint,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _descriptionCtrl,
-        label: AppStrings.shopFieldDescription,
-        hint: AppStrings.shopFieldDescriptionHint,
-        maxLines: 4,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _logoUrlCtrl,
-        label: AppStrings.shopFieldLogoUrl,
-        hint: AppStrings.shopFieldLogoUrlHint,
-        keyboardType: TextInputType.url,
-      ),
-      AppSizes.spacingMd,
-      _buildField(
-        controller: _coverUrlCtrl,
-        label: AppStrings.shopFieldCoverUrl,
-        hint: AppStrings.shopFieldCoverUrlHint,
-        keyboardType: TextInputType.url,
-      ),
-      AppSizes.spacingLg,
-      _SubmitButton(isSaving: _isSaving, onPressed: () => _submit(context)),
-      AppSizes.spacingLg,
-    ];
+  Widget _buildHeaderPicker(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final coverHeight = constraints.maxWidth * AppSizes.shopCoverRatio;
+      return SizedBox(
+        height: coverHeight + AppSizes.shopLogoSize / 2,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: coverHeight,
+              child: ShopCoverPicker(
+                imageUrl: _coverUrl,
+                isUploading: _isUploadingCover,
+                onTap: () => _pickAndUpload('cover'),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: AppSizes.paddingMd,
+              child: ShopLogoPicker(
+                imageUrl: _logoUrl,
+                shopName: _nameCtrl.text,
+                isUploading: _isUploadingLogo,
+                onTap: () => _pickAndUpload('logo'),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Future<void> _pickAndUpload(String type) async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      if (type == 'logo') {
+        _isUploadingLogo = true;
+      } else {
+        _isUploadingCover = true;
+      }
+    });
+
+    final cubit = context.read<ShopCubit>();
+    final (:url, :error) =
+        await cubit.uploadShopImageWithUrl(File(picked.path), type);
+
+    if (!mounted) return;
+    setState(() {
+      if (type == 'logo') {
+        _isUploadingLogo = false;
+        if (url != null) _logoUrl = url;
+      } else {
+        _isUploadingCover = false;
+        if (url != null) _coverUrl = url;
+      }
+    });
+
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(AppStrings.shopImageUploadError),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   Widget _buildField({
@@ -228,8 +272,7 @@ class _AdminShopFormState extends State<_AdminShopForm> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          borderSide:
-              const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
       ),
       validator: validator,
@@ -243,60 +286,26 @@ class _AdminShopFormState extends State<_AdminShopForm> {
     return null;
   }
 
-  String? _validateRating(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-    final parsed = double.tryParse(value.trim());
-    if (parsed == null) return AppStrings.shopValidationRatingInvalid;
-    if (parsed < 0 || parsed > 5) {
-      return AppStrings.shopValidationRatingRange;
-    }
-    return null;
-  }
-
-  String? _validateRatingCount(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-    final parsed = int.tryParse(value.trim());
-    if (parsed == null || parsed < 0) {
-      return AppStrings.shopValidationRatingCountInvalid;
-    }
-    return null;
-  }
-
-  Future<void> _submit(BuildContext context) async {
+  Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSaving = true);
-
-    final ratingText = _ratingCtrl.text.trim();
-    final ratingCountText = _ratingCountCtrl.text.trim();
 
     final draft = widget.initialShop.copyWith(
       name: _nameCtrl.text.trim(),
       address: _addressCtrl.text.trim().isEmpty
           ? null
           : _addressCtrl.text.trim(),
-      rating:
-          ratingText.isEmpty ? null : double.tryParse(ratingText),
-      ratingCount: ratingCountText.isEmpty
-          ? 0
-          : int.tryParse(ratingCountText) ?? 0,
-      phone: _phoneCtrl.text.trim().isEmpty
-          ? null
-          : _phoneCtrl.text.trim(),
+      phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
       openingHours: _openingHoursCtrl.text.trim().isEmpty
           ? null
           : _openingHoursCtrl.text.trim(),
       description: _descriptionCtrl.text.trim().isEmpty
           ? null
           : _descriptionCtrl.text.trim(),
-      logoUrl: _logoUrlCtrl.text.trim().isEmpty
-          ? null
-          : _logoUrlCtrl.text.trim(),
-      coverUrl: _coverUrlCtrl.text.trim().isEmpty
-          ? null
-          : _coverUrlCtrl.text.trim(),
+      logoUrl: _logoUrl,
+      coverUrl: _coverUrl,
     );
 
-    // Capture context-dependent objects before the async gap.
     final cubit = context.read<ShopCubit>();
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
@@ -345,7 +354,7 @@ class _SubmitButton extends StatelessWidget {
         ),
       ),
       child: isSaving
-          ? SizedBox(
+          ? const SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(

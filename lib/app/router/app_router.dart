@@ -46,7 +46,7 @@ import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
-import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_entry_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
@@ -701,7 +701,7 @@ class AppRouter {
         name: AppRoutes.chatList,
         pageBuilder: (context, state) => _slideUpPage(
           state: state,
-          child: const ChatListPage(),
+          child: const ChatEntryPage(),
         ),
         routes: [
           GoRoute(

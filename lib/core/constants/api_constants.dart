@@ -116,4 +116,5 @@ abstract final class ApiConstants {
   // Shop profile
   static const String shop = '/api/shop';
   static const String adminShop = '/api/admin/shop';
+  static const String adminShopUploadImage = '/api/admin/shop/upload-image';
 }

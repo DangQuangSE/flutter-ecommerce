@@ -27,6 +27,25 @@ Redesign the admin shop configuration page to:
 
 ---
 
+## Session Notes
+<!-- Updated by cook automatically — do not edit manually -->
+
+**Last active:** 2026-07-02
+**Phase in progress:** complete
+**Status:** All 4 phases done. Zero errors in modified files.
+
+### Decisions made this session
+- `getShop()` computes rating/ratingCount from ProductReview and persists before returning
+- `uploadShopImage` delegates to `IUploadService.uploadFile(file, "shop")`
+- `DioMediaType` from Dio (not http_parser MediaType) for multipart MIME
+- `_pickAndUpload` and `_submit` use `State.context` (no BuildContext param) to satisfy linter
+- `LayoutBuilder` used in header picker to compute cover height without AspectRatio conflicts
+
+### Next immediate action
+Step 3.S simplify check, then code review
+
+---
+
 ## Risks
 
 - `image_picker` package may not be in pubspec.yaml — check and add if missing
