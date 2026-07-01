@@ -45,7 +45,7 @@ class CouponManagementList extends StatelessWidget {
           96,
         ),
         itemCount: filtered.isEmpty ? 2 : filtered.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(height: AppSizes.radiusMd),
+        separatorBuilder: (_, __) => SizedBox(height: AppSizes.radiusMd),
         itemBuilder: (context, index) {
           if (index == 0) {
             return _CouponListHeader(
@@ -172,7 +172,7 @@ class _CouponTile extends StatelessWidget {
         child: Row(
           children: [
             _CouponIcon(inactive: inactive),
-            const SizedBox(width: AppSizes.paddingSm + AppSizes.paddingXs),
+            SizedBox(width: AppSizes.paddingSm + AppSizes.paddingXs),
             Expanded(child: _CouponSummary(coupon: coupon)),
             Switch.adaptive(
               value: coupon.isActive,
@@ -180,7 +180,7 @@ class _CouponTile extends StatelessWidget {
               onChanged: (_) => onToggle(coupon),
             ),
             PopupMenuButton<String>(
-              icon: const Icon(
+              icon: Icon(
                 Icons.more_vert_rounded,
                 color: AppColors.textSecondary,
               ),
@@ -247,11 +247,11 @@ class _CouponSummary extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: AppSizes.radiusSm),
+            SizedBox(width: AppSizes.radiusSm),
             _DiscountChip(coupon: coupon),
           ],
         ),
-        const SizedBox(height: AppSizes.paddingXs - 1),
+        SizedBox(height: AppSizes.paddingXs - 1),
         _CouponSubtitle(coupon: coupon),
       ],
     );
@@ -337,7 +337,7 @@ class _CouponSubtitle extends StatelessWidget {
           ),
         ),
         if (tag != null) ...[
-          const SizedBox(width: AppSizes.radiusSm),
+          SizedBox(width: AppSizes.radiusSm),
           _CouponStatusTag(tag: tag),
         ],
       ],

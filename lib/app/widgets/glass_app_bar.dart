@@ -25,6 +25,7 @@ class GlassAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
+    final theme = Theme.of(context);
 
     return ClipRRect(
       child: BackdropFilter(
@@ -32,10 +33,10 @@ class GlassAppBar extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.fromLTRB(16, statusBarHeight + 12, 16, 12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.85),
+            color: theme.colorScheme.surface.withValues(alpha: 0.85),
             border: Border(
               bottom: BorderSide(
-                color: const Color(0xFFE2E8F0).withValues(alpha: 0.8),
+                color: theme.dividerColor.withValues(alpha: 0.8),
                 width: 1,
               ),
             ),
@@ -62,10 +63,10 @@ class GlassAppBar extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.arrow_back_rounded,
                         size: 20,
-                        color: AppColors.textPrimary,
+                        color: theme.colorScheme.onSurface,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -73,7 +74,7 @@ class GlassAppBar extends StatelessWidget {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -159,7 +160,7 @@ class _BadgeIconButton extends StatelessWidget {
           onPressed: onPressed,
           icon: Icon(
             icon,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             size: 21,
           ),
         ),

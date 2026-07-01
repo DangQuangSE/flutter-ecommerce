@@ -21,7 +21,7 @@ class CategoryFormAppBar extends StatelessWidget
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_ios_new_rounded,
           color: AppColors.textPrimary,
           size: 20,

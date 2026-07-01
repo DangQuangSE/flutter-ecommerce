@@ -46,7 +46,7 @@ class ProductDetailBottomActionBar extends StatelessWidget {
               isFavorited: isFavorited,
               onPressed: onToggleFavorite,
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
                 onPressed: isInStock ? onAddToCart : null,
@@ -71,7 +71,7 @@ class ProductDetailBottomActionBar extends StatelessWidget {
                           : Icons.remove_shopping_cart_outlined,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       isInStock ? AppStrings.addToCart : AppStrings.outOfStock,
                       style: GoogleFonts.lexend(

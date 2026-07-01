@@ -18,7 +18,7 @@ class CheckoutSectionHeader extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 18, color: AppColors.textSecondary),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Expanded(
           child: Text(
             title,

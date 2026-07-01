@@ -65,7 +65,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         title: Text(
           _isEditing
@@ -104,16 +104,16 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   fullNameCtrl: _fullNameCtrl,
                   phoneCtrl: _phoneCtrl,
                 ),
-                const SizedBox(height: AppSizes.radiusLg),
+                SizedBox(height: AppSizes.radiusLg),
                 AddressLocationSection(addressLineCtrl: _addressLineCtrl),
-                const SizedBox(height: AppSizes.radiusLg),
+                SizedBox(height: AppSizes.radiusLg),
                 AddressOptionsSection(
                   labelCtrl: _labelCtrl,
                   isDefault: _isDefault,
                   onToggleDefault: () =>
                       setState(() => _isDefault = !_isDefault),
                 ),
-                const SizedBox(height: AppSizes.paddingXl),
+                SizedBox(height: AppSizes.paddingXl),
               ],
             ),
           ),

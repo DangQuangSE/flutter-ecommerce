@@ -21,8 +21,8 @@ class AdminVariantActionButtons extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: onBulkCreate,
-                icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-                label: const Text(AppStrings.adminProductVariantCreateBulk),
+                icon: Icon(Icons.auto_awesome_rounded, size: 18),
+                label: Text(AppStrings.adminProductVariantCreateBulk),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   side: const BorderSide(color: AppColors.primary),
@@ -32,12 +32,12 @@ class AdminVariantActionButtons extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: AppSizes.paddingSm),
+            SizedBox(width: AppSizes.paddingSm),
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: onAddOne,
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text(AppStrings.adminProductVariantAddOne),
+                icon: Icon(Icons.add_rounded, size: 18),
+                label: Text(AppStrings.adminProductVariantAddOne),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.textSecondary,
                   side: const BorderSide(color: AppColors.divider),
@@ -79,16 +79,16 @@ class AdminVariantNavigation extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: onBack,
-                icon: const Icon(Icons.arrow_back_rounded),
-                label: const Text(AppStrings.adminProductVariantBack),
+                icon: Icon(Icons.arrow_back_rounded),
+                label: Text(AppStrings.adminProductVariantBack),
               ),
             ),
-            const SizedBox(width: AppSizes.paddingMd),
+            SizedBox(width: AppSizes.paddingMd),
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: onNext,
-                icon: const Icon(Icons.arrow_forward_rounded),
-                label: const Text(AppStrings.adminProductVariantNext),
+                icon: Icon(Icons.arrow_forward_rounded),
+                label: Text(AppStrings.adminProductVariantNext),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

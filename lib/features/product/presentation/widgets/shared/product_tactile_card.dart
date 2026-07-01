@@ -101,9 +101,9 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
         child: Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardTheme.color ?? Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: Theme.of(context).dividerColor),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.015),
@@ -119,7 +119,9 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                 aspectRatio: 0.84,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF0F172A)
+                        : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -131,7 +133,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                               _imageUrl,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
+                                  Center(
                                 child: Icon(
                                   Icons.image_not_supported_outlined,
                                   size: 28,
@@ -139,7 +141,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                                 ),
                               ),
                             )
-                          : const Center(
+                          : Center(
                               child: Icon(
                                 Icons.image_not_supported_outlined,
                                 size: 28,
@@ -198,7 +200,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 child: Column(
@@ -229,7 +231,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       _name,
                       maxLines: 1,
@@ -241,12 +243,12 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     _ProductRating(
                       rating: _averageRating,
                       reviewCount: _reviewCount,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     SizedBox(
                       height: 40,
                       child: Column(
@@ -261,7 +263,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                             ),
                           ),
                           if (originalPrice != null) ...[
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2),
                             Text(
                               formatPrice(originalPrice),
                               style: GoogleFonts.spaceMono(
@@ -301,7 +303,7 @@ class _ProductRating extends StatelessWidget {
       children: [
         ...List.generate(5, _buildStar),
         if (reviewCount > 0) ...[
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(
             AppStrings.productReviewCount(reviewCount),
             style: GoogleFonts.plusJakartaSans(
@@ -317,16 +319,16 @@ class _ProductRating extends StatelessWidget {
 
   Widget _buildStar(int index) {
     if (index < rating.floor()) {
-      return const Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
+      return Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
     }
     if (index < rating && rating - index >= 0.5) {
-      return const Icon(
+      return Icon(
         Icons.star_half,
         size: 12,
         color: Color(0xFFFFC107),
       );
     }
-    return const Icon(
+    return Icon(
       Icons.star_border,
       size: 12,
       color: Color(0xFFFFC107),

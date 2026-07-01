@@ -76,7 +76,7 @@ class _ErrorState extends StatelessWidget {
         onPressed: () {
           context.read<OrderBloc>().add(const OrderListRequested());
         },
-        child: const Text(AppStrings.retry),
+        child: Text(AppStrings.retry),
       ),
     );
   }
@@ -124,7 +124,7 @@ class _MessageCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: AppSizes.iconXxl, color: iconColor),
-          const SizedBox(height: AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingMd),
           Text(
             title,
             style: GoogleFonts.lexend(
@@ -135,7 +135,7 @@ class _MessageCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: AppSizes.radiusSm),
+            SizedBox(height: AppSizes.radiusSm),
             Text(
               subtitle!,
               style: GoogleFonts.plusJakartaSans(
@@ -146,7 +146,7 @@ class _MessageCard extends StatelessWidget {
             ),
           ],
           if (action != null) ...[
-            const SizedBox(height: AppSizes.paddingMd),
+            SizedBox(height: AppSizes.paddingMd),
             action!,
           ],
         ],

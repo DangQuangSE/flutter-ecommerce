@@ -67,14 +67,14 @@ class _RegisterPasswordPageState extends State<RegisterPasswordPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
               size: 20, color: AppColors.textPrimary),
           onPressed: () => context.goNamed(AppRoutes.register),
         ),
@@ -98,7 +98,7 @@ class _RegisterPasswordPageState extends State<RegisterPasswordPage>
                       controller: _animationController,
                       child: const AuthBrandHeader(),
                     ),
-                    const SizedBox(height: AppSizes.paddingXl + 8),
+                    SizedBox(height: AppSizes.paddingXl + 8),
                     _AnimatedEntrance(
                       delay: 150,
                       controller: _animationController,
@@ -261,7 +261,7 @@ class _PasswordCard extends StatelessWidget {
                           letterSpacing: 0.5,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         'Hoàn tất đăng ký cho $email',
                         style: GoogleFonts.inter(
@@ -270,7 +270,7 @@ class _PasswordCard extends StatelessWidget {
                           height: 1.4,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       LoginFormField(
                         controller: passwordController,
                         label: 'MẬT KHẨU',
@@ -290,7 +290,7 @@ class _PasswordCard extends StatelessWidget {
                           return null;
                         },
                       ),
-                      const SizedBox(height: AppSizes.paddingLg),
+                      SizedBox(height: AppSizes.paddingLg),
                       LoginFormField(
                         controller: confirmController,
                         label: 'XÁC NHẬN MẬT KHẨU',
@@ -311,7 +311,7 @@ class _PasswordCard extends StatelessWidget {
                         },
                       ),
                       if (apiError != null) ...[
-                        const SizedBox(height: 14),
+                        SizedBox(height: 14),
                         Text(
                           apiError,
                           style: GoogleFonts.inter(
@@ -320,7 +320,7 @@ class _PasswordCard extends StatelessWidget {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
                       LoginSubmitButton(
                         isLoading: isLoading,
                         onPressed: onSubmit,

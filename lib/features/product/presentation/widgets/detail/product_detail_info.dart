@@ -29,7 +29,7 @@ class ProductDetailInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _ProductBrandRow(product: product, categoryLabel: categoryLabel),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Text(
             product.name,
             style: GoogleFonts.lexend(
@@ -39,7 +39,7 @@ class ProductDetailInfo extends StatelessWidget {
               height: 1.25,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -144,7 +144,7 @@ class _ProductPriceBlock extends StatelessWidget {
         ),
         if (originalPriceToDisplay != null &&
             originalPriceToDisplay! > priceToDisplay) ...[
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -187,7 +187,7 @@ class _ProductRatingBlock extends StatelessWidget {
     return Row(
       children: [
         Row(children: _buildRatingStars(product.averageRating)),
-        const SizedBox(width: 4),
+        SizedBox(width: 4),
         Text(
           AppStrings.productReviewCount(product.reviewCount),
           style: GoogleFonts.inter(

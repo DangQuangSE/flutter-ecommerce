@@ -22,7 +22,7 @@ class ProductDetailErrorView extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_rounded,
             color: AppColors.textPrimary,
           ),
@@ -35,12 +35,12 @@ class ProductDetailErrorView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline_rounded,
                 size: 48,
                 color: AppColors.error,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 AppStrings.productDetailLoadError,
                 style: GoogleFonts.inter(
@@ -49,7 +49,7 @@ class ProductDetailErrorView extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 message,
                 textAlign: TextAlign.center,
@@ -58,7 +58,7 @@ class ProductDetailErrorView extends StatelessWidget {
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
@@ -68,7 +68,7 @@ class ProductDetailErrorView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(AppStrings.retry),
+                child: Text(AppStrings.retry),
               ),
             ],
           ),

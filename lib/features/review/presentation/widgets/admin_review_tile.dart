@@ -34,19 +34,19 @@ class AdminReviewTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _Header(review: review),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _RatingRow(rating: review.rating),
           if (review.productName.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             _ProductChip(productName: review.productName),
           ],
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             review.comment,
             style:
                 GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           if (review.replyComment != null && review.replyComment!.isNotEmpty)
             _ReplyBox(replyComment: review.replyComment!),
           Align(
@@ -82,11 +82,11 @@ class _Header extends StatelessWidget {
               ? null
               : CachedNetworkImageProvider(review.userAvatar!),
           child: review.userAvatar == null
-              ? const Icon(Icons.person_rounded,
+              ? Icon(Icons.person_rounded,
                   size: 18, color: AppColors.primary)
               : null,
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +186,7 @@ class _ReplyBox extends StatelessWidget {
               color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             replyComment,
             style:

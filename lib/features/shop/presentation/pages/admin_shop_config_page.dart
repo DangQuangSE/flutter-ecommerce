@@ -15,7 +15,7 @@ class AdminShopConfigPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -28,18 +28,18 @@ class AdminShopConfigPage extends StatelessWidget {
             fontSize: AppSizes.fontXl,
           ),
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
       ),
       body: SafeArea(
         child: BlocBuilder<ShopCubit, ShopState>(
           builder: (context, state) => switch (state) {
-            ShopInitial() => const Center(
+            ShopInitial() => Center(
                 child: CircularProgressIndicator(
                   valueColor:
                       AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
-            ShopLoading() => const Center(
+            ShopLoading() => Center(
                 child: CircularProgressIndicator(
                   valueColor:
                       AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -210,7 +210,7 @@ class _AdminShopFormState extends State<_AdminShopForm> {
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: AppSizes.fontLg,
         color: AppColors.textPrimary,
       ),
@@ -346,7 +346,7 @@ class _SubmitButton extends StatelessWidget {
         ),
       ),
       child: isSaving
-          ? const SizedBox(
+          ? SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(

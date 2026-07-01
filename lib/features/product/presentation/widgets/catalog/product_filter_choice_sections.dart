@@ -32,10 +32,10 @@ class ProductFilterBrandSection extends StatelessWidget {
         if (loading)
           const AppLoadingView(size: AppSizes.paddingXl)
         else if (error != null)
-          Text(error!, style: const TextStyle(color: AppColors.error))
+          Text(error!, style: TextStyle(color: AppColors.error))
         else
           ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 140),
+            constraints: BoxConstraints(maxHeight: 140),
             child: SingleChildScrollView(
               child: Wrap(
                 spacing: AppSizes.paddingSm,
@@ -71,6 +71,7 @@ class _BrandChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: () {
         final id = brand.id;
@@ -83,10 +84,12 @@ class _BrandChip extends StatelessWidget {
           vertical: AppSizes.radiusSm,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.background,
+          color: selected
+              ? AppColors.primary
+              : (isDark ? const Color(0xFF1E293B) : AppColors.background),
           borderRadius: BorderRadius.circular(AppSizes.paddingSm),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.divider,
+            color: selected ? AppColors.primary : Theme.of(context).dividerColor,
           ),
         ),
         child: Text(
@@ -195,16 +198,19 @@ class _SelectableTextChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(right: AppSizes.paddingSm),
         padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.background,
+          color: selected
+              ? AppColors.primary
+              : (isDark ? const Color(0xFF1E293B) : AppColors.background),
           borderRadius: BorderRadius.circular(AppSizes.paddingSm),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.divider,
+            color: selected ? AppColors.primary : Theme.of(context).dividerColor,
           ),
         ),
         child: Text(
@@ -258,7 +264,7 @@ class _ColorChip extends StatelessWidget {
               : null,
         ),
         child: selected
-            ? const Icon(
+            ? Icon(
                 Icons.check,
                 size: AppSizes.fontXl,
                 color: AppColors.white,

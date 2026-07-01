@@ -47,7 +47,7 @@ class AddressFieldLabel extends StatelessWidget {
                 ),
               ),
             if (!isRequired && optionalHint != null) ...[
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               Text(
                 optionalHint!,
                 style: GoogleFonts.inter(fontSize: 11, color: AppColors.textHint),
@@ -55,7 +55,7 @@ class AddressFieldLabel extends StatelessWidget {
             ],
           ],
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         child,
       ],
     );

@@ -34,7 +34,7 @@ class CouponDetailSheet extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               coupon.code,
               style: GoogleFonts.lexend(
@@ -43,7 +43,7 @@ class CouponDetailSheet extends StatelessWidget {
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _DetailRow(label: 'Loại giảm', value: coupon.discountType.label),
             _DetailRow(label: 'Giá trị giảm', value: _discountText(coupon)),
             _DetailRow(

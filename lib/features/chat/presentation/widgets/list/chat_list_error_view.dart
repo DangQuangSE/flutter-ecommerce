@@ -20,12 +20,12 @@ class ChatListErrorView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline_rounded,
               size: 48,
               color: AppColors.error,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Không thể tải danh sách chat.',
               style: GoogleFonts.lexend(
@@ -34,7 +34,7 @@ class ChatListErrorView extends StatelessWidget {
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -43,7 +43,7 @@ class ChatListErrorView extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: onRetry,
               style: ElevatedButton.styleFrom(
@@ -53,7 +53,7 @@ class ChatListErrorView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Thử lại'),
+              child: Text('Thử lại'),
             ),
           ],
         ),

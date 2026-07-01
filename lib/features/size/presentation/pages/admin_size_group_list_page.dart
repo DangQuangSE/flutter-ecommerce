@@ -56,7 +56,7 @@ class _AdminSizeGroupListPageState extends State<AdminSizeGroupListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: _buildAppBar(),
       body: BlocConsumer<SizeGroupCubit, SizeGroupState>(
         listener: _onStateChange,
@@ -65,7 +65,7 @@ class _AdminSizeGroupListPageState extends State<AdminSizeGroupListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToCreate(context),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add_rounded, color: AppColors.white),
+        child: Icon(Icons.add_rounded, color: AppColors.white),
       ),
     );
   }
@@ -75,7 +75,7 @@ class _AdminSizeGroupListPageState extends State<AdminSizeGroupListPage> {
       backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
-      iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
       title: Text(
         AppStrings.adminSizeGroupTitle,
         style: GoogleFonts.lexend(

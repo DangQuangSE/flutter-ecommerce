@@ -91,7 +91,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -122,13 +122,13 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildProductName(),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 _buildRatingSection(),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 _buildCommentSection(),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 _buildImageSection(),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 _buildSubmitButton(isSubmitting),
               ],
             ),
@@ -157,7 +157,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           style:
               GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         StarRatingSelector(
             rating: _rating,
             onChanged: (value) => setState(() => _rating = value)),
@@ -176,7 +176,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextField(
           controller: _commentController,
           maxLines: 5,
@@ -213,7 +213,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: isSubmitting
-          ? const SizedBox(
+          ? SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(

@@ -24,12 +24,12 @@ class AppErrorView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline_rounded,
                 size: AppSizes.iconXl - AppSizes.paddingMd,
                 color: AppColors.error,
               ),
-              const SizedBox(height: AppSizes.paddingMd),
+              SizedBox(height: AppSizes.paddingMd),
               Text(
                 title,
                 textAlign: TextAlign.center,
@@ -39,7 +39,7 @@ class AppErrorView extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: AppSizes.paddingSm),
+              SizedBox(height: AppSizes.paddingSm),
               Text(
                 message,
                 textAlign: TextAlign.center,
@@ -49,14 +49,14 @@ class AppErrorView extends StatelessWidget {
                 ),
               ),
               if (onRetry != null) ...[
-                const SizedBox(height: AppSizes.paddingLg),
+                SizedBox(height: AppSizes.paddingLg),
                 ElevatedButton(
                   onPressed: onRetry,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text(AppStrings.retry),
+                  child: Text(AppStrings.retry),
                 ),
               ],
             ],

@@ -116,7 +116,7 @@ class CouponFormFields extends StatelessWidget {
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         const _FieldLabel('Hạng thành viên yêu cầu'),
         DropdownButtonFormField<UserTier?>(
           initialValue: requiredTier,
@@ -142,7 +142,7 @@ class CouponFormFields extends StatelessWidget {
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         CouponDateField(
           label: 'Ngày bắt đầu',
           value: startDate,
@@ -155,7 +155,7 @@ class CouponFormFields extends StatelessWidget {
           onPick: onPickEndDate,
           onClear: onClearEndDate,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         CouponStatusSwitch(
           title: 'Đang hoạt động',
           subtitle: 'Cho phép khách hàng sử dụng mã này',
@@ -197,12 +197,12 @@ class CouponDateField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.event_rounded,
                 size: 20,
                 color: AppColors.textSecondary,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,7 +214,7 @@ class CouponDateField extends StatelessWidget {
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       value == null
                           ? 'Chưa chọn'
@@ -232,7 +232,7 @@ class CouponDateField extends StatelessWidget {
               ),
               if (value != null)
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 18),
+                  icon: Icon(Icons.close_rounded, size: 18),
                   color: AppColors.textSecondary,
                   onPressed: onClear,
                 ),

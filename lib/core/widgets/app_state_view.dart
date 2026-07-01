@@ -10,9 +10,9 @@ class AppStateView extends StatelessWidget {
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
-  final Color iconColor;
-  final Color iconBackgroundColor;
-  final Color actionColor;
+  final Color? iconColor;
+  final Color? iconBackgroundColor;
+  final Color? actionColor;
 
   const AppStateView({
     super.key,
@@ -21,9 +21,9 @@ class AppStateView extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
-    this.iconColor = AppColors.textSecondary,
-    this.iconBackgroundColor = AppColors.canvasLight,
-    this.actionColor = AppColors.primary,
+    this.iconColor,
+    this.iconBackgroundColor,
+    this.actionColor,
   });
 
   @override
@@ -36,10 +36,10 @@ class AppStateView extends StatelessWidget {
           children: [
             _StateIcon(
               icon: icon,
-              color: iconColor,
-              backgroundColor: iconBackgroundColor,
+              color: iconColor ?? AppColors.textSecondary,
+              backgroundColor: iconBackgroundColor ?? AppColors.canvasLight,
             ),
-            const SizedBox(height: AppSizes.paddingXl),
+            SizedBox(height: AppSizes.paddingXl),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -49,7 +49,7 @@ class AppStateView extends StatelessWidget {
                 color: AppColors.primary,
               ),
             ),
-            const SizedBox(height: AppSizes.radiusLg),
+            SizedBox(height: AppSizes.radiusLg),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -60,13 +60,13 @@ class AppStateView extends StatelessWidget {
               ),
             ),
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: AppSizes.fontDisplay),
+              SizedBox(height: AppSizes.fontDisplay),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: onAction,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: actionColor,
+                    backgroundColor: actionColor ?? AppColors.primary,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(

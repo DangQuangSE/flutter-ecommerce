@@ -11,6 +11,8 @@ import 'package:flutter_ecommerce/features/notification/presentation/cubit/notif
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
+import 'package:flutter_ecommerce/app/theme/theme_cubit.dart';
+
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -18,6 +20,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
         BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
         BlocProvider<CartCubit>(create: (_) => sl<CartCubit>()),
         BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>()),
@@ -31,11 +34,17 @@ class App extends StatelessWidget {
           create: (_) => sl<CustomizerCubit>(),
         ),
       ],
-      child: MaterialApp.router(
-        title: AppConstants.appName,
-        theme: AppTheme.light(),
-        routerConfig: AppRouter.router,
-        debugShowCheckedModeBanner: false,
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp.router(
+            title: AppConstants.appName,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            themeMode: themeMode,
+            routerConfig: AppRouter.router,
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
     );
   }

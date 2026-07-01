@@ -142,7 +142,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: CategoryManagementAppBar(onOpenTree: _showTree),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.primary,

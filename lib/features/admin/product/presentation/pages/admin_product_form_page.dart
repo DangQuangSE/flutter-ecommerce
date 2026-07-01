@@ -109,7 +109,7 @@ class AdminProductFormPage extends StatelessWidget {
               }
             },
             child: Scaffold(
-              backgroundColor: AppColors.background,
+              
               appBar: AppBar(
                 title: Text(
                   _isEdit

@@ -66,7 +66,7 @@ class _RegisterPageState extends State<RegisterPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       body: Stack(
         children: [
           const AuthAmbientBackground(),

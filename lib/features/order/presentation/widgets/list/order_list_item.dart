@@ -78,7 +78,7 @@ class OrderListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _OrderThumb(imageUrl: item?.imageUrl),
-          const SizedBox(width: 14),
+          SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +99,7 @@ class OrderListItem extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         BreathingPulseDot(color: statusColor),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         Text(
                           statusLabel,
                           style: GoogleFonts.plusJakartaSans(
@@ -112,7 +112,7 @@ class OrderListItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Text(
                   item?.productName ?? 'Kh\u00f4ng c\u00f3 s\u1ea3n ph\u1ea9m',
                   maxLines: 1,
@@ -123,7 +123,7 @@ class OrderListItem extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'Size: ${item?.size ?? '-'}  ·  ${AppStrings.orderQuantityLabel}: ${item?.quantity ?? 0}',
                   style: GoogleFonts.plusJakartaSans(
@@ -132,7 +132,7 @@ class OrderListItem extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -202,7 +202,7 @@ class _ImageFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Icon(
         Icons.image_not_supported_outlined,
         color: AppColors.textSecondary,

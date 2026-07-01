@@ -49,7 +49,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       body: BlocConsumer<AdminBloc, AdminState>(
         listener: (context, state) {
           if (state is AdminLoaded && state.message != null) {
@@ -68,7 +68,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         },
         builder: (context, state) {
           if (state is AdminLoading) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary)),
             );
@@ -91,7 +91,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             );
           }
 
-          return const Center(child: Text(AppStrings.adminDashboardLoadError));
+          return Center(child: Text(AppStrings.adminDashboardLoadError));
         },
       ),
       bottomNavigationBar: Container(

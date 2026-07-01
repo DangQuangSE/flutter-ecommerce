@@ -57,7 +57,7 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
     return BlocListener<SizeGroupCubit, SizeGroupState>(
       listener: _onStateChange,
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        
         appBar: _buildAppBar(),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSizes.paddingMd),
@@ -67,9 +67,9 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizeGroupNameField(controller: _nameCtrl),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 SizeGroupDescriptionField(controller: _descCtrl),
-                const SizedBox(height: AppSizes.paddingLg),
+                SizedBox(height: AppSizes.paddingLg),
                 SizeOptionListEditor(
                   drafts: _drafts,
                   onAdd: _addDraft,
@@ -91,7 +91,7 @@ class _AdminSizeGroupFormPageState extends State<AdminSizeGroupFormPage> {
       backgroundColor: AppColors.white,
       elevation: 0,
       centerTitle: true,
-      iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
       title: Text(
         _isEdit
             ? AppStrings.adminSizeGroupEditTitle

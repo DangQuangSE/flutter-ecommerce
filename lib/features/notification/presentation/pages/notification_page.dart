@@ -24,7 +24,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -44,7 +44,7 @@ class _NotificationPageState extends State<NotificationPage> {
               context.goNamed(AppRoutes.productList);
             }
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: AppColors.textPrimary,
             size: AppSizes.iconMd,
@@ -86,7 +86,7 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Widget _buildEmptyNotificationsState() {
-    return const AppStateView(
+    return AppStateView(
       icon: Icons.notifications_off_outlined,
       title: AppStrings.notificationEmptyTitle,
       message: AppStrings.notificationEmptyMessage,
@@ -145,7 +145,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 ),
             ],
           ),
-          const SizedBox(height: AppSizes.radiusLg),
+          SizedBox(height: AppSizes.radiusLg),
 
           // Unread/Recent List
           if (unreadList.isEmpty)
@@ -166,7 +166,7 @@ class _NotificationPageState extends State<NotificationPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: unreadList.length,
               separatorBuilder: (context, index) =>
-                  const SizedBox(height: AppSizes.radiusMd),
+                  SizedBox(height: AppSizes.radiusMd),
               itemBuilder: (context, index) {
                 final item = unreadList[index];
                 return _buildNotificationCard(context, item);
@@ -175,7 +175,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
           // Divider for Older Notifications
           if (readList.isNotEmpty) ...[
-            const SizedBox(height: AppSizes.paddingXl),
+            SizedBox(height: AppSizes.paddingXl),
             Row(
               children: [
                 Expanded(
@@ -204,7 +204,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 ),
               ],
             ),
-            const SizedBox(height: AppSizes.paddingMd),
+            SizedBox(height: AppSizes.paddingMd),
 
             // Read/Older List
             ListView.separated(
@@ -212,7 +212,7 @@ class _NotificationPageState extends State<NotificationPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: readList.length,
               separatorBuilder: (context, index) =>
-                  const SizedBox(height: AppSizes.radiusMd),
+                  SizedBox(height: AppSizes.radiusMd),
               itemBuilder: (context, index) {
                 final item = readList[index];
                 return _buildNotificationCard(context, item);
@@ -296,7 +296,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(width: AppSizes.paddingXs),
+                    SizedBox(width: AppSizes.paddingXs),
 
                     // Circular Icon Bounding Box
                     Container(
@@ -314,7 +314,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: AppSizes.fontLg),
+                    SizedBox(width: AppSizes.fontLg),
 
                     // Text Details
                     Expanded(
@@ -339,7 +339,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                 ),
                               ),
                               if (!item.isRead) ...[
-                                const SizedBox(width: AppSizes.paddingSm),
+                                SizedBox(width: AppSizes.paddingSm),
                                 Container(
                                   width: AppSizes.paddingSm,
                                   height: AppSizes.paddingSm,
@@ -351,7 +351,7 @@ class _NotificationPageState extends State<NotificationPage> {
                               ],
                             ],
                           ),
-                          const SizedBox(height: AppSizes.radiusSm),
+                          SizedBox(height: AppSizes.radiusSm),
                           Text(
                             item.description,
                             style: GoogleFonts.inter(
@@ -361,7 +361,7 @@ class _NotificationPageState extends State<NotificationPage> {
                               height: 1.4,
                             ),
                           ),
-                          const SizedBox(height: AppSizes.paddingSm),
+                          SizedBox(height: AppSizes.paddingSm),
                           Text(
                             item.createdAt,
                             style: GoogleFonts.inter(

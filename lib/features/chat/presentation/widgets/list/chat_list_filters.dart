@@ -57,8 +57,9 @@ class _ChatSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.fromLTRB(AppSizes.paddingMd,
           AppSizes.spacing12, AppSizes.paddingMd, AppSizes.paddingSm),
       child: TextField(
@@ -71,7 +72,7 @@ class _ChatSearchBar extends StatelessWidget {
             color: AppColors.textHint,
             fontWeight: FontWeight.w500,
           ),
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Icons.search_rounded,
             color: AppColors.textSecondary,
             size: AppSizes.iconMd,
@@ -79,7 +80,7 @@ class _ChatSearchBar extends StatelessWidget {
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
                   onPressed: onClear,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close_rounded,
                     color: AppColors.textSecondary,
                     size: AppSizes.iconMd18,
@@ -87,7 +88,7 @@ class _ChatSearchBar extends StatelessWidget {
                 )
               : null,
           filled: true,
-          fillColor: AppColors.canvasLight,
+          fillColor: isDark ? const Color(0xFF1E293B) : AppColors.canvasLight,
           contentPadding: const EdgeInsets.symmetric(
               vertical: 0, horizontal: AppSizes.paddingMd),
           border: OutlineInputBorder(
@@ -117,7 +118,7 @@ class _ChatFilterChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.fromLTRB(AppSizes.paddingMd, AppSizes.paddingXs,
           AppSizes.paddingMd, AppSizes.spacing12),
       child: Row(
@@ -128,14 +129,14 @@ class _ChatFilterChips extends StatelessWidget {
             selectedFilter: selectedFilter,
             onFilterChanged: onFilterChanged,
           ),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
           _ChatFilterChip(
             label: AppStrings.chatFilterUnread,
             filterValue: 'unread',
             selectedFilter: selectedFilter,
             onFilterChanged: onFilterChanged,
           ),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
           _ChatFilterChip(
             label: AppStrings.chatFilterSupport,
             filterValue: 'support',
@@ -164,6 +165,7 @@ class _ChatFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = selectedFilter == filterValue;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => onFilterChanged(filterValue),
@@ -172,7 +174,9 @@ class _ChatFilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.paddingMd, vertical: AppSizes.paddingSm),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : AppColors.canvasLight,
+          color: isActive 
+              ? AppColors.primary 
+              : (isDark ? const Color(0xFF1E293B) : AppColors.canvasLight),
           borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           border: Border.all(
             color: isActive ? AppColors.primary : Colors.transparent,
@@ -183,7 +187,9 @@ class _ChatFilterChip extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontMd,
             fontWeight: FontWeight.w700,
-            color: isActive ? Colors.white : AppColors.textSecondary,
+            color: isActive 
+                ? Colors.white 
+                : (isDark ? Colors.white70 : AppColors.textSecondary),
           ),
         ),
       ),

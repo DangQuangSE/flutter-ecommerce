@@ -20,7 +20,7 @@ class AdminOrderDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -33,7 +33,7 @@ class AdminOrderDetailPage extends StatelessWidget {
             fontSize: AppSizes.fontXxl,
           ),
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
       ),
       body: BlocConsumer<AdminOrderCubit, AdminOrderState>(
         listener: (context, state) {
@@ -52,7 +52,7 @@ class AdminOrderDetailPage extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is AdminOrderDetailLoading) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
@@ -65,12 +65,12 @@ class AdminOrderDetailPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(state.message, textAlign: TextAlign.center),
-                  const SizedBox(height: AppSizes.spacing12),
+                  SizedBox(height: AppSizes.spacing12),
                   FilledButton(
                     onPressed: () => context
                         .read<AdminOrderCubit>()
                         .refreshDetail(int.parse(orderId)),
-                    child: const Text(AppStrings.retry),
+                    child: Text(AppStrings.retry),
                   ),
                 ],
               ),
@@ -134,7 +134,7 @@ class _OrderDetailBody extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           dateFormat.format(order.createdAt),
                           style: GoogleFonts.inter(
@@ -165,7 +165,7 @@ class _OrderDetailBody extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _Section(
               title: 'THÔNG TIN ĐƠN HÀNG',
               icon: Icons.receipt_long_outlined,
@@ -188,7 +188,7 @@ class _OrderDetailBody extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _Section(
               title: 'ĐỊA CHỈ GIAO HÀNG',
               icon: Icons.location_on_outlined,
@@ -196,7 +196,7 @@ class _OrderDetailBody extends StatelessWidget {
                 _DetailRow(label: 'Địa chỉ', value: order.shippingAddress),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _Section(
               title: 'SẢN PHẨM (${order.items.length})',
               icon: Icons.shopping_bag_outlined,
@@ -207,7 +207,7 @@ class _OrderDetailBody extends StatelessWidget {
                       ))
                   .toList(),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -236,17 +236,17 @@ class _OrderDetailBody extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             FilledButton.icon(
               onPressed:
                   isUpdating ? null : () => _showStatusSheet(context, order),
               icon: isUpdating
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.edit_rounded),
+                  : Icon(Icons.edit_rounded),
               label: Text(
                 isUpdating
                     ? AppStrings.adminOrderUpdating
@@ -260,7 +260,7 @@ class _OrderDetailBody extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
           ],
         ),
       ),
@@ -307,7 +307,7 @@ class _OrderDetailBody extends StatelessWidget {
                       return ListTile(
                         title: Text(OrderStatusLabel.vi(status)),
                         trailing: order.status == status
-                            ? const Icon(
+                            ? Icon(
                                 Icons.check_rounded,
                                 color: AppColors.primary,
                               )
@@ -317,7 +317,7 @@ class _OrderDetailBody extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(height: AppSizes.paddingSm),
+                SizedBox(height: AppSizes.paddingSm),
               ],
             ),
           ),
@@ -332,7 +332,7 @@ class _OrderDetailBody extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(AppStrings.confirm),
+        title: Text(AppStrings.confirm),
         content: Text(
           AppStrings.adminOrderStatusChangeConfirm(
             OrderStatusLabel.vi(selected),
@@ -341,11 +341,11 @@ class _OrderDetailBody extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(AppStrings.cancel),
+            child: Text(AppStrings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(AppStrings.confirm),
+            child: Text(AppStrings.confirm),
           ),
         ],
       ),
@@ -383,7 +383,7 @@ class _Section extends StatelessWidget {
           Row(
             children: [
               Icon(icon, size: 18, color: AppColors.primary),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 title,
                 style: GoogleFonts.inter(
@@ -395,7 +395,7 @@ class _Section extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           ...children,
         ],
       ),
@@ -468,7 +468,7 @@ class _ItemCard extends StatelessWidget {
                   )
                 : _placeholder(),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,7 +482,7 @@ class _ItemCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   '${item.size} · ${item.color} · x${item.quantity}',
                   style: GoogleFonts.inter(
@@ -510,7 +510,7 @@ class _ItemCard extends StatelessWidget {
       width: 56,
       height: 56,
       color: AppColors.background,
-      child: const Icon(Icons.image_outlined, color: AppColors.textSecondary),
+      child: Icon(Icons.image_outlined, color: AppColors.textSecondary),
     );
   }
 }

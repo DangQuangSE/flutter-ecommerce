@@ -43,7 +43,7 @@ class LayerEditor extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: layers.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, __) => SizedBox(height: 8),
             itemBuilder: (context, index) {
               final layer = layers[index];
               final bool isActive = activeLayerId == layer.id;
@@ -74,7 +74,7 @@ class LayerEditor extends StatelessWidget {
                             : AppColors.textSecondary,
                         size: 18,
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +91,7 @@ class LayerEditor extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2),
                             Text(
                               layer.type == LayerType.text
                                   ? '${layer.font} | ${layer.fontSize.toInt()}px'
@@ -103,7 +103,7 @@ class LayerEditor extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded,
+                        icon: Icon(Icons.delete_outline_rounded,
                             color: AppColors.error, size: 20),
                         onPressed: () => onLayerDeleted(index, layer.id),
                       ),

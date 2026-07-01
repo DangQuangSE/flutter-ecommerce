@@ -45,7 +45,7 @@ class ActiveFilterChips extends StatelessWidget {
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: const Text(
+            child: Text(
               AppStrings.productFilterClearAll,
               style: TextStyle(
                 fontSize: AppSizes.fontSm,
@@ -189,7 +189,7 @@ class _Chip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontSm,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -198,7 +198,7 @@ class _Chip extends StatelessWidget {
           AppSizes.spacingXs,
           GestureDetector(
             onTap: onDelete,
-            child: const Icon(
+            child: Icon(
               Icons.close,
               size: AppSizes.fontMd,
               color: AppColors.textSecondary,

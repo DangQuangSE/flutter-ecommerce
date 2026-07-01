@@ -24,7 +24,7 @@ class CategoryManagementAppBar extends StatelessWidget
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_ios_new_rounded,
           color: AppColors.textPrimary,
           size: AppSizes.iconMd,
@@ -45,7 +45,7 @@ class CategoryManagementAppBar extends StatelessWidget
       actions: [
         IconButton(
           tooltip: AppStrings.adminCategoryViewTree,
-          icon: const Icon(
+          icon: Icon(
             Icons.account_tree_outlined,
             color: AppColors.textPrimary,
             size: AppSizes.iconMd + 2,

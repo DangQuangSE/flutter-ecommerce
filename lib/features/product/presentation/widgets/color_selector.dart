@@ -38,7 +38,7 @@ class ColorSelector extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Row(
           children: List.generate(colors.length, (index) {
             final isSelected = selectedColorIndex == index;

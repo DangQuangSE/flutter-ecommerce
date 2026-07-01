@@ -67,7 +67,7 @@ class _HomeCategorySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const _HomeSectionHeader(),
-          const SizedBox(height: AppSizes.fontLg),
+          SizedBox(height: AppSizes.fontLg),
           SizedBox(
             height: 120,
             child: ListView.separated(
@@ -77,7 +77,7 @@ class _HomeCategorySection extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
               itemCount: _categories.length,
               separatorBuilder: (context, index) =>
-                  const SizedBox(width: AppSizes.radiusLg),
+                  SizedBox(width: AppSizes.radiusLg),
               itemBuilder: (context, index) => _HomeCategoryCard(
                 category: _categories[index],
               ),
@@ -105,7 +105,7 @@ class _HomeSectionHeader extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: AppSizes.fontXxl,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           GestureDetector(
@@ -138,9 +138,9 @@ class _HomeCategoryCard extends StatelessWidget {
       child: Container(
         width: 140,
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.radiusXl),
-          border: Border.all(color: AppColors.divider),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
@@ -200,10 +200,10 @@ class _FeaturedProductsSection extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: AppSizes.fontXxl,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          const SizedBox(height: AppSizes.fontXxl),
+          SizedBox(height: AppSizes.fontXxl),
           if (products.isEmpty)
             const _FeaturedProductsEmptyState()
           else
@@ -257,7 +257,7 @@ class _FeaturedProductRow extends StatelessWidget {
         Expanded(
           child: secondProduct != null
               ? ProductTactileCard(product: secondProduct!)
-              : const SizedBox(),
+              : SizedBox(),
         ),
       ],
     );

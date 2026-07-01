@@ -26,7 +26,7 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -39,7 +39,7 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
             fontSize: 16,
           ),
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
       ),
       body: SafeArea(
         child: BlocConsumer<SiteSettingCubit, SiteSettingState>(
@@ -64,7 +64,7 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
           },
           builder: (context, state) {
             if (state is SiteSettingLoading || state is SiteSettingInitial) {
-              return const Center(
+              return Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
@@ -99,7 +99,7 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
               style: GoogleFonts.inter(
                   fontSize: 12, color: AppColors.textSecondary),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Expanded(
               child: TextFormField(
                 controller: _returnPolicyController,
@@ -118,7 +118,7 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
                     : null,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: isSubmitting ? null : () => _submit(context),
               style: ElevatedButton.styleFrom(
@@ -129,7 +129,7 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
                     borderRadius: BorderRadius.circular(8)),
               ),
               child: isSubmitting
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
@@ -162,15 +162,15 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded,
+            Icon(Icons.error_outline_rounded,
                 size: 48, color: AppColors.error),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Đã xảy ra lỗi khi tải dữ liệu.',
               style: GoogleFonts.inter(
                   fontWeight: FontWeight.w600, color: AppColors.textPrimary),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => context.read<SiteSettingCubit>().loadSettings(),
               style: ElevatedButton.styleFrom(
@@ -179,7 +179,7 @@ class _AdminSiteSettingPageState extends State<AdminSiteSettingPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text('Thử lại'),
+              child: Text('Thử lại'),
             ),
           ],
         ),

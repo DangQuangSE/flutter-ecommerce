@@ -57,7 +57,7 @@ class CategoryFormFields extends StatelessWidget {
           decoration: _decoration(AppStrings.categoryDescriptionHint),
           maxLines: 3,
         ),
-        const SizedBox(height: AppSizes.paddingMd),
+        SizedBox(height: AppSizes.paddingMd),
         const _FieldLabel(AppStrings.categoryParentLabel),
         DropdownButtonFormField<int?>(
           initialValue: parentId,
@@ -89,7 +89,7 @@ class CategoryFormFields extends StatelessWidget {
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
-        const SizedBox(height: AppSizes.paddingSm),
+        SizedBox(height: AppSizes.paddingSm),
         CategoryStatusSwitch(
           title: AppStrings.categoryStatusActiveTitle,
           subtitle: AppStrings.categoryStatusActiveSubtitle,

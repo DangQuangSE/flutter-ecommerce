@@ -111,7 +111,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -124,7 +124,7 @@ class _ColorManagementPageState extends State<ColorManagementPage>
             fontSize: AppSizes.fontXxl,
           ),
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.primary,
@@ -153,13 +153,13 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                 _openPrintingColorForm();
               }
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.add_rounded,
               color: AppColors.primary,
               size: 28,
             ),
           ),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
         ],
       ),
       body: TabBarView(

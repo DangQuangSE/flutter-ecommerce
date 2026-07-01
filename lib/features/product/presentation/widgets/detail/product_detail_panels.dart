@@ -59,7 +59,7 @@ class _ProductReviewsPanel extends StatelessWidget {
     return BlocBuilder<ReviewCubit, ReviewState>(
       builder: (context, state) {
         if (state is ReviewLoading || state is ReviewInitial) {
-          return const Center(
+          return Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
               child: AppLoadingView(size: AppSizes.paddingXl),
@@ -142,7 +142,7 @@ class _ReviewRow extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(review.comment, style: _bodyStyle()),
         _ReviewImages(imageUrls: review.images),
       ],
@@ -169,7 +169,7 @@ class _ReviewImages extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           itemCount: urls.length,
           separatorBuilder: (context, index) =>
-              const SizedBox(width: AppSizes.paddingSm),
+              SizedBox(width: AppSizes.paddingSm),
           itemBuilder: (context, index) => _ReviewImage(
             url: urls[index],
             onTap: () => _showReviewImageViewer(
@@ -208,7 +208,7 @@ class _ReviewImage extends StatelessWidget {
             width: AppSizes.reviewImageSize,
             height: AppSizes.reviewImageSize,
             color: AppColors.divider,
-            child: const Icon(
+            child: Icon(
               Icons.image_not_supported_outlined,
               size: AppSizes.iconSm,
               color: AppColors.textSecondary,
@@ -287,7 +287,7 @@ class _ReviewImageViewerState extends State<_ReviewImageViewer> {
                   child: Image.network(
                     widget.imageUrls[index],
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
+                    errorBuilder: (context, error, stackTrace) => Icon(
                       Icons.image_not_supported_outlined,
                       size: AppSizes.iconLg,
                       color: AppColors.white,
@@ -308,7 +308,7 @@ class _ReviewImageViewerState extends State<_ReviewImageViewer> {
                   ).pop(),
                   iconSize: AppSizes.iconLg,
                   padding: const EdgeInsets.all(AppSizes.paddingMd),
-                  icon: const Icon(Icons.close_rounded, color: AppColors.white),
+                  icon: Icon(Icons.close_rounded, color: AppColors.white),
                 ),
               ),
             ),

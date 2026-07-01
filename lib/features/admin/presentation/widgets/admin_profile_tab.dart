@@ -35,7 +35,7 @@ class AdminProfileTab extends StatelessWidget {
                         ? NetworkImage(user!.avatarUrl!)
                         : null,
                     child: user?.avatarUrl == null
-                        ? const Icon(Icons.person_rounded,
+                        ? Icon(Icons.person_rounded,
                             size: 48, color: AppColors.primary)
                         : null,
                   ),
@@ -46,14 +46,14 @@ class AdminProfileTab extends StatelessWidget {
                       padding: const EdgeInsets.all(6),
                       decoration: const BoxDecoration(
                           color: AppColors.primary, shape: BoxShape.circle),
-                      child: const Icon(Icons.verified_user_rounded,
+                      child: Icon(Icons.verified_user_rounded,
                           size: 16, color: Colors.white),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Center(
               child: Text(
                 user?.name ?? 'Admin Sport Pro',
@@ -72,7 +72,7 @@ class AdminProfileTab extends StatelessWidget {
                     color: AppColors.textSecondary),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Center(
               child: Container(
                 padding:
@@ -91,7 +91,7 @@ class AdminProfileTab extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: 48),
             Card(
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -101,36 +101,36 @@ class AdminProfileTab extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.store_mall_directory_rounded,
+                    leading: Icon(Icons.store_mall_directory_rounded,
                         color: AppColors.primary),
                     title: Text('Về Cửa hàng (User View)',
                         style: GoogleFonts.inter(
                             fontSize: 14, fontWeight: FontWeight.w600)),
                     trailing:
-                        const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                        Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: () => context.goNamed(AppRoutes.productList),
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.settings_outlined,
+                    leading: Icon(Icons.settings_outlined,
                         color: AppColors.primary),
                     title: Text(AppStrings.adminShopConfigMenuLabel,
                         style: GoogleFonts.inter(
                             fontSize: 14, fontWeight: FontWeight.w600)),
                     trailing:
-                        const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                        Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: () => context.pushNamed(AppRoutes.adminShopConfig),
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.logout_rounded,
+                    leading: Icon(Icons.logout_rounded,
                         color: AppColors.error),
                     title: Text('Đăng xuất tài khoản',
                         style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: AppColors.error)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                    trailing: Icon(Icons.arrow_forward_ios_rounded,
                         size: 14, color: AppColors.error),
                     onTap: () => context
                         .read<AuthBloc>()

@@ -112,7 +112,7 @@ class _CouponManagementPageState extends State<CouponManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: const CouponManagementAppBar(),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.primary,

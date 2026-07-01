@@ -46,7 +46,7 @@ class AdminDashboardTab extends StatelessWidget {
                   _chatInboxButton(context),
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(Icons.notifications_none_rounded,
+                    icon: Icon(Icons.notifications_none_rounded,
                         color: AppColors.textPrimary),
                   ),
                   const CircleAvatar(
@@ -58,7 +58,7 @@ class AdminDashboardTab extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,7 +74,7 @@ class AdminDashboardTab extends StatelessWidget {
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     'Hôm nay, 01 Tháng 6',
                     style: GoogleFonts.inter(
@@ -92,12 +92,12 @@ class AdminDashboardTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey.shade200),
                 ),
-                child: const Icon(Icons.calendar_today_rounded,
+                child: Icon(Icons.calendar_today_rounded,
                     size: 16, color: AppColors.textPrimary),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // Revenue block
           Container(
@@ -132,7 +132,7 @@ class AdminDashboardTab extends StatelessWidget {
                         letterSpacing: 1.0,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       stats.totalRevenue >= 1000000
                           ? '${(stats.totalRevenue / 1000000).toStringAsFixed(1)}M'
@@ -143,13 +143,13 @@ class AdminDashboardTab extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(Icons.arrow_upward_rounded,
                             size: 12,
                             color: Colors.white.withValues(alpha: 0.9)),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2),
                         Text(
                           '+${stats.revenueGrowth}% so với tuần trước',
                           style: GoogleFonts.inter(
@@ -168,13 +168,13 @@ class AdminDashboardTab extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.account_balance_wallet_rounded,
+                  child: Icon(Icons.account_balance_wallet_rounded,
                       size: 28, color: Colors.white),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // KPI row
           Row(
@@ -187,7 +187,7 @@ class AdminDashboardTab extends StatelessWidget {
                 icon: Icons.local_shipping_outlined,
                 iconColor: AppColors.primary,
               )),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                   child: _kpiCard(
                 label: 'KHÁCH MỚI',
@@ -198,7 +198,7 @@ class AdminDashboardTab extends StatelessWidget {
               )),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Traffic chart
           Container(
@@ -240,14 +240,14 @@ class AdminDashboardTab extends StatelessWidget {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          const Icon(Icons.keyboard_arrow_down_rounded,
+                          Icon(Icons.keyboard_arrow_down_rounded,
                               size: 12, color: AppColors.textPrimary),
                         ],
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 _barChart(context, stats.weeklyTraffic),
               ],
             ),
@@ -268,7 +268,7 @@ class AdminDashboardTab extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () => context.pushNamed(AppRoutes.chatList),
-              icon: const Icon(Icons.chat_bubble_outline_rounded,
+              icon: Icon(Icons.chat_bubble_outline_rounded,
                   color: AppColors.textPrimary),
             ),
             if (unread > 0)
@@ -279,7 +279,7 @@ class AdminDashboardTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                   constraints:
-                      const BoxConstraints(minWidth: 16, minHeight: 16),
+                      BoxConstraints(minWidth: 16, minHeight: 16),
                   decoration: const BoxDecoration(
                       color: AppColors.error, shape: BoxShape.circle),
                   child: Text(
@@ -327,13 +327,13 @@ class AdminDashboardTab extends StatelessWidget {
               Icon(icon, size: 16, color: iconColor),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(value,
               style: GoogleFonts.lexend(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary)),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(growth,
               style: GoogleFonts.inter(
                   fontSize: 10,
@@ -385,7 +385,7 @@ class AdminDashboardTab extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   days[index],
                   style: GoogleFonts.inter(

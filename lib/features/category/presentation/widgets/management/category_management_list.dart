@@ -39,7 +39,7 @@ class CategoryManagementList extends StatelessWidget {
           96,
         ),
         itemCount: state.categories.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(height: AppSizes.radiusMd),
+        separatorBuilder: (_, __) => SizedBox(height: AppSizes.radiusMd),
         itemBuilder: (context, index) {
           if (index == 0) {
             return _CategoryListHeader(state: state);
@@ -124,7 +124,7 @@ class _CategoryTile extends StatelessWidget {
         child: Row(
           children: [
             _CategoryImage(category: category),
-            const SizedBox(width: AppSizes.paddingSm + AppSizes.paddingXs),
+            SizedBox(width: AppSizes.paddingSm + AppSizes.paddingXs),
             Expanded(child: _CategorySummary(category: category)),
             Switch.adaptive(
               value: category.isActive,
@@ -132,7 +132,7 @@ class _CategoryTile extends StatelessWidget {
               onChanged: (_) => onToggle(category),
             ),
             PopupMenuButton<String>(
-              icon: const Icon(
+              icon: Icon(
                 Icons.more_vert_rounded,
                 color: AppColors.textSecondary,
               ),
@@ -173,12 +173,12 @@ class _CategoryImage extends StatelessWidget {
           ? Image.network(
               imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const Icon(
+              errorBuilder: (_, __, ___) => Icon(
                 Icons.category_rounded,
                 color: AppColors.primary,
               ),
             )
-          : const Icon(
+          : Icon(
               Icons.category_rounded,
               color: AppColors.primary,
             ),
@@ -211,8 +211,8 @@ class _CategorySummary extends StatelessWidget {
               ),
             ),
             if (category.isCustomizable) ...[
-              const SizedBox(width: AppSizes.radiusSm),
-              const Icon(
+              SizedBox(width: AppSizes.radiusSm),
+              Icon(
                 Icons.brush_rounded,
                 size: AppSizes.fontLg,
                 color: AppColors.accent,
@@ -220,7 +220,7 @@ class _CategorySummary extends StatelessWidget {
             ],
           ],
         ),
-        const SizedBox(height: AppSizes.paddingXs / 2),
+        SizedBox(height: AppSizes.paddingXs / 2),
         Text(
           category.slug ?? '-',
           maxLines: 1,

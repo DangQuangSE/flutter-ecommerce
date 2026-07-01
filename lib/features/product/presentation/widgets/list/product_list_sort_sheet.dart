@@ -172,7 +172,7 @@ class _SortSelectionIndicator extends StatelessWidget {
         color: selected ? AppColors.accent : Colors.transparent,
       ),
       child: selected
-          ? const Center(
+          ? Center(
               child: Icon(
                 Icons.check,
                 size: AppSizes.radiusMd,
@@ -217,7 +217,7 @@ class _SortSheetActions extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: AppSizes.radiusLg),
+        SizedBox(width: AppSizes.radiusLg),
         Expanded(
           child: ElevatedButton(
             onPressed: onApply,

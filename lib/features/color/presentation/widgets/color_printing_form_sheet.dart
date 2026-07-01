@@ -162,13 +162,13 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: Icon(Icons.close_rounded),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
             const Divider(),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             const _FormLabel(AppStrings.adminColorPrintingNameLabel),
             TextField(
               controller: _nameController,
@@ -190,7 +190,7 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.color_lens_outlined,
+                  icon: Icon(Icons.color_lens_outlined,
                       color: AppColors.primary),
                   onPressed: _openColorPicker,
                 ),
@@ -208,7 +208,7 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
                     border: Border.all(color: AppColors.divider),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Text(
                   AppStrings.adminColorPreviewLabel,
                   style: GoogleFonts.inter(

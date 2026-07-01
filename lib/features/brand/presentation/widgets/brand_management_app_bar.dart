@@ -28,17 +28,17 @@ class BrandManagementAppBar extends StatelessWidget
           fontSize: 18,
         ),
       ),
-      iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
       actions: [
         IconButton(
           onPressed: onCreate,
-          icon: const Icon(
+          icon: Icon(
             Icons.add_rounded,
             color: AppColors.primary,
             size: 28,
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
       ],
     );
   }

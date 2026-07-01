@@ -141,7 +141,7 @@ class CanvasWorkspace extends StatelessWidget {
         child: Column(
           children: [
             IconButton(
-              icon: const Icon(Icons.zoom_in_rounded),
+              icon: Icon(Icons.zoom_in_rounded),
               color: AppColors.textPrimary,
               onPressed: () {
                 if (zoomScale < AppSizes.canvasMaxZoom) {
@@ -151,7 +151,7 @@ class CanvasWorkspace extends StatelessWidget {
             ),
             Container(width: 20, height: 1, color: AppColors.selectedBg),
             IconButton(
-              icon: const Icon(Icons.zoom_out_rounded),
+              icon: Icon(Icons.zoom_out_rounded),
               color: AppColors.textPrimary,
               onPressed: () {
                 if (zoomScale > AppSizes.canvasMinZoom) {
@@ -161,7 +161,7 @@ class CanvasWorkspace extends StatelessWidget {
             ),
             Container(width: 20, height: 1, color: AppColors.selectedBg),
             IconButton(
-              icon: const Icon(Icons.restart_alt_rounded),
+              icon: Icon(Icons.restart_alt_rounded),
               color: AppColors.textPrimary,
               onPressed: () => onZoomChanged(1.0),
             ),
@@ -192,7 +192,7 @@ class CanvasWorkspace extends StatelessWidget {
             children: [
               _buildViewButton(
                   'MẶT TRƯỚC', isFrontView, () => onFrontViewChanged(true)),
-              const SizedBox(width: AppSizes.paddingXs),
+              SizedBox(width: AppSizes.paddingXs),
               _buildViewButton(
                   'MẶT SAU', !isFrontView, () => onFrontViewChanged(false)),
             ],

@@ -45,8 +45,8 @@ class SizeOptionListEditor extends StatelessWidget {
         AppSizes.spacingXs,
         TextButton.icon(
           onPressed: onAdd,
-          icon: const Icon(Icons.add_rounded, size: 18),
-          label: const Text(AppStrings.adminSizeGroupAddSize),
+          icon: Icon(Icons.add_rounded, size: 18),
+          label: Text(AppStrings.adminSizeGroupAddSize),
         ),
       ],
     );

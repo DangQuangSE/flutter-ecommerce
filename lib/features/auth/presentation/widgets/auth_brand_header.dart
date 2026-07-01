@@ -46,7 +46,7 @@ class AuthBrandHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         Text(
           subtitle.toUpperCase(),
           style: GoogleFonts.plusJakartaSans(

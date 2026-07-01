@@ -19,10 +19,10 @@ class AdminLocationTab extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: onBackToDashboard,
-                  child: const Icon(Icons.arrow_back_ios_new_rounded,
+                  child: Icon(Icons.arrow_back_ios_new_rounded,
                       size: 18, color: AppColors.textPrimary),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Text(
                   'Vị trí của cửa hàng',
                   style: GoogleFonts.lexend(
@@ -78,8 +78,8 @@ class AdminLocationTab extends StatelessWidget {
                                             color: AppColors.primary),
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    const Icon(Icons.location_on_rounded,
+                                    SizedBox(height: 4),
+                                    Icon(Icons.location_on_rounded,
                                         size: 48, color: AppColors.primary),
                                   ],
                                 ),
@@ -123,18 +123,18 @@ class AdminLocationTab extends StatelessWidget {
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.primary)),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text('Sport Pro Showroom',
                             style: GoogleFonts.lexend(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: AppColors.textPrimary)),
-                        const SizedBox(height: 14),
+                        SizedBox(height: 14),
                         _infoRow(Icons.location_on_rounded,
                             '123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh'),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         _infoRow(Icons.phone_rounded, '0909 123 456'),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         _infoRow(
                             Icons.access_time_filled_rounded, '08:00 - 21:00'),
                       ],
@@ -154,7 +154,7 @@ class AdminLocationTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 16, color: AppColors.primary),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Expanded(
           child: Text(text,
               style: GoogleFonts.inter(

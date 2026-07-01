@@ -82,7 +82,7 @@ class _LoginFormFieldState extends State<LoginFormField> {
           ),
           child: Text(widget.label.toUpperCase()),
         ),
-        const SizedBox(height: AppSizes.paddingSm),
+        SizedBox(height: AppSizes.paddingSm),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(

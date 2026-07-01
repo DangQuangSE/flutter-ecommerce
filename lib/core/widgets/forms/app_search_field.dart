@@ -47,7 +47,7 @@ class AppSearchField extends StatelessWidget {
               fontSize: AppSizes.fontLg,
               color: AppColors.textHint,
             ),
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.search_rounded,
               size: AppSizes.iconMd,
               color: AppColors.textSecondary,
@@ -56,7 +56,7 @@ class AppSearchField extends StatelessWidget {
                 ? IconButton(
                     tooltip: AppStrings.clearSearch,
                     icon:
-                        const Icon(Icons.close_rounded, size: AppSizes.iconSm),
+                        Icon(Icons.close_rounded, size: AppSizes.iconSm),
                     onPressed: onClear,
                   )
                 : null,

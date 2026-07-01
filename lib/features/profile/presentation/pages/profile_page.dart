@@ -15,6 +15,7 @@ import 'package:flutter_ecommerce/app/router/navigation_history.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter_ecommerce/app/theme/theme_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_state.dart';
 
@@ -27,7 +28,7 @@ class ProfilePage extends StatelessWidget {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBody: true,
       body: PopScope(
         canPop: false,
@@ -51,7 +52,7 @@ class ProfilePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildBioPanel(context),
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
                   _buildMenuSection(context),
                 ],
               ),
@@ -83,12 +84,14 @@ class ProfilePage extends StatelessWidget {
         final email = profile?.email ??
             (state is ProfileError ? AppStrings.profileLoadError : '');
 
+        final cardColor = Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface;
+
         return Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: Theme.of(context).dividerColor),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.02),
@@ -106,16 +109,16 @@ class ProfilePage extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    const Color(0xFFFFFFFF),
-                    const Color(0xFFF8FAFC).withValues(alpha: 0.8),
+                    cardColor,
+                    cardColor.withValues(alpha: 0.8),
                   ],
                 ),
               ),
               child: Row(
                 children: [
                   _BioAvatar(url: profile?.avatar, size: 64),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildBioText(name, email, profile?.tier)),
+                  SizedBox(width: 16),
+                  Expanded(child: _buildBioText(context, name, email, profile?.tier)),
                   _buildEditButton(context),
                 ],
               ),
@@ -126,7 +129,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildBioText(String name, String email, String? tier) {
+  Widget _buildBioText(BuildContext context, String name, String email, String? tier) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -137,11 +140,11 @@ class ProfilePage extends StatelessWidget {
           style: GoogleFonts.lexend(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: -0.4,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           email,
           maxLines: 1,
@@ -153,7 +156,7 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
         if (tier != null && tier.isNotEmpty) ...[
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _buildTierBadge(tier),
         ],
       ],
@@ -186,12 +189,12 @@ class ProfilePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
-        child: const Icon(Icons.edit_outlined,
-            size: 16, color: AppColors.textPrimary),
+        child: Icon(Icons.edit_outlined,
+            size: 16, color: Theme.of(context).colorScheme.onSurface),
       ),
     );
   }
@@ -202,53 +205,53 @@ class ProfilePage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildEyebrowHeader(AppStrings.profileAccountSection),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.person_outline_rounded,
           label: AppStrings.profilePersonalInfo,
           onTap: () => context.pushNamed(AppRoutes.editProfile),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.receipt_long_outlined,
           label: AppStrings.profileMyOrders,
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.location_on_outlined,
           label: AppStrings.profileShippingAddresses,
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.payment_outlined,
           label: AppStrings.profilePaymentMethods,
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.storefront_outlined,
           label: AppStrings.shopInfoMenuLabel,
           onTap: () => context.pushNamed(AppRoutes.shopInfo),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         _buildLogoutRow(context),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         _buildEyebrowHeader(AppStrings.profileSettingsSection),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.notifications_none_rounded,
           label: AppStrings.profileAppNotifications,
           onTap: () => context.pushNamed(AppRoutes.notificationList),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.chat_bubble_outline_rounded,
           label: AppStrings.profileInbox,
           onTap: () => context.pushNamed(AppRoutes.chatList),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.settings_outlined,
           label: AppStrings.profileSystemSettings,
@@ -359,7 +362,7 @@ class _AvatarFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Icon(Icons.person_rounded,
+    return Icon(Icons.person_rounded,
         size: 32, color: AppColors.textSecondary);
   }
 }
@@ -395,9 +398,9 @@ class _SystemSettingsSheetState extends State<_SystemSettingsSheet> {
         margin: const EdgeInsets.all(12),
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -408,22 +411,22 @@ class _SystemSettingsSheetState extends State<_SystemSettingsSheet> {
               style: GoogleFonts.lexend(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             SwitchListTile.adaptive(
               contentPadding: EdgeInsets.zero,
-              secondary: const Icon(
+              secondary: Icon(
                 Icons.volume_up_outlined,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               title: Text(
                 AppStrings.notificationSoundTitle,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               subtitle: Text(
@@ -438,6 +441,62 @@ class _SystemSettingsSheetState extends State<_SystemSettingsSheet> {
               activeTrackColor: AppColors.accent.withValues(alpha: 0.35),
               value: _notificationSoundEnabled,
               onChanged: _setNotificationSoundEnabled,
+            ),
+            const Divider(height: 24, color: Color(0xFFE2E8F0)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.dark_mode_outlined,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    SizedBox(width: 14),
+                    Text(
+                      'Giao diện',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+                BlocBuilder<ThemeCubit, ThemeMode>(
+                  builder: (context, currentMode) {
+                    return DropdownButton<ThemeMode>(
+                      value: currentMode,
+                      underline: SizedBox(),
+                      icon: Icon(Icons.keyboard_arrow_down_rounded),
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: ThemeMode.system,
+                          child: Text('Theo hệ thống'),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeMode.light,
+                          child: Text('Sáng'),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeMode.dark,
+                          child: Text('Tối'),
+                        ),
+                      ],
+                      onChanged: (mode) {
+                        if (mode != null) {
+                          context.read<ThemeCubit>().updateThemeMode(mode);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -474,8 +533,9 @@ class _ProfileMenuRowState extends State<ProfileMenuRow> {
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = widget.iconColor ?? AppColors.textPrimary;
-    final labelColor = widget.labelColor ?? AppColors.textPrimary;
+    final theme = Theme.of(context);
+    final iconColor = widget.iconColor ?? theme.colorScheme.onSurface;
+    final labelColor = widget.labelColor ?? theme.colorScheme.onSurface;
     final opacity = widget.enabled ? 1.0 : 0.5;
 
     return Opacity(
@@ -496,9 +556,9 @@ class _ProfileMenuRowState extends State<ProfileMenuRow> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              border: Border.all(color: Theme.of(context).dividerColor),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.01),
@@ -510,7 +570,7 @@ class _ProfileMenuRowState extends State<ProfileMenuRow> {
             child: Row(
               children: [
                 Icon(widget.icon, size: 20, color: iconColor),
-                const SizedBox(width: 14),
+                SizedBox(width: 14),
                 Expanded(
                   child: Text(
                     widget.label,

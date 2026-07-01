@@ -32,7 +32,7 @@ class AddressCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeaderRow(),
-            const SizedBox(height: AppSizes.paddingSm),
+            SizedBox(height: AppSizes.paddingSm),
             _buildInfoRow(Icons.person_outline, address.fullName),
             _buildInfoRow(Icons.phone_outlined, address.phoneNumber),
             _buildInfoRow(Icons.location_on_outlined, address.formattedAddress),
@@ -52,7 +52,7 @@ class AddressCard extends StatelessWidget {
         Expanded(
           child: Text(
             address.fullName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontXxl,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -74,7 +74,7 @@ class AddressCard extends StatelessWidget {
         color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
       ),
-      child: const Text(
+      child: Text(
         AppStrings.addressDefaultLabel,
         style: TextStyle(
           fontSize: AppSizes.fontSm,
@@ -92,11 +92,11 @@ class AddressCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: AppSizes.iconSm, color: AppColors.textSecondary),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: AppSizes.fontLg,
                 color: AppColors.textSecondary,
               ),
@@ -120,7 +120,7 @@ class AddressCard extends StatelessWidget {
       ),
       child: Text(
         address.label!,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: AppSizes.fontSm,
           color: AppColors.accent,
         ),
@@ -137,9 +137,9 @@ class AddressCard extends StatelessWidget {
             label: AppStrings.addressSetDefault,
             onTap: onSetDefault,
           ),
-        const SizedBox(width: AppSizes.paddingSm),
+        SizedBox(width: AppSizes.paddingSm),
         _ActionButton(label: AppStrings.addressEdit, onTap: onEdit),
-        const SizedBox(width: AppSizes.paddingSm),
+        SizedBox(width: AppSizes.paddingSm),
         _ActionButton(label: AppStrings.addressDelete, onTap: onDelete),
       ],
     );

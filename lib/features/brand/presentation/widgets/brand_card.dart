@@ -41,7 +41,7 @@ class BrandCard extends StatelessWidget {
             Row(
               children: [
                 _BrandAvatar(brand: brand),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(child: _BrandSummary(brand: brand)),
                 Switch.adaptive(
                   value: brand.isActive,
@@ -51,7 +51,7 @@ class BrandCard extends StatelessWidget {
               ],
             ),
             if (brand.description.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 brand.description,
                 maxLines: 2,
@@ -63,9 +63,9 @@ class BrandCard extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             const Divider(height: 1),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _BrandFooter(
               brand: brand,
               onEdit: onEdit,
@@ -148,7 +148,7 @@ class _BrandSummary extends StatelessWidget {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Row(
           children: [
             Icon(
@@ -156,7 +156,7 @@ class _BrandSummary extends StatelessWidget {
               size: 12,
               color: Colors.grey.shade400,
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             Expanded(
               child: Text(
                 brand.country.isNotEmpty
@@ -198,12 +198,12 @@ class _BrandFooter extends StatelessWidget {
           child: brand.websiteUrl.isNotEmpty
               ? Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.link_rounded,
                       size: 14,
                       color: AppColors.primary,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         brand.websiteUrl,
@@ -224,20 +224,20 @@ class _BrandFooter extends StatelessWidget {
           children: [
             IconButton(
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+              constraints: BoxConstraints(),
               onPressed: onEdit,
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit_outlined,
                 color: Colors.blue,
                 size: 20,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             IconButton(
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+              constraints: BoxConstraints(),
               onPressed: onDelete,
-              icon: const Icon(
+              icon: Icon(
                 Icons.delete_outline_rounded,
                 color: AppColors.error,
                 size: 20,

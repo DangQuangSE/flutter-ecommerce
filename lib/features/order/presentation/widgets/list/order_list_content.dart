@@ -45,7 +45,7 @@ class OrderListContent extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 26,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.6,
             ),
           ),
