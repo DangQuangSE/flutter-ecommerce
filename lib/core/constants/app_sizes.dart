@@ -81,6 +81,7 @@ abstract final class AppSizes {
   static const double forgotPasswordFontSize = 13.0;
   static const double submitButtonFontSize = 15.0;
   static const double adminProductImageTileSize = 100.0;
+  static const double reviewImageSize = 56.0;
 
   static const SizedBox spacingXs = SizedBox(height: 4, width: 4);
   static const SizedBox spacingSm = SizedBox(height: 8, width: 8);
