@@ -35,7 +35,7 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
     final reply = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -61,12 +61,12 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: _buildAppBar(),
       body: SafeArea(
         child: BlocBuilder<AdminReviewCubit, AdminReviewState>(
           builder: (context, state) => switch (state) {
-            AdminReviewInitial() || AdminReviewLoading() => const Center(
+            AdminReviewInitial() || AdminReviewLoading() => Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
@@ -82,11 +82,10 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+        icon: Icon(Icons.arrow_back_ios_new_rounded,
             color: AppColors.textPrimary, size: 20),
         onPressed: () {
           if (Navigator.of(context).canPop()) Navigator.of(context).pop();
@@ -113,7 +112,7 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         itemCount: state.reviews.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, __) => SizedBox(height: 10),
         itemBuilder: (context, index) {
           if (index == 0) return _buildHeaderRow(state);
           final review = state.reviews[index - 1];
@@ -141,7 +140,7 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
             ),
           ),
           if (state.isMutating)
-            const SizedBox(
+            SizedBox(
               width: 16,
               height: 16,
               child: CircularProgressIndicator(
@@ -161,9 +160,9 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.reviews_outlined,
+            Icon(Icons.reviews_outlined,
                 size: 56, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               AppStrings.adminReviewsEmptyTitle,
               style: GoogleFonts.lexend(
@@ -172,7 +171,7 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Text(
               AppStrings.adminReviewsEmptySubtitle,
               style: GoogleFonts.inter(
@@ -191,9 +190,9 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded,
+            Icon(Icons.error_outline_rounded,
                 size: 48, color: AppColors.error),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               AppStrings.adminReviewsLoadError,
               style: GoogleFonts.lexend(
@@ -202,21 +201,21 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                   fontSize: 12, color: AppColors.textSecondary),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => _cubit.load(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               ),
-              child: const Text(AppStrings.retry),
+              child: Text(AppStrings.retry),
             ),
           ],
         ),

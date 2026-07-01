@@ -17,11 +17,11 @@ class ShopInfoRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: AppSizes.iconMd, color: AppColors.primary),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: AppSizes.fontLg,
                 color: AppColors.textPrimary,
               ),

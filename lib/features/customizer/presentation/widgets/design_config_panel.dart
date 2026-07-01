@@ -123,7 +123,7 @@ class DesignConfigPanel extends StatelessWidget {
               onLayerActivated: onLayerActivated,
               onLayerDeleted: onLayerDeleted,
             ),
-            const SizedBox(height: AppSizes.paddingLg),
+            SizedBox(height: AppSizes.paddingLg),
           ],
         ),
       ),
@@ -158,7 +158,7 @@ class _MaterialSection extends StatelessWidget {
         ),
         AppSizes.spacingSm,
         if (list == null || list.isEmpty)
-          const Center(
+          Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: AppSizes.paddingLg),
               child: AppLoadingView(size: AppSizes.paddingXl),
@@ -238,12 +238,12 @@ class _LogoUploadSection extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.cloud_upload_outlined,
                   color: AppColors.primary,
                   size: AppSizes.iconLg,
                 ),
-                const SizedBox(height: AppSizes.paddingXs + 2),
+                SizedBox(height: AppSizes.paddingXs + 2),
                 Text(
                   AppStrings.customizerUploadLogoAction,
                   style: GoogleFonts.inter(

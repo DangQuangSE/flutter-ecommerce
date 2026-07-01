@@ -97,7 +97,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
   void _showDetail(CategoryEntity category) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius:
             BorderRadius.vertical(top: Radius.circular(AppSizes.radiusRound)),
@@ -123,7 +123,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
   void _showTree() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius:
@@ -142,7 +142,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: CategoryManagementAppBar(onOpenTree: _showTree),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.primary,

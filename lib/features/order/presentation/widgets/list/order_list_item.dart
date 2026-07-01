@@ -25,9 +25,9 @@ class OrdersList extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.01),
@@ -41,9 +41,9 @@ class OrdersList extends StatelessWidget {
         padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: orders.length,
-        separatorBuilder: (context, index) => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12),
-          child: Divider(color: Color(0xFFF1F5F9), height: 1, thickness: 1),
+        separatorBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Divider(color: Theme.of(context).dividerColor, height: 1, thickness: 1),
         ),
         itemBuilder: (context, index) {
           return OrderListItem(order: orders[index]);
@@ -78,7 +78,7 @@ class OrderListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _OrderThumb(imageUrl: item?.imageUrl),
-          const SizedBox(width: 14),
+          SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +99,7 @@ class OrderListItem extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         BreathingPulseDot(color: statusColor),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         Text(
                           statusLabel,
                           style: GoogleFonts.plusJakartaSans(
@@ -112,7 +112,7 @@ class OrderListItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Text(
                   item?.productName ?? 'Kh\u00f4ng c\u00f3 s\u1ea3n ph\u1ea9m',
                   maxLines: 1,
@@ -123,7 +123,7 @@ class OrderListItem extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'Size: ${item?.size ?? '-'}  ·  ${AppStrings.orderQuantityLabel}: ${item?.quantity ?? 0}',
                   style: GoogleFonts.plusJakartaSans(
@@ -132,7 +132,7 @@ class OrderListItem extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -173,15 +173,15 @@ class _OrderThumb extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Container(
         width: 68,
         height: 74,
         decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
+          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
         ),
         clipBehavior: Clip.antiAlias,
@@ -202,7 +202,7 @@ class _ImageFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Icon(
         Icons.image_not_supported_outlined,
         color: AppColors.textSecondary,

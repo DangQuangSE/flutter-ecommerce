@@ -33,7 +33,7 @@ class AddressLocationSection extends StatelessWidget {
                 : null,
           ),
         ),
-        const SizedBox(height: AppSizes.fontLg),
+        SizedBox(height: AppSizes.fontLg),
         AddressFieldLabel(
           label: AppStrings.addressProvinceLabel,
           child: _LocationDropdown<LocationEntity>(
@@ -49,7 +49,7 @@ class AddressLocationSection extends StatelessWidget {
                 v == null ? AppStrings.addressProvincePickerRequired : null,
           ),
         ),
-        const SizedBox(height: AppSizes.fontLg),
+        SizedBox(height: AppSizes.fontLg),
         AddressFieldLabel(
           label: AppStrings.addressDistrictLabel,
           child: _LocationDropdown<LocationEntity>(
@@ -65,7 +65,7 @@ class AddressLocationSection extends StatelessWidget {
                 v == null ? AppStrings.addressDistrictPickerRequired : null,
           ),
         ),
-        const SizedBox(height: AppSizes.fontLg),
+        SizedBox(height: AppSizes.fontLg),
         AddressFieldLabel(
           label: AppStrings.addressWardLabel,
           child: _LocationDropdown<LocationEntity>(
@@ -120,7 +120,7 @@ class _LocationDropdown<T extends LocationEntity> extends StatelessWidget {
           style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
           icon: loading
               ? const AppLoadingView(size: AppSizes.iconSm)
-              : const Icon(Icons.keyboard_arrow_down_rounded,
+              : Icon(Icons.keyboard_arrow_down_rounded,
                   color: AppColors.textSecondary),
           decoration: InputDecoration(
             hintText: hint,

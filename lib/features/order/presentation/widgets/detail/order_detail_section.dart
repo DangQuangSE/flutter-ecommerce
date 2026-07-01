@@ -41,7 +41,7 @@ class OrderDetailSection extends StatelessWidget {
             Row(
               children: [
                 Icon(icon, size: 18, color: AppColors.textSecondary),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
@@ -55,7 +55,7 @@ class OrderDetailSection extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             ...children,
           ],
         ),
@@ -92,7 +92,7 @@ class OrderDetailRow extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               value,

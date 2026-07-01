@@ -65,7 +65,7 @@ class _ProductListEmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.category_outlined,
             size: 48,
             color: AppColors.textHint,
@@ -79,7 +79,7 @@ class _ProductListEmptyState extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: AppSizes.radiusSm),
+          SizedBox(height: AppSizes.radiusSm),
           Text(
             AppStrings.productListEmptySubtitle,
             style: GoogleFonts.plusJakartaSans(

@@ -21,14 +21,15 @@ class ProductDetailAppBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: theme.dividerColor.withValues(alpha: 0.3),
           height: 1,
         ),
       ),
@@ -40,9 +41,9 @@ class ProductDetailAppBar extends StatelessWidget
             context.goNamed(AppRoutes.productList);
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_rounded,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
           size: 24,
         ),
       ),
@@ -138,7 +139,7 @@ class _BadgedIconButton extends StatelessWidget {
                 color: AppColors.accent,
                 shape: BoxShape.circle,
               ),
-              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              constraints: BoxConstraints(minWidth: 16, minHeight: 16),
               child: Text(
                 '$count',
                 textAlign: TextAlign.center,

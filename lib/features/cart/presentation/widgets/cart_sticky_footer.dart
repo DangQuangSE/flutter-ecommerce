@@ -19,10 +19,10 @@ class CartStickyFooter extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
             width: 1,
           ),
         ),

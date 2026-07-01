@@ -243,7 +243,7 @@ extension CustomizerActions on CustomizerPageState {
         context,
         message: AppStrings.customizerSaveSuccess,
         type: AppSnackBarType.success,
-        icon: const Icon(
+        icon: Icon(
           Icons.check_circle_rounded,
           color: AppColors.white,
           size: AppSizes.iconMd,

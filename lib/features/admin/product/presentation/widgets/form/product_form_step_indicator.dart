@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class ProductFormStepIndicator extends StatelessWidget {
   final int currentStep;
   const ProductFormStepIndicator({super.key, required this.currentStep});
 
-  static const _labels = ['Thông tin', 'Biến thể', 'Hình ảnh'];
+  static const _labels = [
+    AppStrings.adminProductStepBasicInfo,
+    AppStrings.adminProductStepVariants,
+    AppStrings.adminProductStepImages,
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
       child: Row(
         children: List.generate(3, (i) {

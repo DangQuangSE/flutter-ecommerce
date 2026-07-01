@@ -25,7 +25,7 @@ class BulkVariantSizeGroupDropdown extends StatelessWidget {
           const BulkVariantSectionLabel(
             AppStrings.adminProductBulkSizeGroupStep,
           ),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           DropdownButtonFormField<int>(
             initialValue: selectedId,
             decoration: const InputDecoration(
@@ -69,7 +69,7 @@ class BulkVariantSizeChipsSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const BulkVariantSectionLabel(AppStrings.adminProductBulkSizeStep),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           Wrap(
             spacing: AppSizes.paddingSm,
             runSpacing: AppSizes.paddingSm,
@@ -114,7 +114,7 @@ class BulkVariantColorCheckboxSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const BulkVariantSectionLabel(AppStrings.adminProductBulkColorStep),
-        const SizedBox(height: AppSizes.paddingSm),
+        SizedBox(height: AppSizes.paddingSm),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -157,7 +157,7 @@ class BulkVariantDefaultValuesSection extends StatelessWidget {
         children: [
           const BulkVariantSectionLabel(
               AppStrings.adminProductBulkDefaultsStep),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           Row(
             children: [
               Expanded(
@@ -167,7 +167,7 @@ class BulkVariantDefaultValuesSection extends StatelessWidget {
                   required: true,
                 ),
               ),
-              const SizedBox(width: AppSizes.paddingSm),
+              SizedBox(width: AppSizes.paddingSm),
               Expanded(
                 child: _DefaultPriceField(
                   controller: salePriceCtrl,
@@ -177,7 +177,7 @@ class BulkVariantDefaultValuesSection extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           _DefaultStockField(controller: stockCtrl),
         ],
       );

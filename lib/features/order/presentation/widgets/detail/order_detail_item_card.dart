@@ -34,7 +34,7 @@ class OrderDetailItemCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _OrderItemImage(imageUrl: item.imageUrl),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +49,7 @@ class OrderDetailItemCard extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   '${AppStrings.orderSizeLabel}: ${item.size} · '
                   '${AppStrings.orderQuantityLabel}: ${item.quantity}',
@@ -59,7 +59,7 @@ class OrderDetailItemCard extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -151,7 +151,7 @@ class _ImageFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Icon(
         Icons.image_not_supported_outlined,
         color: AppColors.textSecondary,

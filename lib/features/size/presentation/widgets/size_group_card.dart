@@ -91,7 +91,7 @@ class _CardActions extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.edit_rounded,
             size: AppSizes.iconMd,
             color: AppColors.primary,
@@ -100,7 +100,7 @@ class _CardActions extends StatelessWidget {
           onPressed: onEdit,
         ),
         IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.delete_outline_rounded,
             size: AppSizes.iconMd,
             color: AppColors.error,

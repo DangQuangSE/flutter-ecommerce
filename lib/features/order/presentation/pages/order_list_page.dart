@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/app/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
@@ -51,7 +50,7 @@ class _OrderListPageState extends State<OrderListPage> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       extendBody: true,
       body: PopScope(
         canPop: false,
@@ -85,12 +84,12 @@ class _OrderListPageState extends State<OrderListPage> {
                 );
               },
             ),
-            const Positioned(
+            Positioned(
               top: 0,
               left: 0,
               right: 0,
               child: GlassAppBar(
-                showBackButton: false,
+                showBackButton: context.canPop(),
                 customTitle: 'Sport Pro',
               ),
             ),

@@ -25,13 +25,13 @@ class BulkVariantPreviewSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _PreviewHeader(count: preview.length),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: preview.length,
             separatorBuilder: (_, __) =>
-                const SizedBox(height: AppSizes.paddingXs + 2),
+                SizedBox(height: AppSizes.paddingXs + 2),
             itemBuilder: (_, index) {
               final item = preview[index];
               final color = colors
@@ -79,10 +79,10 @@ class BulkVariantBottomActions extends StatelessWidget {
             Expanded(
               child: OutlinedButton(
                 onPressed: onCancel,
-                child: const Text(AppStrings.cancel),
+                child: Text(AppStrings.cancel),
               ),
             ),
-            const SizedBox(width: AppSizes.radiusLg),
+            SizedBox(width: AppSizes.radiusLg),
             Expanded(
               flex: 2,
               child: ElevatedButton(
@@ -114,7 +114,7 @@ class _PreviewHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         children: [
           const BulkVariantSectionLabel(AppStrings.adminProductBulkPreview),
-          const SizedBox(width: AppSizes.paddingSm),
+          SizedBox(width: AppSizes.paddingSm),
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.paddingSm,
@@ -126,7 +126,7 @@ class _PreviewHeader extends StatelessWidget {
             ),
             child: Text(
               AppStrings.adminProductBulkVariantCount(count),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: AppSizes.fontSm,
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
@@ -164,7 +164,7 @@ class _PreviewItemCard extends StatelessWidget {
           children: [
             _ColorDot(hexCode: color.hexCode),
             _SizeBadge(size: item.size),
-            const SizedBox(width: AppSizes.paddingSm),
+            SizedBox(width: AppSizes.paddingSm),
             Expanded(child: _VariantInfo(colorName: color.name, sku: item.sku)),
             _PriceDisplay(
               originalPrice: item.originalPrice,
@@ -223,7 +223,7 @@ class _SizeBadge extends StatelessWidget {
         ),
         child: Text(
           size,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.w600,
           ),
@@ -243,14 +243,14 @@ class _VariantInfo extends StatelessWidget {
         children: [
           Text(
             colorName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontLg,
               fontWeight: FontWeight.w500,
             ),
           ),
           Text(
             sku,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontSm,
               color: AppColors.textSecondary,
             ),
@@ -284,7 +284,7 @@ class _PriceDisplay extends StatelessWidget {
         children: [
           Text(
             _format(originalPrice),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontSm,
               color: AppColors.textSecondary,
               decoration: TextDecoration.lineThrough,
@@ -292,7 +292,7 @@ class _PriceDisplay extends StatelessWidget {
           ),
           Text(
             _format(salePrice!),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
@@ -303,7 +303,7 @@ class _PriceDisplay extends StatelessWidget {
     }
     return Text(
       _format(originalPrice),
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: AppSizes.fontMd,
         fontWeight: FontWeight.w500,
         color: AppColors.primary,
@@ -332,7 +332,7 @@ class _CardAction extends StatelessWidget {
         icon: Icon(icon, color: color, size: size),
         onPressed: onTap,
         padding: const EdgeInsets.all(AppSizes.paddingXs),
-        constraints: const BoxConstraints(),
+        constraints: BoxConstraints(),
         tooltip: tooltip,
       );
 }

@@ -51,25 +51,25 @@ class CheckoutOrderSummary extends StatelessWidget {
             value: formatPrice(subtotal),
           ),
           if (discount > 0) ...[
-            const SizedBox(height: AppSizes.radiusMd),
+            SizedBox(height: AppSizes.radiusMd),
             _SummaryRow(
               label: AppStrings.checkoutVoucherDiscountLabel,
               value: '-${formatPrice(discount)}',
               color: AppColors.error,
             ),
           ],
-          const SizedBox(height: AppSizes.radiusMd),
+          SizedBox(height: AppSizes.radiusMd),
           const _SummaryRow(
             label: AppStrings.checkoutExpressShippingLabel,
             value: AppStrings.checkoutFreeShipping,
             valueColor: Color(0xFF009933),
           ),
-          const SizedBox(height: AppSizes.radiusLg),
+          SizedBox(height: AppSizes.radiusLg),
           Container(
             height: 1,
             color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
           ),
-          const SizedBox(height: AppSizes.radiusLg),
+          SizedBox(height: AppSizes.radiusLg),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,

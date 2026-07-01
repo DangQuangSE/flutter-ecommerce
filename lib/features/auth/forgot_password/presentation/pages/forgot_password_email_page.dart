@@ -43,12 +43,12 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => context.goNamed(AppRoutes.login),
         ),
       ),
@@ -88,7 +88,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
                         color: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Nhập email đã đăng ký để nhận mã OTP đặt lại mật khẩu.',
                       style: GoogleFonts.inter(
@@ -96,7 +96,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     Text(
                       'EMAIL',
                       style: GoogleFonts.inter(
@@ -106,7 +106,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -132,7 +132,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
                       },
                     ),
                     if (apiError != null) ...[
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Text(
                         apiError,
                         style: GoogleFonts.inter(
@@ -141,7 +141,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     ElevatedButton(
                       onPressed: isLoading ? null : _onSubmit,
                       style: ElevatedButton.styleFrom(

@@ -135,6 +135,59 @@ RegisterPasswordExtra? _resolveRegisterPasswordExtra(GoRouterState state) {
   };
 }
 
+Page<void> _fadeThroughPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: const Duration(milliseconds: 260),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final fade = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final scale = Tween<double>(begin: 0.985, end: 1).animate(fade);
+      return FadeTransition(
+        opacity: fade,
+        child: ScaleTransition(scale: scale, child: child),
+      );
+    },
+  );
+}
+
+Page<void> _slideUpPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: const Duration(milliseconds: 300),
+    reverseTransitionDuration: const Duration(milliseconds: 220),
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curve = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      return FadeTransition(
+        opacity: curve,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.035),
+            end: Offset.zero,
+          ).animate(curve),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/splash',
@@ -441,37 +494,46 @@ class AppRouter {
       GoRoute(
         path: '/home',
         name: AppRoutes.home,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<ProductBloc>(),
-          child: const HomePage(),
+        pageBuilder: (context, state) => _fadeThroughPage(
+          state: state,
+          child: BlocProvider(
+            create: (_) => sl<ProductBloc>(),
+            child: const HomePage(),
+          ),
         ),
       ),
 
       GoRoute(
         path: '/products',
         name: AppRoutes.productList,
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (_) =>
-                  sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
-            ),
-            BlocProvider(create: (_) => sl<ProductFilterOptionsCubit>()),
-          ],
-          child: const ProductCatalogPage(),
+        pageBuilder: (context, state) => _fadeThroughPage(
+          state: state,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) =>
+                    sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
+              ),
+              BlocProvider(create: (_) => sl<ProductFilterOptionsCubit>()),
+            ],
+            child: const ProductCatalogPage(),
+          ),
         ),
         routes: [
           GoRoute(
             path: ':productId',
             name: AppRoutes.productDetail,
-            builder: (context, state) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => sl<ProductBloc>()),
-                BlocProvider(create: (_) => sl<SiteSettingCubit>()),
-                BlocProvider(create: (_) => sl<ReviewCubit>()),
-              ],
-              child: ProductDetailPage(
-                productId: state.pathParameters['productId'] ?? '',
+            pageBuilder: (context, state) => _slideUpPage(
+              state: state,
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (_) => sl<ProductBloc>()),
+                  BlocProvider(create: (_) => sl<SiteSettingCubit>()),
+                  BlocProvider(create: (_) => sl<ReviewCubit>()),
+                ],
+                child: ProductDetailPage(
+                  productId: state.pathParameters['productId'] ?? '',
+                ),
               ),
             ),
           ),
@@ -481,16 +543,22 @@ class AppRouter {
       GoRoute(
         path: '/cart',
         name: AppRoutes.cart,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<CustomDesignSpecCubit>(),
-          child: const CartPage(),
+        pageBuilder: (context, state) => _slideUpPage(
+          state: state,
+          child: BlocProvider(
+            create: (_) => sl<CustomDesignSpecCubit>(),
+            child: const CartPage(),
+          ),
         ),
       ),
 
       GoRoute(
         path: '/notifications',
         name: AppRoutes.notificationList,
-        builder: (context, state) => const NotificationPage(),
+        pageBuilder: (context, state) => _slideUpPage(
+          state: state,
+          child: const NotificationPage(),
+        ),
       ),
 
       GoRoute(
@@ -538,20 +606,26 @@ class AppRouter {
       GoRoute(
         path: '/orders',
         name: AppRoutes.orderList,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<OrderBloc>()..add(const OrderListRequested()),
-          child: const OrderListPage(),
+        pageBuilder: (context, state) => _fadeThroughPage(
+          state: state,
+          child: BlocProvider(
+            create: (_) => sl<OrderBloc>()..add(const OrderListRequested()),
+            child: const OrderListPage(),
+          ),
         ),
         routes: [
           GoRoute(
             path: ':orderId',
             name: AppRoutes.orderDetail,
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final orderId = state.pathParameters['orderId'] ?? '';
-              return BlocProvider(
-                create: (_) => sl<OrderBloc>()
-                  ..add(OrderDetailRequested(int.tryParse(orderId) ?? 0)),
-                child: OrderDetailPage(orderId: orderId),
+              return _slideUpPage(
+                state: state,
+                child: BlocProvider(
+                  create: (_) => sl<OrderBloc>()
+                    ..add(OrderDetailRequested(int.tryParse(orderId) ?? 0)),
+                  child: OrderDetailPage(orderId: orderId),
+                ),
               );
             },
             routes: [
@@ -574,17 +648,23 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         name: AppRoutes.profile,
-        builder: (context, state) => BlocProvider.value(
-          value: sl<ProfileCubit>()..loadProfile(),
-          child: const ProfilePage(),
+        pageBuilder: (context, state) => _fadeThroughPage(
+          state: state,
+          child: BlocProvider.value(
+            value: sl<ProfileCubit>()..loadProfile(),
+            child: const ProfilePage(),
+          ),
         ),
         routes: [
           GoRoute(
             path: 'edit',
             name: AppRoutes.editProfile,
-            builder: (context, state) => BlocProvider.value(
-              value: sl<ProfileCubit>()..loadProfile(),
-              child: const EditProfilePage(),
+            pageBuilder: (context, state) => _slideUpPage(
+              state: state,
+              child: BlocProvider.value(
+                value: sl<ProfileCubit>()..loadProfile(),
+                child: const EditProfilePage(),
+              ),
             ),
           ),
         ],
@@ -619,13 +699,19 @@ class AppRouter {
       GoRoute(
         path: '/chats',
         name: AppRoutes.chatList,
-        builder: (context, state) => const ChatListPage(),
+        pageBuilder: (context, state) => _slideUpPage(
+          state: state,
+          child: const ChatListPage(),
+        ),
         routes: [
           GoRoute(
             path: ':chatId',
             name: AppRoutes.chatDetail,
-            builder: (context, state) => ChatDetailPage(
-              chatId: state.pathParameters['chatId'] ?? '',
+            pageBuilder: (context, state) => _slideUpPage(
+              state: state,
+              child: ChatDetailPage(
+                chatId: state.pathParameters['chatId'] ?? '',
+              ),
             ),
           ),
         ],
@@ -774,9 +860,12 @@ class AppRouter {
       GoRoute(
         path: '/shop',
         name: AppRoutes.shopInfo,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<ShopCubit>()..loadShop(),
-          child: const ShopInfoPage(),
+        pageBuilder: (context, state) => _slideUpPage(
+          state: state,
+          child: BlocProvider(
+            create: (_) => sl<ShopCubit>()..loadShop(),
+            child: const ShopInfoPage(),
+          ),
         ),
       ),
 

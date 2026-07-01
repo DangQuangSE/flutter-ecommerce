@@ -33,9 +33,9 @@ class ProductFilterCategorySection extends StatelessWidget {
       children: [
         const ProductFilterSectionTitle(AppStrings.productFilterCategory),
         if (loading)
-          const AppLoadingView(size: AppSizes.paddingXl)
+          const SizedBox(height: AppSizes.paddingXl)
         else if (error != null)
-          Text(error!, style: const TextStyle(color: AppColors.error))
+          Text(error!, style: TextStyle(color: AppColors.error))
         else
           _CategoryTree(
             categories: categories,
@@ -68,7 +68,7 @@ class _CategoryTree extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 180),
+      constraints: BoxConstraints(maxHeight: 180),
       child: SingleChildScrollView(
         child: Column(
           children: categories
@@ -194,7 +194,7 @@ class _CategoryRow extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
             if (selectedId == id)
-              const Icon(
+              Icon(
                 Icons.check,
                 size: AppSizes.fontXl,
                 color: AppColors.primary,
@@ -240,7 +240,7 @@ class _CategoryChildRow extends StatelessWidget {
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check,
                 size: AppSizes.fontLg,
                 color: AppColors.primary,

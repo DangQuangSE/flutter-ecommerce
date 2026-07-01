@@ -121,14 +121,14 @@ class _OtpVerificationPageState extends State<OtpVerificationPage>
     );
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
               size: 20, color: AppColors.textPrimary),
           onPressed: () => context.goNamed(AppRoutes.register),
         ),
@@ -152,7 +152,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage>
                       controller: _animationController,
                       child: const AuthBrandHeader(),
                     ),
-                    const SizedBox(height: AppSizes.paddingXl + 8),
+                    SizedBox(height: AppSizes.paddingXl + 8),
                     _AnimatedEntrance(
                       delay: 150,
                       controller: _animationController,
@@ -308,7 +308,7 @@ class _OtpCard extends StatelessWidget {
                         letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       AppStrings.otpSentToEmail(email),
                       style: GoogleFonts.inter(
@@ -317,7 +317,7 @@ class _OtpCard extends StatelessWidget {
                         height: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     Center(
                       child: Pinput(
                         controller: pinController,
@@ -337,7 +337,7 @@ class _OtpCard extends StatelessWidget {
                       ),
                     ),
                     if (inlineError != null) ...[
-                      const SizedBox(height: 14),
+                      SizedBox(height: 14),
                       Text(
                         inlineError,
                         style: GoogleFonts.inter(
@@ -346,13 +346,13 @@ class _OtpCard extends StatelessWidget {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     LoginSubmitButton(
                       isLoading: isLoading,
                       onPressed: canVerify ? onVerify : null,
                       label: AppStrings.otpConfirm,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     TextButton(
                       onPressed:
                           resendSeconds > 0 || isLoading ? null : onResend,

@@ -26,14 +26,15 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs';
     final isOnline = chat?.isOnline ?? true;
 
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: theme.dividerColor.withValues(alpha: 0.3),
           height: 1,
         ),
       ),
@@ -46,9 +47,9 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             context.goNamed(AppRoutes.chatList);
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_rounded,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
           size: AppSizes.paddingXl,
         ),
       ),
@@ -58,7 +59,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             avatar: avatar,
             isOnline: isOnline,
           ),
-          const SizedBox(width: AppSizes.radiusLg),
+          SizedBox(width: AppSizes.radiusLg),
           Expanded(
             child: _ChatTitle(
               title: title,
@@ -76,13 +77,13 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
               type: AppSnackBarType.info,
             );
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.more_vert_rounded,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             size: AppSizes.paddingXl,
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
       ],
     );
   }
@@ -106,7 +107,7 @@ class _ChatAvatar extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE2E2E7), width: 1),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           ),
           clipBehavior: Clip.antiAlias,
           child: Image.network(
@@ -124,7 +125,7 @@ class _ChatAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.success,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 1.5),
+                border: Border.all(color: Theme.of(context).colorScheme.surface, width: 1.5),
               ),
             ),
           ),
@@ -153,10 +154,10 @@ class _ChatTitle extends StatelessWidget {
           style: GoogleFonts.lexend(
             fontSize: AppSizes.submitButtonFontSize,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Text(
           isOnline ? AppStrings.chatOnline : AppStrings.chatOffline,
           style: GoogleFonts.inter(

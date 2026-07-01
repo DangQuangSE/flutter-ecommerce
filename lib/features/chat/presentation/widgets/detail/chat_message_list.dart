@@ -58,7 +58,9 @@ class _TimestampDivider extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 24),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFFF3F3F8),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF1E293B)
+              : const Color(0xFFF3F3F8),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -134,16 +136,16 @@ class _OutgoingSystemBubble extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
+                Icon(
                   Icons.design_services_rounded,
                   color: Color(0xFFFFB874),
                   size: 20,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(child: _OutgoingMessageText(message.content)),
               ],
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             _OutgoingTimestamp(timestamp: message.timestamp),
           ],
         ),
@@ -179,7 +181,7 @@ class _OutgoingTextBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             _OutgoingMessageText(message.content),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             _OutgoingTimestamp(timestamp: message.timestamp),
           ],
         ),
@@ -231,7 +233,7 @@ class _IncomingAvatar extends StatelessWidget {
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFE2E2E7), width: 1),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: Image.network(
@@ -257,14 +259,16 @@ class _IncomingContent extends StatelessWidget {
           ? const EdgeInsets.all(4)
           : const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFEDEDF2),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFEDEDF2),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
           bottomRight: Radius.circular(16),
         ),
         border: Border.all(
-          color: const Color(0xFFE2E2E7),
+          color: Theme.of(context).dividerColor,
           width: 1,
         ),
       ),
@@ -277,7 +281,7 @@ class _IncomingContent extends StatelessWidget {
           ] else ...[
             _IncomingText(message.content),
           ],
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
@@ -367,7 +371,7 @@ class _IncomingText extends StatelessWidget {
       style: GoogleFonts.inter(
         fontSize: 13,
         fontWeight: FontWeight.w500,
-        color: AppColors.textPrimary,
+        color: Theme.of(context).colorScheme.onSurface,
         height: 1.4,
       ),
     );

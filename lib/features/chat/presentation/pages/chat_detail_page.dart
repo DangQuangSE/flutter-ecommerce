@@ -85,7 +85,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         }
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: ChatDetailAppBar(chat: chatMetadata),
           body: Column(
             children: [

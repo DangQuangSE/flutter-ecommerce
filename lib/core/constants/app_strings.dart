@@ -46,7 +46,7 @@ abstract final class AppStrings {
   static const String genericLoadError = 'Đã xảy ra lỗi khi tải dữ liệu.';
   static const String networkConnectionError = 'Lỗi kết nối mạng';
   static const String viewCart = 'XEM GIỎ';
-  static const String addToCart = 'ADD TO CART';
+  static const String addToCart = 'THÊM VÀO GIỎ HÀNG';
   static const String outOfStock = 'HẾT HÀNG';
 
   // Commerce common
@@ -122,6 +122,14 @@ abstract final class AppStrings {
   static const String profileAppNotifications = 'Thông báo ứng dụng';
   static const String profileInbox = 'Hộp thư tin nhắn';
   static const String profileSystemSettings = 'Cài đặt hệ thống';
+  static const String systemSettingsTitle = 'Cài đặt hệ thống';
+  static const String notificationSoundTitle = 'Âm thông báo';
+  static const String notificationSoundSubtitle =
+      'Phát âm thanh khi có thông báo mới';
+  static const String systemSettingsThemeLabel = 'Giao diện';
+  static const String systemSettingsThemeSystem = 'Theo hệ thống';
+  static const String systemSettingsThemeLight = 'Sáng';
+  static const String systemSettingsThemeDark = 'Tối';
   static const String profileLogout = 'Đăng xuất';
   static const String profileLogoutConfirm = 'Bạn có chắc muốn đăng xuất?';
   static String profileTier(String tier) => 'HẠNG ${tier.toUpperCase()}';
@@ -883,6 +891,43 @@ abstract final class AppStrings {
   static const String adminSupportMessages = 'Tin nhắn hỗ trợ';
   static const String adminReturnPolicy = 'Chính sách đổi trả & bảo hành';
 
+  // Admin dashboard tab
+  static const String adminDashboardTitle = 'Dashboard';
+  static const String adminRevenueLabel = 'DOANH THU';
+  static const String adminOrdersCountLabel = 'ĐƠN HÀNG';
+  static const String adminNewCustomersLabel = 'KHÁCH MỚI';
+  static const String adminTrafficTitle = 'Lưu lượng truy cập';
+  static const String adminTrafficPeriod = 'TUẦN NÀY';
+  static String adminTrafficDay(String day, int value) =>
+      'Lưu lượng $day: $value%';
+
+  // Admin notification sheet
+  static const String adminNotificationSheetTitle = 'Thông báo đơn hàng mới';
+  static const String adminNotificationEmpty = 'Chưa có thông báo nào';
+  static String adminNotificationOrderText(dynamic orderId, String createdAt) =>
+      'Đơn hàng #$orderId • $createdAt';
+
+  // Admin order detail
+  static const String adminOrderInfoSection = 'THÔNG TIN ĐƠN HÀNG';
+  static const String adminOrderCodeLabel = 'Mã đơn hàng';
+  static const String adminOrderCustomerNameLabel = 'Tên người đặt';
+  static const String adminOrderPhoneLabel = 'Số điện thoại';
+  static const String adminOrderPaymentLabel = 'Thanh toán';
+  static const String adminOrderAddressSection = 'ĐỊA CHỈ GIAO HÀNG';
+  static const String adminOrderAddressLabel = 'Địa chỉ';
+  static String adminOrderItemsSection(int count) => 'SẢN PHẨM ($count)';
+  static const String adminOrderTotalLabel = 'Tổng cộng';
+
+  // Admin location tab
+  static const String adminLocationTitle = 'Vị trí của cửa hàng';
+  static const String adminShowroomName = 'Sport Pro Showroom';
+  static const String adminShowroomLabel = 'SHOWROOM';
+
+  // Admin profile tab
+  static const String adminRoleLabel = 'QUẢN TRỊ VIÊN';
+  static const String adminShopViewLabel = 'Về Cửa hàng (User View)';
+  static const String adminLogoutLabel = 'Đăng xuất tài khoản';
+
   // Category form
   static const String categoryNameLabel = 'Tên danh mục *';
   static const String categoryNameHint = 'VD: Giày chạy bộ';
@@ -902,6 +947,40 @@ abstract final class AppStrings {
   static const String categoryCustomizableTitle = 'Cho phép tùy chỉnh';
   static const String categoryCustomizableSubtitle =
       'Sản phẩm trong danh mục có thể tùy biến';
+
+  // Admin dashboard
+  static const String adminDashboardAppName = 'Sport Pro';
+  static String adminDashboardDate(String date) => date;
+  static String adminDashboardChartTooltip(String day, int value) =>
+      'Lưu lượng $day: $value%';
+
+  // Admin profile
+  static const String adminProfileFallbackName = 'Admin Sport Pro';
+
+  // Admin product form steps
+  static const String adminProductStepBasicInfo = 'Thông tin';
+  static const String adminProductStepVariants = 'Biến thể';
+  static const String adminProductStepImages = 'Hình ảnh';
+
+  // Admin product form cubit
+  static const String adminProductLoadListError =
+      'Không thể tải danh sách. Vui lòng thử lại.';
+  static const String adminProductFillRequired = 'Vui lòng điền đầy đủ thông tin bắt buộc';
+  static String adminProductDeleteError(String msg) =>
+      'Không thể xóa sản phẩm: $msg';
+
+  // Admin bloc messages
+  static const String adminBlocUnknownError = 'Đã xảy ra lỗi không xác định.';
+  static const String adminBlocCreateSuccess = 'Đã thêm sản phẩm thành công!';
+  static const String adminBlocUpdateSuccess = 'Đã cập nhật sản phẩm thành công!';
+  static const String adminBlocDeleteSuccess = 'Đã xóa sản phẩm thành công!';
+  static const String adminBlocDeleteNotFound = 'Không tìm thấy sản phẩm để xóa.';
+
+  // Admin order cubit
+  static const String adminOrderUpdateStatusSuccess = 'Đã cập nhật trạng thái đơn hàng!';
+
+  // Admin order entity
+  static const String adminOrderNoProduct = 'Không có sản phẩm';
 
   // Chat filters
   static const String chatSearchHint = 'Tìm kiếm cuộc hội thoại...';

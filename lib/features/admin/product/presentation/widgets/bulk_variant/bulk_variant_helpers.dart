@@ -19,7 +19,7 @@ class BulkVariantSectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: AppSizes.fontSm,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,

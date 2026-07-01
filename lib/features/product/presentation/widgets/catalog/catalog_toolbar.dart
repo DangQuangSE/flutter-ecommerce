@@ -52,7 +52,7 @@ class _CatalogToolbarState extends State<CatalogToolbar> {
     return Container(
       padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radiusXl),
         boxShadow: [
           BoxShadow(
@@ -101,14 +101,14 @@ class _SearchField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: AppStrings.productSearchHint,
-        hintStyle: const TextStyle(
+        hintStyle: TextStyle(
           fontSize: AppSizes.fontLg,
           color: AppColors.textHint,
         ),
-        prefixIcon: const Icon(Icons.search, color: AppColors.textHint),
+        prefixIcon: Icon(Icons.search, color: AppColors.textHint),
         suffixIcon: controller.text.isNotEmpty
             ? IconButton(
-                icon: const Icon(Icons.clear, size: AppSizes.fontXxl),
+                icon: Icon(Icons.clear, size: AppSizes.fontXxl),
                 onPressed: () {
                   controller.clear();
                   onChanged('');
@@ -116,7 +116,9 @@ class _SearchField extends StatelessWidget {
               )
             : null,
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF0F172A)
+            : AppColors.background,
         contentPadding: const EdgeInsets.symmetric(
           vertical: AppSizes.radiusMd,
         ),
@@ -145,11 +147,11 @@ class _FilterButton extends StatelessWidget {
       children: [
         OutlinedButton.icon(
           onPressed: onTap,
-          icon: const Icon(Icons.tune_rounded, size: AppSizes.fontXl),
-          label: const Text(AppStrings.productFilterTitle),
+          icon: Icon(Icons.tune_rounded, size: AppSizes.fontXl),
+          label: Text(AppStrings.productFilterTitle),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.textPrimary,
-            side: const BorderSide(color: AppColors.divider),
+            side: BorderSide(color: Theme.of(context).dividerColor),
             padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.paddingMd,
               vertical: AppSizes.paddingSm,
@@ -197,7 +199,7 @@ class _SortDropdown extends StatelessWidget {
         return DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             value: currentSort,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.forgotPasswordFontSize,
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w500,

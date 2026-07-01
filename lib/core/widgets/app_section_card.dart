@@ -55,7 +55,7 @@ class AppSectionCard extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(width: AppSizes.radiusMd),
+                SizedBox(width: AppSizes.radiusMd),
                 Text(
                   title,
                   style: GoogleFonts.lexend(

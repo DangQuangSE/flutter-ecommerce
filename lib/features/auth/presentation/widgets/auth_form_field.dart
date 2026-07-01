@@ -63,11 +63,11 @@ class _LoginFormFieldState extends State<LoginFormField> {
   Widget build(BuildContext context) {
     final labelColor = widget.showError
         ? AppColors.error
-        : (_isFocused ? AppColors.primary : AppColors.textSecondary);
+        : (_isFocused ? AppColors.primary : AppColors.textSecondaryLight);
 
     final prefixIconColor = widget.showError
         ? AppColors.error
-        : (_isFocused ? AppColors.primary : AppColors.textSecondary.withValues(alpha: 0.7));
+        : (_isFocused ? AppColors.primary : AppColors.textSecondaryLight.withValues(alpha: 0.7));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -82,7 +82,7 @@ class _LoginFormFieldState extends State<LoginFormField> {
           ),
           child: Text(widget.label.toUpperCase()),
         ),
-        const SizedBox(height: AppSizes.paddingSm),
+        SizedBox(height: AppSizes.paddingSm),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
@@ -108,7 +108,7 @@ class _LoginFormFieldState extends State<LoginFormField> {
             onChanged: widget.onChanged,
             style: GoogleFonts.inter(
               fontSize: AppSizes.fontLg,
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryLight,
             ),
             decoration: InputDecoration(
               hintText: widget.hint,

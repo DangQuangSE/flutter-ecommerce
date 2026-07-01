@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/admin_product_detail_entity.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/enums/gender.dart';
@@ -90,13 +91,13 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
         emit(state.copyWith(
           dropdownStatus: DropdownStatus.error,
           dropdownErrorMessage:
-              msg ?? 'Không thể tải danh sách. Vui lòng thử lại.',
+              msg ?? AppStrings.adminProductLoadListError,
         ));
       }
     } catch (_) {
       emit(state.copyWith(
         dropdownStatus: DropdownStatus.error,
-        dropdownErrorMessage: 'Không thể tải danh sách. Vui lòng thử lại.',
+        dropdownErrorMessage: AppStrings.adminProductLoadListError,
       ));
     }
   }
@@ -109,7 +110,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
         state.gender == null ||
         state.name.trim().isEmpty) {
       emit(state.copyWith(
-          errorMessage: 'Vui lòng điền đầy đủ thông tin bắt buộc'));
+          errorMessage: AppStrings.adminProductFillRequired));
       return;
     }
 
@@ -170,7 +171,7 @@ class AdminProductFormCubit extends Cubit<AdminProductFormState> {
     final result = await _deleteProduct(id);
     if (result case ResultFailure(:final failure)) {
       emit(state.copyWith(
-          errorMessage: 'Không thể xóa sản phẩm: ${failure.message}'));
+          errorMessage: AppStrings.adminProductDeleteError(failure.message)));
     }
   }
 

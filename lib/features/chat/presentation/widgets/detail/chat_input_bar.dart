@@ -19,10 +19,10 @@ class ChatInputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -44,7 +44,7 @@ class ChatInputBar extends StatelessWidget {
                 onSend: onSend,
               ),
             ),
-            const SizedBox(width: AppSizes.radiusMd),
+            SizedBox(width: AppSizes.radiusMd),
             _SendButton(onSend: onSend),
           ],
         ),
@@ -71,11 +71,11 @@ class _AttachmentButton extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
             width: 1.5,
           ),
         ),
-        child: const Icon(
+        child: Icon(
           Icons.add_rounded,
           color: AppColors.primary,
           size: AppSizes.paddingXl,
@@ -98,14 +98,16 @@ class _MessageField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F8),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E293B)
+            : const Color(0xFFF3F3F8),
         borderRadius: BorderRadius.circular(AppSizes.paddingXl),
         border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
-      constraints: const BoxConstraints(minHeight: AppSizes.buttonMinHeight),
+      constraints: BoxConstraints(minHeight: AppSizes.buttonMinHeight),
       child: Row(
         children: [
           Expanded(
@@ -129,7 +131,7 @@ class _MessageField extends StatelessWidget {
               ),
               style: GoogleFonts.inter(
                 fontSize: 13,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -138,7 +140,7 @@ class _MessageField extends StatelessWidget {
             onTap: () {
               controller.text += ' 😊';
             },
-            child: const Icon(
+            child: Icon(
               Icons.sentiment_satisfied_alt_rounded,
               color: AppColors.textSecondary,
               size: 22,
@@ -173,7 +175,7 @@ class _SendButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.send_rounded,
           color: Colors.white,
           size: AppSizes.fontXxl,

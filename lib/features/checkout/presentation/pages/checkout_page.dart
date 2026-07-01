@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
@@ -194,7 +193,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        
         appBar: const CheckoutAppBar(),
         body: CheckoutCartStateView(contentBuilder: _buildCheckoutContent),
       ),

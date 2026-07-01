@@ -8,7 +8,6 @@ abstract final class AppTextStyles {
     fontFamily: _fontFamily,
     fontSize: 32,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
     height: 1.2,
   );
 
@@ -16,7 +15,6 @@ abstract final class AppTextStyles {
     fontFamily: _fontFamily,
     fontSize: 28,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
     height: 1.25,
   );
 
@@ -24,28 +22,24 @@ abstract final class AppTextStyles {
     fontFamily: _fontFamily,
     fontSize: 22,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
   );
 
   static const TextStyle headingMedium = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
   );
 
   static const TextStyle headingSmall = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
   );
 
   static const TextStyle bodyLarge = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    color: AppColors.textPrimary,
     height: 1.5,
   );
 
@@ -53,7 +47,6 @@ abstract final class AppTextStyles {
     fontFamily: _fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textPrimary,
     height: 1.5,
   );
 
@@ -61,7 +54,6 @@ abstract final class AppTextStyles {
     fontFamily: _fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
     height: 1.4,
   );
 
@@ -69,7 +61,6 @@ abstract final class AppTextStyles {
     fontFamily: _fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
     letterSpacing: 0.5,
   );
 

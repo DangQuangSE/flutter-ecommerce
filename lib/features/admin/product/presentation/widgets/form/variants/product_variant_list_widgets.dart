@@ -17,13 +17,13 @@ class AdminVariantEmptyPlaceholder extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingXl + 8),
         child: Column(
           children: [
-            const Icon(
+            Icon(
               Icons.inventory_2_outlined,
               size: AppSizes.iconXl - AppSizes.paddingMd,
               color: AppColors.textHint,
             ),
-            const SizedBox(height: AppSizes.paddingSm + 4),
-            const Text(
+            SizedBox(height: AppSizes.paddingSm + 4),
+            Text(
               AppStrings.adminProductVariantEmptyTitle,
               style: TextStyle(
                 color: AppColors.textSecondary,
@@ -31,8 +31,8 @@ class AdminVariantEmptyPlaceholder extends StatelessWidget {
               ),
             ),
             if (canAddVariant) ...[
-              const SizedBox(height: AppSizes.paddingXs + 2),
-              const Text(
+              SizedBox(height: AppSizes.paddingXs + 2),
+              Text(
                 AppStrings.adminProductVariantEmptyHint,
                 style: TextStyle(
                   color: AppColors.textHint,
@@ -56,7 +56,7 @@ class AdminVariantBasicInfoWarning extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSizes.radiusSm + 2),
           border: Border.all(color: AppColors.warning),
         ),
-        child: const Row(
+        child: Row(
           children: [
             Icon(
               Icons.info_outline,
@@ -98,7 +98,7 @@ class AdminVariantRow extends StatelessWidget {
         child: ListTile(
           title: Text(
             variant.sku,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            style: TextStyle(fontWeight: FontWeight.w600),
           ),
           subtitle: Text(subtitle),
           trailing: Row(
@@ -106,20 +106,20 @@ class AdminVariantRow extends StatelessWidget {
             children: [
               Text(
                 AppStrings.adminProductVariantStockUnit(variant.stockQuantity),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: AppSizes.fontMd,
                   color: AppColors.textSecondary,
                 ),
               ),
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.edit_outlined,
                   color: AppColors.primary,
                 ),
                 onPressed: onEdit,
               ),
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline_rounded,
                   color: AppColors.error,
                 ),
