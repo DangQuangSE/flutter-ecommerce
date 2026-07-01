@@ -2,15 +2,11 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/constants/app_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
-import 'package:flutter_ecommerce/features/auth/data/models/login_response_model.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 
 class _AppExceptionDio implements Dio {
   final Dio _delegate;
@@ -308,6 +304,7 @@ class DioClient {
   DioClient({
     required AuthTokenStorage authTokenStorage,
     required CookieJar cookieJar,
+    Future<void> Function()? onSessionExpired,
   }) {
     dio = _AppExceptionDio(
       BaseOptions(
@@ -340,6 +337,7 @@ class DioClient {
         dio: dio,
         authTokenStorage: authTokenStorage,
         cookieJar: cookieJar,
+        onSessionExpired: onSessionExpired,
       ),
     );
     dio.interceptors.add(_ErrorInterceptor());
@@ -351,8 +349,10 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
     required Dio dio,
     required AuthTokenStorage authTokenStorage,
     required CookieJar cookieJar,
+    Future<void> Function()? onSessionExpired,
   })  : _mainDio = dio,
-        _authTokenStorage = authTokenStorage {
+        _authTokenStorage = authTokenStorage,
+        _onSessionExpired = onSessionExpired {
     // A plain Dio used ONLY for the refresh-token round-trip.
     // It MUST NOT share the main Dio instance or its QueuedInterceptor,
     // otherwise the refresh call deadlocks because QueuedInterceptor blocks
@@ -382,6 +382,7 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
   final Dio _mainDio;
   late final Dio _refreshDio;
   final AuthTokenStorage _authTokenStorage;
+  final Future<void> Function()? _onSessionExpired;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -422,14 +423,12 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
         final refreshResponse = await _refreshDio.post<Map<String, dynamic>>(
           ApiConstants.refreshToken,
         );
-        final loginModel =
-            LoginResponseModel.fromApiResponse(refreshResponse.data!);
-        await _authTokenStorage.saveAccessToken(loginModel.accessToken);
+        final accessToken = _extractAccessToken(refreshResponse.data!);
+        await _authTokenStorage.saveAccessToken(accessToken);
 
         final retryOptions = err.requestOptions;
         retryOptions.extra['_retried'] = true;
-        retryOptions.headers['Authorization'] =
-            'Bearer ${loginModel.accessToken}';
+        retryOptions.headers['Authorization'] = 'Bearer $accessToken';
 
         // Re-execute the original request through the main Dio.
         final retryResponse = await _mainDio.fetch(retryOptions);
@@ -440,11 +439,21 @@ class _AuthRefreshInterceptor extends QueuedInterceptor {
         // now the single owner of session-expiry handling (previously a second
         // interceptor logged the user out on the FIRST 401, before refresh ran).
         await _authTokenStorage.clearAccessToken();
-        GetIt.instance<AuthBloc>().add(const AuthLogoutRequested());
+        await _onSessionExpired?.call();
       }
     }
 
     handler.next(err);
+  }
+
+  String _extractAccessToken(Map<String, dynamic> responseData) {
+    final data = responseData['data'];
+    final payload = data is Map<String, dynamic> ? data : responseData;
+    final accessToken = payload['accessToken'];
+    if (accessToken is String && accessToken.isNotEmpty) {
+      return accessToken;
+    }
+    throw const ServerException('Missing access token', statusCode: 401);
   }
 }
 

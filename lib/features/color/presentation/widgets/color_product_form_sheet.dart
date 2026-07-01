@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 
 class ColorProductFormSheet extends StatefulWidget {
@@ -41,8 +42,7 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.color?.name ?? '');
-    _hexController =
-        TextEditingController(text: widget.color?.hexCode ?? '#');
+    _hexController = TextEditingController(text: widget.color?.hexCode ?? '#');
   }
 
   @override
@@ -105,19 +105,21 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
     final hex = _hexController.text.trim().toUpperCase();
 
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(AppStrings.adminColorProductNameRequired),
-        backgroundColor: AppColors.error,
-      ));
+      AppSnackBar.show(
+        context,
+        message: AppStrings.adminColorProductNameRequired,
+        type: AppSnackBarType.error,
+      );
       return;
     }
 
     final regex = RegExp(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
     if (!regex.hasMatch(hex)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(AppStrings.adminColorHexInvalidFull),
-        backgroundColor: AppColors.error,
-      ));
+      AppSnackBar.show(
+        context,
+        message: AppStrings.adminColorHexInvalidFull,
+        type: AppSnackBarType.error,
+      );
       return;
     }
 
@@ -136,8 +138,7 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
         left: AppSizes.paddingLg,
         right: AppSizes.paddingLg,
         top: AppSizes.paddingXl,
-        bottom:
-            MediaQuery.of(context).viewInsets.bottom + AppSizes.paddingXl,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSizes.paddingXl,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -165,7 +166,6 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
             ),
             const Divider(),
             const SizedBox(height: 12),
-
             const _FormLabel(AppStrings.adminColorProductNameLabel),
             TextField(
               controller: _nameController,
@@ -177,7 +177,6 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
               ),
             ),
             AppSizes.spacingMd,
-
             const _FormLabel(AppStrings.adminColorHexLabel),
             TextField(
               controller: _hexController,
@@ -195,7 +194,6 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
               ),
             ),
             AppSizes.spacingMd,
-
             Row(
               children: [
                 Container(
@@ -219,7 +217,6 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
               ],
             ),
             AppSizes.spacingMd,
-
             const _FormLabel(AppStrings.adminColorPresetsLabel),
             Wrap(
               spacing: 8,
@@ -233,8 +230,7 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
                   }),
                   child: Chip(
                     backgroundColor: presetColor.withValues(alpha: 0.12),
-                    side:
-                        BorderSide(color: presetColor.withValues(alpha: 0.3)),
+                    side: BorderSide(color: presetColor.withValues(alpha: 0.3)),
                     avatar:
                         CircleAvatar(radius: 8, backgroundColor: presetColor),
                     label: Text(
@@ -250,7 +246,6 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
               }).toList(),
             ),
             AppSizes.spacingLg,
-
             ElevatedButton(
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
@@ -265,8 +260,8 @@ class _ColorProductFormSheetState extends State<ColorProductFormSheet> {
                 _isEdit
                     ? AppStrings.adminColorSaveChanges
                     : AppStrings.adminColorCreateProductAction,
-                style:
-                    GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 13),
+                style: GoogleFonts.lexend(
+                    fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
           ],

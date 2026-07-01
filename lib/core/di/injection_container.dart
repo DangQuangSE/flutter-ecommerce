@@ -11,6 +11,8 @@ import 'package:flutter_ecommerce/features/address/address_module.dart';
 import 'package:flutter_ecommerce/features/admin/admin_module.dart';
 import 'package:flutter_ecommerce/features/admin/product/admin_product_module.dart';
 import 'package:flutter_ecommerce/features/auth/auth_module.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/brand/brand_module.dart';
 import 'package:flutter_ecommerce/features/cart/cart_module.dart';
 import 'package:flutter_ecommerce/features/category/category_module.dart';
@@ -57,6 +59,11 @@ Future<void> configureDependencies() async {
     () => DioClient(
       authTokenStorage: sl<AuthTokenStorage>(),
       cookieJar: sl<CookieJar>(),
+      onSessionExpired: () async {
+        if (sl.isRegistered<AuthBloc>()) {
+          sl<AuthBloc>().add(const AuthLogoutRequested());
+        }
+      },
     ),
   );
 

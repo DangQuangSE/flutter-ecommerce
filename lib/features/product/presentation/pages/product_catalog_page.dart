@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
+import 'package:flutter_ecommerce/app/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/cubit/product_filter_options_cubit.dart';

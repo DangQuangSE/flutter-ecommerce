@@ -26,7 +26,7 @@ abstract final class CustomerOrderFilter {
   }
 
   static List<OrderEntity> apply(String pill, List<OrderEntity> orders) {
-    if (pill == 'Tất cả') return orders;
+    if (pill == defaultPill) return orders;
     return orders.where((order) => matches(pill, order.status)).toList();
   }
 }

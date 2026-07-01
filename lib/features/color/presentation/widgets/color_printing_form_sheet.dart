@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/printing_color_entity.dart';
 
 class ColorPrintingFormSheet extends StatefulWidget {
@@ -17,8 +18,7 @@ class ColorPrintingFormSheet extends StatefulWidget {
   });
 
   @override
-  State<ColorPrintingFormSheet> createState() =>
-      _ColorPrintingFormSheetState();
+  State<ColorPrintingFormSheet> createState() => _ColorPrintingFormSheetState();
 }
 
 class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
@@ -43,8 +43,7 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.color?.name ?? '');
-    _hexController =
-        TextEditingController(text: widget.color?.hexCode ?? '#');
+    _hexController = TextEditingController(text: widget.color?.hexCode ?? '#');
     _activeVal = widget.color?.isActive ?? true;
   }
 
@@ -108,19 +107,21 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
     final hex = _hexController.text.trim().toUpperCase();
 
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(AppStrings.adminColorPrintingNameRequired),
-        backgroundColor: AppColors.error,
-      ));
+      AppSnackBar.show(
+        context,
+        message: AppStrings.adminColorPrintingNameRequired,
+        type: AppSnackBarType.error,
+      );
       return;
     }
 
     final regex = RegExp(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
     if (!regex.hasMatch(hex)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(AppStrings.adminColorHexInvalid),
-        backgroundColor: AppColors.error,
-      ));
+      AppSnackBar.show(
+        context,
+        message: AppStrings.adminColorHexInvalid,
+        type: AppSnackBarType.error,
+      );
       return;
     }
 
@@ -140,8 +141,7 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
         left: AppSizes.paddingLg,
         right: AppSizes.paddingLg,
         top: AppSizes.paddingXl,
-        bottom:
-            MediaQuery.of(context).viewInsets.bottom + AppSizes.paddingXl,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSizes.paddingXl,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -169,7 +169,6 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
             ),
             const Divider(),
             const SizedBox(height: 12),
-
             const _FormLabel(AppStrings.adminColorPrintingNameLabel),
             TextField(
               controller: _nameController,
@@ -181,7 +180,6 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
               ),
             ),
             AppSizes.spacingMd,
-
             const _FormLabel(AppStrings.adminColorHexLabel),
             TextField(
               controller: _hexController,
@@ -199,7 +197,6 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
               ),
             ),
             AppSizes.spacingMd,
-
             Row(
               children: [
                 Container(
@@ -223,7 +220,6 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
               ],
             ),
             AppSizes.spacingMd,
-
             const _FormLabel(AppStrings.adminColorPresetsLabel),
             Wrap(
               spacing: 8,
@@ -237,8 +233,7 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
                   }),
                   child: Chip(
                     backgroundColor: presetColor.withValues(alpha: 0.12),
-                    side:
-                        BorderSide(color: presetColor.withValues(alpha: 0.3)),
+                    side: BorderSide(color: presetColor.withValues(alpha: 0.3)),
                     avatar:
                         CircleAvatar(radius: 8, backgroundColor: presetColor),
                     label: Text(
@@ -254,7 +249,6 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
               }).toList(),
             ),
             AppSizes.spacingMd,
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -267,7 +261,6 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
               ],
             ),
             AppSizes.spacingLg,
-
             ElevatedButton(
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
@@ -282,8 +275,8 @@ class _ColorPrintingFormSheetState extends State<ColorPrintingFormSheet> {
                 _isEdit
                     ? AppStrings.adminColorSaveChanges
                     : AppStrings.adminColorCreatePrintingAction,
-                style:
-                    GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 13),
+                style: GoogleFonts.lexend(
+                    fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
           ],

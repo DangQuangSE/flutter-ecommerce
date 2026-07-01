@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/core/utils/customer_order_filter.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_state.dart';
+import 'package:flutter_ecommerce/features/order/presentation/utils/customer_order_filter.dart';
 
 class OrderFilterPillsRow extends StatelessWidget {
   final OrderState state;

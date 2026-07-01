@@ -5,7 +5,7 @@ import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/core/widgets/product_tactile_card.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/shared/product_tactile_card.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/home/product_home_hero_section.dart';
 

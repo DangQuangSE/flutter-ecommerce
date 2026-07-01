@@ -4,14 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
 import 'package:flutter_ecommerce/features/color/domain/entities/printing_color_entity.dart';
-import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
-import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_state.dart';
+import 'package:flutter_ecommerce/features/color/domain/entities/product_color_entity.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_state.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_cubit.dart';
+import 'package:flutter_ecommerce/features/color/presentation/cubit/product_color_state.dart';
 import 'package:flutter_ecommerce/features/color/presentation/widgets/color_card.dart';
-import 'package:flutter_ecommerce/features/color/presentation/widgets/color_delete_dialog.dart';
 import 'package:flutter_ecommerce/features/color/presentation/widgets/color_printing_form_sheet.dart';
 import 'package:flutter_ecommerce/features/color/presentation/widgets/color_product_form_sheet.dart';
 import 'package:flutter_ecommerce/features/color/presentation/widgets/color_state_views.dart';
@@ -45,9 +46,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
       isScrollControlled: true,
       backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusRound),
         ),
       ),
       builder: (_) => ColorProductFormSheet(
@@ -69,9 +69,8 @@ class _ColorManagementPageState extends State<ColorManagementPage>
       isScrollControlled: true,
       backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusRound),
         ),
       ),
       builder: (_) => ColorPrintingFormSheet(
@@ -87,34 +86,26 @@ class _ColorManagementPageState extends State<ColorManagementPage>
     );
   }
 
-  void _confirmDeleteProductColor(ProductColorEntity color) {
-    showDialog(
-      context: context,
-      builder: (_) => ColorDeleteDialog(
-        title: AppStrings.adminColorDeleteProductTitle,
-        content: AppStrings.adminColorDeleteProductBody(color.name),
-        onConfirm: () {
-          if (color.id != null) {
-            context.read<ProductColorCubit>().deleteColor(color.id!);
-          }
-        },
-      ),
+  Future<void> _confirmDeleteProductColor(ProductColorEntity color) async {
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.adminColorDeleteProductTitle,
+      message: AppStrings.adminColorDeleteProductBody(color.name),
+      confirmLabel: AppStrings.delete,
     );
+    if (!confirmed || !mounted || color.id == null) return;
+    context.read<ProductColorCubit>().deleteColor(color.id!);
   }
 
-  void _confirmDeletePrintingColor(PrintingColorEntity color) {
-    showDialog(
-      context: context,
-      builder: (_) => ColorDeleteDialog(
-        title: AppStrings.adminColorDeletePrintingTitle,
-        content: AppStrings.adminColorDeletePrintingBody(color.name),
-        onConfirm: () {
-          if (color.id != null) {
-            context.read<PrintingColorCubit>().deleteColor(color.id!);
-          }
-        },
-      ),
+  Future<void> _confirmDeletePrintingColor(PrintingColorEntity color) async {
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.adminColorDeletePrintingTitle,
+      message: AppStrings.adminColorDeletePrintingBody(color.name),
+      confirmLabel: AppStrings.delete,
     );
+    if (!confirmed || !mounted || color.id == null) return;
+    context.read<PrintingColorCubit>().deleteColor(color.id!);
   }
 
   @override
@@ -140,10 +131,14 @@ class _ColorManagementPageState extends State<ColorManagementPage>
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.primary,
           indicatorWeight: 3,
-          labelStyle:
-              GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 13),
-          unselectedLabelStyle:
-              GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+          labelStyle: GoogleFonts.lexend(
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+          ),
+          unselectedLabelStyle: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
           tabs: const [
             Tab(text: AppStrings.adminColorProductTab),
             Tab(text: AppStrings.adminColorPrintingTab),
@@ -158,8 +153,11 @@ class _ColorManagementPageState extends State<ColorManagementPage>
                 _openPrintingColorForm();
               }
             },
-            icon: const Icon(Icons.add_rounded,
-                color: AppColors.primary, size: 28),
+            icon: const Icon(
+              Icons.add_rounded,
+              color: AppColors.primary,
+              size: 28,
+            ),
           ),
           const SizedBox(width: AppSizes.paddingSm),
         ],
@@ -181,30 +179,31 @@ class _ColorManagementPageState extends State<ColorManagementPage>
   }
 }
 
-// ── Product Colors Tab ─────────────────────────────────────────────────────────
-
 class _ProductColorsTab extends StatelessWidget {
   final ValueChanged<ProductColorEntity> onEdit;
   final ValueChanged<ProductColorEntity> onDelete;
 
-  const _ProductColorsTab({required this.onEdit, required this.onDelete});
+  const _ProductColorsTab({
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProductColorCubit, ProductColorState>(
       listener: (context, state) {
         if (state is ProductColorLoaded && state.message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message!),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-          ));
+          AppSnackBar.show(
+            context,
+            message: state.message!,
+            type: AppSnackBarType.success,
+          );
         } else if (state is ProductColorError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ));
+          AppSnackBar.show(
+            context,
+            message: state.message,
+            type: AppSnackBarType.error,
+          );
         }
       },
       builder: (context, state) {
@@ -212,13 +211,18 @@ class _ProductColorsTab extends StatelessWidget {
         if (state is ProductColorLoaded) {
           if (state.colors.isEmpty) {
             return const ColorEmptyView(
-                message: AppStrings.adminColorProductEmpty);
+              message: AppStrings.adminColorProductEmpty,
+            );
           }
           return _ProductColorGrid(
-              colors: state.colors, onEdit: onEdit, onDelete: onDelete);
+            colors: state.colors,
+            onEdit: onEdit,
+            onDelete: onDelete,
+          );
         }
         return const ColorErrorView(
-            message: AppStrings.adminColorProductError);
+          message: AppStrings.adminColorProductError,
+        );
       },
     );
   }
@@ -229,8 +233,11 @@ class _ProductColorGrid extends StatelessWidget {
   final ValueChanged<ProductColorEntity> onEdit;
   final ValueChanged<ProductColorEntity> onDelete;
 
-  const _ProductColorGrid(
-      {required this.colors, required this.onEdit, required this.onDelete});
+  const _ProductColorGrid({
+    required this.colors,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -256,30 +263,31 @@ class _ProductColorGrid extends StatelessWidget {
   }
 }
 
-// ── Printing Colors Tab ────────────────────────────────────────────────────────
-
 class _PrintingColorsTab extends StatelessWidget {
   final ValueChanged<PrintingColorEntity> onEdit;
   final ValueChanged<PrintingColorEntity> onDelete;
 
-  const _PrintingColorsTab({required this.onEdit, required this.onDelete});
+  const _PrintingColorsTab({
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<PrintingColorCubit, PrintingColorState>(
       listener: (context, state) {
         if (state is PrintingColorLoaded && state.message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message!),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-          ));
+          AppSnackBar.show(
+            context,
+            message: state.message!,
+            type: AppSnackBarType.success,
+          );
         } else if (state is PrintingColorError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ));
+          AppSnackBar.show(
+            context,
+            message: state.message,
+            type: AppSnackBarType.error,
+          );
         }
       },
       builder: (context, state) {
@@ -287,13 +295,18 @@ class _PrintingColorsTab extends StatelessWidget {
         if (state is PrintingColorLoaded) {
           if (state.colors.isEmpty) {
             return const ColorEmptyView(
-                message: AppStrings.adminColorPrintingEmpty);
+              message: AppStrings.adminColorPrintingEmpty,
+            );
           }
           return _PrintingColorGrid(
-              colors: state.colors, onEdit: onEdit, onDelete: onDelete);
+            colors: state.colors,
+            onEdit: onEdit,
+            onDelete: onDelete,
+          );
         }
         return const ColorErrorView(
-            message: AppStrings.adminColorPrintingError);
+          message: AppStrings.adminColorPrintingError,
+        );
       },
     );
   }
@@ -304,8 +317,11 @@ class _PrintingColorGrid extends StatelessWidget {
   final ValueChanged<PrintingColorEntity> onEdit;
   final ValueChanged<PrintingColorEntity> onDelete;
 
-  const _PrintingColorGrid(
-      {required this.colors, required this.onEdit, required this.onDelete});
+  const _PrintingColorGrid({
+    required this.colors,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -324,9 +340,11 @@ class _PrintingColorGrid extends StatelessWidget {
           name: color.name,
           hexCode: color.hexCode,
           isActive: color.isActive,
-          onToggleActive: (val) {
+          onToggleActive: (value) {
             if (color.id != null) {
-              context.read<PrintingColorCubit>().toggleColorStatus(color.id!, val);
+              context
+                  .read<PrintingColorCubit>()
+                  .toggleColorStatus(color.id!, value);
             }
           },
           onEdit: () => onEdit(color),

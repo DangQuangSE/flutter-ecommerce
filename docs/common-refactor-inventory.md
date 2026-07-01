@@ -32,14 +32,11 @@ Baseline for building shared UI primitives conservatively across the Flutter app
 - Images: repeated `Image.network`/`CachedNetworkImage` fallback tiles and delete/thumbnail overlays.
 - Constants cleanup: many inline user-facing strings and magic spacing/radius values remain in feature presentation files.
 
-## Existing Core Boundary Issues To Handle Later
+## Core Boundary Notes
 
-These existed before the first common batch and should be separated in a dedicated boundary pass:
+`lib/core/di/injection_container.dart` intentionally imports feature modules because it is the composition root.
 
-- `lib/core/widgets/glass_app_bar.dart` imports notification/chat/cart feature classes.
-- `lib/core/widgets/product_tactile_card.dart` imports product feature entities.
-- `lib/core/network/dio_client.dart` imports auth feature bloc/model.
-- `lib/core/utils/customer_order_filter.dart` imports order feature entity.
+No feature imports should remain in `core/widgets`, `core/utils`, or `core/network`.
 
 ## Batch 1 Completed
 
@@ -67,9 +64,25 @@ These existed before the first common batch and should be separated in a dedicat
   - `product_form_step3_images`: snackbar helper for upload/error feedback.
   - `variant_edit_dialog`: centralized labels/validators/actions and removed mojibake inline text.
 
+## Batch 3 Completed
+
+- Cleaned core boundary violations:
+  - moved `GlassAppBar` from `core/widgets` to `app/widgets` because it owns app-level actions and imports cart/chat/notification.
+  - moved `ProductTactileCard` from `core/widgets` to `features/product/presentation/widgets/shared`.
+  - moved `CustomerOrderFilter` from `core/utils` to `features/order/presentation/utils`.
+  - decoupled `DioClient` from auth feature model/bloc by using an `onSessionExpired` callback wired in DI.
+- Updated product/order/profile imports and the customer order filter test.
+
+## Batch 4 Completed
+
+- Migrated color management common patterns:
+  - `color_state_views`: now wraps `AppLoadingView`, `AppEmptyView`, and `AppErrorView`.
+  - `color_management_page`: uses `AppConfirmDialog` for delete confirmation and `AppSnackBar` for success/error feedback.
+  - `color_product_form_sheet` and `color_printing_form_sheet`: validation feedback now uses `AppSnackBar`.
+  - Removed unused `color_delete_dialog.dart` after centralizing delete confirmation.
+
 ## Next Recommended Batches
 
-1. Core boundary pass: move feature-specific core widgets/utilities out of `core` or invert dependencies.
-2. Management modules: migrate `color`, `size`, `brand`, `category`, `coupon` forms/dialogs to common form/dialog helpers.
-3. Commerce modules: migrate cart/checkout/product repeated state, image, and card primitives.
-4. User/support modules: migrate auth/profile/address/notification/chat repeated form, state, snackbar, and dialog primitives.
+1. Management modules: migrate remaining `size`, `brand`, `category`, `coupon` forms/dialogs to common form/dialog helpers.
+2. Commerce modules: migrate cart/checkout/product repeated state, image, and card primitives.
+3. User/support modules: migrate auth/profile/address/notification/chat repeated form, state, snackbar, and dialog primitives.

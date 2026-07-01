@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/core/widgets/product_tactile_card.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_catalog_entity.dart';
+import 'package:flutter_ecommerce/features/product/presentation/widgets/shared/product_tactile_card.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<ProductCatalogEntity> products;

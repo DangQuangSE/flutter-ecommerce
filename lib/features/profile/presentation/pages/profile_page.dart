@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
+import 'package:flutter_ecommerce/app/widgets/glass_app_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
@@ -56,7 +56,8 @@ class ProfilePage extends StatelessWidget {
               top: 0,
               left: 0,
               right: 0,
-              child: GlassAppBar(showBackButton: false, customTitle: 'Sport Pro'),
+              child:
+                  GlassAppBar(showBackButton: false, customTitle: 'Sport Pro'),
             ),
           ],
         ),
@@ -71,7 +72,8 @@ class ProfilePage extends StatelessWidget {
       builder: (context, state) {
         final profile = state is ProfileLoaded ? state.profile : null;
         final loading = state is ProfileLoading || state is ProfileInitial;
-        final name = profile?.fullName ?? (loading ? 'Đang tải…' : 'Người dùng');
+        final name =
+            profile?.fullName ?? (loading ? 'Đang tải…' : 'Người dùng');
         final email = profile?.email ??
             (state is ProfileError ? 'Không tải được hồ sơ' : '');
 
@@ -182,7 +184,8 @@ class ProfilePage extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: const Color(0xFFE2E8F0)),
         ),
-        child: const Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary),
+        child: const Icon(Icons.edit_outlined,
+            size: 16, color: AppColors.textPrimary),
       ),
     );
   }
@@ -371,7 +374,8 @@ class _AvatarFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Icon(Icons.person_rounded, size: 32, color: AppColors.textSecondary);
+    return const Icon(Icons.person_rounded,
+        size: 32, color: AppColors.textSecondary);
   }
 }
 

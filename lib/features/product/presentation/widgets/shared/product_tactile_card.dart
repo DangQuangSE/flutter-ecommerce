@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_catalog_entity.dart';
+import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 
 class ProductTactileCard extends StatefulWidget {
   final ProductEntity? product;
@@ -61,15 +61,11 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
       : (widget.catalogProduct?.hasDiscount ?? false);
 
   void _onTapDown(TapDownDetails details) {
-    setState(() {
-      _scale = 0.96;
-    });
+    setState(() => _scale = 0.96);
   }
 
   void _onTapUp(TapUpDetails details) {
-    setState(() {
-      _scale = 1.0;
-    });
+    setState(() => _scale = 1.0);
     context.pushNamed(
       AppRoutes.productDetail,
       pathParameters: {'productId': _id},
@@ -77,9 +73,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
   }
 
   void _onTapCancel() {
-    setState(() {
-      _scale = 1.0;
-    });
+    setState(() => _scale = 1.0);
   }
 
   @override
@@ -154,7 +148,9 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                             if (widget.badge != null)
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 3),
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
                                 margin: const EdgeInsets.only(bottom: 4),
                                 decoration: BoxDecoration(
                                   color: AppColors.accent,
@@ -172,7 +168,9 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                             else if (discountPercent != null)
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 3),
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
                                 decoration: BoxDecoration(
                                   color: AppColors.error,
                                   borderRadius: BorderRadius.circular(4),
@@ -280,9 +278,10 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
   String _formatPrice(double price) {
     final formatStr = price.toInt().toString();
     final buffer = StringBuffer();
-    for (int i = 0; i < formatStr.length; i++) {
-      buffer.write(formatStr[i]);
-      if ((formatStr.length - 1 - i) % 3 == 0 && i != formatStr.length - 1) {
+    for (var index = 0; index < formatStr.length; index++) {
+      buffer.write(formatStr[index]);
+      if ((formatStr.length - 1 - index) % 3 == 0 &&
+          index != formatStr.length - 1) {
         buffer.write('.');
       }
     }
@@ -292,20 +291,28 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
 
 class _StarRating extends StatelessWidget {
   final double rating;
+
   const _StarRating({required this.rating});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: List.generate(5, (i) {
-        if (i < rating.floor()) {
+      children: List.generate(5, (index) {
+        if (index < rating.floor()) {
           return const Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
-        } else if (i < rating && rating - i >= 0.5) {
-          return const Icon(Icons.star_half,
-              size: 12, color: Color(0xFFFFC107));
         }
-        return const Icon(Icons.star_border,
-            size: 12, color: Color(0xFFFFC107));
+        if (index < rating && rating - index >= 0.5) {
+          return const Icon(
+            Icons.star_half,
+            size: 12,
+            color: Color(0xFFFFC107),
+          );
+        }
+        return const Icon(
+          Icons.star_border,
+          size: 12,
+          color: Color(0xFFFFC107),
+        );
       }),
     );
   }
