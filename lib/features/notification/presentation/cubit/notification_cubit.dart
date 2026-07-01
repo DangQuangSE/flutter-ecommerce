@@ -45,17 +45,28 @@ class NotificationCubit extends Cubit<NotificationState> {
   }
 
   Future<void> markAsRead(int id) async {
-    final result = await _repository.markAsRead(id);
-    if (result is Success) {
-      await loadNotifications();
+    if (state is NotificationLoaded) {
+      final currentState = state as NotificationLoaded;
+      final updatedNotifications = currentState.notifications.map((n) {
+        if (n.id == id) {
+          return n.copyWith(isRead: true);
+        }
+        return n;
+      }).toList();
+      emit(NotificationLoaded(updatedNotifications));
     }
+    await _repository.markAsRead(id);
   }
 
   Future<void> markAllAsRead() async {
-    final result = await _repository.markAllAsRead();
-    if (result is Success) {
-      await loadNotifications();
+    if (state is NotificationLoaded) {
+      final currentState = state as NotificationLoaded;
+      final updatedNotifications = currentState.notifications
+          .map((n) => n.copyWith(isRead: true))
+          .toList();
+      emit(NotificationLoaded(updatedNotifications));
     }
+    await _repository.markAllAsRead();
   }
 
   @override

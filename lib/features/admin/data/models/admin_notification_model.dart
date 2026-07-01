@@ -25,7 +25,9 @@ class AdminNotificationModel {
       isRead: json['isRead'] ?? false,
       orderId: json['orderId'] ?? json['relatedId'] ?? 0,
       customerName: json['customerName'] ?? 'Unknown',
-      createdAt: json['createdAt'] ?? '',
+      createdAt: json['createdAt'] is List 
+          ? '${json['createdAt'][0]}-${json['createdAt'][1].toString().padLeft(2, '0')}-${json['createdAt'][2].toString().padLeft(2, '0')}T${json['createdAt'].length > 3 ? json['createdAt'][3].toString().padLeft(2, '0') : '00'}:${json['createdAt'].length > 4 ? json['createdAt'][4].toString().padLeft(2, '0') : '00'}'
+          : json['createdAt']?.toString() ?? '',
     );
   }
 }

@@ -46,22 +46,23 @@ class AdminNotificationCubit extends Cubit<AdminNotificationState> {
   }
 
   Future<void> markAllAsRead() async {
+    // Optimistic update
+    final updated = state.notifications
+        .map((n) => AdminNotificationModel(
+              id: n.id,
+              title: n.title,
+              message: n.message,
+              isRead: true,
+              orderId: n.orderId,
+              customerName: n.customerName,
+              createdAt: n.createdAt,
+            ))
+        .toList();
+    emit(state.copyWith(unreadCount: 0, notifications: updated));
+
     final result = await _markAllAsReadUseCase();
     if (result is Success) {
-      emit(state.copyWith(unreadCount: 0));
-      // Optionally reload or locally update isRead flags:
-      final updated = state.notifications
-          .map((n) => AdminNotificationModel(
-                id: n.id,
-                title: n.title,
-                message: n.message,
-                isRead: true,
-                orderId: n.orderId,
-                customerName: n.customerName,
-                createdAt: n.createdAt,
-              ))
-          .toList();
-      emit(state.copyWith(notifications: updated));
+      // Already updated optimistically, but we could reload from API if needed.
     }
   }
 
