@@ -61,37 +61,13 @@ class AdminDashboardTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Dashboard',
-                    style: GoogleFonts.lexend(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Hôm nay, 01 Tháng 6',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade200),
+              Text(
+                'Thống kê',
+                style: GoogleFonts.lexend(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
                 ),
-                child: const Icon(Icons.calendar_today_rounded,
-                    size: 16, color: AppColors.textPrimary),
               ),
             ],
           ),
@@ -198,58 +174,7 @@ class AdminDashboardTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Traffic chart
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Lưu lượng truy cập',
-                      style: GoogleFonts.lexend(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            'TUẦN NÀY',
-                            style: GoogleFonts.inter(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const Icon(Icons.keyboard_arrow_down_rounded,
-                              size: 12, color: AppColors.textPrimary),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                _barChart(context, stats.weeklyTraffic),
-              ],
-            ),
-          ),
+          // Traffic chart removed as requested
         ],
       ),
     );
@@ -342,66 +267,7 @@ class AdminDashboardTab extends StatelessWidget {
     );
   }
 
-  Widget _barChart(BuildContext context, List<double> traffic) {
-    final days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-    const double maxHeight = 100.0;
-    final maxTraffic = traffic.reduce((a, b) => a > b ? a : b);
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: List.generate(traffic.length, (index) {
-            final val = traffic[index];
-            final height =
-                maxTraffic > 0 ? (val / maxTraffic) * maxHeight : 10.0;
-            final bool isHighlighted = index == 2;
-
-            return Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content:
-                          Text('Lưu lượng ${days[index]}: ${val.toInt()}%'),
-                      duration: const Duration(milliseconds: 600),
-                      backgroundColor: AppColors.primary,
-                    ));
-                  },
-                  child: Container(
-                    width: 24,
-                    height: height,
-                    decoration: BoxDecoration(
-                      color: isHighlighted
-                          ? AppColors.primary
-                          : AppColors.primary.withValues(alpha: 0.25),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(4),
-                        topRight: Radius.circular(4),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  days[index],
-                  style: GoogleFonts.inter(
-                    fontSize: 10,
-                    fontWeight:
-                        isHighlighted ? FontWeight.w700 : FontWeight.w500,
-                    color: isHighlighted
-                        ? AppColors.primary
-                        : AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            );
-          }),
-        ),
-      ],
-    );
-  }
 
   Widget _notificationBellButton(BuildContext context) {
     return BlocBuilder<AdminNotificationCubit, AdminNotificationState>(

@@ -10,8 +10,8 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
 
   @override
   Future<AdminStatsModel> getAdminStats() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    return AdminStatsModel.mockStats;
+    final response = await _dioClient.dio.get('/api/v1/admin/analytics/dashboard-summary');
+    return AdminStatsModel.fromJson(response.data['data']);
   }
 
   @override
