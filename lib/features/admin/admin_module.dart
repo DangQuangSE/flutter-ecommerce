@@ -60,7 +60,6 @@ void setupAdminModule(GetIt sl) {
   sl.registerFactory<AdminBloc>(
     () => AdminBloc(
       getAdminStatsUseCase: sl<GetAdminStatsUseCase>(),
-      getAdminOrdersUseCase: sl<GetAdminOrdersUseCase>(),
       getProductsUseCase: sl<GetProductsUseCase>(),
       addProductUseCase: sl<AddProductUseCase>(),
       updateProductUseCase: sl<UpdateProductUseCase>(),

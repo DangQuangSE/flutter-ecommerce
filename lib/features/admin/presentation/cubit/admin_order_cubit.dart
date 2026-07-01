@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/features/admin/domain/entities/admin_order_entity.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_order_detail_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_orders_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/update_admin_order_status_usecase.dart';
@@ -27,9 +28,36 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
     final search = current is AdminOrderListLoaded ? current.search : null;
     final statusFilter =
         current is AdminOrderListLoaded ? current.statusFilter : null;
+    final startDateFilter =
+        current is AdminOrderListLoaded ? current.startDateFilter : null;
+    final endDateFilter =
+        current is AdminOrderListLoaded ? current.endDateFilter : null;
 
     if (reset) {
       emit(const AdminOrderListLoading());
+    }
+
+    if (_hasDateFilter(startDateFilter, endDateFilter)) {
+      final filteredResult = await _loadOrdersByDateRange(
+        search: search,
+        status: statusFilter,
+        startDate: startDateFilter,
+        endDate: endDateFilter,
+      );
+      if (filteredResult.error != null) {
+        emit(AdminOrderListError(filteredResult.error!));
+        return;
+      }
+      emit(AdminOrderListLoaded(
+        orders: filteredResult.orders,
+        page: 0,
+        isLast: true,
+        search: search,
+        statusFilter: statusFilter,
+        startDateFilter: startDateFilter,
+        endDateFilter: endDateFilter,
+      ));
+      return;
     }
 
     final result = await _getAdminOrdersUseCase(
@@ -47,6 +75,8 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
           isLast: data.isLast,
           search: search,
           statusFilter: statusFilter,
+          startDateFilter: startDateFilter,
+          endDateFilter: endDateFilter,
         ));
       case ResultFailure(:final failure):
         emit(AdminOrderListError(failure.message));
@@ -73,11 +103,20 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
     switch (result) {
       case Success(:final data):
         emit(AdminOrderListLoaded(
-          orders: [...current.orders, ...data.content],
+          orders: [
+            ...current.orders,
+            ..._filterByDateRange(
+              data.content,
+              current.startDateFilter,
+              current.endDateFilter,
+            ),
+          ],
           page: data.page,
           isLast: data.isLast,
           search: current.search,
           statusFilter: current.statusFilter,
+          startDateFilter: current.startDateFilter,
+          endDateFilter: current.endDateFilter,
         ));
       case ResultFailure(:final failure):
         emit(current.copyWith(
@@ -87,8 +126,46 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
     }
   }
 
-  Future<void> applyFilters({String? search, String? status}) async {
+  Future<void> applyFilters({
+    String? search,
+    String? status,
+    DateTime? startDate,
+    DateTime? endDate,
+    bool clearStartDate = false,
+    bool clearEndDate = false,
+  }) async {
+    final current = state;
+    final currentStartDate =
+        current is AdminOrderListLoaded ? current.startDateFilter : null;
+    final currentEndDate =
+        current is AdminOrderListLoaded ? current.endDateFilter : null;
+    final startDateFilter =
+        clearStartDate ? null : (startDate ?? currentStartDate);
+    final endDateFilter = clearEndDate ? null : (endDate ?? currentEndDate);
     emit(const AdminOrderListLoading());
+
+    if (_hasDateFilter(startDateFilter, endDateFilter)) {
+      final filteredResult = await _loadOrdersByDateRange(
+        search: search,
+        status: status?.isEmpty == true ? null : status,
+        startDate: startDateFilter,
+        endDate: endDateFilter,
+      );
+      if (filteredResult.error != null) {
+        emit(AdminOrderListError(filteredResult.error!));
+        return;
+      }
+      emit(AdminOrderListLoaded(
+        orders: filteredResult.orders,
+        page: 0,
+        isLast: true,
+        search: search,
+        statusFilter: status?.isEmpty == true ? null : status,
+        startDateFilter: startDateFilter,
+        endDateFilter: endDateFilter,
+      ));
+      return;
+    }
 
     final result = await _getAdminOrdersUseCase(
       search: search,
@@ -105,6 +182,8 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
           isLast: data.isLast,
           search: search,
           statusFilter: status?.isEmpty == true ? null : status,
+          startDateFilter: startDateFilter,
+          endDateFilter: endDateFilter,
         ));
       case ResultFailure(:final failure):
         emit(AdminOrderListError(failure.message));
@@ -160,4 +239,59 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
   Future<void> refreshList() => loadOrders(reset: true);
 
   Future<void> refreshDetail(int id) => loadOrderDetail(id);
+
+  Future<({List<AdminOrderEntity> orders, String? error})>
+      _loadOrdersByDateRange({
+    required String? search,
+    required String? status,
+    required DateTime? startDate,
+    required DateTime? endDate,
+  }) async {
+    var page = 0;
+    var isLast = false;
+    final orders = <AdminOrderEntity>[];
+
+    while (!isLast) {
+      final result = await _getAdminOrdersUseCase(
+        search: search,
+        status: status,
+        page: page,
+        size: defaultPageSize,
+      );
+      switch (result) {
+        case Success(:final data):
+          orders.addAll(_filterByDateRange(data.content, startDate, endDate));
+          isLast = data.isLast;
+          page += 1;
+        case ResultFailure(:final failure):
+          return (orders: const <AdminOrderEntity>[], error: failure.message);
+      }
+    }
+
+    return (orders: orders, error: null);
+  }
+
+  bool _hasDateFilter(DateTime? startDate, DateTime? endDate) =>
+      startDate != null || endDate != null;
+
+  List<AdminOrderEntity> _filterByDateRange(
+    List<AdminOrderEntity> orders,
+    DateTime? startDate,
+    DateTime? endDate,
+  ) {
+    if (startDate == null && endDate == null) return orders;
+
+    return orders.where((order) {
+      final createdAt = order.createdAt;
+      final startsAt = startDate == null
+          ? null
+          : DateTime(startDate.year, startDate.month, startDate.day);
+      final endsAt = endDate == null
+          ? null
+          : DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
+      final afterStart = startsAt == null || !createdAt.isBefore(startsAt);
+      final beforeEnd = endsAt == null || !createdAt.isAfter(endsAt);
+      return afterStart && beforeEnd;
+    }).toList();
+  }
 }

@@ -16,13 +16,20 @@ import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_state.dart';
 
 class AdminOrderListPage extends StatefulWidget {
-  const AdminOrderListPage({super.key});
+  final bool showAppBar;
+
+  const AdminOrderListPage({
+    super.key,
+    this.showAppBar = true,
+  });
 
   @override
   State<AdminOrderListPage> createState() => _AdminOrderListPageState();
 }
 
 class _AdminOrderListPageState extends State<AdminOrderListPage> {
+  static const double _loadMoreThreshold = 200;
+
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
@@ -43,7 +50,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+        _scrollController.position.maxScrollExtent - _loadMoreThreshold) {
       context.read<AdminOrderCubit>().loadMoreOrders();
     }
   }
@@ -51,7 +58,11 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
   void _onSearchChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
-      context.read<AdminOrderCubit>().applyFilters(search: value);
+      final state = context.read<AdminOrderCubit>().state;
+      context.read<AdminOrderCubit>().applyFilters(
+            search: value,
+            status: state is AdminOrderListLoaded ? state.statusFilter : null,
+          );
     });
   }
 
@@ -59,71 +70,95 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          AppStrings.adminOrderManagementTitle,
-          style: GoogleFonts.lexend(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-            fontSize: AppSizes.fontXxl,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
-      ),
-      body: BlocConsumer<AdminOrderCubit, AdminOrderState>(
-        listener: (context, state) {
-          if (state is AdminOrderListLoaded && state.message != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message!),
-                backgroundColor: AppColors.error,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSizes.paddingMd, AppSizes.paddingMd,
-                    AppSizes.paddingMd, AppSizes.paddingSm),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: _onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: AppStrings.adminOrderSearchHint,
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        size: AppSizes.iconMd),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: AppSizes.spacing12),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppSizes.radiusMd),
-                      borderSide: BorderSide(color: Colors.grey.shade200),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppSizes.radiusMd),
-                      borderSide:
-                          const BorderSide(color: AppColors.primary),
-                    ),
+    final content = BlocConsumer<AdminOrderCubit, AdminOrderState>(
+      listener: (context, state) {
+        if (state is AdminOrderListLoaded && state.message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message!),
+              backgroundColor: AppColors.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Column(
+          children: [
+            if (!widget.showAppBar) _buildInlineHeader(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSizes.paddingMd,
+                  AppSizes.paddingMd, AppSizes.paddingMd, AppSizes.paddingSm),
+              child: TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                decoration: InputDecoration(
+                  hintText: AppStrings.adminOrderSearchHint,
+                  prefixIcon:
+                      const Icon(Icons.search_rounded, size: AppSizes.iconMd),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: AppSizes.spacing12),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    borderSide: BorderSide(color: Colors.grey.shade200),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    borderSide: const BorderSide(color: AppColors.primary),
                   ),
                 ),
               ),
-              _buildStatusFilters(context, state),
-              Expanded(child: _buildBody(context, state, currencyFormat)),
-            ],
-          );
-        },
+            ),
+            _buildStatusFilters(context, state),
+            _buildDateRangeFilter(context, state),
+            Expanded(child: _buildBody(context, state, currencyFormat)),
+          ],
+        );
+      },
+    );
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: widget.showAppBar
+          ? AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              centerTitle: true,
+              title: Text(
+                AppStrings.adminOrderManagementTitle,
+                style: GoogleFonts.lexend(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: AppSizes.fontXxl,
+                ),
+              ),
+              iconTheme: const IconThemeData(color: AppColors.textPrimary),
+            )
+          : null,
+      body: widget.showAppBar ? content : SafeArea(child: content),
+    );
+  }
+
+  Widget _buildInlineHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.paddingMd,
+        AppSizes.paddingLg,
+        AppSizes.paddingMd,
+        AppSizes.paddingXs,
+      ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          AppStrings.adminOrderManagementTitle,
+          style: GoogleFonts.lexend(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w800,
+            fontSize: AppSizes.fontTitle,
+          ),
+        ),
       ),
     );
   }
@@ -135,7 +170,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
       height: AppSizes.buttonMinHeight,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
         children: [
           _StatusChip(
             label: AppStrings.filterAll,
@@ -160,6 +195,84 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
     );
   }
 
+  Widget _buildDateRangeFilter(BuildContext context, AdminOrderState state) {
+    final startDate =
+        state is AdminOrderListLoaded ? state.startDateFilter : null;
+    final endDate = state is AdminOrderListLoaded ? state.endDateFilter : null;
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final label = startDate == null && endDate == null
+        ? AppStrings.adminOrderDateRangeAll
+        : '${startDate == null ? '' : dateFormat.format(startDate)}'
+            ' - ${endDate == null ? '' : dateFormat.format(endDate)}';
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.paddingMd,
+        AppSizes.paddingSm,
+        AppSizes.paddingMd,
+        AppSizes.paddingXs,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Tooltip(
+              message: AppStrings.adminOrderDateRangeAction,
+              child: OutlinedButton.icon(
+                onPressed: () => _selectDateRange(context, startDate, endDate),
+                icon:
+                    const Icon(Icons.date_range_rounded, size: AppSizes.iconSm),
+                label: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ),
+          if (startDate != null || endDate != null) ...[
+            const SizedBox(width: AppSizes.paddingSm),
+            IconButton(
+              tooltip: AppStrings.adminOrderDateRangeClear,
+              onPressed: () => context.read<AdminOrderCubit>().applyFilters(
+                    search: _searchController.text,
+                    status: state is AdminOrderListLoaded
+                        ? state.statusFilter
+                        : null,
+                    clearStartDate: true,
+                    clearEndDate: true,
+                  ),
+              icon: const Icon(Icons.close_rounded),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _selectDateRange(
+    BuildContext context,
+    DateTime? startDate,
+    DateTime? endDate,
+  ) async {
+    final now = DateTime.now();
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 5),
+      lastDate: DateTime(now.year + 1),
+      initialDateRange: startDate == null || endDate == null
+          ? null
+          : DateTimeRange(start: startDate, end: endDate),
+    );
+    if (range == null || !context.mounted) return;
+
+    final state = context.read<AdminOrderCubit>().state;
+    context.read<AdminOrderCubit>().applyFilters(
+          search: _searchController.text,
+          status: state is AdminOrderListLoaded ? state.statusFilter : null,
+          startDate: range.start,
+          endDate: range.end,
+        );
+  }
+
   Widget _buildBody(
     BuildContext context,
     AdminOrderState state,
@@ -181,8 +294,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
             Text(state.message, textAlign: TextAlign.center),
             const SizedBox(height: AppSizes.spacing12),
             FilledButton(
-              onPressed: () =>
-                  context.read<AdminOrderCubit>().refreshList(),
+              onPressed: () => context.read<AdminOrderCubit>().refreshList(),
               child: const Text(AppStrings.retry),
             ),
           ],
@@ -204,12 +316,12 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
         onRefresh: () => context.read<AdminOrderCubit>().refreshList(),
         child: ListView.builder(
           controller: _scrollController,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSizes.paddingMd),
           itemCount: state.orders.length + (state.isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
             if (index >= state.orders.length) {
               return const Padding(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(AppSizes.paddingMd),
                 child: Center(
                   child: CircularProgressIndicator(
                     valueColor:
@@ -221,6 +333,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
 
             final order = state.orders[index];
             return AdminOrderCard(
+              key: ValueKey(order.id),
               order: order,
               currencyFormat: currencyFormat,
               onTap: () async {
@@ -256,7 +369,7 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: AppSizes.paddingSm),
       child: FilterChip(
         label: Text(label),
         selected: isSelected,
@@ -264,7 +377,7 @@ class _StatusChip extends StatelessWidget {
         selectedColor: AppColors.primary.withValues(alpha: 0.12),
         checkmarkColor: AppColors.primary,
         labelStyle: GoogleFonts.inter(
-          fontSize: 12,
+          fontSize: AppSizes.fontMd,
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           color: isSelected ? AppColors.primary : AppColors.textSecondary,
         ),

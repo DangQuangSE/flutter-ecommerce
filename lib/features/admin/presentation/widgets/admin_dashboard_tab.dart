@@ -7,9 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
-import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
-import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
-import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_order_card.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
@@ -253,70 +250,6 @@ class AdminDashboardTab extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 24),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Đơn hàng gần đây',
-                style: GoogleFonts.lexend(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              GestureDetector(
-                onTap: () => context.pushNamed(AppRoutes.adminOrders),
-                child: Text(
-                  'XEM TẤT CẢ',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          if (state.recentOrders.isEmpty)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Text(
-                'Chưa có đơn hàng',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            )
-          else
-            ...state.recentOrders.map(
-              (order) => AdminOrderCard(
-                order: order,
-                currencyFormat: currencyFormat,
-                onTap: () async {
-                  await context.pushNamed(
-                    AppRoutes.adminOrderDetail,
-                    pathParameters: {'orderId': order.id.toString()},
-                  );
-                  if (context.mounted) {
-                    context
-                        .read<AdminBloc>()
-                        .add(const AdminRecentOrdersRefreshRequested());
-                  }
-                },
-              ),
-            ),
         ],
       ),
     );

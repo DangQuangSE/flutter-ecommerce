@@ -24,8 +24,8 @@ class ProductModel extends ProductEntity {
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     final rawVariants = json['variants'] as List<dynamic>? ?? [];
     final variantsList = rawVariants
-        .map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>)
-            .toEntity())
+        .map((e) =>
+            ProductVariantModel.fromJson(e as Map<String, dynamic>).toEntity())
         .toList();
 
     double price = ((json['salePrice'] ??
@@ -76,7 +76,7 @@ class ProductModel extends ProductEntity {
       variants: variantsList,
       numericId: int.tryParse((json['id'] ?? '').toString()),
       averageRating: ((json['averageRating'] ?? 0.0) as num).toDouble(),
-      reviewCount: (json['reviewCount'] ?? 0) as int,
+      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
     );
   }
 

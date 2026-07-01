@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_catalog_entity.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 
@@ -51,10 +53,15 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
       widget.catalogProduct?.originalPrice ??
       0.0;
 
-  double get _averageRating =>
-      widget.product?.averageRating ??
-      widget.catalogProduct?.averageRating ??
-      0.0;
+  double get _averageRating {
+    final rating =
+        widget.product?.averageRating ?? widget.catalogProduct?.averageRating;
+    if (rating == null || !rating.isFinite) return 0.0;
+    return rating;
+  }
+
+  int get _reviewCount =>
+      widget.product?.reviewCount ?? widget.catalogProduct?.reviewCount ?? 0;
 
   bool get _hasDiscount => widget.product != null
       ? widget.product!.hasDiscount
@@ -235,7 +242,10 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    _StarRating(rating: _averageRating),
+                    _ProductRating(
+                      rating: _averageRating,
+                      reviewCount: _reviewCount,
+                    ),
                     const SizedBox(height: 8),
                     SizedBox(
                       height: 40,
@@ -243,7 +253,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _formatPrice(_price),
+                            formatPrice(_price),
                             style: GoogleFonts.spaceMono(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
@@ -253,7 +263,7 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
                           if (originalPrice != null) ...[
                             const SizedBox(height: 2),
                             Text(
-                              _formatPrice(originalPrice),
+                              formatPrice(originalPrice),
                               style: GoogleFonts.spaceMono(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
@@ -274,46 +284,52 @@ class _ProductTactileCardState extends State<ProductTactileCard> {
       ),
     );
   }
-
-  String _formatPrice(double price) {
-    final formatStr = price.toInt().toString();
-    final buffer = StringBuffer();
-    for (var index = 0; index < formatStr.length; index++) {
-      buffer.write(formatStr[index]);
-      if ((formatStr.length - 1 - index) % 3 == 0 &&
-          index != formatStr.length - 1) {
-        buffer.write('.');
-      }
-    }
-    return '${buffer.toString()}đ';
-  }
 }
 
-class _StarRating extends StatelessWidget {
+class _ProductRating extends StatelessWidget {
   final double rating;
+  final int reviewCount;
 
-  const _StarRating({required this.rating});
+  const _ProductRating({
+    required this.rating,
+    required this.reviewCount,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: List.generate(5, (index) {
-        if (index < rating.floor()) {
-          return const Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
-        }
-        if (index < rating && rating - index >= 0.5) {
-          return const Icon(
-            Icons.star_half,
-            size: 12,
-            color: Color(0xFFFFC107),
-          );
-        }
-        return const Icon(
-          Icons.star_border,
-          size: 12,
-          color: Color(0xFFFFC107),
-        );
-      }),
+      children: [
+        ...List.generate(5, _buildStar),
+        if (reviewCount > 0) ...[
+          const SizedBox(width: 4),
+          Text(
+            AppStrings.productReviewCount(reviewCount),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildStar(int index) {
+    if (index < rating.floor()) {
+      return const Icon(Icons.star, size: 12, color: Color(0xFFFFC107));
+    }
+    if (index < rating && rating - index >= 0.5) {
+      return const Icon(
+        Icons.star_half,
+        size: 12,
+        color: Color(0xFFFFC107),
+      );
+    }
+    return const Icon(
+      Icons.star_border,
+      size: 12,
+      color: Color(0xFFFFC107),
     );
   }
 }

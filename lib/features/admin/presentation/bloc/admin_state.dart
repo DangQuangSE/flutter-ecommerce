@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_ecommerce/features/admin/domain/entities/admin_order_entity.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/admin_stats_entity.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 
@@ -21,32 +20,28 @@ class AdminLoading extends AdminState {
 class AdminLoaded extends AdminState {
   final AdminStatsEntity stats;
   final List<ProductEntity> products;
-  final List<AdminOrderEntity> recentOrders;
   final String? message; // Optional success message for operations
 
   const AdminLoaded({
     required this.stats,
     required this.products,
-    this.recentOrders = const [],
     this.message,
   });
 
   AdminLoaded copyWith({
     AdminStatsEntity? stats,
     List<ProductEntity>? products,
-    List<AdminOrderEntity>? recentOrders,
     String? message,
   }) {
     return AdminLoaded(
       stats: stats ?? this.stats,
       products: products ?? this.products,
-      recentOrders: recentOrders ?? this.recentOrders,
       message: message,
     );
   }
 
   @override
-  List<Object?> get props => [stats, products, recentOrders, message];
+  List<Object?> get props => [stats, products, message];
 }
 
 class AdminError extends AdminState {

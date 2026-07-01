@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class GlassBottomBar extends StatelessWidget {
   final String currentTab;
@@ -48,7 +49,7 @@ class GlassBottomBar extends StatelessWidget {
                 context,
                 iconActive: Icons.home_rounded,
                 iconInactive: Icons.home_outlined,
-                label: 'Home',
+                label: AppStrings.navHome,
                 isActive: currentTab == 'home',
                 onTap: () {
                   if (currentTab != 'home') {
@@ -58,9 +59,9 @@ class GlassBottomBar extends StatelessWidget {
               ),
               _buildNavItem(
                 context,
-                iconActive: Icons.directions_run_rounded,
-                iconInactive: Icons.directions_run_rounded,
-                label: 'Shop',
+                iconActive: Icons.storefront_rounded,
+                iconInactive: Icons.storefront_outlined,
+                label: AppStrings.navShop,
                 isActive: currentTab == 'shop',
                 onTap: () {
                   if (currentTab != 'shop') {
@@ -72,7 +73,7 @@ class GlassBottomBar extends StatelessWidget {
                 context,
                 iconActive: Icons.receipt_long_rounded,
                 iconInactive: Icons.receipt_long_outlined,
-                label: 'Orders',
+                label: AppStrings.navOrders,
                 isActive: currentTab == 'orders',
                 onTap: () {
                   if (currentTab != 'orders') {
@@ -84,7 +85,7 @@ class GlassBottomBar extends StatelessWidget {
                 context,
                 iconActive: Icons.person_rounded,
                 iconInactive: Icons.person_outline_rounded,
-                label: 'Profile',
+                label: AppStrings.navProfile,
                 isActive: currentTab == 'profile',
                 onTap: () {
                   if (currentTab != 'profile') {

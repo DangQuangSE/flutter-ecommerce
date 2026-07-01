@@ -23,6 +23,8 @@ class AdminOrderListLoaded extends AdminOrderState {
   final bool isLoadingMore;
   final String? search;
   final String? statusFilter;
+  final DateTime? startDateFilter;
+  final DateTime? endDateFilter;
   final String? message;
 
   const AdminOrderListLoaded({
@@ -32,6 +34,8 @@ class AdminOrderListLoaded extends AdminOrderState {
     this.isLoadingMore = false,
     this.search,
     this.statusFilter,
+    this.startDateFilter,
+    this.endDateFilter,
     this.message,
   });
 
@@ -42,8 +46,12 @@ class AdminOrderListLoaded extends AdminOrderState {
     bool? isLoadingMore,
     String? search,
     String? statusFilter,
+    DateTime? startDateFilter,
+    DateTime? endDateFilter,
     String? message,
     bool clearMessage = false,
+    bool clearStartDateFilter = false,
+    bool clearEndDateFilter = false,
   }) {
     return AdminOrderListLoaded(
       orders: orders ?? this.orders,
@@ -52,6 +60,11 @@ class AdminOrderListLoaded extends AdminOrderState {
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       search: search ?? this.search,
       statusFilter: statusFilter ?? this.statusFilter,
+      startDateFilter: clearStartDateFilter
+          ? null
+          : (startDateFilter ?? this.startDateFilter),
+      endDateFilter:
+          clearEndDateFilter ? null : (endDateFilter ?? this.endDateFilter),
       message: clearMessage ? null : (message ?? this.message),
     );
   }
@@ -64,6 +77,8 @@ class AdminOrderListLoaded extends AdminOrderState {
         isLoadingMore,
         search,
         statusFilter,
+        startDateFilter,
+        endDateFilter,
         message,
       ];
 }

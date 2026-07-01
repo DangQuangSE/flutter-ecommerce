@@ -13,6 +13,7 @@ class ProductCatalogModel {
   final String brandName;
   final int totalStock;
   final double averageRating;
+  final int? reviewCount;
   final String status;
   final String? gender;
   final List<String> availableSizes;
@@ -31,6 +32,7 @@ class ProductCatalogModel {
     required this.brandName,
     required this.totalStock,
     required this.averageRating,
+    this.reviewCount,
     required this.status,
     this.gender,
     required this.availableSizes,
@@ -51,6 +53,7 @@ class ProductCatalogModel {
       brandName: json['brandName'] as String? ?? '',
       totalStock: (json['totalStock'] as num?)?.toInt() ?? 0,
       averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
+      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
       status: json['status'] as String? ?? 'ACTIVE',
       gender: json['gender'] as String?,
       availableSizes: (json['availableSizes'] as List<dynamic>?)
@@ -77,6 +80,7 @@ class ProductCatalogModel {
         brandName: brandName,
         totalStock: totalStock,
         averageRating: averageRating,
+        reviewCount: reviewCount,
         status: status,
         gender: gender,
         availableSizes: availableSizes,

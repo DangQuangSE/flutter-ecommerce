@@ -7,5 +7,5 @@ String formatPrice(double price) {
       buffer.write('.');
     }
   }
-  return '${buffer.toString()}đ';
+  return '${buffer.toString()}\u0111';
 }

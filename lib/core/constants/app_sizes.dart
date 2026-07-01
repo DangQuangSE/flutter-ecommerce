@@ -36,6 +36,7 @@ abstract final class AppSizes {
   static const double canvasWidthRatio = 0.85;
   static const double canvasHeightRatio = 0.42;
   static const double canvasMaxOffsetRatio = 0.40;
+  static const double bottomSheetMaxHeightRatio = 0.75;
   static const double canvasMinZoom = 0.7;
   static const double canvasMaxZoom = 1.6;
   static const double canvasZoomStep = 0.1;
@@ -80,6 +81,7 @@ abstract final class AppSizes {
   static const double forgotPasswordFontSize = 13.0;
   static const double submitButtonFontSize = 15.0;
   static const double adminProductImageTileSize = 100.0;
+  static const double reviewImageSize = 56.0;
 
   static const SizedBox spacingXs = SizedBox(height: 4, width: 4);
   static const SizedBox spacingSm = SizedBox(height: 8, width: 8);

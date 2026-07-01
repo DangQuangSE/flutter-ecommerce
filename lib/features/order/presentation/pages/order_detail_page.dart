@@ -55,6 +55,7 @@ class OrderDetailPage extends StatelessWidget {
   ) async {
     final reviewed = await context.pushNamed<bool>(
       AppRoutes.writeReview,
+      pathParameters: {'orderId': order.id.toString()},
       extra:
           WriteReviewArgs(orderItemId: item.id, productName: item.productName),
     );

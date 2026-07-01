@@ -12,10 +12,6 @@ class AdminStatsRequested extends AdminEvent {
   const AdminStatsRequested();
 }
 
-class AdminRecentOrdersRefreshRequested extends AdminEvent {
-  const AdminRecentOrdersRefreshRequested();
-}
-
 class AdminProductAdded extends AdminEvent {
   final ProductEntity product;
   const AdminProductAdded(this.product);
