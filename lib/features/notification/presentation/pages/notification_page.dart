@@ -4,6 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/app_state_view.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/notification/domain/entities/notification_entity.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_state.dart';
@@ -42,13 +47,13 @@ class _NotificationPageState extends State<NotificationPage> {
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             color: AppColors.textPrimary,
-            size: 20,
+            size: AppSizes.iconMd,
           ),
         ),
         title: Text(
-          'Thông báo',
+          AppStrings.notificationTitle,
           style: GoogleFonts.lexend(
-            fontSize: 18,
+            fontSize: AppSizes.fontXxl,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
             letterSpacing: -0.5,
@@ -59,11 +64,7 @@ class _NotificationPageState extends State<NotificationPage> {
       body: BlocBuilder<NotificationCubit, NotificationState>(
         builder: (context, state) {
           if (state is NotificationLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            );
+            return const AppLoadingView();
           } else if (state is NotificationLoaded) {
             final unreadList =
                 state.notifications.where((n) => !n.isRead).toList();
@@ -85,54 +86,11 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Widget _buildEmptyNotificationsState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F3F8),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
-                ),
-              ),
-              child: const Icon(
-                Icons.notifications_off_outlined,
-                size: 64,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Transform(
-              transform: Matrix4.skewX(-0.12),
-              child: Text(
-                'KHÔNG CÓ THÔNG BÁO',
-                style: GoogleFonts.lexend(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
-                  color: AppColors.primary,
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Hộp thư của bạn hiện đang trống. Mọi cập nhật về đơn hàng hoặc ưu đãi đặc biệt sẽ xuất hiện tại đây!',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return const AppStateView(
+      icon: Icons.notifications_off_outlined,
+      title: AppStrings.notificationEmptyTitle,
+      message: AppStrings.notificationEmptyMessage,
+      iconColor: AppColors.textSecondary,
     );
   }
 
@@ -143,7 +101,7 @@ class _NotificationPageState extends State<NotificationPage> {
   ) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -152,9 +110,9 @@ class _NotificationPageState extends State<NotificationPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'MỚI NHẤT',
+                AppStrings.notificationLatestSection,
                 style: GoogleFonts.inter(
-                  fontSize: 10,
+                  fontSize: AppSizes.fontSm - 1,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textSecondary,
                   letterSpacing: 1.0,
@@ -164,12 +122,11 @@ class _NotificationPageState extends State<NotificationPage> {
                 TextButton(
                   onPressed: () {
                     context.read<NotificationCubit>().markAllAsRead();
-                    ScaffoldMessenger.of(context).clearSnackBars();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Đã đánh dấu đọc tất cả thông báo.'),
-                        duration: Duration(seconds: 1),
-                      ),
+                    AppSnackBar.show(
+                      context,
+                      message: AppStrings.notificationMarkAllReadSuccess,
+                      type: AppSnackBarType.success,
+                      duration: const Duration(seconds: 1),
                     );
                   },
                   style: TextButton.styleFrom(
@@ -178,9 +135,9 @@ class _NotificationPageState extends State<NotificationPage> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    'Đánh dấu đã đọc',
+                    AppStrings.notificationMarkAllRead,
                     style: GoogleFonts.inter(
-                      fontSize: 12,
+                      fontSize: AppSizes.fontMd,
                       fontWeight: FontWeight.w600,
                       color: AppColors.primary,
                     ),
@@ -188,16 +145,16 @@ class _NotificationPageState extends State<NotificationPage> {
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.radiusLg),
 
           // Unread/Recent List
           if (unreadList.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
               child: Text(
-                'Không có thông báo chưa đọc mới nào.',
+                AppStrings.notificationNoUnread,
                 style: GoogleFonts.inter(
-                  fontSize: 12,
+                  fontSize: AppSizes.fontMd,
                   color: AppColors.textSecondary,
                   fontStyle: FontStyle.italic,
                 ),
@@ -208,7 +165,8 @@ class _NotificationPageState extends State<NotificationPage> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: unreadList.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: AppSizes.radiusMd),
               itemBuilder: (context, index) {
                 final item = unreadList[index];
                 return _buildNotificationCard(context, item);
@@ -217,7 +175,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
           // Divider for Older Notifications
           if (readList.isNotEmpty) ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSizes.paddingXl),
             Row(
               children: [
                 Expanded(
@@ -229,9 +187,9 @@ class _NotificationPageState extends State<NotificationPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    'TRƯỚC ĐÓ',
+                    AppStrings.notificationOlderSection,
                     style: GoogleFonts.inter(
-                      fontSize: 10,
+                      fontSize: AppSizes.fontSm - 1,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textSecondary,
                       letterSpacing: 1.0,
@@ -246,14 +204,15 @@ class _NotificationPageState extends State<NotificationPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSizes.paddingMd),
 
             // Read/Older List
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: readList.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: AppSizes.radiusMd),
               itemBuilder: (context, index) {
                 final item = readList[index];
                 return _buildNotificationCard(context, item);
@@ -303,7 +262,7 @@ class _NotificationPageState extends State<NotificationPage> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
             color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
           ),
@@ -326,18 +285,18 @@ class _NotificationPageState extends State<NotificationPage> {
                   left: 0,
                   top: 0,
                   bottom: 0,
-                  width: 4,
+                  width: AppSizes.paddingXs,
                   child: Container(
                     color: AppColors.primary,
                   ),
                 ),
 
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSizes.paddingMd),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(width: 4), // spacer for left blue bar
+                    const SizedBox(width: AppSizes.paddingXs),
 
                     // Circular Icon Bounding Box
                     Container(
@@ -351,11 +310,11 @@ class _NotificationPageState extends State<NotificationPage> {
                         child: Icon(
                           iconData,
                           color: iconColor,
-                          size: 20,
+                          size: AppSizes.iconMd,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: AppSizes.fontLg),
 
                     // Text Details
                     Expanded(
@@ -370,7 +329,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                 child: Text(
                                   item.title,
                                   style: GoogleFonts.lexend(
-                                    fontSize: 13,
+                                    fontSize: AppSizes.forgotPasswordFontSize,
                                     fontWeight: item.isRead
                                         ? FontWeight.w700
                                         : FontWeight.w800,
@@ -380,10 +339,10 @@ class _NotificationPageState extends State<NotificationPage> {
                                 ),
                               ),
                               if (!item.isRead) ...[
-                                const SizedBox(width: 8),
+                                const SizedBox(width: AppSizes.paddingSm),
                                 Container(
-                                  width: 8,
-                                  height: 8,
+                                  width: AppSizes.paddingSm,
+                                  height: AppSizes.paddingSm,
                                   decoration: const BoxDecoration(
                                     color: AppColors.primary,
                                     shape: BoxShape.circle,
@@ -392,21 +351,21 @@ class _NotificationPageState extends State<NotificationPage> {
                               ],
                             ],
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: AppSizes.radiusSm),
                           Text(
                             item.description,
                             style: GoogleFonts.inter(
-                              fontSize: 11,
+                              fontSize: AppSizes.fontSm,
                               fontWeight: FontWeight.w500,
                               color: AppColors.textSecondary,
                               height: 1.4,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppSizes.paddingSm),
                           Text(
                             item.createdAt,
                             style: GoogleFonts.inter(
-                              fontSize: 10,
+                              fontSize: AppSizes.fontSm - 1,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xFF717786),
                             ),
@@ -425,49 +384,15 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Widget _buildErrorState(String message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline_rounded,
-                size: 48, color: AppColors.error),
-            const SizedBox(height: 16),
-            Text(
-              'Đã xảy ra lỗi khi tải danh sách thông báo.',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                context.read<NotificationCubit>().loadNotifications();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Thử lại'),
-            ),
-          ],
-        ),
-      ),
+    return AppStateView(
+      icon: Icons.error_outline_rounded,
+      title: AppStrings.notificationLoadErrorTitle,
+      message: message,
+      actionLabel: AppStrings.retry,
+      iconColor: AppColors.error,
+      onAction: () {
+        context.read<NotificationCubit>().loadNotifications();
+      },
     );
   }
 }

@@ -93,6 +93,72 @@ abstract final class AppStrings {
   static const String paymentSuccessTitle = 'Thanh toán thành công';
   static const String paymentFailureTitle = 'Thanh toán thất bại';
   static const String paymentBackHome = 'VỀ TRANG CHỦ';
+  static const String notificationTitle = 'Thông báo';
+  static const String notificationEmptyTitle = 'KHÔNG CÓ THÔNG BÁO';
+  static const String notificationEmptyMessage =
+      'Hộp thư của bạn hiện đang trống. Mọi cập nhật về đơn hàng hoặc ưu đãi đặc biệt sẽ xuất hiện tại đây!';
+  static const String notificationLatestSection = 'MỚI NHẤT';
+  static const String notificationOlderSection = 'TRƯỚC ĐÓ';
+  static const String notificationMarkAllRead = 'Đánh dấu đã đọc';
+  static const String notificationMarkAllReadSuccess =
+      'Đã đánh dấu đọc tất cả thông báo.';
+  static const String notificationNoUnread =
+      'Không có thông báo chưa đọc mới nào.';
+  static const String notificationLoadErrorTitle =
+      'Đã xảy ra lỗi khi tải danh sách thông báo.';
+  static const String profileLoadingName = 'Đang tải…';
+  static const String profileDefaultName = 'Người dùng';
+  static const String profileLoadError = 'Không tải được hồ sơ';
+  static const String profileAccountSection = 'TÀI KHOẢN VÀ BẢO MẬT';
+  static const String profileSettingsSection = 'THIẾT LẬP VÀ TIN NHẮN';
+  static const String profilePersonalInfo = 'Thông tin cá nhân';
+  static const String profileMyOrders = 'Đơn hàng của tôi';
+  static const String profileShippingAddresses = 'Địa chỉ giao hàng';
+  static const String profilePaymentMethods = 'Phương thức thanh toán';
+  static const String profileAppNotifications = 'Thông báo ứng dụng';
+  static const String profileInbox = 'Hộp thư tin nhắn';
+  static const String profileSystemSettings = 'Cài đặt hệ thống';
+  static const String profileLogout = 'Đăng xuất';
+  static const String profileLogoutConfirm = 'Bạn có chắc muốn đăng xuất?';
+  static String profileTier(String tier) => 'HẠNG ${tier.toUpperCase()}';
+  static const String editProfileAvatarUpdated = 'Đã cập nhật ảnh đại diện';
+  static const String editProfileSaved = 'Đã lưu thay đổi';
+  static const String editProfileFirstNameLabel = 'TÊN';
+  static const String editProfileLastNameLabel = 'HỌ';
+  static const String editProfileEmailLabel = 'EMAIL';
+  static const String editProfileFirstNameHint = 'Tên';
+  static const String editProfileLastNameHint = 'Họ';
+  static const String editProfileFirstNameRequired = 'Vui lòng nhập tên';
+  static const String editProfileLastNameRequired = 'Vui lòng nhập họ';
+  static const String editProfileSaveChanges = 'LƯU THAY ĐỔI';
+  static const String chatListTitle = 'Hộp thư thoại';
+  static const String chatHotlineMessage = 'Hotline CSKH: 1900-SPORT-PRO';
+  static const String chatAttachmentMessage = 'Tải lên ảnh đính kèm.';
+  static const String chatMessageHint = 'Nhập tin nhắn...';
+  static const String chatDefaultSupportName = 'Hỗ trợ khách hàng';
+  static const String chatEscalationMessage =
+      'Yêu cầu hỗ trợ đã được chuyển tiếp đến giám sát viên.';
+  static const String chatOnline = 'Đang hoạt động';
+  static const String chatOffline = 'Ngoại tuyến';
+  static const String appDisplayName = 'Flutter E-Commerce';
+  static const String googleSignInSetup =
+      'Đăng nhập bằng Google đang được thiết lập';
+  static const String registerSuccessLoginPrompt =
+      'Đăng ký thành công! Vui lòng đăng nhập.';
+  static const String forgotPasswordResetSuccess =
+      'Đặt lại mật khẩu thành công. Vui lòng đăng nhập.';
+  static const String otpResent = 'Mã OTP đã được gửi lại';
+  static const String otpVerifyEmailTitle = 'Xác minh email';
+  static String otpSentToEmail(String email) =>
+      'Nhập mã 6 số đã gửi tới $email';
+  static const String otpConfirm = 'Xác nhận';
+  static String otpResendCountdown(int seconds) => 'Gửi lại sau ${seconds}s';
+  static const String otpResendCode = 'Gửi lại mã OTP';
+  static const String forgotPasswordOtpTitle = 'Nhập mã OTP';
+  static const String forgotPasswordOtpHelp =
+      'Nếu bạn không nhận được mã, kiểm tra email hoặc quay lại.';
+  static const String forgotPasswordResendShort = 'Gửi lại mã';
+  static const String forgotPasswordBackToEmail = 'Quay lại nhập email';
   static const String cartTitle = 'GIỎ HÀNG';
   static const String cartListTitle = 'DANH SÁCH GIỎ HÀNG';
   static String cartSelectAll(int selected, int total) =>
@@ -105,6 +171,18 @@ abstract final class AppStrings {
   static String cartRemoveDesignMessage(String name) =>
       'Bạn có chắc muốn xóa thiết kế in ấn khỏi sản phẩm $name? Thiết kế của bạn sẽ bị hủy và sản phẩm được trả về dạng nguyên bản.';
   static const String cartRemoveDesignConfirm = 'XÓA THIẾT KẾ';
+  static const String customDesignSpecUnavailable = 'N/A';
+  static const String customDesignSpecMaterialLabel = 'Chất liệu tuyển chọn:';
+  static const String customDesignSpecTextLinesLabel = 'Số lớp chữ in thêm:';
+  static const String customDesignSpecImagesLabel = 'Số logo tải lên:';
+  static const String customDesignSpecTotalLabel = 'Tổng cộng chi phí in:';
+  static String customDesignSpecTextLines(int count) => '$count lớp';
+  static String customDesignSpecImages(int count) => '$count ảnh';
+  static String customDesignSpecPricingFormula(
+    String textUnitPrice,
+    String imageUnitPrice,
+  ) =>
+      'Công thức tính giá in ấn: Giá phôi in + (Số lớp chữ x $textUnitPrice/lớp) + (Số logo x $imageUnitPrice/ảnh)';
 
   // Product catalog / filter
   static const String productSearchHint = 'Tìm kiếm sản phẩm...';
@@ -556,6 +634,29 @@ abstract final class AppStrings {
       'Đã đặt địa chỉ mặc định thành công!';
   static const String addressLoadError =
       'Không thể tải địa chỉ. Vui lòng thử lại sau.';
+  static const String addressContactSectionTitle = 'Thông tin người nhận';
+  static const String addressFullNameLabel = 'Họ và tên';
+  static const String addressPhoneLabel = 'Số điện thoại';
+  static const String addressPhoneInvalid =
+      'Số điện thoại không hợp lệ (VD: 0912345678)';
+  static const String addressShippingSectionTitle = 'Địa chỉ giao hàng';
+  static const String addressLineLabel = 'Số nhà, tên đường';
+  static const String addressProvinceLabel = 'Tỉnh / Thành phố';
+  static const String addressDistrictLabel = 'Quận / Huyện';
+  static const String addressWardLabel = 'Phường / Xã';
+  static const String addressProvincePickerHint = 'Chọn tỉnh/thành phố';
+  static const String addressDistrictPickerHint = 'Chọn quận/huyện';
+  static const String addressWardPickerHint = 'Chọn phường/xã';
+  static const String addressProvincePickerRequired =
+      'Vui lòng chọn tỉnh/thành phố';
+  static const String addressDistrictPickerRequired =
+      'Vui lòng chọn quận/huyện';
+  static const String addressWardPickerRequired = 'Vui lòng chọn phường/xã';
+  static const String addressOptionsSectionTitle = 'Tuỳ chọn';
+  static const String addressLabelLabel = 'Nhãn địa chỉ';
+  static const String addressOptionalLabelExample = 'Ví dụ: Nhà, Công ty...';
+  static const String addressDefaultOrderHint =
+      'Dùng địa chỉ này mặc định khi đặt hàng';
 
   // ── Shop info (user-facing) ────────────────────────────────────────────────
   static const String shopInfoTitle = 'Thông tin cửa hàng';

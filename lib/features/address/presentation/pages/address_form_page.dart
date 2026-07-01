@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/widgets/app_section_card.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
@@ -29,7 +29,6 @@ class _AddressFormPageState extends State<AddressFormPage> {
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _addressLineCtrl;
   late final TextEditingController _labelCtrl;
-  late final LocationCubit _locationCubit;
   bool _isDefault = false;
   bool get _isEditing => widget.initialAddress != null;
 
@@ -42,12 +41,15 @@ class _AddressFormPageState extends State<AddressFormPage> {
     _addressLineCtrl = TextEditingController(text: a?.addressLine ?? '');
     _labelCtrl = TextEditingController(text: a?.label ?? '');
     _isDefault = a?.isDefault ?? false;
-    _locationCubit = sl<LocationCubit>();
-    if (_isEditing) {
-      _locationCubit.initializeFromNames(a?.city, a?.district, a?.ward);
-    } else {
-      _locationCubit.loadProvinces();
-    }
+    Future.microtask(() {
+      if (!mounted) return;
+      final locationCubit = context.read<LocationCubit>();
+      if (_isEditing) {
+        locationCubit.initializeFromNames(a?.city, a?.district, a?.ward);
+      } else {
+        locationCubit.loadProvinces();
+      }
+    });
   }
 
   @override
@@ -56,7 +58,6 @@ class _AddressFormPageState extends State<AddressFormPage> {
     _phoneCtrl.dispose();
     _addressLineCtrl.dispose();
     _labelCtrl.dispose();
-    _locationCubit.close();
     super.dispose();
   }
 
@@ -82,10 +83,10 @@ class _AddressFormPageState extends State<AddressFormPage> {
           final isSubmitting = state is AddressLoaded && state.isSubmitting;
           return Container(
             padding: EdgeInsets.fromLTRB(
-              16,
-              12,
-              16,
-              MediaQuery.of(context).padding.bottom + 12,
+              AppSizes.paddingMd,
+              AppSizes.radiusLg,
+              AppSizes.paddingMd,
+              MediaQuery.of(context).padding.bottom + AppSizes.radiusLg,
             ),
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -100,25 +101,20 @@ class _AddressFormPageState extends State<AddressFormPage> {
                   foregroundColor: AppColors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   ),
                 ),
                 child: isSubmitting
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.4,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(AppColors.white),
-                        ),
+                    ? const AppLoadingView(
+                        size: AppSizes.fontHeading,
+                        color: AppColors.white,
                       )
                     : Text(
                         _isEditing
                             ? AppStrings.addressUpdate
                             : AppStrings.addressSave,
                         style: GoogleFonts.lexend(
-                          fontSize: 15,
+                          fontSize: AppSizes.submitButtonFontSize,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -127,172 +123,176 @@ class _AddressFormPageState extends State<AddressFormPage> {
           );
         },
       ),
-      body: BlocProvider.value(
-        value: _locationCubit,
-        child: BlocConsumer<AddressCubit, AddressState>(
-          listener: (context, state) {
-            if (state is AddressLoaded &&
-                state.message != null &&
-                !state.isSubmitting) {
-              context.pop();
-            }
-          },
-          builder: (context, state) {
-            return Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Section 1: Contact info
-                    AppSectionCard(
-                      title: 'Thông tin người nhận',
-                      icon: Icons.person_outline_rounded,
-                      children: [
-                        _buildLabeledField(
-                          label: 'Họ và tên',
-                          required: true,
-                          child: _buildTextFormField(
-                            controller: _fullNameCtrl,
-                            hint: AppStrings.addressFullNameHint,
-                            icon: Icons.person_outline,
-                            validator: (v) => v == null || v.trim().isEmpty
-                                ? AppStrings.addressFullNameRequired
-                                : null,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        _buildLabeledField(
-                          label: 'Số điện thoại',
-                          required: true,
-                          child: _buildTextFormField(
-                            controller: _phoneCtrl,
-                            hint: AppStrings.addressPhoneHint,
-                            icon: Icons.phone_outlined,
-                            keyboardType: TextInputType.phone,
-                            validator: (v) {
-                              if (v == null || v.trim().isEmpty) {
-                                return AppStrings.addressPhoneRequired;
-                              }
-                              final phone = v.trim();
-                              if (!RegExp(r'^(0[3|5|7|8|9])[0-9]{8}$')
-                                  .hasMatch(phone)) {
-                                return 'Số điện thoại không hợp lệ (VD: 0912345678)';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Section 2: Address detail
-                    AppSectionCard(
-                      title: 'Địa chỉ giao hàng',
-                      icon: Icons.location_on_outlined,
-                      children: [
-                        _buildLabeledField(
-                          label: 'Số nhà, tên đường',
-                          required: true,
-                          child: _buildTextFormField(
-                            controller: _addressLineCtrl,
-                            hint: AppStrings.addressLineHint,
-                            icon: Icons.home_outlined,
-                            validator: (v) => v == null || v.trim().isEmpty
-                                ? AppStrings.addressLineRequired
-                                : null,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        _buildLabeledField(
-                          label: 'Tỉnh / Thành phố',
-                          required: true,
-                          child: _buildLocationDropdown<LocationEntity>(
-                            hint: 'Chọn tỉnh/thành phố',
-                            icon: Icons.map_outlined,
-                            items: (s) => s.provinces,
-                            selectedItem: (s) => s.selectedProvince,
-                            isLoading: (_) => false,
-                            onChanged: (v) {
-                              if (v != null) {
-                                context.read<LocationCubit>().selectProvince(v);
-                              }
-                            },
-                            validator: (v) => v == null
-                                ? 'Vui lòng chọn tỉnh/thành phố'
-                                : null,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        _buildLabeledField(
-                          label: 'Quận / Huyện',
-                          required: true,
-                          child: _buildLocationDropdown<LocationEntity>(
-                            hint: 'Chọn quận/huyện',
-                            icon: Icons.location_city_outlined,
-                            items: (s) => s.districts,
-                            selectedItem: (s) => s.selectedDistrict,
-                            isLoading: (s) => s.isLoadingDistricts,
-                            onChanged: (v) {
-                              if (v != null) {
-                                context.read<LocationCubit>().selectDistrict(v);
-                              }
-                            },
-                            validator: (v) =>
-                                v == null ? 'Vui lòng chọn quận/huyện' : null,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        _buildLabeledField(
-                          label: 'Phường / Xã',
-                          required: true,
-                          child: _buildLocationDropdown<LocationEntity>(
-                            hint: 'Chọn phường/xã',
-                            icon: Icons.place_outlined,
-                            items: (s) => s.wards,
-                            selectedItem: (s) => s.selectedWard,
-                            isLoading: (s) => s.isLoadingWards,
-                            onChanged: (v) {
-                              if (v != null) {
-                                context.read<LocationCubit>().selectWard(v);
-                              }
-                            },
-                            validator: (v) =>
-                                v == null ? 'Vui lòng chọn phường/xã' : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Section 3: Optional
-                    AppSectionCard(
-                      title: 'Tuỳ chọn',
-                      icon: Icons.tune_outlined,
-                      children: [
-                        _buildLabeledField(
-                          label: 'Nhãn địa chỉ',
-                          required: false,
-                          hint: 'Ví dụ: Nhà, Công ty...',
-                          child: _buildTextFormField(
-                            controller: _labelCtrl,
-                            hint: AppStrings.addressLabelHint,
-                            icon: Icons.label_outline,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildDefaultToggle(),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+      body: BlocConsumer<AddressCubit, AddressState>(
+        listener: (context, state) {
+          if (state is AddressLoaded &&
+              state.message != null &&
+              !state.isSubmitting) {
+            context.pop();
+          }
+        },
+        builder: (context, state) {
+          return Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.paddingMd,
+                AppSizes.paddingMd,
+                AppSizes.paddingMd,
+                AppSizes.fontDisplay,
               ),
-            );
-          },
-        ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Section 1: Contact info
+                  AppSectionCard(
+                    title: AppStrings.addressContactSectionTitle,
+                    icon: Icons.person_outline_rounded,
+                    children: [
+                      _buildLabeledField(
+                        label: AppStrings.addressFullNameLabel,
+                        required: true,
+                        child: _buildTextFormField(
+                          controller: _fullNameCtrl,
+                          hint: AppStrings.addressFullNameHint,
+                          icon: Icons.person_outline,
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? AppStrings.addressFullNameRequired
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.fontLg),
+                      _buildLabeledField(
+                        label: AppStrings.addressPhoneLabel,
+                        required: true,
+                        child: _buildTextFormField(
+                          controller: _phoneCtrl,
+                          hint: AppStrings.addressPhoneHint,
+                          icon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return AppStrings.addressPhoneRequired;
+                            }
+                            final phone = v.trim();
+                            if (!RegExp(r'^(0[3|5|7|8|9])[0-9]{8}$')
+                                .hasMatch(phone)) {
+                              return AppStrings.addressPhoneInvalid;
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizes.radiusLg),
+
+                  // Section 2: Address detail
+                  AppSectionCard(
+                    title: AppStrings.addressShippingSectionTitle,
+                    icon: Icons.location_on_outlined,
+                    children: [
+                      _buildLabeledField(
+                        label: AppStrings.addressLineLabel,
+                        required: true,
+                        child: _buildTextFormField(
+                          controller: _addressLineCtrl,
+                          hint: AppStrings.addressLineHint,
+                          icon: Icons.home_outlined,
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? AppStrings.addressLineRequired
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.fontLg),
+                      _buildLabeledField(
+                        label: AppStrings.addressProvinceLabel,
+                        required: true,
+                        child: _buildLocationDropdown<LocationEntity>(
+                          hint: AppStrings.addressProvincePickerHint,
+                          icon: Icons.map_outlined,
+                          items: (s) => s.provinces,
+                          selectedItem: (s) => s.selectedProvince,
+                          isLoading: (_) => false,
+                          onChanged: (v) {
+                            if (v != null) {
+                              context.read<LocationCubit>().selectProvince(v);
+                            }
+                          },
+                          validator: (v) => v == null
+                              ? AppStrings.addressProvincePickerRequired
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.fontLg),
+                      _buildLabeledField(
+                        label: AppStrings.addressDistrictLabel,
+                        required: true,
+                        child: _buildLocationDropdown<LocationEntity>(
+                          hint: AppStrings.addressDistrictPickerHint,
+                          icon: Icons.location_city_outlined,
+                          items: (s) => s.districts,
+                          selectedItem: (s) => s.selectedDistrict,
+                          isLoading: (s) => s.isLoadingDistricts,
+                          onChanged: (v) {
+                            if (v != null) {
+                              context.read<LocationCubit>().selectDistrict(v);
+                            }
+                          },
+                          validator: (v) => v == null
+                              ? AppStrings.addressDistrictPickerRequired
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.fontLg),
+                      _buildLabeledField(
+                        label: AppStrings.addressWardLabel,
+                        required: true,
+                        child: _buildLocationDropdown<LocationEntity>(
+                          hint: AppStrings.addressWardPickerHint,
+                          icon: Icons.place_outlined,
+                          items: (s) => s.wards,
+                          selectedItem: (s) => s.selectedWard,
+                          isLoading: (s) => s.isLoadingWards,
+                          onChanged: (v) {
+                            if (v != null) {
+                              context.read<LocationCubit>().selectWard(v);
+                            }
+                          },
+                          validator: (v) => v == null
+                              ? AppStrings.addressWardPickerRequired
+                              : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizes.radiusLg),
+
+                  // Section 3: Optional
+                  AppSectionCard(
+                    title: AppStrings.addressOptionsSectionTitle,
+                    icon: Icons.tune_outlined,
+                    children: [
+                      _buildLabeledField(
+                        label: AppStrings.addressLabelLabel,
+                        required: false,
+                        hint: AppStrings.addressOptionalLabelExample,
+                        child: _buildTextFormField(
+                          controller: _labelCtrl,
+                          hint: AppStrings.addressLabelHint,
+                          icon: Icons.label_outline,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.paddingSm),
+                      _buildDefaultToggle(),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizes.paddingXl),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -430,9 +430,9 @@ class _AddressFormPageState extends State<AddressFormPage> {
                     ),
                   ),
                   Text(
-                    'Dùng địa chỉ này mặc định khi đặt hàng',
+                    AppStrings.addressDefaultOrderHint,
                     style: GoogleFonts.inter(
-                      fontSize: 11,
+                      fontSize: AppSizes.fontSm,
                       color: AppColors.textHint,
                     ),
                   ),
@@ -466,7 +466,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
   void _handleSubmit() {
     if (!_formKey.currentState!.validate()) return;
 
-    final locState = _locationCubit.state;
+    final locState = context.read<LocationCubit>().state;
     String city = '', district = '', ward = '';
     if (locState is LocationLoaded) {
       city = locState.selectedProvince?.name ?? '';
@@ -521,11 +521,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
           isExpanded: true,
           style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
           icon: loading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
+              ? const AppLoadingView(size: AppSizes.iconSm)
               : const Icon(Icons.keyboard_arrow_down_rounded,
                   color: AppColors.textSecondary),
           decoration: InputDecoration(

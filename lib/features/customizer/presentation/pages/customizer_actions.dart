@@ -14,6 +14,7 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/printing_constants.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_state.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
@@ -56,8 +57,10 @@ extension CustomizerActions on CustomizerPageState {
       });
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.customizerUploadImageError)),
+      AppSnackBar.show(
+        context,
+        message: AppStrings.customizerUploadImageError,
+        type: AppSnackBarType.error,
       );
     }
   }
@@ -162,11 +165,10 @@ extension CustomizerActions on CustomizerPageState {
     updateState(() => activeLayer = previousActive);
     if (bytes == null) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(AppStrings.customizerCaptureError),
-          backgroundColor: AppColors.error,
-        ),
+      AppSnackBar.show(
+        context,
+        message: AppStrings.customizerCaptureError,
+        type: AppSnackBarType.error,
       );
       return;
     }
@@ -203,25 +205,14 @@ extension CustomizerActions on CustomizerPageState {
 
     final state = context.read<CustomizerCubit>().state;
     if (state is CustomizerLoaded) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(
-                Icons.check_circle_rounded,
-                color: AppColors.white,
-                size: AppSizes.iconMd,
-              ),
-              AppSizes.spacingSm,
-              Text(
-                AppStrings.customizerSaveSuccess,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 2),
+      AppSnackBar.show(
+        context,
+        message: AppStrings.customizerSaveSuccess,
+        type: AppSnackBarType.success,
+        icon: const Icon(
+          Icons.check_circle_rounded,
+          color: AppColors.white,
+          size: AppSizes.iconMd,
         ),
       );
       if (widget.variantId != null) {
@@ -234,11 +225,10 @@ extension CustomizerActions on CustomizerPageState {
       context.goNamed(AppRoutes.cart);
     } else {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(AppStrings.customizerSyncError),
-          backgroundColor: AppColors.error,
-        ),
+      AppSnackBar.show(
+        context,
+        message: AppStrings.customizerSyncError,
+        type: AppSnackBarType.error,
       );
     }
   }

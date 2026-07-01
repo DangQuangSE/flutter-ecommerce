@@ -7,6 +7,7 @@ import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/core/utils/extensions/string_extensions.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
@@ -233,7 +234,8 @@ class _LoginCard extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(1.0), // Creates gradient border line refraction
+      padding:
+          const EdgeInsets.all(1.0), // Creates gradient border line refraction
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppSizes.radiusXl - 1),
         child: BackdropFilter(
@@ -476,11 +478,10 @@ class _GoogleSignInButtonState extends State<_GoogleSignInButton>
       onTapDown: (_) => _scaleController.reverse(),
       onTapUp: (_) {
         _scaleController.forward();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đăng nhập bằng Google đang được thiết lập'),
-            duration: Duration(seconds: 2),
-          ),
+        AppSnackBar.show(
+          context,
+          message: AppStrings.googleSignInSetup,
+          type: AppSnackBarType.info,
         );
       },
       onTapCancel: () => _scaleController.forward(),
@@ -531,4 +532,3 @@ class _GoogleSignInButtonState extends State<_GoogleSignInButton>
     );
   }
 }
-

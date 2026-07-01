@@ -7,6 +7,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_event.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_state.dart';
@@ -129,8 +133,10 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                   ),
                 );
               } else if (state is ForgotPasswordResendSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Mã OTP đã được gửi lại')),
+                AppSnackBar.show(
+                  context,
+                  message: AppStrings.otpResent,
+                  type: AppSnackBarType.success,
                 );
                 _pinController.clear();
                 setState(() => _inlineError = null);
@@ -147,7 +153,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Nhập mã OTP',
+                    AppStrings.forgotPasswordOtpTitle,
                     style: GoogleFonts.lexend(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
@@ -156,7 +162,9 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Nhập mã 6 số đã gửi tới ${_maskEmail(widget.extra.email)}',
+                    AppStrings.otpSentToEmail(
+                      _maskEmail(widget.extra.email),
+                    ),
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       color: AppColors.textSecondary,
@@ -175,7 +183,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                   ],
                   const SizedBox(height: 8),
                   Text(
-                    'Nếu bạn không nhận được mã, kiểm tra email hoặc quay lại.',
+                    AppStrings.forgotPasswordOtpHelp,
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -220,17 +228,12 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       ),
                     ),
                     child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
+                        ? const AppLoadingView(
+                            size: AppSizes.iconMd,
+                            color: Colors.white,
                           )
                         : Text(
-                            'Xác nhận',
+                            AppStrings.otpConfirm,
                             style: GoogleFonts.lexend(
                               fontWeight: FontWeight.w700,
                             ),
@@ -242,8 +245,8 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                         _resendSeconds > 0 || isLoading ? null : _onResend,
                     child: Text(
                       _resendSeconds > 0
-                          ? 'Gửi lại sau ${_resendSeconds}s'
-                          : 'Gửi lại mã',
+                          ? AppStrings.otpResendCountdown(_resendSeconds)
+                          : AppStrings.forgotPasswordResendShort,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
@@ -253,7 +256,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                   TextButton(
                     onPressed: isLoading ? null : _onBackToEmail,
                     child: Text(
-                      'Quay lại nhập email',
+                      AppStrings.forgotPasswordBackToEmail,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,

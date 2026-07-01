@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/message_entity.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
@@ -91,12 +91,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             children: [
               Expanded(
                 child: isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(AppColors.primary),
-                        ),
-                      )
+                    ? const AppLoadingView()
                     : ChatMessageList(
                         messages: messages,
                         chat: chatMetadata,

@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
 
 class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -18,7 +21,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = chat?.senderName ?? 'Hỗ trợ khách hàng';
+    final title = chat?.senderName ?? AppStrings.chatDefaultSupportName;
     final avatar = chat?.senderAvatar ??
         'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs';
     final isOnline = chat?.isOnline ?? true;
@@ -46,7 +49,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         icon: const Icon(
           Icons.arrow_back_rounded,
           color: AppColors.textPrimary,
-          size: 24,
+          size: AppSizes.paddingXl,
         ),
       ),
       title: Row(
@@ -55,7 +58,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             avatar: avatar,
             isOnline: isOnline,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSizes.radiusLg),
           Expanded(
             child: _ChatTitle(
               title: title,
@@ -67,20 +70,16 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Yêu cầu hỗ trợ đã được chuyển tiếp đến giám sát viên.',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w500),
-                ),
-                backgroundColor: AppColors.primary,
-              ),
+            AppSnackBar.show(
+              context,
+              message: AppStrings.chatEscalationMessage,
+              type: AppSnackBarType.info,
             );
           },
           icon: const Icon(
             Icons.more_vert_rounded,
             color: AppColors.textPrimary,
-            size: 24,
+            size: AppSizes.paddingXl,
           ),
         ),
         const SizedBox(width: 8),
@@ -120,8 +119,8 @@ class _ChatAvatar extends StatelessWidget {
             bottom: 0,
             right: 0,
             child: Container(
-              width: 10,
-              height: 10,
+              width: AppSizes.radiusMd,
+              height: AppSizes.radiusMd,
               decoration: BoxDecoration(
                 color: AppColors.success,
                 shape: BoxShape.circle,
@@ -152,14 +151,14 @@ class _ChatTitle extends StatelessWidget {
         Text(
           title,
           style: GoogleFonts.lexend(
-            fontSize: 15,
+            fontSize: AppSizes.submitButtonFontSize,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 2),
         Text(
-          isOnline ? 'Đang hoạt động' : 'Ngoại tuyến',
+          isOnline ? AppStrings.chatOnline : AppStrings.chatOffline,
           style: GoogleFonts.inter(
             fontSize: 10,
             fontWeight: FontWeight.w600,

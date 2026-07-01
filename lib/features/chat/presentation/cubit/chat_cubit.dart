@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/chat/domain/repositories/chat_repository.dart';
 import 'package:flutter_ecommerce/features/chat/domain/usecases/get_chats_usecase.dart';
@@ -67,7 +68,7 @@ class ChatCubit extends Cubit<ChatState> {
       (c) => c.id == chatId,
       orElse: () => ChatEntity(
         id: chatId,
-        senderName: 'Hỗ trợ khách hàng',
+        senderName: AppStrings.chatDefaultSupportName,
         senderAvatar:
             'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs',
         lastMessage: '',

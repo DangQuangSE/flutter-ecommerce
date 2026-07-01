@@ -9,6 +9,7 @@ import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_custom
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_existing_design_usecase.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_printing_configs_usecase.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/save_custom_design_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 
 void setupCustomizerModule(GetIt sl) {
@@ -35,6 +36,11 @@ void setupCustomizerModule(GetIt sl) {
       getPrintingConfigs: sl<GetPrintingConfigsUseCase>(),
       saveCustomDesign: sl<SaveCustomDesignUseCase>(),
       getExistingDesign: sl<GetExistingDesignUseCase>(),
+    ),
+  );
+  sl.registerFactory<CustomDesignSpecCubit>(
+    () => CustomDesignSpecCubit(
+      getCustomDesignSpec: sl<GetCustomDesignSpecUseCase>(),
     ),
   );
 }

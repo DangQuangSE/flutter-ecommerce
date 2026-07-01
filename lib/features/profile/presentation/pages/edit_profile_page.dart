@@ -8,6 +8,10 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/widgets/notification_bell_icon.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
@@ -72,7 +76,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await context.read<ProfileCubit>().updateAvatar(File(picked.path));
     if (!mounted) return;
     setState(() => _uploadingAvatar = false);
-    _showSnack(error ?? 'Đã cập nhật ảnh đại diện', isError: error != null);
+    _showSnack(
+      error ?? AppStrings.editProfileAvatarUpdated,
+      isError: error != null,
+    );
   }
 
   Future<void> _submit() async {
@@ -89,7 +96,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() => _submitting = false);
 
     if (error == null) {
-      _showSnack('Đã lưu thay đổi');
+      _showSnack(AppStrings.editProfileSaved);
       if (context.canPop()) context.pop();
     } else {
       _showSnack(error, isError: true);
@@ -97,16 +104,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _showSnack(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(
-        backgroundColor: isError ? AppColors.error : AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        content: Text(
-          message,
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12),
-        ),
-      ));
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: isError ? AppSnackBarType.error : AppSnackBarType.success,
+    );
   }
 
   @override
@@ -125,11 +127,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           builder: (context, state) {
             final profile = state is ProfileLoaded ? state.profile : null;
             if (profile == null && state is ProfileLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              );
+              return const AppLoadingView();
             }
             return _buildForm(context, profile);
           },
@@ -141,39 +139,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget _buildForm(BuildContext context, ProfileEntity? profile) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSizes.paddingMd),
             _buildAvatarSection(profile?.avatar),
-            const SizedBox(height: 32),
-            _buildLabel('TÊN'),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSizes.fontDisplay),
+            _buildLabel(AppStrings.editProfileFirstNameLabel),
+            const SizedBox(height: AppSizes.radiusSm),
             _buildTextField(
               controller: _firstNameController,
-              hint: 'Tên',
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên' : null,
+              hint: AppStrings.editProfileFirstNameHint,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? AppStrings.editProfileFirstNameRequired
+                  : null,
             ),
-            const SizedBox(height: 20),
-            _buildLabel('HỌ'),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSizes.paddingLg),
+            _buildLabel(AppStrings.editProfileLastNameLabel),
+            const SizedBox(height: AppSizes.radiusSm),
             _buildTextField(
               controller: _lastNameController,
-              hint: 'Họ',
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Vui lòng nhập họ' : null,
+              hint: AppStrings.editProfileLastNameHint,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? AppStrings.editProfileLastNameRequired
+                  : null,
             ),
-            const SizedBox(height: 20),
-            _buildLabel('EMAIL'),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSizes.paddingLg),
+            _buildLabel(AppStrings.editProfileEmailLabel),
+            const SizedBox(height: AppSizes.radiusSm),
             _buildReadOnlyEmail(profile?.email ?? ''),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSizes.fontDisplay),
             _buildSaveButton(),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSizes.fontDisplay),
           ],
         ),
       ),
@@ -207,13 +207,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   color: Colors.black26,
                 ),
                 child: Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
+                  child: AppLoadingView(
+                    size: AppSizes.paddingXl,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -296,16 +292,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: _submitting
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
+          ? const AppLoadingView(size: AppSizes.iconMd, color: Colors.white)
           : Text(
-              'LƯU THAY ĐỔI',
+              AppStrings.editProfileSaveChanges,
               style: GoogleFonts.lexend(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,

@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_event.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_state.dart';
@@ -62,12 +66,10 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
           child: BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
             listener: (context, state) {
               if (state is ForgotPasswordResetSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Đặt lại mật khẩu thành công. Vui lòng đăng nhập.',
-                    ),
-                  ),
+                AppSnackBar.show(
+                  context,
+                  message: AppStrings.forgotPasswordResetSuccess,
+                  type: AppSnackBarType.success,
                 );
                 context.goNamed(AppRoutes.login);
               }
@@ -156,14 +158,9 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
                         ),
                       ),
                       child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
+                          ? const AppLoadingView(
+                              size: AppSizes.iconMd,
+                              color: Colors.white,
                             )
                           : Text(
                               'Đặt lại mật khẩu',

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
-import 'package:flutter_ecommerce/core/di/injection_container.dart';
-import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
-import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_custom_design_spec_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
 
 class CustomDesignSpecCard extends StatefulWidget {
   final int customDesignId;
@@ -24,159 +26,206 @@ class CustomDesignSpecCard extends StatefulWidget {
 }
 
 class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
-  bool _isLoading = true;
-  String? _materialName;
-  int _numTextLines = 0;
-  int _numImages = 0;
-  double _totalPrintingPrice = 0.0;
-  double _materialBasePrice = 0.0;
-  double _textUnitPrice = 0.0;
-  double _imageUnitPrice = 0.0;
+  bool _requested = false;
 
   @override
-  void initState() {
-    super.initState();
-    _loadDesignDetails();
-  }
-
-  Future<void> _loadDesignDetails() async {
-    try {
-      final result =
-          await sl<GetCustomDesignSpecUseCase>()(widget.customDesignId);
-      if (result is! Success<CustomDesignSpecEntity>) {
-        if (mounted) setState(() => _isLoading = false);
-        return;
-      }
-
-      final spec = result.data;
-
-      if (mounted) {
-        setState(() {
-          _materialName = spec.materialName;
-          _numTextLines = spec.numTextLines;
-          _numImages = spec.numImages;
-          _totalPrintingPrice = spec.totalPrintingPrice;
-          _materialBasePrice = spec.materialBasePrice;
-          _textUnitPrice = spec.textUnitPrice;
-          _imageUnitPrice = spec.imageUnitPrice;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading custom design details: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_requested) return;
+    _requested = true;
+    context.read<CustomDesignSpecCubit>().loadSpec(widget.customDesignId);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
-          child: AppLoadingView(size: AppSizes.fontLg),
-        ),
-      );
-    }
+    return BlocBuilder<CustomDesignSpecCubit, CustomDesignSpecState>(
+      buildWhen: (previous, current) {
+        if (previous is! CustomDesignSpecSnapshot ||
+            current is! CustomDesignSpecSnapshot) {
+          return true;
+        }
+        final id = widget.customDesignId;
+        return previous.specOf(id) != current.specOf(id) ||
+            previous.isLoading(id) != current.isLoading(id) ||
+            previous.errorOf(id) != current.errorOf(id);
+      },
+      builder: (context, state) {
+        final snapshot = state is CustomDesignSpecSnapshot
+            ? state
+            : const CustomDesignSpecSnapshot();
+        if (snapshot.isLoading(widget.customDesignId)) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
+            child: AppLoadingView(size: AppSizes.fontLg),
+          );
+        }
 
-    final materialText = _materialName ?? 'N/A';
-    final textLines = _numTextLines;
-    final images = _numImages;
-    final printingPrice = _totalPrintingPrice > 0
-        ? _totalPrintingPrice
-        : widget.fallbackPrintingPrice;
+        return _CustomDesignSpecContent(
+          spec: snapshot.specOf(widget.customDesignId),
+          fallbackPrintingPrice: widget.fallbackPrintingPrice,
+        );
+      },
+    );
+  }
+}
 
-    final textCost = textLines * _textUnitPrice;
-    final imageCost = images * _imageUnitPrice;
+class _CustomDesignSpecContent extends StatelessWidget {
+  final CustomDesignSpecEntity? spec;
+  final double fallbackPrintingPrice;
 
-    final materialValueText = _materialBasePrice > 0
-        ? '${materialText.toUpperCase()} (+${formatPrice(_materialBasePrice)})'
+  const _CustomDesignSpecContent({
+    required this.spec,
+    required this.fallbackPrintingPrice,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final materialText =
+        spec?.materialName ?? AppStrings.customDesignSpecUnavailable;
+    final textLines = spec?.numTextLines ?? 0;
+    final images = spec?.numImages ?? 0;
+    final totalPrintingPrice = spec?.totalPrintingPrice ?? 0;
+    final materialBasePrice = spec?.materialBasePrice ?? 0;
+    final textUnitPrice = spec?.textUnitPrice ?? 0;
+    final imageUnitPrice = spec?.imageUnitPrice ?? 0;
+    final printingPrice =
+        totalPrintingPrice > 0 ? totalPrintingPrice : fallbackPrintingPrice;
+
+    final textCost = textLines * textUnitPrice;
+    final imageCost = images * imageUnitPrice;
+
+    final materialValueText = materialBasePrice > 0
+        ? '${materialText.toUpperCase()} (+${formatPrice(materialBasePrice)})'
         : materialText.toUpperCase();
-    final textValueText = _textUnitPrice > 0
-        ? '$textLines lớp (+${formatPrice(textCost)})'
-        : '$textLines lớp';
-    final imageValueText = _imageUnitPrice > 0
-        ? '$images ảnh (+${formatPrice(imageCost)})'
-        : '$images ảnh';
+    final textValueText = textUnitPrice > 0
+        ? '${AppStrings.customDesignSpecTextLines(textLines)} (+${formatPrice(textCost)})'
+        : AppStrings.customDesignSpecTextLines(textLines);
+    final imageValueText = imageUnitPrice > 0
+        ? '${AppStrings.customDesignSpecImages(images)} (+${formatPrice(imageCost)})'
+        : AppStrings.customDesignSpecImages(images);
 
     return Column(
       children: [
-        _buildSpecRow('Chất liệu tuyển chọn:', materialValueText,
-            isBoldValue: true),
-        const SizedBox(height: 4),
-        _buildSpecRow('Số lớp chữ in thêm:', textValueText),
-        const SizedBox(height: 4),
-        _buildSpecRow('Số logo tải lên:', imageValueText),
-        const SizedBox(height: 4),
+        _SpecRow(
+          label: AppStrings.customDesignSpecMaterialLabel,
+          value: materialValueText,
+          isBoldValue: true,
+        ),
+        const SizedBox(height: AppSizes.paddingXs),
+        _SpecRow(
+          label: AppStrings.customDesignSpecTextLinesLabel,
+          value: textValueText,
+        ),
+        const SizedBox(height: AppSizes.paddingXs),
+        _SpecRow(
+          label: AppStrings.customDesignSpecImagesLabel,
+          value: imageValueText,
+        ),
+        const SizedBox(height: AppSizes.paddingXs),
         Container(
-            height: 1, color: const Color(0xFFC1C6D7).withValues(alpha: 0.15)),
-        const SizedBox(height: 4),
-        _buildSpecRow(
-          'Tổng cộng chi phí in:',
-          '+${formatPrice(printingPrice)}',
+          height: 1,
+          color: const Color(0xFFC1C6D7).withValues(alpha: 0.15),
+        ),
+        const SizedBox(height: AppSizes.paddingXs),
+        _SpecRow(
+          label: AppStrings.customDesignSpecTotalLabel,
+          value: '+${formatPrice(printingPrice)}',
           isBlueValue: true,
           isBoldValue: true,
         ),
-        if (_textUnitPrice > 0 && _imageUnitPrice > 0) ...[
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0F4F9),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(Icons.info_outline_rounded,
-                    size: 12, color: Color(0xFF0058BC)),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    'Công thức tính giá in ấn: Giá phôi in + (Số lớp chữ x ${formatPrice(_textUnitPrice)}/lớp) + (Số logo x ${formatPrice(_imageUnitPrice)}/ảnh)',
-                    style: GoogleFonts.inter(
-                      fontSize: 8.5,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF0058BC),
-                      height: 1.3,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        if (textUnitPrice > 0 && imageUnitPrice > 0) ...[
+          const SizedBox(height: AppSizes.paddingSm),
+          _PricingFormulaHint(
+            textUnitPrice: textUnitPrice,
+            imageUnitPrice: imageUnitPrice,
           ),
         ],
       ],
     );
   }
+}
 
-  Widget _buildSpecRow(String label, String value,
-      {bool isBoldValue = false, bool isBlueValue = false}) {
+class _PricingFormulaHint extends StatelessWidget {
+  final double textUnitPrice;
+  final double imageUnitPrice;
+
+  const _PricingFormulaHint({
+    required this.textUnitPrice,
+    required this.imageUnitPrice,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.paddingSm),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F4F9),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.info_outline_rounded,
+            size: AppSizes.fontMd,
+            color: AppColors.primary,
+          ),
+          const SizedBox(width: AppSizes.radiusSm),
+          Expanded(
+            child: Text(
+              AppStrings.customDesignSpecPricingFormula(
+                formatPrice(textUnitPrice),
+                formatPrice(imageUnitPrice),
+              ),
+              style: GoogleFonts.inter(
+                fontSize: AppSizes.fontBadge + 0.5,
+                fontWeight: FontWeight.w500,
+                color: AppColors.primary,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SpecRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isBoldValue;
+  final bool isBlueValue;
+
+  const _SpecRow({
+    required this.label,
+    required this.value,
+    this.isBoldValue = false,
+    this.isBlueValue = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
           style: GoogleFonts.inter(
-            fontSize: 10,
+            fontSize: AppSizes.fontSm - 1,
             fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSizes.paddingSm),
         Expanded(
           child: Text(
             value,
             textAlign: TextAlign.right,
             style: GoogleFonts.inter(
-              fontSize: 10,
+              fontSize: AppSizes.fontSm - 1,
               fontWeight: isBoldValue ? FontWeight.w800 : FontWeight.w600,
-              color:
-                  isBlueValue ? const Color(0xFF0058BC) : AppColors.textPrimary,
+              color: isBlueValue ? AppColors.primary : AppColors.textPrimary,
             ),
           ),
         ),

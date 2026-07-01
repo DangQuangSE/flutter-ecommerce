@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 
 class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ChatListAppBar({super.key});
@@ -27,7 +30,7 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
         icon: const Icon(
           Icons.arrow_back_rounded,
           color: AppColors.textPrimary,
-          size: 24,
+          size: AppSizes.paddingXl,
         ),
       ),
       titleSpacing: 0,
@@ -41,7 +44,7 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Transform(
         transform: Matrix4.skewX(-0.12),
         child: Text(
-          'Hộp thư thoại',
+          AppStrings.chatListTitle,
           style: GoogleFonts.lexend(
             fontSize: 20,
             fontWeight: FontWeight.w900,
@@ -54,20 +57,16 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Hotline CSKH: 1900-SPORT-PRO',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                ),
-                backgroundColor: AppColors.primary,
-              ),
+            AppSnackBar.show(
+              context,
+              message: AppStrings.chatHotlineMessage,
+              type: AppSnackBarType.info,
             );
           },
           icon: const Icon(
             Icons.support_agent_rounded,
             color: AppColors.primary,
-            size: 24,
+            size: AppSizes.paddingXl,
           ),
         ),
         const SizedBox(width: 8),

@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/widgets/address_card.dart';
@@ -18,24 +22,18 @@ class AddressListPage extends StatelessWidget {
       body: BlocConsumer<AddressCubit, AddressState>(
         listener: (context, state) {
           if (state is AddressLoaded && state.message != null) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(state.message!),
-                  backgroundColor: Colors.green,
-                ),
-              );
+            AppSnackBar.show(
+              context,
+              message: state.message!,
+              type: AppSnackBarType.success,
+            );
           }
           if (state is AddressError) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
+            AppSnackBar.show(
+              context,
+              message: state.message,
+              type: AppSnackBarType.error,
+            );
           }
         },
         builder: (context, state) {
@@ -55,7 +53,7 @@ class _LoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return const AppLoadingView();
   }
 }
 
@@ -71,7 +69,11 @@ class _ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const Icon(
+              Icons.error_outline,
+              size: AppSizes.iconXxl,
+              color: AppColors.error,
+            ),
             const SizedBox(height: AppSizes.paddingMd),
             Text(
               message,
@@ -119,14 +121,16 @@ class _AddressListView extends StatelessWidget {
                   AppRoutes.addressForm,
                   extra: addr,
                 ),
-                onDelete: () => _confirmDelete(context, addr.id!),
+                onDelete: () {
+                  _confirmDelete(context, addr.id!);
+                },
               );
             },
           ),
         ),
         if (addresses.isSubmitting)
           const Positioned.fill(
-            child: Center(child: CircularProgressIndicator()),
+            child: AppLoadingView(),
           ),
       ],
     );
@@ -169,26 +173,16 @@ class _AddressListView extends StatelessWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, int id) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text(AppStrings.addressDelete),
-        content: const Text(AppStrings.addressDeleteConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text(AppStrings.addressCancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              context.read<AddressCubit>().deleteAddress(id);
-            },
-            child: const Text(AppStrings.addressDelete),
-          ),
-        ],
-      ),
+  Future<void> _confirmDelete(BuildContext context, int id) async {
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.addressDelete,
+      message: AppStrings.addressDeleteConfirm,
+      cancelLabel: AppStrings.addressCancel,
+      confirmLabel: AppStrings.addressDelete,
     );
+    if (confirmed && context.mounted) {
+      context.read<AddressCubit>().deleteAddress(id);
+    }
   }
 }

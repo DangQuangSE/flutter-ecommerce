@@ -6,6 +6,7 @@ import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_state.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_actions.dart';
@@ -24,9 +25,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-            ),
+            const AppLoadingView(),
             AppSizes.spacingMd,
             Text(
               AppStrings.customizerLoading,
@@ -129,9 +128,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
-              ),
+              const AppLoadingView(color: AppColors.accent),
               AppSizes.spacingMd,
               Text(
                 AppStrings.customizerSaving,

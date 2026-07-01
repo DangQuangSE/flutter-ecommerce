@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 
 class LoginSubmitButton extends StatefulWidget {
   final bool isLoading;
@@ -99,13 +100,9 @@ class _LoginSubmitButtonState extends State<LoginSubmitButton>
               height: 52, // Standardized premium button height
               child: Center(
                 child: widget.isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
+                    ? const AppLoadingView(
+                        size: AppSizes.iconMd,
+                        color: Colors.white,
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -135,4 +132,3 @@ class _LoginSubmitButtonState extends State<LoginSubmitButton>
     );
   }
 }
-

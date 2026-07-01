@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 
 class ChatInputBar extends StatelessWidget {
   final TextEditingController controller;
@@ -25,10 +28,10 @@ class ChatInputBar extends StatelessWidget {
         ),
       ),
       padding: EdgeInsets.fromLTRB(
-        16,
-        8,
-        16,
-        MediaQuery.of(context).viewInsets.bottom + 12,
+        AppSizes.paddingMd,
+        AppSizes.paddingSm,
+        AppSizes.paddingMd,
+        MediaQuery.of(context).viewInsets.bottom + AppSizes.radiusLg,
       ),
       child: SafeArea(
         child: Row(
@@ -41,7 +44,7 @@ class ChatInputBar extends StatelessWidget {
                 onSend: onSend,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSizes.radiusMd),
             _SendButton(onSend: onSend),
           ],
         ),
@@ -55,20 +58,16 @@ class _AttachmentButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Tải lên ảnh đính kèm.',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w500),
-            ),
-            backgroundColor: AppColors.primary,
-          ),
+        AppSnackBar.show(
+          context,
+          message: AppStrings.chatAttachmentMessage,
+          type: AppSnackBarType.info,
         );
       },
       child: Container(
         width: 44,
         height: 44,
-        margin: const EdgeInsets.only(right: 10),
+        margin: const EdgeInsets.only(right: AppSizes.radiusMd),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
@@ -79,7 +78,7 @@ class _AttachmentButton extends StatelessWidget {
         child: const Icon(
           Icons.add_rounded,
           color: AppColors.primary,
-          size: 24,
+          size: AppSizes.paddingXl,
         ),
       ),
     );
@@ -100,13 +99,13 @@ class _MessageField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF3F3F8),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppSizes.paddingXl),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      constraints: const BoxConstraints(minHeight: 44),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
+      constraints: const BoxConstraints(minHeight: AppSizes.buttonMinHeight),
       child: Row(
         children: [
           Expanded(
@@ -117,14 +116,15 @@ class _MessageField extends StatelessWidget {
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => onSend(),
               decoration: InputDecoration(
-                hintText: 'Nhập tin nhắn...',
+                hintText: AppStrings.chatMessageHint,
                 hintStyle: GoogleFonts.inter(
                   fontSize: 13,
                   color: AppColors.textHint,
                   fontWeight: FontWeight.w500,
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: AppSizes.radiusMd),
                 isDense: true,
               ),
               style: GoogleFonts.inter(
@@ -176,7 +176,7 @@ class _SendButton extends StatelessWidget {
         child: const Icon(
           Icons.send_rounded,
           color: Colors.white,
-          size: 18,
+          size: AppSizes.fontXxl,
         ),
       ),
     );

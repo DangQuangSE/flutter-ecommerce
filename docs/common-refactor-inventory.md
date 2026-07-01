@@ -99,10 +99,25 @@ No feature imports should remain in `core/widgets`, `core/utils`, or `core/netwo
   - `order`: detail/list state loading uses `AppLoadingView`; list state dimensions use `AppSizes`.
   - `product`: home/list/detail/catalog/filter/review loading indicators use `AppLoadingView`; product detail feedback uses `AppSnackBar`.
 - Verification: `flutter analyze` passes with no issues after the batch.
-- Follow-up noted: `cart/presentation/widgets/custom_design_spec_card.dart` still owns a direct use case lookup through `sl<GetCustomDesignSpecUseCase>()`; move that state behind a cubit/bloc or parent-provided view model in a later architecture pass.
+
+## Batch 7 Completed
+
+- Resolved the commerce architecture follow-up:
+  - Added `CustomDesignSpecCubit` and snapshot state under `customizer/presentation/cubit`.
+  - Registered the cubit in `customizer_module.dart`.
+  - Provided `CustomDesignSpecCubit` from the cart route and removed direct `sl<GetCustomDesignSpecUseCase>()` lookup from `custom_design_spec_card.dart`.
+  - `CustomDesignSpecCard` now only renders Cubit state and no longer owns domain/use case calls.
+- Started priority 3 user/support cleanup:
+  - `notification`: common loading/state views, snackbar helper, centralized notification strings.
+  - `address`: common loading/snackbar/delete confirmation; moved `LocationCubit` ownership from `AddressFormPage` to router DI and made initial location load lifecycle-safe.
+  - `profile`: common logout confirmation dialog, edit profile snackbar/loading cleanup, centralized profile/edit labels.
+  - `chat`: common snackbar/loading cleanup in chat list/detail/app bars/input and centralized chat labels.
+  - `auth`: common loading in splash/login/forgot-password flows and snackbar helper for Google login, OTP resend, registration success, and reset success.
+  - `customizer`: common snackbar helper in customization actions and common loading in view helpers/material config panel.
+- Verification: `flutter analyze` passes with no issues after the batch.
 
 ## Next Recommended Batches
 
-1. User/support modules: migrate `auth`, `profile`, `address`, `notification`, `chat`, `location`, and `customizer` repeated form, state, snackbar, and dialog primitives.
-2. Commerce follow-up: move `CustomDesignSpecCard` use case access out of the widget and continue spacing/string cleanup in deeper order detail/list widgets.
+1. Continue deeper string/spacing cleanup in auth validation copy, forgot-password forms, address/profile form internals, and customizer panel internals.
+2. Continue spacing/string cleanup in deeper order detail/list widgets.
 3. Admin order/dashboard and settings/shop cleanup: align remaining loading/snackbar/dialog patterns.

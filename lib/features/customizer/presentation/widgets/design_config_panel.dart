@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/widgets/layer_editor.dart';
@@ -160,14 +161,7 @@ class _MaterialSection extends StatelessWidget {
           const Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: AppSizes.paddingLg),
-              child: SizedBox(
-                height: AppSizes.paddingXl,
-                width: AppSizes.paddingXl,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              ),
+              child: AppLoadingView(size: AppSizes.paddingXl),
             ),
           )
         else

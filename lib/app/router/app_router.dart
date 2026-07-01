@@ -48,6 +48,7 @@ import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profi
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
@@ -91,6 +92,7 @@ import 'package:flutter_ecommerce/features/address/domain/entities/address_entit
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_list_page.dart';
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_form_page.dart';
+import 'package:flutter_ecommerce/features/location/presentation/cubit/location_cubit.dart';
 
 // Shop
 import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
@@ -479,7 +481,10 @@ class AppRouter {
       GoRoute(
         path: '/cart',
         name: AppRoutes.cart,
-        builder: (context, state) => const CartPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<CustomDesignSpecCubit>(),
+          child: const CartPage(),
+        ),
       ),
 
       GoRoute(
@@ -599,8 +604,11 @@ class AppRouter {
             name: AppRoutes.addressForm,
             builder: (context, state) {
               final address = state.extra as AddressEntity?;
-              return BlocProvider(
-                create: (_) => sl<AddressCubit>(),
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (_) => sl<AddressCubit>()),
+                  BlocProvider(create: (_) => sl<LocationCubit>()),
+                ],
                 child: AddressFormPage(initialAddress: address),
               );
             },
