@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
@@ -54,14 +58,18 @@ class _SplashPageState extends State<SplashPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.blue),
-              SizedBox(height: 16),
+              Icon(
+                Icons.shopping_bag_outlined,
+                size: AppSizes.shopLogoSize,
+                color: AppColors.primary,
+              ),
+              SizedBox(height: AppSizes.paddingMd),
               Text(
-                'Flutter E-Commerce',
+                AppStrings.appDisplayName,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 32),
-              CircularProgressIndicator(),
+              SizedBox(height: AppSizes.fontDisplay),
+              AppLoadingView(),
             ],
           ),
         ),

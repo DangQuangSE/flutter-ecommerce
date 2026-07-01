@@ -35,4 +35,8 @@ abstract final class AppColors {
   static const Color accentRed = Color(0xFFBA1A1A);
   static const Color darkText = Color(0xFF1A1C1F);
   static const Color selectedBg = Color(0xFFEDEDF2);
+
+  // Input / border
+  static const Color borderLight = Color(0xFFE5E7EB);
+  static const Color inputBgLight = Color(0xFFF8F9FC);
 }

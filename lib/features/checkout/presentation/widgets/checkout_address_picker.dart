@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
@@ -34,30 +38,24 @@ class CheckoutAddressPicker extends StatelessWidget {
 
   Widget _buildLoadingCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
         ),
       ),
-      child: const Center(
-        child: SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      ),
+      child: const AppLoadingView(size: AppSizes.iconMd),
     );
   }
 
   Widget _buildNoAddressCard(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
         ),
@@ -67,13 +65,16 @@ class CheckoutAddressPicker extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.location_off_outlined,
-                  size: 18, color: AppColors.textSecondary),
-              const SizedBox(width: 8),
+              const Icon(
+                Icons.location_off_outlined,
+                size: AppSizes.fontXxl,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: AppSizes.paddingSm),
               Text(
-                'CHƯA CÓ ĐỊA CHỈ GIAO HÀNG',
+                AppStrings.checkoutNoAddressTitle,
                 style: GoogleFonts.inter(
-                  fontSize: 11,
+                  fontSize: AppSizes.fontSm,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textSecondary,
                   letterSpacing: 0.5,
@@ -81,22 +82,22 @@ class CheckoutAddressPicker extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.radiusLg),
           Text(
-            'Thêm địa chỉ giao hàng để tiến hành đặt hàng.',
+            AppStrings.checkoutNoAddressMessage,
             style: GoogleFonts.inter(
-              fontSize: 12,
+              fontSize: AppSizes.fontMd,
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.radiusLg),
           ElevatedButton.icon(
-            onPressed: () => context.push('/addresses/form'),
-            icon: const Icon(Icons.add, size: 16),
+            onPressed: () => context.pushNamed(AppRoutes.addressForm),
+            icon: const Icon(Icons.add, size: AppSizes.iconSm),
             label: Text(
-              'THÊM ĐỊA CHỈ',
+              AppStrings.checkoutAddAddress,
               style: GoogleFonts.inter(
-                fontSize: 12,
+                fontSize: AppSizes.fontMd,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -104,9 +105,9 @@ class CheckoutAddressPicker extends StatelessWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: AppSizes.radiusMd),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSizes.paddingSm),
               ),
             ),
           ),
@@ -115,14 +116,15 @@ class CheckoutAddressPicker extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressCard(BuildContext context, List<AddressEntity> addresses) {
+  Widget _buildAddressCard(
+      BuildContext context, List<AddressEntity> addresses) {
     final displayAddress = selectedAddress ?? _findDefaultOrFirst(addresses);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
         ),
@@ -139,31 +141,36 @@ class CheckoutAddressPicker extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.location_on_rounded,
-                  size: 16, color: AppColors.primary),
-              const SizedBox(width: 6),
+              const Icon(
+                Icons.location_on_rounded,
+                size: AppSizes.iconSm,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: AppSizes.radiusSm),
               Text(
                 displayAddress.fullName,
                 style: GoogleFonts.lexend(
-                  fontSize: 13,
+                  fontSize: AppSizes.forgotPasswordFontSize,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),
               ),
               if (displayAddress.isDefault)
                 Padding(
-                  padding: const EdgeInsets.only(left: 8),
+                  padding: const EdgeInsets.only(left: AppSizes.paddingSm),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.radiusSm,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(AppSizes.paddingXs),
                     ),
                     child: Text(
-                      'MẶC ĐỊNH',
+                      AppStrings.checkoutDefaultAddress,
                       style: GoogleFonts.inter(
-                        fontSize: 8,
+                        fontSize: AppSizes.fontBadge,
                         fontWeight: FontWeight.w800,
                         color: AppColors.primary,
                       ),
@@ -174,9 +181,9 @@ class CheckoutAddressPicker extends StatelessWidget {
               GestureDetector(
                 onTap: () => _openAddressPicker(context, addresses),
                 child: Text(
-                  'THAY ĐỔI',
+                  AppStrings.checkoutChangeAddress,
                   style: GoogleFonts.inter(
-                    fontSize: 10,
+                    fontSize: AppSizes.fontSm - 1,
                     fontWeight: FontWeight.w800,
                     color: AppColors.primary,
                   ),
@@ -184,36 +191,40 @@ class CheckoutAddressPicker extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSizes.paddingSm),
           Text(
             displayAddress.phoneNumber,
             style: GoogleFonts.inter(
-              fontSize: 12,
+              fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSizes.paddingXs),
           Text(
             displayAddress.formattedAddress,
             style: GoogleFonts.inter(
-              fontSize: 12,
+              fontSize: AppSizes.fontMd,
               color: AppColors.textSecondary,
               height: 1.4,
             ),
           ),
-          if (displayAddress.label != null && displayAddress.label!.isNotEmpty) ...[
-            const SizedBox(height: 6),
+          if (displayAddress.label != null &&
+              displayAddress.label!.isNotEmpty) ...[
+            const SizedBox(height: AppSizes.radiusSm),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.radiusSm,
+                vertical: 2,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.accent.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppSizes.paddingXs),
               ),
               child: Text(
                 displayAddress.label!,
                 style: GoogleFonts.inter(
-                  fontSize: 9,
+                  fontSize: AppSizes.fontXs,
                   fontWeight: FontWeight.w700,
                   color: AppColors.accent,
                 ),
@@ -238,7 +249,9 @@ class CheckoutAddressPicker extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusRound),
+        ),
       ),
       builder: (modalContext) => _AddressPickerSheet(
         addresses: addresses,
@@ -273,7 +286,7 @@ class _AddressPickerSheet extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.only(top: 8, bottom: 8),
               width: 40,
-              height: 4,
+              height: AppSizes.paddingXs,
               decoration: BoxDecoration(
                 color: const Color(0xFFC1C6D7).withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(2),
@@ -281,20 +294,23 @@ class _AddressPickerSheet extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.paddingMd,
+              vertical: AppSizes.paddingSm,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'CHỌN ĐỊA CHỈ GIAO HÀNG',
+                  AppStrings.checkoutSelectAddressTitle,
                   style: GoogleFonts.lexend(
-                    fontSize: 15,
+                    fontSize: AppSizes.submitButtonFontSize,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, size: 20),
+                  icon: const Icon(Icons.close, size: AppSizes.iconMd),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -303,9 +319,10 @@ class _AddressPickerSheet extends StatelessWidget {
           const Divider(height: 1),
           Expanded(
             child: ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSizes.paddingMd),
               itemCount: addresses.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSizes.radiusLg),
               itemBuilder: (_, index) {
                 final addr = addresses[index];
                 final isSelected = addr.id == selectedAddress?.id;
@@ -318,7 +335,7 @@ class _AddressPickerSheet extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSizes.paddingMd),
             decoration: const BoxDecoration(
               border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
             ),
@@ -327,13 +344,13 @@ class _AddressPickerSheet extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
-                  context.push('/addresses/form');
+                  context.pushNamed(AppRoutes.addressForm);
                 },
-                icon: const Icon(Icons.add, size: 16),
+                icon: const Icon(Icons.add, size: AppSizes.iconSm),
                 label: Text(
-                  'THÊM ĐỊA CHỈ MỚI',
+                  AppStrings.checkoutAddNewAddress,
                   style: GoogleFonts.inter(
-                    fontSize: 12,
+                    fontSize: AppSizes.fontMd,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -341,9 +358,11 @@ class _AddressPickerSheet extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSizes.radiusLg,
+                  ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppSizes.paddingSm),
                   ),
                 ),
               ),
@@ -370,12 +389,14 @@ class _AddressPickerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSizes.fontLg),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.05)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
             color: isSelected
                 ? AppColors.primary
@@ -395,25 +416,28 @@ class _AddressPickerTile extends StatelessWidget {
                       Text(
                         address.fullName,
                         style: GoogleFonts.lexend(
-                          fontSize: 13,
+                          fontSize: AppSizes.forgotPasswordFontSize,
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,
                         ),
                       ),
                       if (address.isDefault)
                         Padding(
-                          padding: const EdgeInsets.only(left: 6),
+                          padding:
+                              const EdgeInsets.only(left: AppSizes.radiusSm),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 1),
+                              horizontal: AppSizes.paddingXs + 1,
+                              vertical: 1,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(3),
                             ),
                             child: Text(
-                              'MẶC ĐỊNH',
+                              AppStrings.checkoutDefaultAddress,
                               style: GoogleFonts.inter(
-                                fontSize: 7,
+                                fontSize: AppSizes.fontXxs,
                                 fontWeight: FontWeight.w800,
                                 color: AppColors.primary,
                               ),
@@ -422,11 +446,11 @@ class _AddressPickerTile extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSizes.paddingXs),
                   Text(
                     address.phoneNumber,
                     style: GoogleFonts.inter(
-                      fontSize: 11,
+                      fontSize: AppSizes.fontSm,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textSecondary,
                     ),
@@ -435,7 +459,7 @@ class _AddressPickerTile extends StatelessWidget {
                   Text(
                     address.formattedAddress,
                     style: GoogleFonts.inter(
-                      fontSize: 11,
+                      fontSize: AppSizes.fontSm,
                       color: AppColors.textSecondary,
                       height: 1.3,
                     ),
@@ -443,13 +467,13 @@ class _AddressPickerTile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSizes.paddingSm),
             if (isSelected)
               const Icon(Icons.check_circle_rounded,
-                  size: 20, color: AppColors.primary)
+                  size: AppSizes.iconMd, color: AppColors.primary)
             else
               const Icon(Icons.radio_button_unchecked_rounded,
-                  size: 20, color: AppColors.textHint),
+                  size: AppSizes.iconMd, color: AppColors.textHint),
           ],
         ),
       ),

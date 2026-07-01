@@ -16,6 +16,8 @@ abstract final class AppSizes {
   static const double radiusRound = 20.0;
 
   // Font sizes
+  static const double fontXxs = 7.0;
+  static const double fontBadge = 8.0;
   static const double fontXs = 9.0;
   static const double fontSm = 11.0;
   static const double fontMd = 12.0;
@@ -28,6 +30,7 @@ abstract final class AppSizes {
   static const double iconSm = 16.0;
   static const double iconMd = 20.0;
   static const double iconLg = 28.0;
+  static const double iconXxl = 48.0;
 
   // Canvas
   static const double canvasWidthRatio = 0.85;
@@ -49,6 +52,26 @@ abstract final class AppSizes {
   static const double borderThick = 3.0;
   static const double letterSpacingWide = 1.0;
 
+  // Extra spacing
+  static const double spacing6 = 6.0;
+  static const double spacing10 = 10.0;
+  static const double spacing12 = 12.0;
+  static const double spacing14 = 14.0;
+
+  // Extra icon sizes
+  static const double iconMd18 = 18.0;
+  static const double iconNav = 22.0;
+  static const double iconNavActive = 24.0;
+
+  // Extra radius
+  static const double radius8 = 8.0;
+  static const double radius14 = 14.0;
+  static const double radiusFull = 30.0;
+
+  // Extra font sizes
+  static const double font13 = 13.0;
+  static const double fontTitle = 26.0;
+
   // Others
   static const double buttonMinHeight = 44.0;
   static const double tabVerticalPadding = 14.0;
@@ -56,6 +79,7 @@ abstract final class AppSizes {
   static const double fieldLabelFontSize = 11.0;
   static const double forgotPasswordFontSize = 13.0;
   static const double submitButtonFontSize = 15.0;
+  static const double adminProductImageTileSize = 100.0;
 
   static const SizedBox spacingXs = SizedBox(height: 4, width: 4);
   static const SizedBox spacingSm = SizedBox(height: 8, width: 8);

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
 
 class ActiveFilterChips extends StatelessWidget {
@@ -19,29 +21,38 @@ class ActiveFilterChips extends StatelessWidget {
     if (chips.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.paddingMd,
+        vertical: AppSizes.paddingSm,
+      ),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
       ),
       child: Wrap(
-        spacing: 6,
-        runSpacing: 6,
+        spacing: AppSizes.radiusSm,
+        runSpacing: AppSizes.radiusSm,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           TextButton(
             onPressed: onClearAll,
             style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingSm,
+                vertical: AppSizes.paddingXs,
+              ),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: const Text('Xóa tất cả',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.error)),
+            child: const Text(
+              AppStrings.productFilterClearAll,
+              style: TextStyle(
+                fontSize: AppSizes.fontSm,
+                fontWeight: FontWeight.w700,
+                color: AppColors.error,
+              ),
+            ),
           ),
           ...chips,
         ],
@@ -71,14 +82,8 @@ class ActiveFilterChips extends StatelessWidget {
     }
 
     if (state.gender != null) {
-      final label = switch (state.gender!) {
-        'MALE' => 'Nam',
-        'FEMALE' => 'Nữ',
-        'UNISEX' => 'Unisex',
-        _ => state.gender!,
-      };
       chips.add(_Chip(
-        label: label,
+        label: _genderLabel(state.gender!),
         onDelete: () => context.read<ProductCatalogBloc>().add(
               ProductCatalogFilterChanged(clearGender: true, silent: true),
             ),
@@ -104,21 +109,14 @@ class ActiveFilterChips extends StatelessWidget {
     }
 
     if (state.minPrice != null || state.maxPrice != null) {
-      final min = state.minPrice;
-      final max = state.maxPrice;
-      String label;
-      if (min != null && max != null) {
-        label = '${_fmtPrice(min)} – ${_fmtPrice(max)}';
-      } else if (min != null) {
-        label = 'Từ ${_fmtPrice(min)}';
-      } else {
-        label = 'Đến ${_fmtPrice(max!)}';
-      }
       chips.add(_Chip(
-        label: label,
+        label: _priceLabel(state.minPrice, state.maxPrice),
         onDelete: () => context.read<ProductCatalogBloc>().add(
               ProductCatalogFilterChanged(
-                  clearMinPrice: true, clearMaxPrice: true, silent: true),
+                clearMinPrice: true,
+                clearMaxPrice: true,
+                silent: true,
+              ),
             ),
       ));
     }
@@ -126,15 +124,45 @@ class ActiveFilterChips extends StatelessWidget {
     return chips;
   }
 
-  String _capitalize(String s) =>
-      s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+  String _genderLabel(String gender) {
+    return switch (gender) {
+      'MALE' => AppStrings.productFilterMale,
+      'FEMALE' => AppStrings.productFilterFemale,
+      'UNISEX' => AppStrings.productFilterUnisex,
+      _ => gender,
+    };
+  }
 
-  String _fmtPrice(double p) {
-    final n = p.toInt();
-    if (n >= 1000000)
-      return '${(n / 1000000).toStringAsFixed(n % 1000000 == 0 ? 0 : 1)}M';
-    if (n >= 1000) return '${(n / 1000).toStringAsFixed(0)}K';
-    return '${n}đ';
+  String _priceLabel(double? min, double? max) {
+    if (min != null && max != null) {
+      return AppStrings.productFilterPriceBetween(
+        _formatPrice(min),
+        _formatPrice(max),
+      );
+    }
+    if (min != null) {
+      return AppStrings.productFilterPriceFrom(_formatPrice(min));
+    }
+    return AppStrings.productFilterPriceTo(_formatPrice(max!));
+  }
+
+  String _capitalize(String value) {
+    return value.isEmpty
+        ? value
+        : '${value[0].toUpperCase()}${value.substring(1)}';
+  }
+
+  String _formatPrice(double price) {
+    final value = price.toInt();
+    if (value >= 1000000) {
+      final millionValue = value / 1000000;
+      final precision = value % 1000000 == 0 ? 0 : 1;
+      return '${millionValue.toStringAsFixed(precision)}M';
+    }
+    if (value >= 1000) {
+      return '${(value / 1000).toStringAsFixed(0)}K';
+    }
+    return '$value${AppStrings.productFilterCurrencySuffix}';
   }
 }
 
@@ -147,25 +175,34 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.radiusMd,
+        vertical: AppSizes.paddingXs,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.radiusRound),
         border: Border.all(color: AppColors.divider),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary)),
-          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: AppSizes.fontSm,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          AppSizes.spacingXs,
           GestureDetector(
             onTap: onDelete,
-            child: const Icon(Icons.close,
-                size: 12, color: AppColors.textSecondary),
+            child: const Icon(
+              Icons.close,
+              size: AppSizes.fontMd,
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),

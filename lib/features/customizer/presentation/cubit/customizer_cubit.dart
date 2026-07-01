@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
-import 'package:flutter_ecommerce/features/customizer/data/models/customization_model.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/customization_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/existing_design_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_existing_design_usecase.dart';
@@ -37,8 +37,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
           jsonDecode(raw) as Map<String, dynamic>;
       for (final entry in decoded.entries) {
         final map = entry.value as Map<String, dynamic>;
-        _customizations[entry.key] =
-            CustomizationModel.fromJson(map).toEntity();
+        _customizations[entry.key] = _customizationFromJson(map);
       }
     } catch (_) {}
   }
@@ -120,7 +119,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
         _customizations[productId] = CustomizationEntity(
           productId: productId,
           customText: activeText,
-          textColor: 'Selected Color',
+          textColor: AppStrings.customizerSelectedColor,
           colorHex: activeColor,
           printMethod: printMethod,
           logoEnabled: hasLogo,
@@ -149,10 +148,10 @@ class CustomizerCubit extends Cubit<CustomizerState> {
     }
     return CustomizationEntity(
       productId: productId,
-      customText: 'TEAM SPORT',
-      textColor: 'Jet Black',
+      customText: AppStrings.customizerDefaultTeamText,
+      textColor: AppStrings.customizerDefaultTextColor,
       colorHex: 0xFF1A1C1F,
-      printMethod: 'In chuyển nhiệt',
+      printMethod: AppStrings.customizerDefaultPrintMethod,
       logoEnabled: true,
       textScale: 1.0,
     );
@@ -162,8 +161,38 @@ class CustomizerCubit extends Cubit<CustomizerState> {
     final prefs = await SharedPreferences.getInstance();
     final Map<String, Map<String, dynamic>> toSave = {};
     for (final e in _customizations.entries) {
-      toSave[e.key] = CustomizationModel.fromEntity(e.value).toJson();
+      toSave[e.key] = _customizationToJson(e.value);
     }
     await prefs.setString('customizations', jsonEncode(toSave));
+  }
+
+  CustomizationEntity _customizationFromJson(Map<String, dynamic> json) {
+    return CustomizationEntity(
+      productId: json['productId'] as String? ?? '',
+      customText: json['customText'] as String? ?? '',
+      textColor: json['textColor'] as String? ?? '',
+      colorHex: json['colorHex'] as int? ?? 0xFF1A1C1F,
+      printMethod: json['printMethod'] as String? ??
+          AppStrings.customizerDefaultPrintMethod,
+      logoEnabled: json['logoEnabled'] as bool? ?? false,
+      textScale: (json['textScale'] as num?)?.toDouble() ?? 1.0,
+      layersJson: json['layersJson'] as String? ?? '',
+      customDesignId: json['customDesignId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> _customizationToJson(CustomizationEntity entity) {
+    return {
+      'productId': entity.productId,
+      'customText': entity.customText,
+      'textColor': entity.textColor,
+      'colorHex': entity.colorHex,
+      'printMethod': entity.printMethod,
+      'logoEnabled': entity.logoEnabled,
+      'textScale': entity.textScale,
+      'layersJson': entity.layersJson,
+      if (entity.customDesignId != null)
+        'customDesignId': entity.customDesignId,
+    };
   }
 }

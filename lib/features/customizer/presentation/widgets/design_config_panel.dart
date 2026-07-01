@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
-import 'package:flutter_ecommerce/features/customizer/presentation/widgets/material_card.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/widgets/layer_editor.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/widgets/material_card.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/widgets/text_layer_editor.dart';
 
 class DesignConfigPanel extends StatelessWidget {
@@ -56,14 +58,17 @@ class DesignConfigPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
+          topLeft: Radius.circular(AppSizes.iconLg),
+          topRight: Radius.circular(AppSizes.iconLg),
         ),
         boxShadow: [
           BoxShadow(
-              color: Colors.black12, blurRadius: 16, offset: Offset(0, -2))
+            color: Colors.black12,
+            blurRadius: AppSizes.fontXl,
+            offset: Offset(0, -2),
+          )
         ],
       ),
       child: SingleChildScrollView(
@@ -73,22 +78,28 @@ class DesignConfigPanel extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'TÙY CHỈNH THIẾT KẾ',
+              AppStrings.customizerTitle,
               style: GoogleFonts.lexend(
-                  fontSize: AppSizes.fontXxl,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary),
+                fontSize: AppSizes.fontXxl,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textPrimary,
+              ),
             ),
             AppSizes.spacingXs,
             Text(
-              'Tự tay thiết kế áo thi đấu đẳng cấp cao. Tên, số áo và logo tùy chỉnh theo ý bạn.',
+              AppStrings.customizerPanelSubtitle,
               style: GoogleFonts.inter(
-                  fontSize: AppSizes.fontSm,
-                  color: AppColors.textSecondary,
-                  height: 1.4),
+                fontSize: AppSizes.fontSm,
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
             ),
             AppSizes.spacingLg,
-            _buildMaterialSection(),
+            _MaterialSection(
+              materials: materials,
+              printMethod: printMethod,
+              onPrintMethodChanged: onPrintMethodChanged,
+            ),
             AppSizes.spacingLg,
             TextLayerEditor(
               activeLayer: activeLayer,
@@ -104,7 +115,7 @@ class DesignConfigPanel extends StatelessWidget {
               onAddLayer: onAddLayer,
             ),
             AppSizes.spacingLg,
-            _buildLogoUploadSection(),
+            _LogoUploadSection(onUploadLogo: onUploadLogo),
             AppSizes.spacingLg,
             LayerEditor(
               layers: layers,
@@ -118,90 +129,99 @@ class DesignConfigPanel extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildMaterialSection() {
+class _MaterialSection extends StatelessWidget {
+  final List<PrintingMaterialEntity>? materials;
+  final String printMethod;
+  final ValueChanged<String> onPrintMethodChanged;
+
+  const _MaterialSection({
+    required this.materials,
+    required this.printMethod,
+    required this.onPrintMethodChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final list = materials;
-    if (list == null || list.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'CHẤT LIỆU IN ẤN',
-            style: GoogleFonts.inter(
-                fontSize: AppSizes.fontSm,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary),
-          ),
-          AppSizes.spacingSm,
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: SizedBox(
-                height: AppSizes.paddingLg + 4,
-                width: AppSizes.paddingLg + 4,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'CHẤT LIỆU IN ẤN',
+          AppStrings.customizerMaterialSection,
           style: GoogleFonts.inter(
-              fontSize: AppSizes.fontSm,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary),
+            fontSize: AppSizes.fontSm,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
         ),
         AppSizes.spacingSm,
-        ...list.map((m) {
-          final isSelected =
-              printMethod.toLowerCase() == m.name.toLowerCase() ||
-                  m.name.toLowerCase().contains(printMethod.toLowerCase()) ||
-                  printMethod.toLowerCase().contains(m.name.toLowerCase());
-          return Padding(
-            padding: const EdgeInsets.only(bottom: AppSizes.paddingSm + 2),
-            child: MaterialCard(
-              title: m.name,
-              priceAdd: '+${_formatPrice(m.basePrice)}',
-              desc: m.description,
-              isSelected: isSelected,
-              onTap: () => onPrintMethodChanged(m.name),
+        if (list == null || list.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: AppSizes.paddingLg),
+              child: AppLoadingView(size: AppSizes.paddingXl),
             ),
-          );
-        }),
+          )
+        else
+          ...list.map(
+            (material) {
+              final isSelected =
+                  printMethod.toLowerCase() == material.name.toLowerCase() ||
+                      material.name
+                          .toLowerCase()
+                          .contains(printMethod.toLowerCase()) ||
+                      printMethod
+                          .toLowerCase()
+                          .contains(material.name.toLowerCase());
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSizes.paddingSm + 2),
+                child: MaterialCard(
+                  title: material.name,
+                  priceAdd: '+${_formatPrice(material.basePrice)}',
+                  desc: material.description,
+                  isSelected: isSelected,
+                  onTap: () => onPrintMethodChanged(material.name),
+                ),
+              );
+            },
+          ),
       ],
     );
   }
 
   String _formatPrice(double price) {
-    final formatStr = price.toInt().toString();
+    final value = price.toInt().toString();
     final buffer = StringBuffer();
-    for (int i = 0; i < formatStr.length; i++) {
-      buffer.write(formatStr[i]);
-      if ((formatStr.length - 1 - i) % 3 == 0 && i != formatStr.length - 1) {
+    for (var index = 0; index < value.length; index++) {
+      buffer.write(value[index]);
+      if ((value.length - 1 - index) % 3 == 0 && index != value.length - 1) {
         buffer.write('.');
       }
     }
     return '${buffer.toString()}đ';
   }
+}
 
-  Widget _buildLogoUploadSection() {
+class _LogoUploadSection extends StatelessWidget {
+  final VoidCallback onUploadLogo;
+
+  const _LogoUploadSection({required this.onUploadLogo});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('TẢI LÊN LOGO CỦA BẠN',
-            style: GoogleFonts.inter(
-                fontSize: AppSizes.fontSm,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary)),
+        Text(
+          AppStrings.customizerUploadLogoTitle,
+          style: GoogleFonts.inter(
+            fontSize: AppSizes.fontSm,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
+        ),
         AppSizes.spacingSm,
         GestureDetector(
           onTap: onUploadLogo,
@@ -209,26 +229,37 @@ class DesignConfigPanel extends StatelessWidget {
             height: 98,
             decoration: BoxDecoration(
               border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.4), width: 1.5),
+                color: AppColors.primary.withValues(alpha: 0.4),
+                width: 1.5,
+              ),
               borderRadius: BorderRadius.circular(AppSizes.radiusXl),
               color: AppColors.primary.withValues(alpha: 0.02),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.cloud_upload_outlined,
-                    color: AppColors.primary, size: AppSizes.iconLg),
+                const Icon(
+                  Icons.cloud_upload_outlined,
+                  color: AppColors.primary,
+                  size: AppSizes.iconLg,
+                ),
                 const SizedBox(height: AppSizes.paddingXs + 2),
-                Text('NHẤN ĐỂ TẢI ẢNH LÊN',
-                    style: GoogleFonts.inter(
-                        fontSize: AppSizes.fontMd,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary)),
+                Text(
+                  AppStrings.customizerUploadLogoAction,
+                  style: GoogleFonts.inter(
+                    fontSize: AppSizes.fontMd,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
                 AppSizes.spacingXs,
-                Text('PNG, JPG, SVG (Tối đa 5MB)',
-                    style: GoogleFonts.inter(
-                        fontSize: AppSizes.fontXs,
-                        color: AppColors.textSecondary)),
+                Text(
+                  AppStrings.customizerUploadLogoHint,
+                  style: GoogleFonts.inter(
+                    fontSize: AppSizes.fontXs,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
               ],
             ),
           ),

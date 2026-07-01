@@ -114,7 +114,7 @@ class AdminDashboardTab extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -131,7 +131,7 @@ class AdminDashboardTab extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -150,14 +150,15 @@ class AdminDashboardTab extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.arrow_upward_rounded,
-                            size: 12, color: Colors.white.withOpacity(0.9)),
+                            size: 12,
+                            color: Colors.white.withValues(alpha: 0.9)),
                         const SizedBox(width: 2),
                         Text(
                           '+${stats.revenueGrowth}% so với tuần trước',
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                         ),
                       ],
@@ -167,7 +168,7 @@ class AdminDashboardTab extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.account_balance_wallet_rounded,
@@ -443,7 +444,7 @@ class AdminDashboardTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isHighlighted
                           ? AppColors.primary
-                          : AppColors.primary.withOpacity(0.25),
+                          : AppColors.primary.withValues(alpha: 0.25),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(4),
                         topRight: Radius.circular(4),

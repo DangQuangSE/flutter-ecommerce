@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
-import 'package:flutter_ecommerce/core/utils/customer_order_filter.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_order_by_id_usecase.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_orders_usecase.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_state.dart';
+import 'package:flutter_ecommerce/features/order/presentation/utils/customer_order_filter.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
   static const int defaultPageSize = 10;

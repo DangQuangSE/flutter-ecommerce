@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class AdminManagementTab extends StatelessWidget {
@@ -13,53 +14,55 @@ class AdminManagementTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.paddingLg, vertical: AppSizes.paddingXl),
         children: [
           Text(
-            'Quản lý',
+            AppStrings.adminManagementTitle,
             style: GoogleFonts.lexend(
-                fontSize: 26,
+                fontSize: AppSizes.fontTitle,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSizes.paddingXs),
           Text(
-            'Truy cập nhanh các mục quản trị',
-            style:
-                GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
+            AppStrings.adminManagementSubtitle,
+            style: GoogleFonts.inter(
+                fontSize: AppSizes.font13, color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSizes.paddingXl),
           Card(
             elevation: 0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppSizes.radius14),
               side: BorderSide(color: Colors.grey.shade200),
             ),
             child: Column(
               children: [
                 _item(context,
                     icon: Icons.shopping_bag_rounded,
-                    label: 'Quản lý Sản phẩm',
+                    label: AppStrings.adminManageProducts,
                     onTap: () => context.pushNamed(AppRoutes.adminProductList)),
                 const Divider(height: 1),
                 _item(context,
                     icon: Icons.branding_watermark_rounded,
-                    label: 'Quản lý Thương hiệu',
+                    label: AppStrings.adminManageBrands,
                     onTap: () => context.pushNamed(AppRoutes.adminBrands)),
                 const Divider(height: 1),
                 _item(context,
                     icon: Icons.color_lens_rounded,
-                    label: 'Quản lý Màu sắc',
+                    label: AppStrings.adminManageColors,
                     onTap: () => context.pushNamed(AppRoutes.adminColors)),
                 const Divider(height: 1),
                 _item(context,
                     icon: Icons.category_rounded,
-                    label: 'Quản lý Danh mục',
-                    onTap: () => context.pushNamed(AppRoutes.adminCategories)),
+                    label: AppStrings.adminManageCategories,
+                    onTap: () =>
+                        context.pushNamed(AppRoutes.adminCategories)),
                 const Divider(height: 1),
                 _item(context,
                     icon: Icons.local_offer_rounded,
-                    label: 'Quản lý Mã giảm giá',
+                    label: AppStrings.adminManageCoupons,
                     onTap: () => context.pushNamed(AppRoutes.adminCoupons)),
                 const Divider(height: 1),
                 _item(context,
@@ -69,17 +72,18 @@ class AdminManagementTab extends StatelessWidget {
                 const Divider(height: 1),
                 _item(context,
                     icon: Icons.straighten_rounded,
-                    label: 'Quản lý Kích thước',
-                    onTap: () => context.pushNamed(AppRoutes.adminSizeGroups)),
+                    label: AppStrings.adminManageSizes,
+                    onTap: () =>
+                        context.pushNamed(AppRoutes.adminSizeGroups)),
                 const Divider(height: 1),
                 _item(context,
                     icon: Icons.support_agent_rounded,
-                    label: 'Tin nhắn hỗ trợ',
+                    label: AppStrings.adminSupportMessages,
                     onTap: () => context.pushNamed(AppRoutes.chatList)),
                 const Divider(height: 1),
                 _item(context,
                     icon: Icons.policy_rounded,
-                    label: 'Chính sách đổi trả & bảo hành',
+                    label: AppStrings.adminReturnPolicy,
                     onTap: () =>
                         context.pushNamed(AppRoutes.adminSiteSettings)),
               ],
@@ -97,8 +101,10 @@ class AdminManagementTab extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
       title: Text(label,
-          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+          style: GoogleFonts.inter(
+              fontSize: AppSizes.fontLg, fontWeight: FontWeight.w600)),
+      trailing: const Icon(Icons.arrow_forward_ios_rounded,
+          size: AppSizes.fontLg),
       onTap: onTap,
     );
   }

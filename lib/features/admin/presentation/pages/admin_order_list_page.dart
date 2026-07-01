@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_order_card.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
@@ -64,11 +66,11 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Quản lý đơn hàng',
+          AppStrings.adminOrderManagementTitle,
           style: GoogleFonts.lexend(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
-            fontSize: 18,
+            fontSize: AppSizes.fontXxl,
           ),
         ),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
@@ -89,23 +91,30 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                padding: const EdgeInsets.fromLTRB(
+                    AppSizes.paddingMd, AppSizes.paddingMd,
+                    AppSizes.paddingMd, AppSizes.paddingSm),
                 child: TextField(
                   controller: _searchController,
                   onChanged: _onSearchChanged,
                   decoration: InputDecoration(
-                    hintText: 'Tìm mã đơn, SĐT...',
-                    prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                    hintText: AppStrings.adminOrderSearchHint,
+                    prefixIcon: const Icon(Icons.search_rounded,
+                        size: AppSizes.iconMd),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: AppSizes.spacing12),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius:
+                          BorderRadius.circular(AppSizes.radiusMd),
                       borderSide: BorderSide(color: Colors.grey.shade200),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: AppColors.primary),
+                      borderRadius:
+                          BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide:
+                          const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -123,13 +132,13 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
     final selected = state is AdminOrderListLoaded ? state.statusFilter : null;
 
     return SizedBox(
-      height: 44,
+      height: AppSizes.buttonMinHeight,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           _StatusChip(
-            label: 'Tất cả',
+            label: AppStrings.filterAll,
             isSelected: selected == null,
             onTap: () => context.read<AdminOrderCubit>().applyFilters(
                   search: _searchController.text,
@@ -170,10 +179,11 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(state.message, textAlign: TextAlign.center),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSizes.spacing12),
             FilledButton(
-              onPressed: () => context.read<AdminOrderCubit>().refreshList(),
-              child: const Text('Thử lại'),
+              onPressed: () =>
+                  context.read<AdminOrderCubit>().refreshList(),
+              child: const Text(AppStrings.retry),
             ),
           ],
         ),
@@ -184,7 +194,7 @@ class _AdminOrderListPageState extends State<AdminOrderListPage> {
       if (state.orders.isEmpty) {
         return Center(
           child: Text(
-            'Không có đơn hàng nào.',
+            AppStrings.adminOrderEmpty,
             style: GoogleFonts.inter(color: AppColors.textSecondary),
           ),
         );

@@ -5,7 +5,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/utils/auth_error_me
 void main() {
   group('mapRegisterOtpFailureMessage', () {
     test('wrong OTP returns OTP không hợp lệ', () {
-      final failure = NetworkFailure(
+      const failure = NetworkFailure(
         'OTP code is incorrect',
         statusCode: 400,
       );
@@ -16,7 +16,7 @@ void main() {
     });
 
     test('expired OTP keeps specific message', () {
-      final failure = NetworkFailure(
+      const failure = NetworkFailure(
         'OTP has expired',
         statusCode: 400,
       );
@@ -29,7 +29,7 @@ void main() {
 
   group('mapRegisterFailureMessage', () {
     test('email exists returns current Vietnamese string', () {
-      final failure = NetworkFailure(
+      const failure = NetworkFailure(
         'Email already exists',
         statusCode: 409,
       );

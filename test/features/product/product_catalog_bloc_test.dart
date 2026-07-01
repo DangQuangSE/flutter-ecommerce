@@ -57,7 +57,8 @@ class _FakeProductRepository implements ProductRepository {
 
   // Unused by product catalog bloc — stubs only.
   @override
-  Future<Result<List<ProductEntity>>> getProducts({int page = 1, int limit = 20}) =>
+  Future<Result<List<ProductEntity>>> getProducts(
+          {int page = 1, int limit = 20}) =>
       throw UnimplementedError();
 
   @override
@@ -379,6 +380,7 @@ void main() {
       expect(combined.products[1].id, 2);
       expect(combined.currentPage, 1);
       expect(combined.hasReachedMax, isTrue);
+      expect(callCount, 2);
     });
   });
 

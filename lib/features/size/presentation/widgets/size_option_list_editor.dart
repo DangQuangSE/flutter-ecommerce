@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/size/presentation/widgets/size_option_draft.dart';
 import 'package:flutter_ecommerce/features/size/presentation/widgets/size_option_editor_row.dart';
 
@@ -24,27 +26,27 @@ class SizeOptionListEditor extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Danh sách kích thước',
+          AppStrings.adminSizeGroupSizeListLabel,
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 8),
-        ...List.generate(drafts.length, (i) {
+        AppSizes.spacingSm,
+        ...List.generate(drafts.length, (index) {
           return SizeOptionEditorRow(
-            key: ValueKey(i),
-            draft: drafts[i],
-            onChanged: (updated) => onChanged(i, updated),
-            onRemove: () => onRemove(i),
+            key: ValueKey(index),
+            draft: drafts[index],
+            onChanged: (updated) => onChanged(index, updated),
+            onRemove: () => onRemove(index),
           );
         }),
-        const SizedBox(height: 4),
+        AppSizes.spacingXs,
         TextButton.icon(
           onPressed: onAdd,
           icon: const Icon(Icons.add_rounded, size: 18),
-          label: const Text('Thêm kích thước'),
+          label: const Text(AppStrings.adminSizeGroupAddSize),
         ),
       ],
     );

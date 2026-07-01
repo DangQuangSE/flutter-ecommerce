@@ -5,7 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/core/widgets/glass_app_bar.dart';
+import 'package:flutter_ecommerce/app/widgets/glass_app_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
@@ -56,7 +57,8 @@ class ProfilePage extends StatelessWidget {
               top: 0,
               left: 0,
               right: 0,
-              child: GlassAppBar(showBackButton: false, customTitle: 'Sport Pro'),
+              child:
+                  GlassAppBar(showBackButton: false, customTitle: 'Sport Pro'),
             ),
           ],
         ),
@@ -71,9 +73,12 @@ class ProfilePage extends StatelessWidget {
       builder: (context, state) {
         final profile = state is ProfileLoaded ? state.profile : null;
         final loading = state is ProfileLoading || state is ProfileInitial;
-        final name = profile?.fullName ?? (loading ? 'Đang tải…' : 'Người dùng');
+        final name = profile?.fullName ??
+            (loading
+                ? AppStrings.profileLoadingName
+                : AppStrings.profileDefaultName);
         final email = profile?.email ??
-            (state is ProfileError ? 'Không tải được hồ sơ' : '');
+            (state is ProfileError ? AppStrings.profileLoadError : '');
 
         return Container(
           padding: const EdgeInsets.all(5),
@@ -161,7 +166,7 @@ class ProfilePage extends StatelessWidget {
         border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
       ),
       child: Text(
-        'HẠNG ${tier.toUpperCase()}',
+        AppStrings.profileTier(tier),
         style: GoogleFonts.spaceMono(
           fontSize: 8,
           fontWeight: FontWeight.w900,
@@ -182,7 +187,8 @@ class ProfilePage extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: const Color(0xFFE2E8F0)),
         ),
-        child: const Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary),
+        child: const Icon(Icons.edit_outlined,
+            size: 16, color: AppColors.textPrimary),
       ),
     );
   }
@@ -192,29 +198,29 @@ class ProfilePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildEyebrowHeader('TÀI KHOẢN VÀ BẢO MẬT'),
+        _buildEyebrowHeader(AppStrings.profileAccountSection),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.person_outline_rounded,
-          label: 'Thông tin cá nhân',
+          label: AppStrings.profilePersonalInfo,
           onTap: () => context.pushNamed(AppRoutes.editProfile),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.receipt_long_outlined,
-          label: 'Đơn hàng của tôi',
+          label: AppStrings.profileMyOrders,
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.location_on_outlined,
-          label: 'Địa chỉ giao hàng',
+          label: AppStrings.profileShippingAddresses,
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.payment_outlined,
-          label: 'Phương thức thanh toán',
+          label: AppStrings.profilePaymentMethods,
           onTap: () => context.goNamed(AppRoutes.orderList),
         ),
         const SizedBox(height: 10),
@@ -226,23 +232,23 @@ class ProfilePage extends StatelessWidget {
         const SizedBox(height: 10),
         _buildLogoutRow(context),
         const SizedBox(height: 24),
-        _buildEyebrowHeader('THIẾT LẬP VÀ TIN NHẮN'),
+        _buildEyebrowHeader(AppStrings.profileSettingsSection),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.notifications_none_rounded,
-          label: 'Thông báo ứng dụng',
+          label: AppStrings.profileAppNotifications,
           onTap: () => context.pushNamed(AppRoutes.notificationList),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.chat_bubble_outline_rounded,
-          label: 'Hộp thư tin nhắn',
+          label: AppStrings.profileInbox,
           onTap: () => context.pushNamed(AppRoutes.chatList),
         ),
         const SizedBox(height: 10),
         ProfileMenuRow(
           icon: Icons.settings_outlined,
-          label: 'Cài đặt hệ thống',
+          label: AppStrings.profileSystemSettings,
           onTap: () => context.goNamed(AppRoutes.home),
         ),
       ],
@@ -270,7 +276,7 @@ class ProfilePage extends StatelessWidget {
         final isLoading = state is AuthLoading;
         return ProfileMenuRow(
           icon: Icons.logout_rounded,
-          label: 'Đăng xuất',
+          label: AppStrings.profileLogout,
           iconColor: AppColors.error,
           labelColor: AppColors.error,
           enabled: !isLoading,
@@ -281,46 +287,15 @@ class ProfilePage extends StatelessWidget {
   }
 
   Future<void> _confirmLogout(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          'Đăng xuất',
-          style: GoogleFonts.plusJakartaSans(
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: Text(
-          'Bạn có chắc muốn đăng xuất?',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(
-              'Hủy',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(
-              'Đăng xuất',
-              style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.w700,
-                color: AppColors.error,
-              ),
-            ),
-          ),
-        ],
-      ),
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.profileLogout,
+      message: AppStrings.profileLogoutConfirm,
+      cancelLabel: AppStrings.cancel,
+      confirmLabel: AppStrings.profileLogout,
     );
 
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       context.read<AuthBloc>().add(const AuthLogoutRequested());
     }
   }
@@ -371,7 +346,8 @@ class _AvatarFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Icon(Icons.person_rounded, size: 32, color: AppColors.textSecondary);
+    return const Icon(Icons.person_rounded,
+        size: 32, color: AppColors.textSecondary);
   }
 }
 

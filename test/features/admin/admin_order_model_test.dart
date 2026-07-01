@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_ecommerce/features/admin/data/models/admin_order_model.dart';
 import 'package:flutter_ecommerce/features/checkout/data/models/order_request_model.dart';
-import 'package:flutter_ecommerce/features/checkout/domain/entities/order_request_entity.dart';
 
 void main() {
   group('OrderRequestModel', () {
@@ -32,7 +31,7 @@ void main() {
 
   group('AdminOrderModel', () {
     test('fromJson parses customerName', () {
-      final model = AdminOrderModel.fromJson({
+      final model = AdminOrderModel.fromJson(const {
         'id': 1,
         'shippingAddress': '123 St',
         'phoneNumber': '0987654321',
@@ -49,7 +48,7 @@ void main() {
     });
 
     test('displayCustomerName falls back to em dash when missing', () {
-      final model = AdminOrderModel.fromJson({
+      final model = AdminOrderModel.fromJson(const {
         'id': 2,
         'shippingAddress': '123 St',
         'phoneNumber': '0987654321',

@@ -42,6 +42,10 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
       return Success(ExistingDesignEntity(
         designMetadata: result.designMetadata,
         printingMaterialName: result.printingMaterialName,
+        printingMaterialId: result.printingMaterialId,
+        numTextLines: result.numTextLines,
+        numImages: result.numImages,
+        totalPrintingPrice: result.totalPrintingPrice,
       ));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));

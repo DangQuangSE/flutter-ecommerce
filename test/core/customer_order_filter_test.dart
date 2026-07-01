@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_ecommerce/core/utils/customer_order_filter.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.dart';
+import 'package:flutter_ecommerce/features/order/presentation/utils/customer_order_filter.dart';
 
 OrderEntity _order(String status) => OrderEntity(
       id: 1,

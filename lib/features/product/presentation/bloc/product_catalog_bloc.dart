@@ -118,7 +118,9 @@ class ProductCatalogBloc
             live.productSize != current.productSize ||
             live.color != current.color ||
             live.minPrice != current.minPrice ||
-            live.maxPrice != current.maxPrice) return;
+            live.maxPrice != current.maxPrice) {
+          return;
+        }
         emit(live.copyWith(
           products: [...live.products, ...data.content],
           isLoadingMore: false,

@@ -8,6 +8,8 @@ import 'package:pinput/pinput.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
@@ -126,7 +128,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage>
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              size: 20, color: AppColors.textPrimary),
           onPressed: () => context.goNamed(AppRoutes.register),
         ),
       ),
@@ -279,8 +282,10 @@ class _OtpCard extends StatelessWidget {
                     }
                   });
                 } else if (state is AuthOtpSent) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Mã OTP đã được gửi lại')),
+                  AppSnackBar.show(
+                    context,
+                    message: AppStrings.otpResent,
+                    type: AppSnackBarType.success,
                   );
                 }
               },
@@ -295,7 +300,7 @@ class _OtpCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Xác minh email'.toUpperCase(),
+                      AppStrings.otpVerifyEmailTitle.toUpperCase(),
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: AppSizes.fontXxl - 2, // 16
                         fontWeight: FontWeight.w800,
@@ -305,7 +310,7 @@ class _OtpCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Nhập mã 6 số đã gửi tới $email',
+                      AppStrings.otpSentToEmail(email),
                       style: GoogleFonts.inter(
                         fontSize: AppSizes.fontLg - 1, // 13
                         color: AppColors.textSecondary,
@@ -345,7 +350,7 @@ class _OtpCard extends StatelessWidget {
                     LoginSubmitButton(
                       isLoading: isLoading,
                       onPressed: canVerify ? onVerify : null,
-                      label: 'Xác nhận',
+                      label: AppStrings.otpConfirm,
                     ),
                     const SizedBox(height: 16),
                     TextButton(
@@ -358,8 +363,8 @@ class _OtpCard extends StatelessWidget {
                       ),
                       child: Text(
                         resendSeconds > 0
-                            ? 'Gửi lại sau ${resendSeconds}s'
-                            : 'Gửi lại mã OTP',
+                            ? AppStrings.otpResendCountdown(resendSeconds)
+                            : AppStrings.otpResendCode,
                         style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
@@ -377,4 +382,3 @@ class _OtpCard extends StatelessWidget {
     );
   }
 }
-

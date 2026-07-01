@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
@@ -72,7 +74,8 @@ class _RegisterPasswordPageState extends State<RegisterPasswordPage>
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              size: 20, color: AppColors.textPrimary),
           onPressed: () => context.goNamed(AppRoutes.register),
         ),
       ),
@@ -105,8 +108,8 @@ class _RegisterPasswordPageState extends State<RegisterPasswordPage>
                         confirmController: _confirmController,
                         obscurePassword: _obscurePassword,
                         obscureConfirm: _obscureConfirm,
-                        onTogglePassword: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onTogglePassword: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
                         onToggleConfirm: () =>
                             setState(() => _obscureConfirm = !_obscureConfirm),
                         onSubmit: _onSubmit,
@@ -225,10 +228,10 @@ class _PasswordCard extends StatelessWidget {
             child: BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthRegistrationSuccess) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
-                    ),
+                  AppSnackBar.show(
+                    context,
+                    message: AppStrings.registerSuccessLoginPrompt,
+                    type: AppSnackBarType.success,
                   );
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (!context.mounted) return;
@@ -334,4 +337,3 @@ class _PasswordCard extends StatelessWidget {
     );
   }
 }
-

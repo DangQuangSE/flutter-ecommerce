@@ -23,7 +23,10 @@ class _AdminReviewListPageState extends State<AdminReviewListPage> {
   @override
   void initState() {
     super.initState();
-    context.read<AdminReviewCubit>().load();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<AdminReviewCubit>().load();
+    });
   }
 
   AdminReviewCubit get _cubit => context.read<AdminReviewCubit>();

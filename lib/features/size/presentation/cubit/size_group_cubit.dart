@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/size/domain/entities/size_group_entity.dart';
 import 'package:flutter_ecommerce/features/size/domain/usecases/create_size_group_usecase.dart';
@@ -50,7 +51,7 @@ class SizeGroupCubit extends Cubit<SizeGroupState> {
         final groups = _currentGroups();
         emit(SizeGroupSuccess(
           groups: [data, ...groups],
-          message: 'Đã tạo nhóm kích thước thành công!',
+          message: AppStrings.adminSizeGroupCreated,
         ));
       case ResultFailure(:final failure):
         emit(SizeGroupError(failure.message));
@@ -65,11 +66,12 @@ class SizeGroupCubit extends Cubit<SizeGroupState> {
     final result = await _updateUseCase(id, entity);
     switch (result) {
       case Success(:final data):
-        final updated =
-            _currentGroups().map((g) => g.id == id ? data : g).toList();
+        final updated = _currentGroups()
+            .map((group) => group.id == id ? data : group)
+            .toList();
         emit(SizeGroupSuccess(
           groups: updated,
-          message: 'Đã cập nhật nhóm kích thước thành công!',
+          message: AppStrings.adminSizeGroupUpdated,
         ));
       case ResultFailure(:final failure):
         emit(SizeGroupError(failure.message));
@@ -84,13 +86,14 @@ class SizeGroupCubit extends Cubit<SizeGroupState> {
     final result = await _deleteUseCase(id);
     switch (result) {
       case Success():
-        final remaining = _currentGroups().where((g) => g.id != id).toList();
+        final remaining =
+            _currentGroups().where((group) => group.id != id).toList();
         if (remaining.isEmpty) {
           emit(const SizeGroupEmpty());
         } else {
           emit(SizeGroupSuccess(
             groups: remaining,
-            message: 'Đã xóa nhóm kích thước thành công!',
+            message: AppStrings.adminSizeGroupDeleted,
           ));
         }
       case ResultFailure(:final failure):

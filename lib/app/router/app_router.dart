@@ -39,15 +39,16 @@ import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_detail_page.dart';
-import 'package:flutter_ecommerce/features/product/presentation/pages/product_list_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/product_catalog_page.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_catalog_bloc.dart';
+import 'package:flutter_ecommerce/features/product/presentation/cubit/product_filter_options_cubit.dart';
 import 'package:flutter_ecommerce/features/product/presentation/pages/home_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
@@ -72,8 +73,12 @@ import 'package:flutter_ecommerce/features/color/presentation/cubit/product_colo
 import 'package:flutter_ecommerce/features/color/presentation/cubit/printing_color_cubit.dart';
 import 'package:flutter_ecommerce/features/color/presentation/pages/color_management_page.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
+import 'package:flutter_ecommerce/features/category/presentation/models/category_form_extra.dart';
+import 'package:flutter_ecommerce/features/category/presentation/pages/category_form_page.dart';
 import 'package:flutter_ecommerce/features/category/presentation/pages/category_management_page.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/models/coupon_form_extra.dart';
+import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_form_page.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/pages/coupon_management_page.dart';
 import 'package:flutter_ecommerce/features/review/presentation/cubit/admin_review_cubit.dart';
 import 'package:flutter_ecommerce/features/review/presentation/pages/admin_review_list_page.dart';
@@ -87,6 +92,7 @@ import 'package:flutter_ecommerce/features/address/domain/entities/address_entit
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_list_page.dart';
 import 'package:flutter_ecommerce/features/address/presentation/pages/address_form_page.dart';
+import 'package:flutter_ecommerce/features/location/presentation/cubit/location_cubit.dart';
 
 // Shop
 import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
@@ -164,7 +170,7 @@ class AppRouter {
       if (!isAuthenticated && !isGoingToAuth) return '/login';
 
       if (isAuthenticated) {
-        final user = (authState as AuthAuthenticated).user;
+        final user = authState.user;
         if (isForgotPasswordFlow) {
           return user.isAdmin ? '/admin' : '/home';
         }
@@ -320,6 +326,28 @@ class AppRouter {
           create: (_) => sl<CategoryCubit>(),
           child: const CategoryManagementPage(),
         ),
+        routes: [
+          GoRoute(
+            path: 'form',
+            name: AppRoutes.adminCategoryForm,
+            builder: (context, state) {
+              final extra = state.extra as CategoryFormExtra?;
+              if (extra == null) {
+                return BlocProvider(
+                  create: (_) => sl<CategoryCubit>(),
+                  child: const CategoryManagementPage(),
+                );
+              }
+              return BlocProvider.value(
+                value: extra.cubit,
+                child: CategoryFormPage(
+                  category: extra.category,
+                  parents: extra.parents,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/admin/coupons',
@@ -328,6 +356,25 @@ class AppRouter {
           create: (_) => sl<CouponCubit>(),
           child: const CouponManagementPage(),
         ),
+        routes: [
+          GoRoute(
+            path: 'form',
+            name: AppRoutes.adminCouponForm,
+            builder: (context, state) {
+              final extra = state.extra as CouponFormExtra?;
+              if (extra == null) {
+                return BlocProvider(
+                  create: (_) => sl<CouponCubit>(),
+                  child: const CouponManagementPage(),
+                );
+              }
+              return BlocProvider.value(
+                value: extra.cubit,
+                child: CouponFormPage(coupon: extra.coupon),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/admin/reviews',
@@ -403,8 +450,14 @@ class AppRouter {
       GoRoute(
         path: '/products',
         name: AppRoutes.productList,
-        builder: (context, state) => BlocProvider(
-          create: (_) => sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) =>
+                  sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
+            ),
+            BlocProvider(create: (_) => sl<ProductFilterOptionsCubit>()),
+          ],
           child: const ProductCatalogPage(),
         ),
         routes: [
@@ -428,7 +481,10 @@ class AppRouter {
       GoRoute(
         path: '/cart',
         name: AppRoutes.cart,
-        builder: (context, state) => const CartPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<CustomDesignSpecCubit>(),
+          child: const CartPage(),
+        ),
       ),
 
       GoRoute(
@@ -443,8 +499,9 @@ class AppRouter {
         builder: (context, state) => MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => sl<CheckoutBloc>()),
-            BlocProvider(create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
-            BlocProvider.value(value: sl<AddressCubit>()..loadAddresses()),
+            BlocProvider(
+                create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
+            BlocProvider(create: (_) => sl<AddressCubit>()..loadAddresses()),
           ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),
@@ -537,8 +594,8 @@ class AppRouter {
       GoRoute(
         path: '/addresses',
         name: AppRoutes.addressList,
-        builder: (context, state) => BlocProvider.value(
-          value: sl<AddressCubit>()..loadAddresses(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<AddressCubit>()..loadAddresses(),
           child: const AddressListPage(),
         ),
         routes: [
@@ -547,8 +604,11 @@ class AppRouter {
             name: AppRoutes.addressForm,
             builder: (context, state) {
               final address = state.extra as AddressEntity?;
-              return BlocProvider.value(
-                value: sl<AddressCubit>(),
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (_) => sl<AddressCubit>()),
+                  BlocProvider(create: (_) => sl<LocationCubit>()),
+                ],
                 child: AddressFormPage(initialAddress: address),
               );
             },

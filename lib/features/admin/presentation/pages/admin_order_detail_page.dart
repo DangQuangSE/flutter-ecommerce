@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/order_status_label.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/admin_order_entity.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/admin_order_item_entity.dart';
@@ -24,11 +26,11 @@ class AdminOrderDetailPage extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Chi tiết đơn hàng',
+          AppStrings.adminOrderDetailTitle,
           style: GoogleFonts.lexend(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
-            fontSize: 18,
+            fontSize: AppSizes.fontXxl,
           ),
         ),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
@@ -37,7 +39,7 @@ class AdminOrderDetailPage extends StatelessWidget {
         listener: (context, state) {
           if (state is AdminOrderDetailLoaded && state.message != null) {
             final isSuccess =
-                state.message == 'Đã cập nhật trạng thái đơn hàng!';
+                state.message == AppStrings.adminOrderStatusUpdated;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message!),
@@ -63,12 +65,12 @@ class AdminOrderDetailPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(state.message, textAlign: TextAlign.center),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSizes.spacing12),
                   FilledButton(
                     onPressed: () => context
                         .read<AdminOrderCubit>()
                         .refreshDetail(int.parse(orderId)),
-                    child: const Text('Thử lại'),
+                    child: const Text(AppStrings.retry),
                   ),
                 ],
               ),
@@ -116,7 +118,7 @@ class _OrderDetailBody extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                 border: Border.all(color: Colors.grey.shade200),
               ),
               child: Row(
@@ -128,7 +130,7 @@ class _OrderDetailBody extends StatelessWidget {
                         Text(
                           order.displayCode,
                           style: GoogleFonts.lexend(
-                            fontSize: 18,
+                            fontSize: AppSizes.fontXxl,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -144,11 +146,12 @@ class _OrderDetailBody extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSizes.spacing10,
+                        vertical: AppSizes.paddingXs),
                     decoration: BoxDecoration(
                       color: badgeBg,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppSizes.radius8),
                     ),
                     child: Text(
                       OrderStatusLabel.vi(order.status),
@@ -245,7 +248,9 @@ class _OrderDetailBody extends StatelessWidget {
                     )
                   : const Icon(Icons.edit_rounded),
               label: Text(
-                isUpdating ? 'Đang cập nhật...' : 'Cập nhật trạng thái',
+                isUpdating
+                    ? AppStrings.adminOrderUpdating
+                    : AppStrings.adminOrderUpdateStatus,
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
@@ -279,7 +284,7 @@ class _OrderDetailBody extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Chọn trạng thái mới',
+                  AppStrings.adminOrderSelectStatus,
                   style: GoogleFonts.lexend(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -310,18 +315,18 @@ class _OrderDetailBody extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận'),
+        title: const Text(AppStrings.confirm),
         content: Text(
           'Đổi trạng thái sang "${OrderStatusLabel.vi(selected)}"?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: const Text(AppStrings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Xác nhận'),
+            child: const Text(AppStrings.confirm),
           ),
         ],
       ),

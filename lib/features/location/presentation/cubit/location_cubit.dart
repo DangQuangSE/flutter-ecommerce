@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
-import 'package:flutter_ecommerce/features/location/data/models/location_model.dart';
+import 'package:flutter_ecommerce/features/location/domain/entities/location_entity.dart';
 import 'package:flutter_ecommerce/features/location/domain/repositories/location_repository.dart';
 import 'package:flutter_ecommerce/features/location/presentation/cubit/location_state.dart';
 
@@ -15,11 +15,12 @@ class LocationCubit extends Cubit<LocationState> {
     final result = await _repository.getProvinces();
     switch (result) {
       case Success(:final data):
-        LocationModel? selected;
+        LocationEntity? selected;
         if (initialProvinceName != null) {
           try {
             selected = data.firstWhere(
-              (p) => p.name.toLowerCase().trim() ==
+              (p) =>
+                  p.name.toLowerCase().trim() ==
                   initialProvinceName.toLowerCase().trim(),
             );
           } catch (_) {}
@@ -33,7 +34,7 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
-  Future<void> selectProvince(LocationModel province) async {
+  Future<void> selectProvince(LocationEntity province) async {
     final current = state;
     if (current is! LocationLoaded) return;
     emit(current.copyWith(
@@ -47,7 +48,7 @@ class LocationCubit extends Cubit<LocationState> {
     _loadDistricts(province.code);
   }
 
-  Future<void> selectDistrict(LocationModel district) async {
+  Future<void> selectDistrict(LocationEntity district) async {
     final current = state;
     if (current is! LocationLoaded) return;
     emit(current.copyWith(
@@ -59,7 +60,7 @@ class LocationCubit extends Cubit<LocationState> {
     _loadWards(district.code);
   }
 
-  void selectWard(LocationModel ward) {
+  void selectWard(LocationEntity ward) {
     final current = state;
     if (current is! LocationLoaded) return;
     emit(current.copyWith(selectedWard: () => ward));
@@ -70,7 +71,7 @@ class LocationCubit extends Cubit<LocationState> {
     // Step 1: load provinces
     emit(const LocationLoading());
     final provResult = await _repository.getProvinces();
-    final List<LocationModel> provinces;
+    final List<LocationEntity> provinces;
     switch (provResult) {
       case Success(:final data):
         provinces = data;
@@ -79,20 +80,22 @@ class LocationCubit extends Cubit<LocationState> {
         return;
     }
 
-    LocationModel? selectedProvince;
+    LocationEntity? selectedProvince;
     if (provinceName != null) {
       try {
         selectedProvince = provinces.firstWhere(
-          (p) => p.name.toLowerCase().trim() == provinceName.toLowerCase().trim(),
+          (p) =>
+              p.name.toLowerCase().trim() == provinceName.toLowerCase().trim(),
         );
       } catch (_) {}
     }
-    emit(LocationLoaded(provinces: provinces, selectedProvince: selectedProvince));
+    emit(LocationLoaded(
+        provinces: provinces, selectedProvince: selectedProvince));
     if (selectedProvince == null) return;
 
     // Step 2: load districts
     final distResult = await _repository.getDistricts(selectedProvince.code);
-    final List<LocationModel> districts;
+    final List<LocationEntity> districts;
     switch (distResult) {
       case Success(:final data):
         districts = data;
@@ -100,11 +103,12 @@ class LocationCubit extends Cubit<LocationState> {
         return;
     }
 
-    LocationModel? selectedDistrict;
+    LocationEntity? selectedDistrict;
     if (districtName != null) {
       try {
         selectedDistrict = districts.firstWhere(
-          (d) => d.name.toLowerCase().trim() == districtName.toLowerCase().trim(),
+          (d) =>
+              d.name.toLowerCase().trim() == districtName.toLowerCase().trim(),
         );
       } catch (_) {}
     }
@@ -120,7 +124,7 @@ class LocationCubit extends Cubit<LocationState> {
 
     // Step 3: load wards
     final wardResult = await _repository.getWards(selectedDistrict.code);
-    final List<LocationModel> wards;
+    final List<LocationEntity> wards;
     switch (wardResult) {
       case Success(:final data):
         wards = data;
@@ -128,7 +132,7 @@ class LocationCubit extends Cubit<LocationState> {
         return;
     }
 
-    LocationModel? selectedWard;
+    LocationEntity? selectedWard;
     if (wardName != null) {
       try {
         selectedWard = wards.firstWhere(
@@ -154,11 +158,12 @@ class LocationCubit extends Cubit<LocationState> {
         final current = state;
         if (current is! LocationLoaded) return;
 
-        LocationModel? selected;
+        LocationEntity? selected;
         if (initialDistrictName != null) {
           try {
             selected = data.firstWhere(
-              (d) => d.name.toLowerCase().trim() ==
+              (d) =>
+                  d.name.toLowerCase().trim() ==
                   initialDistrictName.toLowerCase().trim(),
             );
           } catch (_) {}
@@ -181,19 +186,19 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
-  Future<void> _loadWards(int districtCode,
-      {String? initialWardName}) async {
+  Future<void> _loadWards(int districtCode, {String? initialWardName}) async {
     final result = await _repository.getWards(districtCode);
     switch (result) {
       case Success(:final data):
         final current = state;
         if (current is! LocationLoaded) return;
 
-        LocationModel? selected;
+        LocationEntity? selected;
         if (initialWardName != null) {
           try {
             selected = data.firstWhere(
-              (w) => w.name.toLowerCase().trim() ==
+              (w) =>
+                  w.name.toLowerCase().trim() ==
                   initialWardName.toLowerCase().trim(),
             );
           } catch (_) {}
