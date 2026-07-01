@@ -30,7 +30,7 @@ class ProductFilterBrandSection extends StatelessWidget {
       children: [
         const ProductFilterSectionTitle(AppStrings.productFilterBrand),
         if (loading)
-          const AppLoadingView(size: AppSizes.paddingXl)
+          const SizedBox(height: AppSizes.paddingXl)
         else if (error != null)
           Text(error!, style: TextStyle(color: AppColors.error))
         else
