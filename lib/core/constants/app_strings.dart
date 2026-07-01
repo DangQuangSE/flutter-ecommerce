@@ -126,6 +126,10 @@ abstract final class AppStrings {
   static const String notificationSoundTitle = 'Âm thông báo';
   static const String notificationSoundSubtitle =
       'Phát âm thanh khi có thông báo mới';
+  static const String systemSettingsThemeLabel = 'Giao diện';
+  static const String systemSettingsThemeSystem = 'Theo hệ thống';
+  static const String systemSettingsThemeLight = 'Sáng';
+  static const String systemSettingsThemeDark = 'Tối';
   static const String profileLogout = 'Đăng xuất';
   static const String profileLogoutConfirm = 'Bạn có chắc muốn đăng xuất?';
   static String profileTier(String tier) => 'HẠNG ${tier.toUpperCase()}';

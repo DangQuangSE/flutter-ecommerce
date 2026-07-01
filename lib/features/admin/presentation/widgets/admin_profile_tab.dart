@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/settings/system_settings_sheet.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
@@ -120,6 +121,17 @@ class AdminProfileTab extends StatelessWidget {
                     trailing:
                         Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: () => context.pushNamed(AppRoutes.adminShopConfig),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: Icon(Icons.settings_outlined,
+                        color: AppColors.primary),
+                    title: Text(AppStrings.profileSystemSettings,
+                        style: GoogleFonts.inter(
+                            fontSize: 14, fontWeight: FontWeight.w600)),
+                    trailing:
+                        Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                    onTap: () => SystemSettingsSheet.show(context),
                   ),
                   const Divider(height: 1),
                   ListTile(

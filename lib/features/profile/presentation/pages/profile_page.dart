@@ -4,18 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
-import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/core/di/injection_container.dart';
-import 'package:flutter_ecommerce/core/storage/app_settings_storage.dart';
-import 'package:flutter_ecommerce/core/storage/local_storage.dart';
 import 'package:flutter_ecommerce/app/widgets/glass_app_bar.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
 import 'package:flutter_ecommerce/core/widgets/glass_bottom_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/settings/system_settings_sheet.dart';
 import 'package:flutter_ecommerce/app/router/navigation_history.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
-import 'package:flutter_ecommerce/app/theme/theme_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_state.dart';
 
@@ -262,13 +259,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _showSystemSettingsSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _SystemSettingsSheet(
-        settingsStorage: AppSettingsStorage(sl<LocalStorage>()),
-      ),
-    );
+    SystemSettingsSheet.show(context);
   }
 
   Widget _buildEyebrowHeader(String label) {
@@ -364,144 +355,6 @@ class _AvatarFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return Icon(Icons.person_rounded,
         size: 32, color: AppColors.textSecondary);
-  }
-}
-
-class _SystemSettingsSheet extends StatefulWidget {
-  final AppSettingsStorage settingsStorage;
-
-  const _SystemSettingsSheet({required this.settingsStorage});
-
-  @override
-  State<_SystemSettingsSheet> createState() => _SystemSettingsSheetState();
-}
-
-class _SystemSettingsSheetState extends State<_SystemSettingsSheet> {
-  late bool _notificationSoundEnabled;
-
-  @override
-  void initState() {
-    super.initState();
-    _notificationSoundEnabled =
-        widget.settingsStorage.isNotificationSoundEnabled;
-  }
-
-  Future<void> _setNotificationSoundEnabled(bool value) async {
-    setState(() => _notificationSoundEnabled = value);
-    await widget.settingsStorage.setNotificationSoundEnabled(value: value);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        margin: const EdgeInsets.all(12),
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Theme.of(context).dividerColor),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              AppStrings.systemSettingsTitle,
-              style: GoogleFonts.lexend(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            SizedBox(height: 12),
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              secondary: Icon(
-                Icons.volume_up_outlined,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              title: Text(
-                AppStrings.notificationSoundTitle,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              subtitle: Text(
-                AppStrings.notificationSoundSubtitle,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              activeThumbColor: AppColors.accent,
-              activeTrackColor: AppColors.accent.withValues(alpha: 0.35),
-              value: _notificationSoundEnabled,
-              onChanged: _setNotificationSoundEnabled,
-            ),
-            const Divider(height: 24, color: Color(0xFFE2E8F0)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.dark_mode_outlined,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    SizedBox(width: 14),
-                    Text(
-                      'Giao diện',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-                BlocBuilder<ThemeCubit, ThemeMode>(
-                  builder: (context, currentMode) {
-                    return DropdownButton<ThemeMode>(
-                      value: currentMode,
-                      underline: SizedBox(),
-                      icon: Icon(Icons.keyboard_arrow_down_rounded),
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                          value: ThemeMode.system,
-                          child: Text('Theo hệ thống'),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.light,
-                          child: Text('Sáng'),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.dark,
-                          child: Text('Tối'),
-                        ),
-                      ],
-                      onChanged: (mode) {
-                        if (mode != null) {
-                          context.read<ThemeCubit>().updateThemeMode(mode);
-                        }
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 
