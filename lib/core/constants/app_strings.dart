@@ -2,6 +2,12 @@
 /// constant here instead, so swapping to a localization framework later
 /// only touches this file.
 abstract final class AppStrings {
+  // Bottom navigation
+  static const String navHome = 'Trang chủ';
+  static const String navShop = 'Cửa hàng';
+  static const String navOrders = 'Đơn hàng';
+  static const String navProfile = 'Cá nhân';
+
   // Checkout
   static const String checkoutTitle = 'THANH TOÁN';
   static const String checkoutShippingSectionTitle = 'THÔNG TIN GIAO HÀNG';
