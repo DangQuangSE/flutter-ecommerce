@@ -98,7 +98,7 @@ class _AddressAppBar extends StatelessWidget {
                 context.goNamed(AppRoutes.profile);
               }
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new_rounded,
               color: AppColors.textPrimary,
               size: AppSizes.iconMd,
@@ -117,9 +117,7 @@ class _AddressAppBar extends StatelessWidget {
           ),
           BlocBuilder<AddressCubit, AddressState>(
             builder: (context, state) {
-              final count = state is AddressLoaded
-                  ? state.addresses.length
-                  : 0;
+              final count = state is AddressLoaded ? state.addresses.length : 0;
               if (count == 0) return const SizedBox.shrink();
               return Container(
                 padding: const EdgeInsets.symmetric(
@@ -158,8 +156,7 @@ class _BodyContent extends StatelessWidget {
     return switch (state) {
       AddressInitial() || AddressLoading() => _LoadingState(),
       AddressError(:final message) => _ErrorState(message: message),
-      AddressLoaded(:final addresses, :final isSubmitting) =>
-        _AddressListView(
+      AddressLoaded(:final addresses, :final isSubmitting) => _AddressListView(
           addresses: addresses,
           isSubmitting: isSubmitting,
           topPadding: topPadding,
@@ -302,8 +299,7 @@ class _AddressListView extends StatelessWidget {
             },
           ),
         ),
-        if (isSubmitting)
-          const Positioned.fill(child: AppLoadingView()),
+        if (isSubmitting) const Positioned.fill(child: AppLoadingView()),
       ],
     );
   }
