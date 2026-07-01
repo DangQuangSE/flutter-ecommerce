@@ -7,7 +7,9 @@ abstract interface class CustomDesignRemoteDataSource {
     required int numTextLines,
     required int numImages,
     required String metadata,
+    required String backMetadata,
     required Uint8List imageBytes,
+    Uint8List? backImageBytes,
   });
 
   Future<PrintingConfigEntity> getPrintingConfigs();
@@ -15,6 +17,7 @@ abstract interface class CustomDesignRemoteDataSource {
   Future<
       ({
         String designMetadata,
+        String backDesignMetadata,
         String printingMaterialName,
         int? printingMaterialId,
         int numTextLines,

@@ -19,7 +19,9 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
     required int numTextLines,
     required int numImages,
     required String metadata,
+    required String backMetadata,
     required Uint8List imageBytes,
+    Uint8List? backImageBytes,
   }) async {
     try {
       final id = await _dataSource.saveDesign(
@@ -27,7 +29,9 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
         numTextLines: numTextLines,
         numImages: numImages,
         metadata: metadata,
+        backMetadata: backMetadata,
         imageBytes: imageBytes,
+        backImageBytes: backImageBytes,
       );
       return Success(id);
     } on AppException catch (e) {
@@ -41,6 +45,7 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
       final result = await _dataSource.getExistingDesign(id);
       return Success(ExistingDesignEntity(
         designMetadata: result.designMetadata,
+        backDesignMetadata: result.backDesignMetadata,
         printingMaterialName: result.printingMaterialName,
         printingMaterialId: result.printingMaterialId,
         numTextLines: result.numTextLines,

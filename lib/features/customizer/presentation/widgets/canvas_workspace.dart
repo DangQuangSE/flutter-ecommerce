@@ -42,6 +42,8 @@ class CanvasWorkspace extends StatelessWidget {
         MediaQuery.of(context).size.width * AppSizes.canvasWidthRatio;
     final canvasHeight =
         MediaQuery.of(context).size.height * AppSizes.canvasHeightRatio;
+    final currentView = isFrontView ? LayerView.front : LayerView.back;
+    final visibleLayers = layers.where((l) => l.view == currentView).toList();
 
     return Stack(
       fit: StackFit.expand,
@@ -73,12 +75,19 @@ class CanvasWorkspace extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    AnimatedRotation(
-                      turns: isFrontView ? 0.0 : 0.5,
+                    AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
                       child: CachedNetworkImage(
-                        imageUrl:
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuAg16llodl6Hl8MPqH6DvSysphHsH9azINDafCIQFp9rqCHyIEj5IyNuBfAVIK7-s1m70zLJYYuRDn7ps4e9BkxeY1wfIJ58BidKV1GgULrOntZ7svsuNpwj8nvPhazvHISS-5OqI81qGvWmbwLlQlDr7PaeNVO1DpmYgljTca2s33rrrPqLBq7MLlaEkQdj7fqz_fN5K-XrOluv8Ux-V0w9V8-aE1C5t5BlJtTl7b0-7Tot4btl19oWsO5WWVz6wdqu1TcpvcIJ6k',
+                        key: ValueKey(isFrontView ? 'front' : 'back'),
+                        imageUrl: isFrontView
+                            ? 'https://res.cloudinary.com/dq8qlmvhn/image/upload/v1782924800/tshirt-customizer/front-view.png'
+                            : 'https://res.cloudinary.com/dq8qlmvhn/image/upload/v1782924804/tshirt-customizer/back-view.png',
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -104,7 +113,7 @@ class CanvasWorkspace extends StatelessWidget {
                         ),
                       ),
                     LayerOverlayStack(
-                      layers: layers,
+                      layers: visibleLayers,
                       activeLayerId: activeLayerId,
                       canvasWidth: canvasWidth,
                       canvasHeight: canvasHeight,

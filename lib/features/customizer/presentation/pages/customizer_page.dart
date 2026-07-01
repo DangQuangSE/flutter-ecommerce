@@ -174,7 +174,10 @@ class CustomizerPageState extends State<CustomizerPage> {
       listener: (context, state) {
         if (state case CustomizerLoaded(:final existingDesign)
             when existingDesign != null) {
-          restoreExistingDesign(existingDesign.designMetadata);
+          restoreExistingDesign(
+            existingDesign.designMetadata,
+            existingDesign.backDesignMetadata,
+          );
           printMethod = existingDesign.printingMaterialName;
         }
         hasRestoredExistingDesign = true;
@@ -191,24 +194,38 @@ class CustomizerPageState extends State<CustomizerPage> {
     );
   }
 
-  void restoreExistingDesign(String metadata) {
-    if (metadata.isEmpty) return;
+  void restoreExistingDesign(String metadata, String backMetadata) {
+    final restored = <DesignLayer>[];
     try {
-      final decoded = jsonDecode(metadata) as List<dynamic>;
-      final restored = decoded
-          .map((entry) => DesignLayer.fromJson(entry as Map<String, dynamic>))
-          .toList();
-      setState(() {
-        layers
-          ..clear()
-          ..addAll(restored);
-        if (restored.isNotEmpty) {
-          activeLayer = restored.last;
-          if (activeLayer!.type == LayerType.text) {
-            textController.text = activeLayer!.text;
-          }
-        }
-      });
+      if (metadata.isNotEmpty) {
+        final decoded = jsonDecode(metadata) as List<dynamic>;
+        restored.addAll(decoded.map(
+          (entry) => DesignLayer.fromJson(
+            entry as Map<String, dynamic>,
+          ).copyWith(view: LayerView.front),
+        ));
+      }
     } catch (_) {}
+    try {
+      if (backMetadata.isNotEmpty) {
+        final decoded = jsonDecode(backMetadata) as List<dynamic>;
+        restored.addAll(decoded.map(
+          (entry) => DesignLayer.fromJson(
+            entry as Map<String, dynamic>,
+          ).copyWith(view: LayerView.back),
+        ));
+      }
+    } catch (_) {}
+    setState(() {
+      layers
+        ..clear()
+        ..addAll(restored);
+      if (restored.isNotEmpty) {
+        activeLayer = restored.last;
+        if (activeLayer!.type == LayerType.text) {
+          textController.text = activeLayer!.text;
+        }
+      }
+    });
   }
 }

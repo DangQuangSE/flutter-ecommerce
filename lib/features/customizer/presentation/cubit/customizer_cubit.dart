@@ -76,13 +76,16 @@ class CustomizerCubit extends Cubit<CustomizerState> {
     required int numTextLines,
     required int numImages,
     required String metadata,
+    required String backMetadata,
     required Uint8List imageBytes,
+    Uint8List? backImageBytes,
     required String activeText,
     required int activeColor,
     required double activeFontSize,
     required bool hasLogo,
     required String printMethod,
     required String layersJson,
+    required String backLayersJson,
   }) async {
     if (state
         case CustomizerLoaded(
@@ -103,7 +106,9 @@ class CustomizerCubit extends Cubit<CustomizerState> {
       numTextLines: numTextLines,
       numImages: numImages,
       metadata: metadata,
+      backMetadata: backMetadata,
       imageBytes: imageBytes,
+      backImageBytes: backImageBytes,
     );
 
     final loadedState = state;
@@ -125,6 +130,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
           logoEnabled: hasLogo,
           textScale: activeFontSize / 22.0,
           layersJson: layersJson,
+          backLayersJson: backLayersJson,
           customDesignId: customDesignId,
         );
         await _persistCustomizations();
@@ -140,6 +146,12 @@ class CustomizerCubit extends Cubit<CustomizerState> {
           existingDesign: existingDesign,
         ));
     }
+  }
+
+  Future<void> clearAllCustomizations() async {
+    _customizations.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('customizations');
   }
 
   CustomizationEntity getCustomizationOrDefault(String productId) {
@@ -177,6 +189,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
       logoEnabled: json['logoEnabled'] as bool? ?? false,
       textScale: (json['textScale'] as num?)?.toDouble() ?? 1.0,
       layersJson: json['layersJson'] as String? ?? '',
+      backLayersJson: json['backLayersJson'] as String? ?? '',
       customDesignId: json['customDesignId'] as int?,
     );
   }
@@ -191,6 +204,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
       'logoEnabled': entity.logoEnabled,
       'textScale': entity.textScale,
       'layersJson': entity.layersJson,
+      'backLayersJson': entity.backLayersJson,
       if (entity.customDesignId != null)
         'customDesignId': entity.customDesignId,
     };

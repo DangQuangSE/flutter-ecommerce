@@ -10,6 +10,14 @@ class AddressCubit extends Cubit<AddressState> {
 
   AddressCubit(this._repository) : super(const AddressInitial());
 
+  List<AddressEntity> _currentAddresses() {
+    final currentState = state;
+    if (currentState is AddressLoaded) {
+      return currentState.addresses;
+    }
+    return const [];
+  }
+
   Future<void> loadAddresses() async {
     emit(const AddressLoading());
     final result = await _repository.getAddresses();
@@ -22,90 +30,82 @@ class AddressCubit extends Cubit<AddressState> {
   }
 
   Future<void> createAddress(AddressEntity address) async {
-    final currentState = state;
-    if (currentState is AddressLoaded) {
-      emit(currentState.copyWith(isSubmitting: true));
-      final result = await _repository.createAddress(address);
-      switch (result) {
-        case Success(:final data):
-          final updatedList = List<AddressEntity>.from(currentState.addresses)
-            ..insert(0, data);
-          emit(AddressLoaded(
-            addresses: updatedList,
-            message: AppStrings.addressCreated,
-          ));
-        case ResultFailure(:final failure):
-          emit(AddressError(failure.message));
-      }
+    final currentAddresses = _currentAddresses();
+    emit(AddressLoaded(addresses: currentAddresses, isSubmitting: true));
+    final result = await _repository.createAddress(address);
+    switch (result) {
+      case Success(:final data):
+        final updatedList = List<AddressEntity>.from(currentAddresses)
+          ..insert(0, data);
+        emit(AddressLoaded(
+          addresses: updatedList,
+          message: AppStrings.addressCreated,
+        ));
+      case ResultFailure(:final failure):
+        emit(AddressError(failure.message));
     }
   }
 
   Future<void> updateAddress(int id, AddressEntity address) async {
-    final currentState = state;
-    if (currentState is AddressLoaded) {
-      emit(currentState.copyWith(isSubmitting: true));
-      final result = await _repository.updateAddress(id, address);
-      switch (result) {
-        case Success(:final data):
-          final updatedList =
-              currentState.addresses.map((a) => a.id == id ? data : a).toList();
-          emit(AddressLoaded(
-            addresses: updatedList,
-            message: AppStrings.addressUpdated,
-          ));
-        case ResultFailure(:final failure):
-          emit(AddressError(failure.message));
-      }
+    final currentAddresses = _currentAddresses();
+    emit(AddressLoaded(addresses: currentAddresses, isSubmitting: true));
+    final result = await _repository.updateAddress(id, address);
+    switch (result) {
+      case Success(:final data):
+        final updatedList =
+            currentAddresses.map((a) => a.id == id ? data : a).toList();
+        emit(AddressLoaded(
+          addresses: updatedList,
+          message: AppStrings.addressUpdated,
+        ));
+      case ResultFailure(:final failure):
+        emit(AddressError(failure.message));
     }
   }
 
   Future<void> deleteAddress(int id) async {
-    final currentState = state;
-    if (currentState is AddressLoaded) {
-      emit(currentState.copyWith(isSubmitting: true));
-      final result = await _repository.deleteAddress(id);
-      switch (result) {
-        case Success():
-          final updatedList =
-              currentState.addresses.where((a) => a.id != id).toList();
-          emit(AddressLoaded(
-            addresses: updatedList,
-            message: AppStrings.addressDeleted,
-          ));
-        case ResultFailure(:final failure):
-          emit(AddressError(failure.message));
-      }
+    final currentAddresses = _currentAddresses();
+    emit(AddressLoaded(addresses: currentAddresses, isSubmitting: true));
+    final result = await _repository.deleteAddress(id);
+    switch (result) {
+      case Success():
+        final updatedList =
+            currentAddresses.where((a) => a.id != id).toList();
+        emit(AddressLoaded(
+          addresses: updatedList,
+          message: AppStrings.addressDeleted,
+        ));
+      case ResultFailure(:final failure):
+        emit(AddressError(failure.message));
     }
   }
 
   Future<void> setDefaultAddress(int id) async {
-    final currentState = state;
-    if (currentState is AddressLoaded) {
-      final optimisticList = currentState.addresses.map((a) {
-        if (a.id == id) {
-          return a.copyWith(isDefault: true);
-        }
-        return a.copyWith(isDefault: false);
-      }).toList();
-
-      emit(currentState.copyWith(addresses: optimisticList));
-
-      final result = await _repository.setDefaultAddress(id);
-      switch (result) {
-        case Success(:final data):
-          final updatedList = currentState.addresses.map((a) {
-            if (a.id == id) {
-              return data;
-            }
-            return a.copyWith(isDefault: false);
-          }).toList();
-          emit(AddressLoaded(
-            addresses: updatedList,
-            message: AppStrings.addressSetDefaultSuccess,
-          ));
-        case ResultFailure(:final failure):
-          emit(AddressError(failure.message));
+    final currentAddresses = _currentAddresses();
+    final optimisticList = currentAddresses.map((a) {
+      if (a.id == id) {
+        return a.copyWith(isDefault: true);
       }
+      return a.copyWith(isDefault: false);
+    }).toList();
+
+    emit(AddressLoaded(addresses: optimisticList, isSubmitting: true));
+
+    final result = await _repository.setDefaultAddress(id);
+    switch (result) {
+      case Success(:final data):
+        final updatedList = currentAddresses.map((a) {
+          if (a.id == id) {
+            return data;
+          }
+          return a.copyWith(isDefault: false);
+        }).toList();
+        emit(AddressLoaded(
+          addresses: updatedList,
+          message: AppStrings.addressSetDefaultSuccess,
+        ));
+      case ResultFailure(:final failure):
+        emit(AddressError(failure.message));
     }
   }
 }
