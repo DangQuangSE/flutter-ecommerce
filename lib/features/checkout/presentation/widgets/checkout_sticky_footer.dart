@@ -51,7 +51,7 @@ class CheckoutStickyFooter extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'CONFIRM ORDER',
+                  'Xác nhận đặt hàng',
                   style: GoogleFonts.lexend(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -59,7 +59,6 @@ class CheckoutStickyFooter extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.bolt_rounded, size: 20),
               ],
             ),
           ),
