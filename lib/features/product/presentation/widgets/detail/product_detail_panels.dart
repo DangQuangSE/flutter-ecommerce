@@ -37,13 +37,13 @@ class ProductDetailPanels extends StatelessWidget {
               style: _bodyStyle(),
             ),
           ),
-          CollapsiblePanel(
-            title: AppStrings.reviewsTitle(product.reviewCount),
-            child: const _ProductReviewsPanel(),
-          ),
           const CollapsiblePanel(
             title: AppStrings.returnPolicyTitle,
             child: _ReturnPolicyPanel(),
+          ),
+          CollapsiblePanel(
+            title: AppStrings.reviewsTitle(product.reviewCount),
+            child: const _ProductReviewsPanel(),
           ),
         ],
       ),
@@ -144,7 +144,207 @@ class _ReviewRow extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(review.comment, style: _bodyStyle()),
+        _ReviewImages(imageUrls: review.images),
       ],
+    );
+  }
+}
+
+class _ReviewImages extends StatelessWidget {
+  final List<String> imageUrls;
+
+  const _ReviewImages({required this.imageUrls});
+
+  @override
+  Widget build(BuildContext context) {
+    final urls = imageUrls.where((url) => url.trim().isNotEmpty).toList();
+    if (urls.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSizes.paddingSm),
+      child: SizedBox(
+        height: AppSizes.reviewImageSize,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          itemCount: urls.length,
+          separatorBuilder: (context, index) =>
+              const SizedBox(width: AppSizes.paddingSm),
+          itemBuilder: (context, index) => _ReviewImage(
+            url: urls[index],
+            onTap: () => _showReviewImageViewer(
+              context,
+              imageUrls: urls,
+              initialIndex: index,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReviewImage extends StatelessWidget {
+  final String url;
+  final VoidCallback onTap;
+
+  const _ReviewImage({
+    required this.url,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        child: Image.network(
+          url,
+          width: AppSizes.reviewImageSize,
+          height: AppSizes.reviewImageSize,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: AppSizes.reviewImageSize,
+            height: AppSizes.reviewImageSize,
+            color: AppColors.divider,
+            child: const Icon(
+              Icons.image_not_supported_outlined,
+              size: AppSizes.iconSm,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void _showReviewImageViewer(
+  BuildContext context, {
+  required List<String> imageUrls,
+  required int initialIndex,
+}) {
+  showDialog<void>(
+    context: context,
+    useRootNavigator: true,
+    barrierDismissible: false,
+    builder: (_) => Dialog.fullscreen(
+      backgroundColor: AppColors.black,
+      child: _ReviewImageViewer(
+        imageUrls: imageUrls,
+        initialIndex: initialIndex,
+      ),
+    ),
+  );
+}
+
+class _ReviewImageViewer extends StatefulWidget {
+  final List<String> imageUrls;
+  final int initialIndex;
+
+  const _ReviewImageViewer({
+    required this.imageUrls,
+    required this.initialIndex,
+  });
+
+  @override
+  State<_ReviewImageViewer> createState() => _ReviewImageViewerState();
+}
+
+class _ReviewImageViewerState extends State<_ReviewImageViewer> {
+  late final PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.sizeOf(context).height,
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _pageController,
+              itemCount: widget.imageUrls.length,
+              onPageChanged: (index) => setState(() => _currentIndex = index),
+              itemBuilder: (context, index) => InteractiveViewer(
+                minScale: 1,
+                maxScale: 4,
+                child: Center(
+                  child: Image.network(
+                    widget.imageUrls[index],
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.image_not_supported_outlined,
+                      size: AppSizes.iconLg,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: AppSizes.paddingSm,
+              right: AppSizes.paddingSm,
+              child: Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  onPressed: () => Navigator.of(
+                    context,
+                    rootNavigator: true,
+                  ).pop(),
+                  iconSize: AppSizes.iconLg,
+                  padding: const EdgeInsets.all(AppSizes.paddingMd),
+                  icon: const Icon(Icons.close_rounded, color: AppColors.white),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: AppSizes.paddingLg,
+              child: Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.paddingMd,
+                      vertical: AppSizes.paddingSm,
+                    ),
+                    child: Text(
+                      AppStrings.reviewImageCounter(
+                        _currentIndex + 1,
+                        widget.imageUrls.length,
+                      ),
+                      style: GoogleFonts.inter(
+                        color: AppColors.white,
+                        fontSize: AppSizes.fontMd,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

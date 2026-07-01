@@ -34,11 +34,7 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         ApiConstants.productReviews(productId),
         queryParameters: {'page': page, 'size': size, 'sort': 'createdAt,desc'},
       );
-      final dataMap = response.data['data'] as Map<String, dynamic>;
-      final contentList = dataMap['content'] as List;
-      return contentList
-          .map((json) => ReviewModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      return _parseReviewList(response.data);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ??
@@ -57,19 +53,20 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         queryParameters: {'page': page, 'size': size, 'sort': 'createdAt,desc'},
       );
       final data = response.data?['data'];
-      if (data is! Map<String, dynamic>) {
+      if (data is! Map) {
         throw const ParseException(AppStrings.reviewListParseError);
       }
-      final content = (data['content'] as List<dynamic>? ?? [])
-          .map((e) => ReviewModel.fromJson(e as Map<String, dynamic>))
+      final dataMap = Map<String, dynamic>.from(data);
+      final content = (dataMap['content'] as List<dynamic>? ?? [])
+          .map(_parseReviewItem)
           .toList();
       return ReviewPage(
         items: content,
-        page: (data['number'] as num?)?.toInt() ?? page,
-        totalPages: (data['totalPages'] as num?)?.toInt() ?? 1,
+        page: (dataMap['number'] as num?)?.toInt() ?? page,
+        totalPages: (dataMap['totalPages'] as num?)?.toInt() ?? 1,
         totalElements:
-            (data['totalElements'] as num?)?.toInt() ?? content.length,
-        isLast: data['last'] as bool? ?? true,
+            (dataMap['totalElements'] as num?)?.toInt() ?? content.length,
+        isLast: dataMap['last'] as bool? ?? true,
       );
     } on DioException catch (e) {
       throw NetworkException(
@@ -89,10 +86,10 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         data: jsonEncode(reply),
       );
       final data = response.data?['data'];
-      if (data is! Map<String, dynamic>) {
+      if (data is! Map) {
         throw const ParseException(AppStrings.reviewParseError);
       }
-      return ReviewModel.fromJson(data);
+      return ReviewModel.fromJson(Map<String, dynamic>.from(data));
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ??
@@ -133,10 +130,10 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         options: Options(contentType: Headers.multipartFormDataContentType),
       );
       final data = response.data?['data'];
-      if (data is! Map<String, dynamic>) {
+      if (data is! Map) {
         throw const ParseException(AppStrings.writeReviewParseError);
       }
-      return ReviewModel.fromJson(data);
+      return ReviewModel.fromJson(Map<String, dynamic>.from(data));
     } on DioException catch (e) {
       final embedded = e.error;
       if (embedded is AppException) {
@@ -152,5 +149,35 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
         statusCode: e.response?.statusCode,
       );
     }
+  }
+
+  List<ReviewModel> _parseReviewList(dynamic responseData) {
+    final content = _extractReviewContent(responseData);
+    if (content == null) {
+      throw const ParseException(AppStrings.reviewListParseError);
+    }
+    return content.map(_parseReviewItem).toList();
+  }
+
+  List<dynamic>? _extractReviewContent(dynamic responseData) {
+    if (responseData is List<dynamic>) return responseData;
+    if (responseData is! Map) return null;
+
+    final data = responseData['data'];
+    if (data is List<dynamic>) return data;
+    if (data is Map) {
+      final content = data['content'] ?? data['items'];
+      if (content is List<dynamic>) return content;
+    }
+
+    final content = responseData['content'] ?? responseData['items'];
+    return content is List<dynamic> ? content : null;
+  }
+
+  ReviewModel _parseReviewItem(dynamic item) {
+    if (item is! Map) {
+      throw const ParseException(AppStrings.reviewParseError);
+    }
+    return ReviewModel.fromJson(Map<String, dynamic>.from(item));
   }
 }

@@ -189,7 +189,7 @@ class _ProductRatingBlock extends StatelessWidget {
         Row(children: _buildRatingStars(product.averageRating)),
         const SizedBox(width: 4),
         Text(
-          '(${product.reviewCount})',
+          AppStrings.productReviewCount(product.reviewCount),
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w600,

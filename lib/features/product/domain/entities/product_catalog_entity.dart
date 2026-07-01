@@ -13,6 +13,7 @@ class ProductCatalogEntity extends Equatable {
   final String brandName;
   final int totalStock;
   final double averageRating;
+  final int? reviewCount;
   final String status;
   final String? gender;
   final List<String> availableSizes;
@@ -31,6 +32,7 @@ class ProductCatalogEntity extends Equatable {
     required this.brandName,
     required this.totalStock,
     required this.averageRating,
+    this.reviewCount,
     required this.status,
     this.gender,
     required this.availableSizes,
@@ -53,6 +55,7 @@ class ProductCatalogEntity extends Equatable {
         brandName,
         totalStock,
         averageRating,
+        reviewCount,
         status,
         gender,
         availableSizes,

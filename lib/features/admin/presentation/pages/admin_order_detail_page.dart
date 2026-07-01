@@ -273,36 +273,53 @@ class _OrderDetailBody extends StatelessWidget {
   ) async {
     final selected = await showModalBottomSheet<String>(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusXl),
+        ),
       ),
       builder: (context) {
+        final maxHeight = MediaQuery.sizeOf(context).height *
+            AppSizes.bottomSheetMaxHeightRatio;
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  AppStrings.adminOrderSelectStatus,
-                  style: GoogleFonts.lexend(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(AppSizes.paddingMd),
+                  child: Text(
+                    AppStrings.adminOrderSelectStatus,
+                    style: GoogleFonts.lexend(
+                      fontSize: AppSizes.fontXl,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-              ),
-              ...OrderStatusLabel.allStatuses.map(
-                (status) => ListTile(
-                  title: Text(OrderStatusLabel.vi(status)),
-                  trailing: order.status == status
-                      ? const Icon(Icons.check_rounded,
-                          color: AppColors.primary)
-                      : null,
-                  onTap: () => Navigator.pop(context, status),
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: OrderStatusLabel.allStatuses.length,
+                    itemBuilder: (context, index) {
+                      final status = OrderStatusLabel.allStatuses[index];
+                      return ListTile(
+                        title: Text(OrderStatusLabel.vi(status)),
+                        trailing: order.status == status
+                            ? const Icon(
+                                Icons.check_rounded,
+                                color: AppColors.primary,
+                              )
+                            : null,
+                        onTap: () => Navigator.pop(context, status),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-            ],
+                const SizedBox(height: AppSizes.paddingSm),
+              ],
+            ),
           ),
         );
       },
@@ -317,7 +334,9 @@ class _OrderDetailBody extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text(AppStrings.confirm),
         content: Text(
-          'Đổi trạng thái sang "${OrderStatusLabel.vi(selected)}"?',
+          AppStrings.adminOrderStatusChangeConfirm(
+            OrderStatusLabel.vi(selected),
+          ),
         ),
         actions: [
           TextButton(
