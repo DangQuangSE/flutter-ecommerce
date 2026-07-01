@@ -18,7 +18,7 @@ class ProductImagesHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         AppStrings.adminProductImagesTitle(count, maxImages),
-        style: const TextStyle(
+        style: TextStyle(
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,
         ),
@@ -44,7 +44,7 @@ class ProductAddImageTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppSizes.radiusSm + 2),
             color: AppColors.primary.withValues(alpha: 0.05),
           ),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
@@ -106,7 +106,7 @@ class ProductImageTile extends StatelessWidget {
                     color: isUploading ? AppColors.textHint : AppColors.error,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.close_rounded,
                     color: Colors.white,
                     size: AppSizes.fontLg,
@@ -132,7 +132,7 @@ class ProductImageBasicInfoWarning extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppSizes.radiusSm + 2),
             border: Border.all(color: AppColors.warning),
           ),
-          child: const Row(
+          child: Row(
             children: [
               Icon(
                 Icons.info_outline,
@@ -177,20 +177,20 @@ class ProductImageStepNavigation extends StatelessWidget {
           AppSizes.paddingMd,
           AppSizes.paddingMd,
         ),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.divider)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
         ),
         child: Row(
           children: [
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: isUploading ? null : onBack,
-                icon: const Icon(Icons.arrow_back_rounded),
-                label: const Text(AppStrings.adminProductImagesBack),
+                icon: Icon(Icons.arrow_back_rounded),
+                label: Text(AppStrings.adminProductImagesBack),
               ),
             ),
-            const SizedBox(width: AppSizes.paddingMd),
+            SizedBox(width: AppSizes.paddingMd),
             Expanded(
               child: ElevatedButton(
                 onPressed: (isSubmitting || isUploading) ? null : onComplete,
@@ -205,7 +205,7 @@ class ProductImageStepNavigation extends StatelessWidget {
                   ),
                 ),
                 child: isSubmitting
-                    ? const SizedBox(
+                    ? SizedBox(
                         height: AppSizes.iconMd,
                         width: AppSizes.iconMd,
                         child: CircularProgressIndicator(
@@ -213,7 +213,7 @@ class ProductImageStepNavigation extends StatelessWidget {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
+                    : Text(
                         AppStrings.adminProductImagesComplete,
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
@@ -235,7 +235,7 @@ class _ImageErrorPlaceholder extends StatelessWidget {
           color: AppColors.divider,
           borderRadius: BorderRadius.circular(AppSizes.radiusSm + 2),
         ),
-        child: const Icon(Icons.broken_image, color: AppColors.textHint),
+        child: Icon(Icons.broken_image, color: AppColors.textHint),
       );
 }
 
@@ -255,7 +255,7 @@ class _ThumbnailBadge extends StatelessWidget {
             color: AppColors.primary,
             borderRadius: BorderRadius.circular(AppSizes.paddingXs),
           ),
-          child: const Text(
+          child: Text(
             AppStrings.adminProductImagesThumbnail,
             style: TextStyle(
               color: Colors.white,

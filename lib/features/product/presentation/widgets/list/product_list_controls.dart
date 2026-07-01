@@ -83,7 +83,7 @@ class ProductListActionRow extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: AppSizes.radiusLg),
+        SizedBox(height: AppSizes.radiusLg),
       ],
     );
   }
@@ -104,6 +104,7 @@ class _ActionChipButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final labelWidget = Text(
       label,
       style: GoogleFonts.plusJakartaSans(
@@ -126,9 +127,9 @@ class _ActionChipButton extends StatelessWidget {
           vertical: AppSizes.paddingSm,
         ),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: isDark ? const Color(0xFF1E293B) : AppColors.white,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: AppColors.divider),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: iconFirst
@@ -153,6 +154,7 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -163,10 +165,14 @@ class _CategoryChip extends StatelessWidget {
           vertical: AppSizes.paddingSm,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.textPrimary : AppColors.white,
+          color: selected
+              ? (isDark ? Colors.white : AppColors.textPrimary)
+              : (isDark ? const Color(0xFF1E293B) : AppColors.white),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: selected ? AppColors.textPrimary : AppColors.divider,
+            color: selected
+                ? (isDark ? Colors.white : AppColors.textPrimary)
+                : Theme.of(context).dividerColor,
           ),
           boxShadow: selected
               ? [
@@ -184,7 +190,9 @@ class _CategoryChip extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: AppSizes.fontSm,
               fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-              color: selected ? AppColors.white : AppColors.textSecondary,
+              color: selected
+                  ? (isDark ? Colors.black : AppColors.white)
+                  : AppColors.textSecondary,
               letterSpacing: 0.2,
             ),
           ),

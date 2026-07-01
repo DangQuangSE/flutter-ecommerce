@@ -22,7 +22,7 @@ class ShopErrorView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline_rounded,
               size: 48,
               color: AppColors.error,
@@ -31,7 +31,7 @@ class ShopErrorView extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: AppSizes.fontXl,
                 color: AppColors.textPrimary,
               ),
@@ -46,7 +46,7 @@ class ShopErrorView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                 ),
               ),
-              child: const Text(AppStrings.retry),
+              child: Text(AppStrings.retry),
             ),
           ],
         ),

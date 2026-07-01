@@ -31,7 +31,7 @@ class TermsAgreementFooter extends StatelessWidget {
             const TextSpan(text: AppStrings.termsPrefix),
             TextSpan(
               text: AppStrings.termsOfService,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
@@ -40,7 +40,7 @@ class TermsAgreementFooter extends StatelessWidget {
             const TextSpan(text: AppStrings.andConnector),
             TextSpan(
               text: AppStrings.privacyPolicy,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),

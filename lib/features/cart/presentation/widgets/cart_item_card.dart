@@ -34,12 +34,13 @@ class CartItemCard extends StatelessWidget {
     final category =
         item.isCustomizable ? 'TRANG BỊ HIỆU NĂNG' : 'THỜI TRANG THỂ THAO';
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
         ),
         boxShadow: [
           BoxShadow(
@@ -57,13 +58,13 @@ class CartItemCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildCheckbox(),
-                _buildThumbnail(),
-                const SizedBox(width: 12),
-                Expanded(child: _buildDetails(category)),
+                _buildThumbnail(context, isDark),
+                SizedBox(width: 12),
+                Expanded(child: _buildDetails(context, category, isDark)),
               ],
             ),
           ),
-          if (item.customDesignId != null) _buildDesignSection(),
+          if (item.customDesignId != null) _buildDesignSection(context, isDark),
         ],
       ),
     );
@@ -88,15 +89,15 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildThumbnail() {
+  Widget _buildThumbnail(BuildContext context, bool isDark) {
     return Container(
       width: 80,
       height: 90,
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F8),
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F3F8),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
         ),
       ),
       child: ClipRRect(
@@ -104,7 +105,7 @@ class CartItemCard extends StatelessWidget {
         child: Image.network(
           item.imageUrl ?? '',
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => const Center(
+          errorBuilder: (context, error, stackTrace) => Center(
             child: Icon(Icons.image_not_supported_outlined,
                 color: AppColors.textSecondary),
           ),
@@ -113,12 +114,12 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDetails(String category) {
+  Widget _buildDetails(BuildContext context, String category, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildHeaderRow(category),
-        const SizedBox(height: 6),
+        _buildHeaderRow(context, category),
+        SizedBox(height: 6),
         Text(
           'Màu sắc: ${item.color ?? "N/A"}    Kích cỡ: ${item.size ?? "N/A"}',
           style: GoogleFonts.inter(
@@ -128,16 +129,16 @@ class CartItemCard extends StatelessWidget {
           ),
         ),
         if (item.customDesignId != null) ...[
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           _buildCustomBadge(),
         ],
-        const SizedBox(height: 10),
-        _buildBottomRow(category),
+        SizedBox(height: 10),
+        _buildBottomRow(context, category),
       ],
     );
   }
 
-  Widget _buildHeaderRow(String category) {
+  Widget _buildHeaderRow(BuildContext context, String category) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +156,7 @@ class CartItemCard extends StatelessWidget {
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(
                 item.productName,
                 maxLines: 1,
@@ -163,19 +164,19 @@ class CartItemCard extends StatelessWidget {
                 style: GoogleFonts.lexend(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
           formatPrice(item.price + item.printingPrice),
           style: GoogleFonts.lexend(
             fontSize: 14,
             fontWeight: FontWeight.w900,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontStyle: FontStyle.italic,
           ),
         ),
@@ -194,9 +195,9 @@ class CartItemCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.build_outlined,
+          Icon(Icons.build_outlined,
               size: 10, color: Color(0xFF0058BC)),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(
             'IN TÙY CHỌN: +${formatPrice(item.printingPrice)}',
             style: GoogleFonts.inter(
@@ -210,34 +211,34 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomRow(String category) {
+  Widget _buildBottomRow(BuildContext context, String category) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildQuantityControl(),
-        const SizedBox(width: 8),
+        _buildQuantityControl(context),
+        SizedBox(width: 8),
         if (category == 'TRANG BỊ HIỆU NĂNG' && item.customDesignId == null)
-          _buildCustomizeButton(),
+          _buildCustomizeButton(context),
         const Spacer(),
         _buildDeleteButton(),
       ],
     );
   }
 
-  Widget _buildQuantityControl() {
+  Widget _buildQuantityControl(BuildContext context) {
     return Container(
       height: 28,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFC1C6D7)),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
             onTap: onDecrementQuantity,
-            child: const SizedBox(
+            child: SizedBox(
                 width: 28, height: 28, child: Icon(Icons.remove, size: 12)),
           ),
           Text(
@@ -245,11 +246,11 @@ class CartItemCard extends StatelessWidget {
             style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary),
+                color: Theme.of(context).colorScheme.onSurface),
           ),
           GestureDetector(
             onTap: onIncrementQuantity,
-            child: const SizedBox(
+            child: SizedBox(
                 width: 28, height: 28, child: Icon(Icons.add, size: 12)),
           ),
         ],
@@ -257,21 +258,21 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomizeButton() {
+  Widget _buildCustomizeButton(BuildContext context) {
     return GestureDetector(
       onTap: onCustomize,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.primary, width: 1.2),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.brush_rounded, size: 12, color: AppColors.primary),
-            const SizedBox(width: 4),
+            Icon(Icons.brush_rounded, size: 12, color: AppColors.primary),
+            SizedBox(width: 4),
             Text(
               'CUSTOM',
               style: GoogleFonts.inter(
@@ -291,9 +292,9 @@ class CartItemCard extends StatelessWidget {
       onTap: onRemove,
       child: Row(
         children: [
-          const Icon(Icons.delete_outline_rounded,
+          Icon(Icons.delete_outline_rounded,
               size: 14, color: AppColors.textSecondary),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(
             'XÓA',
             style: GoogleFonts.inter(
@@ -307,22 +308,22 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDesignSection() {
+  Widget _buildDesignSection(BuildContext context, bool isDark) {
     return Column(
       children: [
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 12),
           height: 1,
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.15),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.15),
         ),
         Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildDesignHeader(),
-              const SizedBox(height: 10),
-              _buildDesignDetail(),
+              _buildDesignHeader(context),
+              SizedBox(height: 10),
+              _buildDesignDetail(context, isDark),
             ],
           ),
         ),
@@ -330,23 +331,23 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDesignHeader() {
+  Widget _buildDesignHeader(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.build_outlined,
+              Icon(Icons.build_outlined,
                   size: 12, color: Color(0xFF0058BC)),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               Expanded(
                 child: Text(
                   'CHI TIẾT THIẾT KẾ IN ẤN',
                   style: GoogleFonts.inter(
                     fontSize: 9,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -354,7 +355,7 @@ class CartItemCard extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         GestureDetector(
           onTap: onEditDesign,
           child: Text(
@@ -386,14 +387,14 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDesignDetail() {
+  Widget _buildDesignDetail(BuildContext context, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAFAFA),
+        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.25),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.25),
         ),
       ),
       child: Row(
@@ -403,10 +404,10 @@ class CartItemCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
               ),
             ),
             child: ClipRRect(
@@ -414,14 +415,14 @@ class CartItemCard extends StatelessWidget {
               child: Image.network(
                 item.designImageUrl ?? '',
                 fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => const Center(
+                errorBuilder: (context, error, stackTrace) => Center(
                   child: Icon(Icons.broken_image_outlined,
                       size: 14, color: AppColors.textSecondary),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: CustomDesignSpecCard(
               customDesignId: item.customDesignId!,

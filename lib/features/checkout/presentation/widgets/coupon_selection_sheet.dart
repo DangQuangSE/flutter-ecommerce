@@ -104,7 +104,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close, size: AppSizes.iconMd),
+                icon: Icon(Icons.close, size: AppSizes.iconMd),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -168,12 +168,12 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.confirmation_num_outlined,
               size: AppSizes.iconXxl,
               color: AppColors.textHint,
             ),
-            const SizedBox(height: AppSizes.radiusLg),
+            SizedBox(height: AppSizes.radiusLg),
             Text(
               AppStrings.checkoutCouponEmpty,
               style: GoogleFonts.inter(
@@ -223,7 +223,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
       children: [
         if (eligible.isNotEmpty) ...[
           _buildSectionLabel(AppStrings.checkoutCouponAvailableSection),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           ...eligible.map(
             (coupon) => CouponVoucherCard(
               coupon: coupon,
@@ -237,9 +237,9 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
           ),
         ],
         if (ineligible.isNotEmpty) ...[
-          if (eligible.isNotEmpty) const SizedBox(height: AppSizes.paddingXl),
+          if (eligible.isNotEmpty) SizedBox(height: AppSizes.paddingXl),
           _buildSectionLabel(AppStrings.checkoutCouponUnavailableSection),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           ...ineligible.map(
             (coupon) => CouponVoucherCard(
               coupon: coupon,

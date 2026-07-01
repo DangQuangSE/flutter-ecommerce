@@ -24,18 +24,18 @@ class AdminManagementTab extends StatelessWidget {
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary),
           ),
-          const SizedBox(height: AppSizes.paddingXs),
+          SizedBox(height: AppSizes.paddingXs),
           Text(
             AppStrings.adminManagementSubtitle,
             style: GoogleFonts.inter(
                 fontSize: AppSizes.font13, color: AppColors.textSecondary),
           ),
-          const SizedBox(height: AppSizes.paddingXl),
+          SizedBox(height: AppSizes.paddingXl),
           Card(
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppSizes.radius14),
-              side: BorderSide(color: Colors.grey.shade200),
+              side: BorderSide(color: Theme.of(context).dividerColor),
             ),
             child: Column(
               children: [
@@ -103,7 +103,7 @@ class AdminManagementTab extends StatelessWidget {
       title: Text(label,
           style: GoogleFonts.inter(
               fontSize: AppSizes.fontLg, fontWeight: FontWeight.w600)),
-      trailing: const Icon(Icons.arrow_forward_ios_rounded,
+      trailing: Icon(Icons.arrow_forward_ios_rounded,
           size: AppSizes.fontLg),
       onTap: onTap,
     );

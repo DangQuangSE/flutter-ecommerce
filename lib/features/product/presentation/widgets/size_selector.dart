@@ -57,7 +57,7 @@ class SizeSelector extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -71,15 +71,19 @@ class SizeSelector extends StatelessWidget {
           itemBuilder: (context, index) {
             final size = sizes[index];
             final isSelected = selectedSize == size;
+            final isDark = Theme.of(context).brightness == Brightness.dark;
             return GestureDetector(
               onTap: () => onSizeSelected(size),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.black : Colors.white,
+                  color: isSelected
+                      ? (isDark ? Colors.white : AppColors.black)
+                      : (isDark ? const Color(0xFF1E293B) : Colors.white),
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color:
-                        isSelected ? AppColors.black : const Color(0xFFC1C6D7),
+                    color: isSelected
+                        ? (isDark ? Colors.white : AppColors.black)
+                        : Theme.of(context).dividerColor,
                     width: isSelected ? 2 : 1,
                   ),
                   boxShadow: isSelected
@@ -99,7 +103,9 @@ class SizeSelector extends StatelessWidget {
                       fontSize: 13,
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected
+                          ? (isDark ? Colors.black : Colors.white)
+                          : AppColors.textPrimary,
                     ),
                   ),
                 ),

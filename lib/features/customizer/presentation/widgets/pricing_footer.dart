@@ -54,7 +54,7 @@ class PricingFooter extends StatelessWidget {
               totalPrintingPrice: _formatPrice(totalPrintingPrice),
             ),
           ),
-          const SizedBox(width: AppSizes.paddingMd - 4),
+          SizedBox(width: AppSizes.paddingMd - 4),
           Expanded(
             flex: 2,
             child: OutlinedButton(
@@ -76,7 +76,7 @@ class PricingFooter extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: AppSizes.paddingSm + 2),
+          SizedBox(width: AppSizes.paddingSm + 2),
           Expanded(
             flex: 3,
             child: ElevatedButton(
@@ -130,7 +130,7 @@ class _PriceSummary extends StatelessWidget {
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Text(
           '$totalPrice ₫',
           style: GoogleFonts.lexend(
@@ -139,7 +139,7 @@ class _PriceSummary extends StatelessWidget {
             color: AppColors.primary,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Row(
           children: [
             Text(

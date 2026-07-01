@@ -42,7 +42,7 @@ class CategoryFormFields extends StatelessWidget {
         const _FieldLabel(AppStrings.categoryNameLabel),
         TextFormField(
           controller: nameController,
-          decoration: _decoration(AppStrings.categoryNameHint),
+          decoration: _decoration(AppStrings.categoryNameHint, context),
           maxLength: 100,
           validator: (value) {
             final trimmed = value?.trim() ?? '';
@@ -54,14 +54,14 @@ class CategoryFormFields extends StatelessWidget {
         const _FieldLabel(AppStrings.categoryDescriptionLabel),
         TextFormField(
           controller: descriptionController,
-          decoration: _decoration(AppStrings.categoryDescriptionHint),
+          decoration: _decoration(AppStrings.categoryDescriptionHint, context),
           maxLines: 3,
         ),
-        const SizedBox(height: AppSizes.paddingMd),
+        SizedBox(height: AppSizes.paddingMd),
         const _FieldLabel(AppStrings.categoryParentLabel),
         DropdownButtonFormField<int?>(
           initialValue: parentId,
-          decoration: _decoration(AppStrings.categoryParentNone),
+          decoration: _decoration(AppStrings.categoryParentNone, context),
           items: [
             const DropdownMenuItem<int?>(
               value: null,
@@ -79,17 +79,17 @@ class CategoryFormFields extends StatelessWidget {
         const _FieldLabel(AppStrings.categoryImageLabel),
         TextFormField(
           controller: imageUrlController,
-          decoration: _decoration(AppStrings.categoryImageHint),
+          decoration: _decoration(AppStrings.categoryImageHint, context),
           keyboardType: TextInputType.url,
         ),
         const _FieldLabel(AppStrings.categoryDisplayOrderLabel),
         TextFormField(
           controller: displayOrderController,
-          decoration: _decoration(AppStrings.categoryDisplayOrderHint),
+          decoration: _decoration(AppStrings.categoryDisplayOrderHint, context),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
-        const SizedBox(height: AppSizes.paddingSm),
+        SizedBox(height: AppSizes.paddingSm),
         CategoryStatusSwitch(
           title: AppStrings.categoryStatusActiveTitle,
           subtitle: AppStrings.categoryStatusActiveSubtitle,
@@ -126,11 +126,9 @@ class CategoryStatusSwitch extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: AppSizes.spacing10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        border: Border.all(
-          color: AppColors.borderGray.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: SwitchListTile.adaptive(
         value: value,
@@ -178,13 +176,13 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
-InputDecoration _decoration(String hint) {
+InputDecoration _decoration(String hint, BuildContext context) {
   return InputDecoration(
     hintText: hint,
     hintStyle:
         GoogleFonts.inter(fontSize: AppSizes.fontLg, color: AppColors.textHint),
     filled: true,
-    fillColor: Colors.white,
+    fillColor: Theme.of(context).inputDecorationTheme.fillColor,
     contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSizes.spacing14, vertical: AppSizes.spacing14),
     border: _fieldBorder(),

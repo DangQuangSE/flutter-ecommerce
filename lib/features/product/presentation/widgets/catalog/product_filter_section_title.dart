@@ -13,7 +13,7 @@ class ProductFilterSectionTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingMd),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: AppSizes.submitButtonFontSize,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,

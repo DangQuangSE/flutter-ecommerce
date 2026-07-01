@@ -41,9 +41,9 @@ class ColorCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(AppSizes.radiusXl),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.015),
@@ -214,16 +214,16 @@ class _ColorCardActions extends StatelessWidget {
                 children: [
                   IconButton(
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: const Icon(Icons.edit_outlined,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.edit_outlined,
                         color: AppColors.primary, size: 18),
                     onPressed: onEdit,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   IconButton(
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: const Icon(Icons.delete_outline_rounded,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.delete_outline_rounded,
                         color: AppColors.error, size: 18),
                     onPressed: onDelete,
                   ),

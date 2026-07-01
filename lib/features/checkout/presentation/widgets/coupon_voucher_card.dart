@@ -79,7 +79,7 @@ class _VoucherIcon extends StatelessWidget {
           bottomLeft: Radius.circular(9),
         ),
       ),
-      child: const Center(
+      child: Center(
         child: Icon(
           Icons.confirmation_num_outlined,
           color: Colors.white,
@@ -122,7 +122,7 @@ class _VoucherText extends StatelessWidget {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Text(
           description,
           style: GoogleFonts.inter(
@@ -132,7 +132,7 @@ class _VoucherText extends StatelessWidget {
           ),
         ),
         if (minOrderText.isNotEmpty) ...[
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             minOrderText,
             style: GoogleFonts.inter(
@@ -142,7 +142,7 @@ class _VoucherText extends StatelessWidget {
           ),
         ],
         if (expiryText.isNotEmpty) ...[
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             expiryText,
             style: GoogleFonts.inter(

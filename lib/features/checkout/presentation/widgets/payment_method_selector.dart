@@ -40,7 +40,7 @@ class PaymentMethodSelector extends StatelessWidget {
             selected: selected == CheckoutPaymentOption.cod,
             onTap: () => onChanged(CheckoutPaymentOption.cod),
           ),
-          const SizedBox(height: AppSizes.paddingSm),
+          SizedBox(height: AppSizes.paddingSm),
           _PaymentOptionTile(
             option: CheckoutPaymentOption.vnpay,
             icon: Icons.account_balance_wallet_outlined,
@@ -97,7 +97,7 @@ class _PaymentOptionTile extends StatelessWidget {
                 size: AppSizes.paddingXl,
                 color: selected ? AppColors.primary : AppColors.textSecondary,
               ),
-              const SizedBox(width: AppSizes.radiusLg),
+              SizedBox(width: AppSizes.radiusLg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +110,7 @@ class _PaymentOptionTile extends StatelessWidget {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       option.subtitle,
                       style: GoogleFonts.inter(

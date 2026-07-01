@@ -59,7 +59,7 @@ class ReviewImagePickerRow extends StatelessWidget {
                   color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.close_rounded,
+                child: Icon(Icons.close_rounded,
                     color: Colors.white, size: 14),
               ),
             ),
@@ -83,9 +83,9 @@ class ReviewImagePickerRow extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add_a_photo_outlined,
+            Icon(Icons.add_a_photo_outlined,
                 color: AppColors.textSecondary, size: 22),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               AppStrings.writeReviewAddImage,
               style: GoogleFonts.inter(

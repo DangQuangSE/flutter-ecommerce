@@ -15,8 +15,9 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(
@@ -27,9 +28,9 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
             context.goNamed(AppRoutes.home);
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_rounded,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
           size: AppSizes.paddingXl,
         ),
       ),
@@ -37,7 +38,7 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: theme.dividerColor,
           height: 1,
         ),
       ),
@@ -49,7 +50,7 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
             fontSize: 20,
             fontWeight: FontWeight.w900,
             fontStyle: FontStyle.italic,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ),

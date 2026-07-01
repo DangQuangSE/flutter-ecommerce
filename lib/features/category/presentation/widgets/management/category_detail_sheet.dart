@@ -29,7 +29,7 @@ class CategoryDetailSheet extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             category.name,
             style: GoogleFonts.lexend(
@@ -38,7 +38,7 @@ class CategoryDetailSheet extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _DetailRow(label: 'ID', value: '${category.id ?? '—'}'),
           _DetailRow(label: 'Slug', value: category.slug ?? '—'),
           _DetailRow(

@@ -29,10 +29,10 @@ class OrderDetailErrorView extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: onRetry,
-              child: const Text('Th\u1eed l\u1ea1i'),
+              child: Text('Th\u1eed l\u1ea1i'),
             ),
           ],
         ),

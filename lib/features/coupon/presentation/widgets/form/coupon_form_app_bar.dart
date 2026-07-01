@@ -16,11 +16,10 @@ class CouponFormAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_ios_new_rounded,
           color: AppColors.textPrimary,
           size: 20,

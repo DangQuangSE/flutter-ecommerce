@@ -52,7 +52,7 @@ class TextLayerEditor extends StatelessWidget {
             ),
             TextButton.icon(
               onPressed: onAddLayer,
-              icon: const Icon(Icons.add_rounded, size: AppSizes.iconSm),
+              icon: Icon(Icons.add_rounded, size: AppSizes.iconSm),
               label: Text(
                 AppStrings.customizerAddLayer,
                 style: GoogleFonts.inter(
@@ -67,10 +67,10 @@ class TextLayerEditor extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         if (activeLayer != null && activeLayer!.type == LayerType.text) ...[
           const _FieldLabel(AppStrings.customizerTextLayerContent),
-          const SizedBox(height: AppSizes.paddingXs + 2),
+          SizedBox(height: AppSizes.paddingXs + 2),
           TextField(
             controller: textController,
             onChanged: onTextChanged,
@@ -92,25 +92,25 @@ class TextLayerEditor extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingMd),
           const _FieldLabel(AppStrings.customizerFont),
-          const SizedBox(height: AppSizes.paddingXs + 2),
+          SizedBox(height: AppSizes.paddingXs + 2),
           _FontDropdown(
             activeLayer: activeLayer!,
             fontsList: fontsList,
             getFontFamily: getFontFamily,
             onFontChanged: onFontChanged,
           ),
-          const SizedBox(height: AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingMd),
           const _FieldLabel(AppStrings.customizerPrintColor),
-          const SizedBox(height: AppSizes.paddingXs + 6),
+          SizedBox(height: AppSizes.paddingXs + 6),
           PrintingColorPicker(
             presetColors: presetColors,
             selectedColor: activeLayer?.color,
             onColorSelected: onColorSelected,
             onCustomColorTap: onCustomColorTap,
           ),
-          const SizedBox(height: AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingMd),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -198,7 +198,7 @@ class _FontDropdown extends StatelessWidget {
         child: DropdownButton<String>(
           value: activeLayer.font,
           isExpanded: true,
-          icon: const Icon(
+          icon: Icon(
             Icons.keyboard_arrow_down_rounded,
             color: AppColors.textSecondary,
           ),

@@ -5,8 +5,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
+import 'package:flutter_ecommerce/core/storage/app_settings_storage.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/core/storage/local_storage.dart';
+import 'package:flutter_ecommerce/app/theme/theme_cubit.dart';
 import 'package:flutter_ecommerce/core/utils/notification_service.dart';
 import 'package:flutter_ecommerce/features/address/address_module.dart';
 import 'package:flutter_ecommerce/features/admin/admin_module.dart';
@@ -44,6 +46,10 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<AuthTokenStorage>(
     () => AuthTokenStorage(sl<LocalStorage>()),
   );
+  sl.registerLazySingleton<AppSettingsStorage>(
+    () => AppSettingsStorage(sl<LocalStorage>()),
+  );
+  sl.registerFactory<ThemeCubit>(() => ThemeCubit(sl<AppSettingsStorage>()));
 
   final CookieJar cookieJar;
   if (kIsWeb) {

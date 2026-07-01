@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/product/domain/entities/product_variant_entity.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/color_selector.dart';
@@ -81,7 +80,7 @@ class ProductDetailContent extends StatelessWidget {
         : product.stockQuantity;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: const ProductDetailAppBar(),
       body: Column(
         children: [

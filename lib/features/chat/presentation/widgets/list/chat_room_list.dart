@@ -29,7 +29,7 @@ class ChatRoomList extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
       itemCount: filtered.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => SizedBox(height: 12),
       itemBuilder: (context, index) {
         return _ChatRoomCard(chat: filtered[index]);
       },
@@ -66,7 +66,7 @@ class _EmptyChatRooms extends StatelessWidget {
               size: 56,
               color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Không tìm thấy cuộc hội thoại nào.',
               style: GoogleFonts.inter(
@@ -100,12 +100,12 @@ class _ChatRoomCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: hasUnread
                 ? AppColors.primary.withValues(alpha: 0.2)
-                : const Color(0xFFC1C6D7).withValues(alpha: 0.25),
+                : Theme.of(context).dividerColor.withValues(alpha: 0.25),
             width: hasUnread ? 1.5 : 1,
           ),
           boxShadow: [
@@ -121,9 +121,9 @@ class _ChatRoomCard extends StatelessWidget {
           child: Row(
             children: [
               _ChatRoomAvatar(chat: chat),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Expanded(child: _ChatRoomSummary(chat: chat)),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _ChatRoomMeta(chat: chat),
             ],
           ),
@@ -156,7 +156,7 @@ class _ChatRoomAvatar extends StatelessWidget {
           child: Image.network(
             chat.senderAvatar,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 24),
+            errorBuilder: (_, __, ___) => Icon(Icons.person, size: 24),
           ),
         ),
         if (chat.isOnline)
@@ -169,7 +169,7 @@ class _ChatRoomAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.success,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(color: Theme.of(context).colorScheme.surface, width: 2),
               ),
             ),
           ),
@@ -200,17 +200,17 @@ class _ChatRoomSummary extends StatelessWidget {
                 style: GoogleFonts.lexend(
                   fontSize: 14,
                   fontWeight: hasUnread ? FontWeight.w800 : FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
             if (chat.tag != null) ...[
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               _ChatTag(tag: chat.tag!),
             ],
           ],
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         Text(
           chat.lastMessage,
           maxLines: 1,
@@ -218,7 +218,7 @@ class _ChatRoomSummary extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
-            color: hasUnread ? AppColors.textPrimary : AppColors.textSecondary,
+            color: hasUnread ? Theme.of(context).colorScheme.onSurface : AppColors.textSecondary,
           ),
         ),
       ],
@@ -276,12 +276,12 @@ class _ChatRoomMeta extends StatelessWidget {
             color: hasUnread ? AppColors.primary : AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Row(
           children: [
             if (chat.associatedProductImage != null) ...[
               _AssociatedProductImage(url: chat.associatedProductImage!),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
             ],
             if (hasUnread) _UnreadBadge(count: chat.unreadCount),
           ],
@@ -329,7 +329,7 @@ class _UnreadBadge extends StatelessWidget {
         color: AppColors.accent,
         shape: BoxShape.circle,
       ),
-      constraints: const BoxConstraints(
+      constraints: BoxConstraints(
         minWidth: 18,
         minHeight: 18,
       ),

@@ -31,7 +31,7 @@ class AppEmptyView extends StatelessWidget {
               Icon(icon,
                   size: AppSizes.iconXl - AppSizes.paddingSm,
                   color: AppColors.textSecondary),
-              const SizedBox(height: AppSizes.paddingMd),
+              SizedBox(height: AppSizes.paddingMd),
               Text(
                 title,
                 textAlign: TextAlign.center,
@@ -42,7 +42,7 @@ class AppEmptyView extends StatelessWidget {
                 ),
               ),
               if (message != null) ...[
-                const SizedBox(height: AppSizes.paddingXs + 2),
+                SizedBox(height: AppSizes.paddingXs + 2),
                 Text(
                   message!,
                   textAlign: TextAlign.center,
@@ -53,10 +53,10 @@ class AppEmptyView extends StatelessWidget {
                 ),
               ],
               if (actionLabel != null && onAction != null) ...[
-                const SizedBox(height: AppSizes.paddingMd),
+                SizedBox(height: AppSizes.paddingMd),
                 FilledButton.icon(
                   onPressed: onAction,
-                  icon: const Icon(Icons.add_rounded),
+                  icon: Icon(Icons.add_rounded),
                   label: Text(actionLabel!),
                 ),
               ],

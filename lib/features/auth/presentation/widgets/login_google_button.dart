@@ -79,7 +79,7 @@ class _LoginGoogleButtonState extends State<LoginGoogleButton>
                   color: const Color(0xFF4285F4),
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               Text(
                 AppStrings.googleBrandName,
                 style: GoogleFonts.lexend(

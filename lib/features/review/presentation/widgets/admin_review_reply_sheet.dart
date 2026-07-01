@@ -55,7 +55,7 @@ class _AdminReviewReplySheetState extends State<AdminReviewReplySheet> {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextField(
             controller: _controller,
             autofocus: true,
@@ -71,7 +71,7 @@ class _AdminReviewReplySheetState extends State<AdminReviewReplySheet> {
               if (_errorText != null) setState(() => _errorText = null);
             },
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: FilledButton(

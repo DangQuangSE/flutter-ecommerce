@@ -18,31 +18,32 @@ class ShopInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ??
+            Theme.of(context).colorScheme.surface,
         elevation: 0,
         centerTitle: true,
         title: Text(
           AppStrings.shopInfoTitle,
           style: GoogleFonts.lexend(
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w700,
-            fontSize: AppSizes.fontXl,
+            fontSize: AppSizes.fontXxl,
           ),
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SafeArea(
         child: BlocBuilder<ShopCubit, ShopState>(
           builder: (context, state) => switch (state) {
-            ShopInitial() => const Center(
+            ShopInitial() => Center(
                 child: CircularProgressIndicator(
                   valueColor:
                       AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
-            ShopLoading() => const Center(
+            ShopLoading() => Center(
                 child: CircularProgressIndicator(
                   valueColor:
                       AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -73,7 +74,7 @@ class _ShopContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ShopCoverHeader(shop: shop),
-          const SizedBox(height: AppSizes.paddingXl + AppSizes.paddingMd),
+          SizedBox(height: AppSizes.paddingXl + AppSizes.paddingMd),
           _ShopNameSection(shop: shop),
           const Divider(height: AppSizes.paddingXl),
           _ShopDetailsSection(shop: shop),
@@ -176,7 +177,7 @@ class _ShopDescriptionSection extends StatelessWidget {
         AppSizes.spacingXs,
         Text(
           description,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: AppSizes.fontLg,
             color: AppColors.textPrimary,
             height: 1.5,

@@ -10,7 +10,7 @@ class CheckoutSuccessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -41,7 +41,7 @@ class CheckoutSuccessPage extends StatelessWidget {
                         color: Color(0xFF009933),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check_rounded,
                         color: Colors.white,
                         size: 40,
@@ -50,7 +50,7 @@ class CheckoutSuccessPage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Title
               Center(
@@ -69,7 +69,7 @@ class CheckoutSuccessPage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Subtitle description
               Padding(
@@ -113,8 +113,8 @@ class CheckoutSuccessPage extends StatelessWidget {
                         letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.shopping_bag_outlined, size: 18),
+                    SizedBox(width: 8),
+                    Icon(Icons.shopping_bag_outlined, size: 18),
                   ],
                 ),
               ),

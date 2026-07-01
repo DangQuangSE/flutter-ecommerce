@@ -135,9 +135,9 @@ class _ProductFilterBottomSheetState extends State<ProductFilterBottomSheet> {
 
     return Container(
       height: screenHeight * 0.92,
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.vertical(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppSizes.radiusRound),
         ),
       ),

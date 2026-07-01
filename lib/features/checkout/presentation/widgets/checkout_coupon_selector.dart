@@ -88,7 +88,7 @@ class CheckoutCouponSelector extends StatelessWidget {
                       hasCoupon ? AppColors.primary : AppColors.textSecondary,
                   size: AppSizes.iconMd,
                 ),
-                const SizedBox(width: AppSizes.radiusLg),
+                SizedBox(width: AppSizes.radiusLg),
                 Expanded(
                   child: _CouponText(
                     selectedCoupon: selectedCoupon,
@@ -101,7 +101,7 @@ class CheckoutCouponSelector extends StatelessWidget {
                 if (isLoading)
                   const AppLoadingView(size: AppSizes.fontLg)
                 else if (hasError)
-                  const Icon(
+                  Icon(
                     Icons.refresh_rounded,
                     color: AppColors.error,
                     size: AppSizes.fontXxl,
@@ -153,7 +153,7 @@ class _CouponText extends StatelessWidget {
             color: hasCoupon ? AppColors.primary : AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Text(
           _subtitle(hasCoupon),
           style: GoogleFonts.inter(

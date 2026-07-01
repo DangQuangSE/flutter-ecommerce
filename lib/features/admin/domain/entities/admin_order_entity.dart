@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'admin_order_item_entity.dart';
 
 class AdminOrderEntity extends Equatable {
@@ -34,7 +35,7 @@ class AdminOrderEntity extends Equatable {
   }
 
   String get primaryProductName =>
-      items.isNotEmpty ? items.first.productName : 'Không có sản phẩm';
+      items.isNotEmpty ? items.first.productName : AppStrings.adminOrderNoProduct;
 
   @override
   List<Object?> get props => [
