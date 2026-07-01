@@ -491,34 +491,53 @@ class AdminDashboardTab extends StatelessWidget {
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final notif = state.notifications[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
+                      return Opacity(
+                        opacity: notif.isRead ? 0.6 : 1.0,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Stack(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.receipt_long_rounded,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              if (!notif.isRead)
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                          child: const Icon(
-                            Icons.receipt_long_rounded,
-                            color: AppColors.primary,
+                          title: Text(
+                            notif.message,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: notif.isRead ? FontWeight.w500 : FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          notif.message,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                          subtitle: Text(
+                            'Đơn hàng #${notif.orderId} • ${notif.createdAt}',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
-                        ),
-                        subtitle: Text(
-                          'Đơn hàng #${notif.orderId} • ${notif.createdAt}',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
                         onTap: () {
                           Navigator.pop(sheetContext);
                           context.pushNamed(
@@ -528,7 +547,7 @@ class AdminDashboardTab extends StatelessWidget {
                             },
                           );
                         },
-                      );
+                      ));
                     },
                   ),
                 ),
