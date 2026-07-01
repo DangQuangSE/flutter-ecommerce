@@ -41,6 +41,7 @@ abstract final class AppStrings {
   static const String confirm = 'Xác nhận';
   static const String clearSearch = 'Xóa tìm kiếm';
   static const String genericLoadError = 'Đã xảy ra lỗi khi tải dữ liệu.';
+  static const String networkConnectionError = 'Lỗi kết nối mạng';
   static const String viewCart = 'XEM GIỎ';
   static const String addToCart = 'ADD TO CART';
   static const String outOfStock = 'HẾT HÀNG';
@@ -593,6 +594,12 @@ abstract final class AppStrings {
   static const String writeReviewRatingRequired = 'Vui lòng chọn số sao';
   static const String writeReviewCommentRequired = 'Vui lòng nhập nhận xét';
   static const String writeReviewSubmitSuccess = 'Đã gửi đánh giá. Cảm ơn bạn!';
+  static const String writeReviewSubmitError = 'Lỗi gửi đánh giá';
+  static const String reviewListParseError =
+      'Phản hồi danh sách đánh giá không hợp lệ';
+  static const String reviewParseError = 'Phản hồi đánh giá không hợp lệ';
+  static const String writeReviewParseError =
+      'Phản hồi gửi đánh giá không hợp lệ';
   static String writeReviewMaxImages(int max) =>
       'Chỉ được chọn tối đa $max ảnh';
 

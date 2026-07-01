@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/order_review_eligibility.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_item_entity.dart';
 import 'package:flutter_ecommerce/features/order/presentation/widgets/order_price_formatter.dart';
@@ -22,8 +23,10 @@ class OrderDetailItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canReview =
-        order.status.toUpperCase() == 'DELIVERED' && !item.isReviewed;
+    final canReview = OrderReviewEligibility.canReview(
+      orderStatus: order.status,
+      isReviewed: item.isReviewed,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -48,7 +51,8 @@ class OrderDetailItemCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Size: ${item.size} · SL: ${item.quantity}',
+                  '${AppStrings.orderSizeLabel}: ${item.size} · '
+                  '${AppStrings.orderQuantityLabel}: ${item.quantity}',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/features/review/data/datasources/review_remote_datasource.dart';
@@ -10,6 +11,14 @@ import 'package:flutter_ecommerce/features/review/data/models/review_model.dart'
 import 'package:flutter_ecommerce/features/review/domain/entities/review_page.dart';
 
 class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
+  static const String _reviewPart = 'review';
+  static const String _imagesPart = 'images';
+  static const String _orderItemIdField = 'orderItemId';
+  static const String _ratingField = 'rating';
+  static const String _commentField = 'comment';
+  static const String _jsonMimeType = 'application';
+  static const String _jsonMimeSubtype = 'json';
+
   final DioClient _dioClient;
 
   const ReviewRemoteDataSourceImpl(this._dioClient);
@@ -34,7 +43,7 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
       throw NetworkException(
         e.response?.data?['message'] as String? ??
             e.message ??
-            'Lỗi kết nối mạng',
+            AppStrings.networkConnectionError,
         statusCode: e.response?.statusCode,
       );
     }
@@ -49,7 +58,7 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
       );
       final data = response.data?['data'];
       if (data is! Map<String, dynamic>) {
-        throw const ParseException('Phản hồi danh sách đánh giá không hợp lệ');
+        throw const ParseException(AppStrings.reviewListParseError);
       }
       final content = (data['content'] as List<dynamic>? ?? [])
           .map((e) => ReviewModel.fromJson(e as Map<String, dynamic>))
@@ -66,7 +75,7 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
       throw NetworkException(
         e.response?.data?['message'] as String? ??
             e.message ??
-            'Lỗi kết nối mạng',
+            AppStrings.networkConnectionError,
         statusCode: e.response?.statusCode,
       );
     }
@@ -81,14 +90,14 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
       );
       final data = response.data?['data'];
       if (data is! Map<String, dynamic>) {
-        throw const ParseException('Phản hồi đánh giá không hợp lệ');
+        throw const ParseException(AppStrings.reviewParseError);
       }
       return ReviewModel.fromJson(data);
     } on DioException catch (e) {
       throw NetworkException(
         e.response?.data?['message'] as String? ??
             e.message ??
-            'Lỗi kết nối mạng',
+            AppStrings.networkConnectionError,
         statusCode: e.response?.statusCode,
       );
     }
@@ -103,16 +112,16 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
   }) async {
     try {
       final formData = FormData.fromMap({
-        'review': MultipartFile.fromString(
+        _reviewPart: MultipartFile.fromString(
           jsonEncode({
-            'orderItemId': orderItemId,
-            'rating': rating,
-            'comment': comment,
+            _orderItemIdField: orderItemId,
+            _ratingField: rating,
+            _commentField: comment,
           }),
-          contentType: MediaType('application', 'json'),
+          contentType: MediaType(_jsonMimeType, _jsonMimeSubtype),
         ),
         if (imagePaths.isNotEmpty)
-          'images': await Future.wait(imagePaths.map(
+          _imagesPart: await Future.wait(imagePaths.map(
             (path) =>
                 MultipartFile.fromFile(path, filename: path.split('/').last),
           )),
@@ -121,17 +130,25 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
       final response = await _dioClient.dio.post<Map<String, dynamic>>(
         ApiConstants.userReviews,
         data: formData,
+        options: Options(contentType: Headers.multipartFormDataContentType),
       );
       final data = response.data?['data'];
       if (data is! Map<String, dynamic>) {
-        throw const ParseException('Phản hồi gửi đánh giá không hợp lệ');
+        throw const ParseException(AppStrings.writeReviewParseError);
       }
       return ReviewModel.fromJson(data);
     } on DioException catch (e) {
+      final embedded = e.error;
+      if (embedded is AppException) {
+        throw NetworkException(
+          embedded.message,
+          statusCode: embedded is ServerException ? embedded.statusCode : null,
+        );
+      }
       throw NetworkException(
         e.response?.data?['message'] as String? ??
             e.message ??
-            'Lỗi gửi đánh giá',
+            AppStrings.writeReviewSubmitError,
         statusCode: e.response?.statusCode,
       );
     }
