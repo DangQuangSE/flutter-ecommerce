@@ -5,12 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
-import 'package:flutter_ecommerce/core/widgets/app_section_card.dart';
-import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
-import 'package:flutter_ecommerce/features/location/domain/entities/location_entity.dart';
+import 'package:flutter_ecommerce/features/address/presentation/widgets/address_contact_section.dart';
+import 'package:flutter_ecommerce/features/address/presentation/widgets/address_location_section.dart';
+import 'package:flutter_ecommerce/features/address/presentation/widgets/address_options_section.dart';
+import 'package:flutter_ecommerce/features/address/presentation/widgets/address_submit_bar.dart';
 import 'package:flutter_ecommerce/features/location/presentation/cubit/location_cubit.dart';
 import 'package:flutter_ecommerce/features/location/presentation/cubit/location_state.dart';
 
@@ -63,14 +64,13 @@ class _AddressFormPageState extends State<AddressFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    final title = _isEditing
-        ? AppStrings.addressFormEditTitle
-        : AppStrings.addressFormTitle;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          title,
+          _isEditing
+              ? AppStrings.addressFormEditTitle
+              : AppStrings.addressFormTitle,
           style: GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 18),
         ),
         backgroundColor: Colors.white,
@@ -78,51 +78,8 @@ class _AddressFormPageState extends State<AddressFormPage> {
         elevation: 0,
         surfaceTintColor: Colors.white,
       ),
-      bottomNavigationBar: BlocBuilder<AddressCubit, AddressState>(
-        builder: (context, state) {
-          final isSubmitting = state is AddressLoaded && state.isSubmitting;
-          return Container(
-            padding: EdgeInsets.fromLTRB(
-              AppSizes.paddingMd,
-              AppSizes.radiusLg,
-              AppSizes.paddingMd,
-              MediaQuery.of(context).padding.bottom + AppSizes.radiusLg,
-            ),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
-            ),
-            child: SizedBox(
-              height: AppSizes.buttonMinHeight,
-              child: ElevatedButton(
-                onPressed: isSubmitting ? null : _handleSubmit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                  ),
-                ),
-                child: isSubmitting
-                    ? const AppLoadingView(
-                        size: AppSizes.fontHeading,
-                        color: AppColors.white,
-                      )
-                    : Text(
-                        _isEditing
-                            ? AppStrings.addressUpdate
-                            : AppStrings.addressSave,
-                        style: GoogleFonts.lexend(
-                          fontSize: AppSizes.submitButtonFontSize,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-              ),
-            ),
-          );
-        },
-      ),
+      bottomNavigationBar:
+          AddressSubmitBar(isEditing: _isEditing, onSubmit: _handleSubmit),
       body: BlocConsumer<AddressCubit, AddressState>(
         listener: (context, state) {
           if (state is AddressLoaded &&
@@ -131,333 +88,35 @@ class _AddressFormPageState extends State<AddressFormPage> {
             context.pop();
           }
         },
-        builder: (context, state) {
-          return Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSizes.paddingMd,
-                AppSizes.paddingMd,
-                AppSizes.paddingMd,
-                AppSizes.fontDisplay,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Section 1: Contact info
-                  AppSectionCard(
-                    title: AppStrings.addressContactSectionTitle,
-                    icon: Icons.person_outline_rounded,
-                    children: [
-                      _buildLabeledField(
-                        label: AppStrings.addressFullNameLabel,
-                        required: true,
-                        child: _buildTextFormField(
-                          controller: _fullNameCtrl,
-                          hint: AppStrings.addressFullNameHint,
-                          icon: Icons.person_outline,
-                          validator: (v) => v == null || v.trim().isEmpty
-                              ? AppStrings.addressFullNameRequired
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.fontLg),
-                      _buildLabeledField(
-                        label: AppStrings.addressPhoneLabel,
-                        required: true,
-                        child: _buildTextFormField(
-                          controller: _phoneCtrl,
-                          hint: AppStrings.addressPhoneHint,
-                          icon: Icons.phone_outlined,
-                          keyboardType: TextInputType.phone,
-                          validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
-                              return AppStrings.addressPhoneRequired;
-                            }
-                            final phone = v.trim();
-                            if (!RegExp(r'^(0[3|5|7|8|9])[0-9]{8}$')
-                                .hasMatch(phone)) {
-                              return AppStrings.addressPhoneInvalid;
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSizes.radiusLg),
-
-                  // Section 2: Address detail
-                  AppSectionCard(
-                    title: AppStrings.addressShippingSectionTitle,
-                    icon: Icons.location_on_outlined,
-                    children: [
-                      _buildLabeledField(
-                        label: AppStrings.addressLineLabel,
-                        required: true,
-                        child: _buildTextFormField(
-                          controller: _addressLineCtrl,
-                          hint: AppStrings.addressLineHint,
-                          icon: Icons.home_outlined,
-                          validator: (v) => v == null || v.trim().isEmpty
-                              ? AppStrings.addressLineRequired
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.fontLg),
-                      _buildLabeledField(
-                        label: AppStrings.addressProvinceLabel,
-                        required: true,
-                        child: _buildLocationDropdown<LocationEntity>(
-                          hint: AppStrings.addressProvincePickerHint,
-                          icon: Icons.map_outlined,
-                          items: (s) => s.provinces,
-                          selectedItem: (s) => s.selectedProvince,
-                          isLoading: (_) => false,
-                          onChanged: (v) {
-                            if (v != null) {
-                              context.read<LocationCubit>().selectProvince(v);
-                            }
-                          },
-                          validator: (v) => v == null
-                              ? AppStrings.addressProvincePickerRequired
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.fontLg),
-                      _buildLabeledField(
-                        label: AppStrings.addressDistrictLabel,
-                        required: true,
-                        child: _buildLocationDropdown<LocationEntity>(
-                          hint: AppStrings.addressDistrictPickerHint,
-                          icon: Icons.location_city_outlined,
-                          items: (s) => s.districts,
-                          selectedItem: (s) => s.selectedDistrict,
-                          isLoading: (s) => s.isLoadingDistricts,
-                          onChanged: (v) {
-                            if (v != null) {
-                              context.read<LocationCubit>().selectDistrict(v);
-                            }
-                          },
-                          validator: (v) => v == null
-                              ? AppStrings.addressDistrictPickerRequired
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.fontLg),
-                      _buildLabeledField(
-                        label: AppStrings.addressWardLabel,
-                        required: true,
-                        child: _buildLocationDropdown<LocationEntity>(
-                          hint: AppStrings.addressWardPickerHint,
-                          icon: Icons.place_outlined,
-                          items: (s) => s.wards,
-                          selectedItem: (s) => s.selectedWard,
-                          isLoading: (s) => s.isLoadingWards,
-                          onChanged: (v) {
-                            if (v != null) {
-                              context.read<LocationCubit>().selectWard(v);
-                            }
-                          },
-                          validator: (v) => v == null
-                              ? AppStrings.addressWardPickerRequired
-                              : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSizes.radiusLg),
-
-                  // Section 3: Optional
-                  AppSectionCard(
-                    title: AppStrings.addressOptionsSectionTitle,
-                    icon: Icons.tune_outlined,
-                    children: [
-                      _buildLabeledField(
-                        label: AppStrings.addressLabelLabel,
-                        required: false,
-                        hint: AppStrings.addressOptionalLabelExample,
-                        child: _buildTextFormField(
-                          controller: _labelCtrl,
-                          hint: AppStrings.addressLabelHint,
-                          icon: Icons.label_outline,
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.paddingSm),
-                      _buildDefaultToggle(),
-                    ],
-                  ),
-                  const SizedBox(height: AppSizes.paddingXl),
-                ],
-              ),
+        builder: (context, state) => Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.paddingMd,
+              AppSizes.paddingMd,
+              AppSizes.paddingMd,
+              AppSizes.fontDisplay,
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
-  Widget _buildLabeledField({
-    required String label,
-    required Widget child,
-    bool required = true,
-    String? hint,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AddressContactSection(
+                  fullNameCtrl: _fullNameCtrl,
+                  phoneCtrl: _phoneCtrl,
+                ),
+                const SizedBox(height: AppSizes.radiusLg),
+                AddressLocationSection(addressLineCtrl: _addressLineCtrl),
+                const SizedBox(height: AppSizes.radiusLg),
+                AddressOptionsSection(
+                  labelCtrl: _labelCtrl,
+                  isDefault: _isDefault,
+                  onToggleDefault: () =>
+                      setState(() => _isDefault = !_isDefault),
+                ),
+                const SizedBox(height: AppSizes.paddingXl),
+              ],
             ),
-            if (required)
-              Text(
-                ' *',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.red,
-                ),
-              ),
-            if (!required && hint != null) ...[
-              const SizedBox(width: 6),
-              Text(
-                hint,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: AppColors.textHint,
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 6),
-        child,
-      ],
-    );
-  }
-
-  Widget _buildTextFormField({
-    required TextEditingController controller,
-    required String hint,
-    IconData? icon,
-    TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
-        prefixIcon: icon != null
-            ? Icon(icon, size: 18, color: AppColors.textSecondary)
-            : null,
-        filled: true,
-        fillColor: const Color(0xFFF8F9FC),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.red, width: 1.2),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.red, width: 1.6),
-        ),
-      ),
-      validator: validator,
-    );
-  }
-
-  Widget _buildDefaultToggle() {
-    return InkWell(
-      onTap: () => setState(() => _isDefault = !_isDefault),
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: _isDefault
-              ? AppColors.primary.withValues(alpha: 0.06)
-              : const Color(0xFFF8F9FC),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: _isDefault ? AppColors.primary : const Color(0xFFE5E7EB),
-            width: _isDefault ? 1.4 : 1,
           ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.home_work_outlined,
-              size: 18,
-              color: _isDefault ? AppColors.primary : AppColors.textSecondary,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppStrings.addressIsDefaultHint,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _isDefault
-                          ? AppColors.primary
-                          : AppColors.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    AppStrings.addressDefaultOrderHint,
-                    style: GoogleFonts.inter(
-                      fontSize: AppSizes.fontSm,
-                      color: AppColors.textHint,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: _isDefault ? AppColors.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color:
-                      _isDefault ? AppColors.primary : const Color(0xFFD1D5DB),
-                  width: 1.5,
-                ),
-              ),
-              child: _isDefault
-                  ? const Icon(Icons.check_rounded,
-                      size: 14, color: Colors.white)
-                  : null,
-            ),
-          ],
         ),
       ),
     );
@@ -465,7 +124,6 @@ class _AddressFormPageState extends State<AddressFormPage> {
 
   void _handleSubmit() {
     if (!_formKey.currentState!.validate()) return;
-
     final locState = context.read<LocationCubit>().state;
     String city = '', district = '', ward = '';
     if (locState is LocationLoaded) {
@@ -473,7 +131,6 @@ class _AddressFormPageState extends State<AddressFormPage> {
       district = locState.selectedDistrict?.name ?? '';
       ward = locState.selectedWard?.name ?? '';
     }
-
     final entity = AddressEntity(
       id: widget.initialAddress?.id,
       fullName: _fullNameCtrl.text.trim(),
@@ -485,78 +142,11 @@ class _AddressFormPageState extends State<AddressFormPage> {
       label: _labelCtrl.text.trim().isEmpty ? null : _labelCtrl.text.trim(),
       isDefault: _isDefault,
     );
-
     final cubit = context.read<AddressCubit>();
     if (_isEditing) {
       cubit.updateAddress(widget.initialAddress!.id!, entity);
     } else {
       cubit.createAddress(entity);
     }
-  }
-
-  Widget _buildLocationDropdown<T extends LocationEntity>({
-    required String hint,
-    IconData? icon,
-    required List<T> Function(LocationLoaded state) items,
-    required T? Function(LocationLoaded state) selectedItem,
-    required bool Function(LocationLoaded state) isLoading,
-    required void Function(T?) onChanged,
-    required String? Function(T?)? validator,
-  }) {
-    OutlineInputBorder borderOf(Color color, [double width = 1]) =>
-        OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: color, width: width),
-        );
-
-    return BlocBuilder<LocationCubit, LocationState>(
-      builder: (context, state) {
-        final loaded = state is LocationLoaded ? state : null;
-        final loading = loaded == null || isLoading(loaded);
-        return DropdownButtonFormField<T>(
-          key: ValueKey(
-              'loc_${hint}_${loaded == null ? null : selectedItem(loaded)?.code}'),
-          initialValue: loaded == null ? null : selectedItem(loaded),
-          menuMaxHeight: 280,
-          isExpanded: true,
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
-          icon: loading
-              ? const AppLoadingView(size: AppSizes.iconSm)
-              : const Icon(Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.textSecondary),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle:
-                GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
-            prefixIcon: icon != null
-                ? Icon(icon, size: 18, color: AppColors.textSecondary)
-                : null,
-            filled: true,
-            fillColor: const Color(0xFFF8F9FC),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-            border: borderOf(const Color(0xFFE5E7EB)),
-            enabledBorder: borderOf(const Color(0xFFE5E7EB)),
-            focusedBorder: borderOf(AppColors.primary, 1.6),
-            errorBorder: borderOf(Colors.red, 1.2),
-            focusedErrorBorder: borderOf(Colors.red, 1.6),
-          ),
-          items: loaded == null
-              ? const []
-              : items(loaded)
-                  .map((item) => DropdownMenuItem(
-                        value: item,
-                        child: Text(
-                          item.name,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(fontSize: 14),
-                        ),
-                      ))
-                  .toList(),
-          onChanged: loading ? null : onChanged,
-          validator: validator,
-        );
-      },
-    );
   }
 }
