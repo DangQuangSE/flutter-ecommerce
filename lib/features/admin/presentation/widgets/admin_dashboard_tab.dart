@@ -9,6 +9,8 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_state.dart';
 
 class AdminDashboardTab extends StatelessWidget {
   final AdminLoaded state;
@@ -44,11 +46,7 @@ class AdminDashboardTab extends StatelessWidget {
               Row(
                 children: [
                   _chatInboxButton(context),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.notifications_none_rounded,
-                        color: AppColors.textPrimary),
-                  ),
+                  _notificationBellButton(context),
                   const CircleAvatar(
                     radius: 16,
                     backgroundImage: NetworkImage(
@@ -88,9 +86,10 @@ class AdminDashboardTab extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(
+                      color: Theme.of(context).dividerColor),
                 ),
                 child: Icon(Icons.calendar_today_rounded,
                     size: 16, color: AppColors.textPrimary),
@@ -204,9 +203,9 @@ class AdminDashboardTab extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,9 +225,10 @@ class AdminDashboardTab extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.background,
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade200),
+                        border: Border.all(
+                            color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         children: [
@@ -308,9 +308,9 @@ class AdminDashboardTab extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,6 +402,161 @@ class AdminDashboardTab extends StatelessWidget {
           }),
         ),
       ],
+    );
+  }
+
+  Widget _notificationBellButton(BuildContext context) {
+    return BlocBuilder<AdminNotificationCubit, AdminNotificationState>(
+      builder: (context, state) {
+        final unread = state.unreadCount;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            IconButton(
+              onPressed: () {
+                context.read<AdminNotificationCubit>().markAllAsRead();
+                _showNotificationsSheet(context, state);
+              },
+              icon: const Icon(Icons.notifications_none_rounded,
+                  color: AppColors.textPrimary),
+            ),
+            if (unread > 0)
+              Positioned(
+                right: 6,
+                top: 6,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  constraints:
+                      const BoxConstraints(minWidth: 16, minHeight: 16),
+                  decoration: const BoxDecoration(
+                      color: AppColors.error, shape: BoxShape.circle),
+                  child: Text(
+                    unread > 9 ? '9+' : '$unread',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNotificationsSheet(
+      BuildContext context, AdminNotificationState state) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Thông báo đơn hàng mới',
+                style: GoogleFonts.lexend(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (state.notifications.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    'Chưa có thông báo nào',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                )
+              else
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: state.notifications.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final notif = state.notifications[index];
+                      return Opacity(
+                        opacity: notif.isRead ? 0.6 : 1.0,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Stack(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.receipt_long_rounded,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              if (!notif.isRead)
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          title: Text(
+                            notif.message,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: notif.isRead ? FontWeight.w500 : FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Đơn hàng #${notif.orderId} • ${notif.createdAt}',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          context.pushNamed(
+                            AppRoutes.adminOrderDetail,
+                            pathParameters: {
+                              'orderId': notif.orderId.toString()
+                            },
+                          );
+                        },
+                      ));
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

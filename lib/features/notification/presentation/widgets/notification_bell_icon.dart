@@ -67,7 +67,10 @@ class _NotificationBellIconState extends State<NotificationBellIcon>
           alignment: Alignment.center,
           children: [
             IconButton(
-              onPressed: () => context.goNamed(AppRoutes.notificationList),
+              onPressed: () {
+                context.read<NotificationCubit>().markAllAsRead();
+                context.goNamed(AppRoutes.notificationList);
+              },
               icon: const Icon(
                 Icons.notifications_none_outlined,
                 color: AppColors.primary,

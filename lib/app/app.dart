@@ -10,8 +10,10 @@ import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cu
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
-
 import 'package:flutter_ecommerce/app/theme/theme_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_state.dart';
+import 'package:flutter_ecommerce/core/utils/notification_service.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -33,16 +35,32 @@ class App extends StatelessWidget {
         BlocProvider<CustomizerCubit>(
           create: (_) => sl<CustomizerCubit>(),
         ),
+        BlocProvider<AdminNotificationCubit>(
+          create: (_) => sl<AdminNotificationCubit>(),
+        ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
-          return MaterialApp.router(
-            title: AppConstants.appName,
-            theme: AppTheme.light(),
-            darkTheme: AppTheme.dark(),
-            themeMode: themeMode,
-            routerConfig: AppRouter.router,
-            debugShowCheckedModeBanner: false,
+          return BlocListener<AdminNotificationCubit, AdminNotificationState>(
+            listenWhen: (previous, current) =>
+                previous.latestNotification != current.latestNotification &&
+                current.latestNotification != null,
+            listener: (context, state) {
+              final notification = state.latestNotification!;
+              sl<NotificationService>().showNotification(
+                id: notification.orderId,
+                title: 'New Order: #${notification.orderId}',
+                body: notification.message,
+              );
+            },
+            child: MaterialApp.router(
+              title: AppConstants.appName,
+              theme: AppTheme.light(),
+              darkTheme: AppTheme.dark(),
+              themeMode: themeMode,
+              routerConfig: AppRouter.router,
+              debugShowCheckedModeBanner: false,
+            ),
           );
         },
       ),

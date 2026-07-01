@@ -259,8 +259,10 @@ class _NotificationPageState extends State<NotificationPage> {
 
     return GestureDetector(
       onTap: () {
-        if (!item.isRead) {
-          context.read<NotificationCubit>().markAsRead(item.id);
+        if (item.type == 'ORDER_STATUS_CHANGED' || item.type == 'NEW_ORDER' || item.type == 'order') {
+          if (item.relatedId != null) {
+            context.pushNamed(AppRoutes.orderDetail, pathParameters: {'id': item.relatedId.toString()});
+          }
         }
       },
       child: Container(

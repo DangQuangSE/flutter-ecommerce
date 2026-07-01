@@ -3,6 +3,6 @@ import 'package:flutter_ecommerce/features/notification/domain/entities/notifica
 
 abstract interface class NotificationRepository {
   Future<Result<List<NotificationEntity>>> getNotifications();
-  Future<Result<void>> markAsRead(String id);
+  Future<Result<void>> markAsRead(int id);
   Future<Result<void>> markAllAsRead();
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import '../models/admin_stats_model.dart';
+import '../models/admin_notification_model.dart';
 import 'admin_remote_datasource.dart';
 
 class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
@@ -11,5 +12,17 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   Future<AdminStatsModel> getAdminStats() async {
     await Future.delayed(const Duration(milliseconds: 400));
     return AdminStatsModel.mockStats;
+  }
+
+  @override
+  Future<List<AdminNotificationModel>> getAdminNotifications() async {
+    final response = await _dioClient.dio.get('/api/v1/notifications/admin?page=0&size=50');
+    final data = response.data['data']['content'] as List;
+    return data.map((e) => AdminNotificationModel.fromJson(e)).toList();
+  }
+
+  @override
+  Future<void> markAllNotificationsAsRead() async {
+    await _dioClient.dio.put('/api/v1/notifications/admin/read-all', data: {});
   }
 }

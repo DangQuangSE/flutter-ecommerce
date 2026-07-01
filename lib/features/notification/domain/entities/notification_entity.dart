@@ -1,11 +1,12 @@
 import 'package:equatable/equatable.dart';
 
 class NotificationEntity extends Equatable {
-  final String id;
+  final int id;
   final String title;
-  final String description;
-  final String type; // order, promo, product, system
-  final String createdAt; // e.g. "10 phút trước", "2 giờ trước"
+  final String description; // maps to 'message' from backend
+  final String type;
+  final int? relatedId;
+  final String createdAt;
   final bool isRead;
 
   const NotificationEntity({
@@ -13,15 +14,17 @@ class NotificationEntity extends Equatable {
     required this.title,
     required this.description,
     required this.type,
+    this.relatedId,
     required this.createdAt,
     required this.isRead,
   });
 
   NotificationEntity copyWith({
-    String? id,
+    int? id,
     String? title,
     String? description,
     String? type,
+    int? relatedId,
     String? createdAt,
     bool? isRead,
   }) {
@@ -30,11 +33,12 @@ class NotificationEntity extends Equatable {
       title: title ?? this.title,
       description: description ?? this.description,
       type: type ?? this.type,
+      relatedId: relatedId ?? this.relatedId,
       createdAt: createdAt ?? this.createdAt,
       isRead: isRead ?? this.isRead,
     );
   }
 
   @override
-  List<Object?> get props => [id, title, description, type, createdAt, isRead];
+  List<Object?> get props => [id, title, description, type, relatedId, createdAt, isRead];
 }
