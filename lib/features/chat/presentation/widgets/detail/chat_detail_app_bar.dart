@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
@@ -6,7 +7,10 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 
 class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ChatEntity? chat;
@@ -40,13 +44,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       leadingWidth: 44,
       leading: IconButton(
-        onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.goNamed(AppRoutes.chatList);
-          }
-        },
+        onPressed: () => _handleBackPressed(context),
         icon: Icon(
           Icons.arrow_back_rounded,
           color: theme.colorScheme.onSurface,
@@ -86,6 +84,23 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         SizedBox(width: 8),
       ],
     );
+  }
+
+  void _handleBackPressed(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    final shouldRefreshChatList =
+        authState is AuthAuthenticated && authState.user.isAdmin;
+    final chatCubit = shouldRefreshChatList ? context.read<ChatCubit>() : null;
+
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoutes.chatList);
+    }
+
+    if (chatCubit != null) {
+      Future.microtask(chatCubit.loadChats);
+    }
   }
 }
 

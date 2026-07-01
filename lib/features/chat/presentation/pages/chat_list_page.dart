@@ -46,7 +46,6 @@ class _ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: const ChatListAppBar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
