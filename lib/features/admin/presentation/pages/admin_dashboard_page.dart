@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -94,53 +95,68 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           return Center(child: Text(AppStrings.adminDashboardLoadError));
         },
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, -2))
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textSecondary.withValues(alpha: 0.7),
-          selectedLabelStyle: GoogleFonts.inter(
-              fontWeight: FontWeight.w600, fontSize: AppSizes.fontSm),
-          unselectedLabelStyle: GoogleFonts.inter(
-              fontWeight: FontWeight.w500, fontSize: AppSizes.fontSm),
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard_rounded, size: AppSizes.iconNav),
-                activeIcon:
-                    Icon(Icons.dashboard_rounded, size: AppSizes.iconNavActive),
-                label: AppStrings.adminNavOverview),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.tune_rounded, size: AppSizes.iconNav),
-                activeIcon:
-                    Icon(Icons.tune_rounded, size: AppSizes.iconNavActive),
-                label: AppStrings.adminNavManagement),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.receipt_long_rounded, size: AppSizes.iconNav),
-                activeIcon: Icon(Icons.receipt_long_rounded,
-                    size: AppSizes.iconNavActive),
-                label: AppStrings.adminNavOrders),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.location_on_rounded, size: AppSizes.iconNav),
-                activeIcon: Icon(Icons.location_on_rounded,
-                    size: AppSizes.iconNavActive),
-                label: AppStrings.adminNavStore),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person_rounded, size: AppSizes.iconNav),
-                activeIcon:
-                    Icon(Icons.person_rounded, size: AppSizes.iconNavActive),
-                label: AppStrings.adminNavProfile),
-          ],
+      bottomNavigationBar: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF0F172A).withValues(alpha: 0.85)
+                  : Colors.white.withValues(alpha: 0.88),
+              border: Border(
+                top: BorderSide(
+                  color: Theme.of(context).dividerColor,
+                  width: 0.5,
+                ),
+              ),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, -2)),
+              ],
+            ),
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) => setState(() => _currentIndex = index),
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedItemColor: AppColors.primary,
+              unselectedItemColor: AppColors.textSecondary.withValues(alpha: 0.7),
+              selectedLabelStyle: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600, fontSize: AppSizes.fontSm),
+              unselectedLabelStyle: GoogleFonts.inter(
+                  fontWeight: FontWeight.w500, fontSize: AppSizes.fontSm),
+              items: const [
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.dashboard_rounded, size: AppSizes.iconNav),
+                    activeIcon:
+                        Icon(Icons.dashboard_rounded, size: AppSizes.iconNavActive),
+                    label: AppStrings.adminNavOverview),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.tune_rounded, size: AppSizes.iconNav),
+                    activeIcon:
+                        Icon(Icons.tune_rounded, size: AppSizes.iconNavActive),
+                    label: AppStrings.adminNavManagement),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.receipt_long_rounded, size: AppSizes.iconNav),
+                    activeIcon: Icon(Icons.receipt_long_rounded,
+                        size: AppSizes.iconNavActive),
+                    label: AppStrings.adminNavOrders),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.location_on_rounded, size: AppSizes.iconNav),
+                    activeIcon: Icon(Icons.location_on_rounded,
+                        size: AppSizes.iconNavActive),
+                    label: AppStrings.adminNavStore),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.person_rounded, size: AppSizes.iconNav),
+                    activeIcon:
+                        Icon(Icons.person_rounded, size: AppSizes.iconNavActive),
+                    label: AppStrings.adminNavProfile),
+              ],
+            ),
+          ),
         ),
       ),
     );
