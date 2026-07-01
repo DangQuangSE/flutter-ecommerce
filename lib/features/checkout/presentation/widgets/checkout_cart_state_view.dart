@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/bloc/checkout_bloc.dart';
@@ -28,7 +28,7 @@ class CheckoutCartStateView extends StatelessWidget {
             BlocBuilder<CartCubit, CartState>(
               builder: (context, state) {
                 if (state is CartLoading) {
-                  return const _CheckoutLoadingIndicator();
+                  return const AppLoadingView();
                 }
                 if (state is CartLoaded) {
                   if (state.items.isEmpty) {
@@ -48,24 +48,11 @@ class CheckoutCartStateView extends StatelessWidget {
             if (isCheckoutBusy)
               const ColoredBox(
                 color: Color(0x66FFFFFF),
-                child: _CheckoutLoadingIndicator(),
+                child: AppLoadingView(),
               ),
           ],
         );
       },
-    );
-  }
-}
-
-class _CheckoutLoadingIndicator extends StatelessWidget {
-  const _CheckoutLoadingIndicator();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-      ),
     );
   }
 }

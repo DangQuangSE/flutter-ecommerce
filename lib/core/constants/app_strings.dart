@@ -14,6 +14,17 @@ abstract final class AppStrings {
       'Vui l\u00f2ng ch\u1ecdn \u0111\u1ecba ch\u1ec9 giao h\u00e0ng!';
   static const String checkoutShippingInfoRequired =
       'Vui l\u00f2ng \u0111i\u1ec1n \u0111\u1ea7y \u0111\u1ee7 th\u00f4ng tin giao h\u00e0ng!';
+  static const String checkoutFullNameLabel = 'HỌ VÀ TÊN';
+  static const String checkoutFullNameRequired = 'Vui lòng nhập họ và tên';
+  static const String checkoutPhoneLabel = 'SỐ ĐIỆN THOẠI';
+  static const String checkoutPhoneRequired = 'Vui lòng nhập số điện thoại';
+  static const String checkoutPhoneInvalid =
+      'Số điện thoại không hợp lệ (VD: 0912345678)';
+  static const String checkoutShippingAddressLabel = 'ĐỊA CHỈ GIAO HÀNG';
+  static const String checkoutShippingAddressRequired =
+      'Vui lòng nhập địa chỉ giao hàng';
+  static const String checkoutShippingEditHint =
+      'Bạn có thể chỉnh sửa thông tin giao hàng bên dưới nếu cần.';
 
   // Cart
   static const String cartEmptyTitle = 'GIỎ HÀNG TRỐNG';
@@ -33,6 +44,67 @@ abstract final class AppStrings {
   static const String viewCart = 'XEM GIỎ';
   static const String addToCart = 'ADD TO CART';
   static const String outOfStock = 'HẾT HÀNG';
+
+  // Commerce common
+  static const String checkoutEmptyTitle = 'ĐƠN HÀNG RỖNG';
+  static const String checkoutEmptyMessage =
+      'Không tìm thấy sản phẩm nào để thanh toán. Hãy quay về giỏ hàng hoặc tiếp tục mua sắm nhé!';
+  static const String checkoutBackToShopping = 'QUAY LẠI MUA SẮM';
+  static const String checkoutLoadErrorTitle =
+      'Không thể tải thông tin thanh toán.';
+  static const String checkoutRetry = 'Thử lại';
+  static const String checkoutSubtotalLabel = 'Tạm tính';
+  static const String checkoutProductCountSuffix = 'sản phẩm';
+  static const String checkoutVoucherDiscountLabel = 'Giảm giá (Voucher)';
+  static const String checkoutExpressShippingLabel = 'Giao hàng hỏa tốc';
+  static const String checkoutFreeShipping = 'Miễn phí';
+  static const String checkoutGrandTotalLabel = 'TỔNG CỘNG';
+  static const String checkoutCouponPickerTitle = 'Chọn Sport Pro Voucher';
+  static const String checkoutCouponInvalid =
+      'Mã giảm giá không hợp lệ hoặc đã hết hạn';
+  static const String checkoutCouponMinOrderNotMet =
+      'Đơn hàng chưa đạt giá trị tối thiểu';
+  static const String checkoutCouponAvailableSection = 'MÃ GIẢM GIÁ KHẢ DỤNG';
+  static const String checkoutCouponUnavailableSection = 'MÃ KHÔNG KHẢ DỤNG';
+  static const String checkoutCouponEmpty = 'Không có mã giảm giá nào';
+  static const String checkoutNoAddressTitle = 'CHƯA CÓ ĐỊA CHỈ GIAO HÀNG';
+  static const String checkoutNoAddressMessage =
+      'Thêm địa chỉ giao hàng để tiến hành đặt hàng.';
+  static const String checkoutAddAddress = 'THÊM ĐỊA CHỈ';
+  static const String checkoutAddNewAddress = 'THÊM ĐỊA CHỈ MỚI';
+  static const String checkoutDefaultAddress = 'MẶC ĐỊNH';
+  static const String checkoutChangeAddress = 'THAY ĐỔI';
+  static const String checkoutSelectAddressTitle = 'CHỌN ĐỊA CHỈ GIAO HÀNG';
+  static const String checkoutVoucherTitle = 'Sport Pro Voucher';
+  static String checkoutCouponApplied(String code) => 'Đã áp dụng mã: $code';
+  static String checkoutCouponSaved(String amount) => 'Tiết kiệm được $amount';
+  static const String checkoutCouponLoadError =
+      'Không tải được mã giảm giá. Nhấn để thử lại.';
+  static const String checkoutCouponLoading = 'Đang tải mã giảm giá...';
+  static const String checkoutCouponChooseOrEnter =
+      'Chọn hoặc nhập mã giảm giá';
+  static const String ok = 'OK';
+  static const String paymentVnpayTitle = 'VNPay';
+  static const String paymentCancelTitle = 'Hủy thanh toán?';
+  static const String paymentCancelMessage =
+      'Bạn có chắc muốn hủy thanh toán VNPay? Đơn hàng vẫn ở trạng thái chờ thanh toán.';
+  static const String paymentContinue = 'Tiếp tục';
+  static const String paymentCancel = 'Hủy';
+  static const String paymentSuccessTitle = 'Thanh toán thành công';
+  static const String paymentFailureTitle = 'Thanh toán thất bại';
+  static const String paymentBackHome = 'VỀ TRANG CHỦ';
+  static const String cartTitle = 'GIỎ HÀNG';
+  static const String cartListTitle = 'DANH SÁCH GIỎ HÀNG';
+  static String cartSelectAll(int selected, int total) =>
+      'CHỌN TẤT CẢ ($selected/$total)';
+  static const String cartRemoveItemTitle = 'Xóa sản phẩm?';
+  static String cartRemoveItemMessage(String name) =>
+      'Bạn có chắc chắn muốn xóa $name khỏi giỏ hàng?';
+  static const String cartRemoveItemConfirm = 'XÓA BỎ';
+  static const String cartRemoveDesignTitle = 'Xóa thiết kế in ấn?';
+  static String cartRemoveDesignMessage(String name) =>
+      'Bạn có chắc muốn xóa thiết kế in ấn khỏi sản phẩm $name? Thiết kế của bạn sẽ bị hủy và sản phẩm được trả về dạng nguyên bản.';
+  static const String cartRemoveDesignConfirm = 'XÓA THIẾT KẾ';
 
   // Product catalog / filter
   static const String productSearchHint = 'Tìm kiếm sản phẩm...';

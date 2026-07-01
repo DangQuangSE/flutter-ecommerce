@@ -16,6 +16,8 @@ abstract final class AppSizes {
   static const double radiusRound = 20.0;
 
   // Font sizes
+  static const double fontXxs = 7.0;
+  static const double fontBadge = 8.0;
   static const double fontXs = 9.0;
   static const double fontSm = 11.0;
   static const double fontMd = 12.0;
@@ -28,6 +30,7 @@ abstract final class AppSizes {
   static const double iconSm = 16.0;
   static const double iconMd = 20.0;
   static const double iconLg = 28.0;
+  static const double iconXxl = 48.0;
 
   // Canvas
   static const double canvasWidthRatio = 0.85;

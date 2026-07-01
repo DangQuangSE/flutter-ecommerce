@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/widgets/app_state_view.dart';
 
 class CheckoutEmptyState extends StatelessWidget {
@@ -12,10 +13,9 @@ class CheckoutEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppStateView(
       icon: Icons.shopping_bag_outlined,
-      title: 'ÄÆ N HÃ€NG Rá»–NG',
-      message:
-          'KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m nÃ o Ä‘á»ƒ thanh toÃ¡n. HÃ£y quay vá» giá» hÃ ng hoáº·c tiáº¿p tá»¥c mua sáº¯m nhÃ©!',
-      actionLabel: 'QUAY Láº I MUA Sáº®M',
+      title: AppStrings.checkoutEmptyTitle,
+      message: AppStrings.checkoutEmptyMessage,
+      actionLabel: AppStrings.checkoutBackToShopping,
       actionColor: AppColors.accent,
       onAction: () => context.goNamed(AppRoutes.productList),
     );
@@ -36,9 +36,9 @@ class CheckoutErrorStateView extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppStateView(
       icon: Icons.error_outline_rounded,
-      title: 'KhÃ´ng thá»ƒ táº£i thÃ´ng tin thanh toÃ¡n.',
+      title: AppStrings.checkoutLoadErrorTitle,
       message: message,
-      actionLabel: 'Thá»­ láº¡i',
+      actionLabel: AppStrings.checkoutRetry,
       iconColor: AppColors.error,
       onAction: onRetry,
     );

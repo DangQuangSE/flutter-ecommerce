@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
 class PaymentResultPage extends StatelessWidget {
   final bool success;
@@ -20,36 +22,38 @@ class PaymentResultPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSizes.paddingXl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 success ? Icons.check_circle_rounded : Icons.error_rounded,
-                size: 72,
+                size: AppSizes.iconXl + AppSizes.paddingSm,
                 color: success ? AppColors.success : AppColors.error,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSizes.paddingXl),
               Text(
-                success ? 'Thanh toán thành công' : 'Thanh toán thất bại',
+                success
+                    ? AppStrings.paymentSuccessTitle
+                    : AppStrings.paymentFailureTitle,
                 style: GoogleFonts.lexend(
-                  fontSize: 22,
+                  fontSize: AppSizes.fontHeading,
                   fontWeight: FontWeight.w800,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSizes.radiusLg),
               Text(
                 message,
-                style: GoogleFonts.inter(fontSize: 14),
+                style: GoogleFonts.inter(fontSize: AppSizes.fontLg),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSizes.fontDisplay),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => context.goNamed(AppRoutes.home),
-                  child: const Text('VỀ TRANG CHỦ'),
+                  child: const Text(AppStrings.paymentBackHome),
                 ),
               ),
             ],

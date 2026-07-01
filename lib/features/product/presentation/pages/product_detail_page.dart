@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
@@ -44,16 +45,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     setState(() {
       _isFavorited = !_isFavorited;
     });
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isFavorited
-              ? AppStrings.addedToWishlist
-              : AppStrings.removedFromWishlist,
-        ),
-        duration: const Duration(seconds: 1),
-      ),
+    AppSnackBar.show(
+      context,
+      message: _isFavorited
+          ? AppStrings.addedToWishlist
+          : AppStrings.removedFromWishlist,
+      duration: const Duration(seconds: 1),
     );
   }
 
@@ -75,32 +72,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           customDesignId: custId,
         );
 
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: AppColors.accent,
-        behavior: SnackBarBehavior.floating,
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                AppStrings.addedToCartMessage(product.name, selectedSize),
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
-        action: SnackBarAction(
-          label: AppStrings.viewCart,
-          textColor: Colors.white,
-          onPressed: () => context.pushNamed(AppRoutes.cart),
-        ),
-      ),
+    AppSnackBar.show(
+      context,
+      message: AppStrings.addedToCartMessage(product.name, selectedSize),
+      type: AppSnackBarType.success,
+      icon: const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+      actionLabel: AppStrings.viewCart,
+      onAction: () => context.pushNamed(AppRoutes.cart),
     );
   }
 
@@ -143,11 +121,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         builder: (context, state) {
           if (state is ProductLoading) {
             return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              ),
+              body: AppLoadingView(),
             );
           } else if (state is ProductDetailLoaded) {
             return _buildContent(context, state.product);

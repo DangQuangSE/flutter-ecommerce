@@ -4,9 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
+import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
-import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_empty_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_error_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_item_card.dart';
@@ -60,16 +64,15 @@ class _CartPageState extends State<CartPage> {
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             color: AppColors.textPrimary,
-            size: 20,
+            size: AppSizes.iconMd,
           ),
         ),
         title: Text(
-          'GIỎ HÀNG',
+          AppStrings.cartTitle,
           style: GoogleFonts.lexend(
-            fontSize: 18,
+            fontSize: AppSizes.fontXxl,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
-            letterSpacing: -0.5,
           ),
         ),
         centerTitle: true,
@@ -77,11 +80,7 @@ class _CartPageState extends State<CartPage> {
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
           if (state is CartLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            );
+            return const AppLoadingView();
           } else if (state is CartLoaded) {
             if (state.items.isEmpty) {
               return const CartEmptyState();
@@ -102,48 +101,52 @@ class _CartPageState extends State<CartPage> {
   Widget _buildCartContent(BuildContext context, CartLoaded state) {
     if (!_hasInitializedSelection) {
       _selectedItemIds.clear();
-      _selectedItemIds.addAll(state.items.map((e) => e.itemId));
+      _selectedItemIds.addAll(state.items.map((item) => item.itemId));
       _hasInitializedSelection = true;
     }
 
     final selectedItems =
-        state.items.where((e) => _selectedItemIds.contains(e.itemId)).toList();
+        state.items.where((item) => _selectedItemIds.contains(item.itemId));
     final selectedTotalItems =
-        selectedItems.fold(0, (sum, e) => sum + e.quantity);
+        selectedItems.fold(0, (sum, item) => sum + item.quantity);
     final selectedTotalPrice = selectedItems.fold(
-        0.0, (sum, e) => sum + (e.price + e.printingPrice) * e.quantity);
+      0.0,
+      (sum, item) => sum + (item.price + item.printingPrice) * item.quantity,
+    );
 
     return Column(
       children: [
         Expanded(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSizes.paddingMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildSelectAllHeader(state),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSizes.paddingLg),
                 _buildSectionHeader(
-                    'DANH SÁCH GIỎ HÀNG', Icons.shopping_bag_outlined),
-                const SizedBox(height: 12),
+                  AppStrings.cartListTitle,
+                  Icons.shopping_bag_outlined,
+                ),
+                const SizedBox(height: AppSizes.radiusLg),
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: state.items.length,
                   separatorBuilder: (context, index) =>
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSizes.radiusLg),
                   itemBuilder: (context, index) {
                     final item = state.items[index];
                     return _buildCartItemCard(context, item);
                   },
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: AppSizes.iconLg),
                 CartOrderSummary(
                   selectedTotalItems: selectedTotalItems,
                   selectedTotalPrice: selectedTotalPrice,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSizes.fontDisplay),
               ],
             ),
           ),
@@ -165,15 +168,15 @@ class _CartPageState extends State<CartPage> {
   Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppColors.textSecondary),
-        const SizedBox(width: 8),
+        Icon(icon, size: AppSizes.iconSm + 2, color: AppColors.textSecondary),
+        const SizedBox(width: AppSizes.paddingSm),
         Text(
           title,
           style: GoogleFonts.inter(
-            fontSize: 11,
+            fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.w700,
             color: AppColors.textSecondary,
-            letterSpacing: 1.0,
+            letterSpacing: AppSizes.letterSpacingWide,
           ),
         ),
       ],
@@ -182,30 +185,34 @@ class _CartPageState extends State<CartPage> {
 
   Widget _buildSelectAllHeader(CartLoaded state) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.radiusLg,
+        vertical: AppSizes.radiusLg,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
         ),
       ),
       child: Row(
         children: [
-          SizedBox(
-            width: 20,
-            height: 20,
+          SizedBox.square(
+            dimension: AppSizes.iconMd,
             child: Checkbox(
               value: state.items.isNotEmpty &&
                   _selectedItemIds.length == state.items.length,
               activeColor: AppColors.primary,
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              onChanged: (val) {
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.paddingXs),
+              ),
+              onChanged: (value) {
                 setState(() {
-                  if (val == true) {
-                    _selectedItemIds
-                        .addAll(state.items.map((e) => e.itemId));
+                  if (value == true) {
+                    _selectedItemIds.addAll(
+                      state.items.map((item) => item.itemId),
+                    );
                   } else {
                     _selectedItemIds.clear();
                   }
@@ -213,11 +220,14 @@ class _CartPageState extends State<CartPage> {
               },
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSizes.radiusLg),
           Text(
-            'CHỌN TẤT CẢ (${_selectedItemIds.length}/${state.items.length})',
+            AppStrings.cartSelectAll(
+              _selectedItemIds.length,
+              state.items.length,
+            ),
             style: GoogleFonts.lexend(
-              fontSize: 12,
+              fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
             ),
@@ -231,9 +241,9 @@ class _CartPageState extends State<CartPage> {
     return CartItemCard(
       item: item,
       isSelected: _selectedItemIds.contains(item.itemId),
-      onToggleSelected: (val) {
+      onToggleSelected: (value) {
         setState(() {
-          if (val) {
+          if (value) {
             _selectedItemIds.add(item.itemId);
           } else {
             _selectedItemIds.remove(item.itemId);
@@ -289,90 +299,37 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void _showRemoveConfirmation(BuildContext context, CartItemEntity item) {
-    showDialog(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: Text(
-          'Xóa sản phẩm?',
-          style: GoogleFonts.lexend(fontWeight: FontWeight.w700),
-        ),
-        content: Text(
-          'Bạn có chắc chắn muốn xóa ${item.productName} khỏi giỏ hàng?',
-          style: GoogleFonts.inter(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogCtx),
-            child: Text(
-              'HỦY',
-              style: GoogleFonts.inter(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<CartCubit>().removeItem(item.itemId);
-              Navigator.pop(dialogCtx);
-            },
-            child: Text(
-              'XÓA BỎ',
-              style: GoogleFonts.inter(
-                color: AppColors.error,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
+  Future<void> _showRemoveConfirmation(
+    BuildContext context,
+    CartItemEntity item,
+  ) async {
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.cartRemoveItemTitle,
+      message: AppStrings.cartRemoveItemMessage(item.productName),
+      confirmLabel: AppStrings.cartRemoveItemConfirm,
     );
+    if (confirmed && context.mounted) {
+      context.read<CartCubit>().removeItem(item.itemId);
+    }
   }
 
-  void _showRemoveDesignConfirmation(
-      BuildContext context, CartItemEntity item) {
-    showDialog(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: Text(
-          'Xóa thiết kế in ấn?',
-          style: GoogleFonts.lexend(fontWeight: FontWeight.w700),
-        ),
-        content: Text(
-          'Bạn có chắc muốn xóa thiết kế in ấn khỏi sản phẩm ${item.productName}? Thiết kế của bạn sẽ bị hủy và sản phẩm được trả về dạng nguyên bản.',
-          style: GoogleFonts.inter(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogCtx),
-            child: Text(
-              'HỦY',
-              style: GoogleFonts.inter(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogCtx);
-              context.read<CartCubit>().removeDesignFromItem(
-                    itemId: item.itemId,
-                    variantId: item.variantId,
-                    quantity: item.quantity,
-                  );
-            },
-            child: Text(
-              'XÓA THIẾT KẾ',
-              style: GoogleFonts.inter(
-                color: AppColors.error,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
+  Future<void> _showRemoveDesignConfirmation(
+    BuildContext context,
+    CartItemEntity item,
+  ) async {
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.cartRemoveDesignTitle,
+      message: AppStrings.cartRemoveDesignMessage(item.productName),
+      confirmLabel: AppStrings.cartRemoveDesignConfirm,
     );
+    if (confirmed && context.mounted) {
+      context.read<CartCubit>().removeDesignFromItem(
+            itemId: item.itemId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+          );
+    }
   }
 }

@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_cubit.dart';
 import 'package:flutter_ecommerce/features/coupon/presentation/cubit/coupon_state.dart';
@@ -54,12 +57,15 @@ class CheckoutCouponSelector extends StatelessWidget {
                         coupons: coupons,
                         errorMessage: errorMessage,
                       ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.paddingMd,
+              vertical: AppSizes.fontLg,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               border: Border.all(
                 color: hasCoupon
                     ? AppColors.primary.withValues(alpha: 0.5)
@@ -80,9 +86,9 @@ class CheckoutCouponSelector extends StatelessWidget {
                   Icons.confirmation_num_outlined,
                   color:
                       hasCoupon ? AppColors.primary : AppColors.textSecondary,
-                  size: 20,
+                  size: AppSizes.iconMd,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSizes.radiusLg),
                 Expanded(
                   child: _CouponText(
                     selectedCoupon: selectedCoupon,
@@ -93,22 +99,18 @@ class CheckoutCouponSelector extends StatelessWidget {
                   ),
                 ),
                 if (isLoading)
-                  const SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
+                  const AppLoadingView(size: AppSizes.fontLg)
                 else if (hasError)
                   const Icon(
                     Icons.refresh_rounded,
                     color: AppColors.error,
-                    size: 18,
+                    size: AppSizes.fontXxl,
                   )
                 else
                   Icon(
                     Icons.arrow_forward_ios_rounded,
                     color: AppColors.textHint.withValues(alpha: 0.7),
-                    size: 14,
+                    size: AppSizes.fontLg,
                   ),
               ],
             ),
@@ -143,10 +145,10 @@ class _CouponText extends StatelessWidget {
       children: [
         Text(
           hasCoupon
-              ? 'Đã áp dụng mã: ${selectedCoupon!.code}'
-              : 'Sport Pro Voucher',
+              ? AppStrings.checkoutCouponApplied(selectedCoupon!.code)
+              : AppStrings.checkoutVoucherTitle,
           style: GoogleFonts.inter(
-            fontSize: 13,
+            fontSize: AppSizes.forgotPasswordFontSize,
             fontWeight: FontWeight.w700,
             color: hasCoupon ? AppColors.primary : AppColors.textPrimary,
           ),
@@ -155,7 +157,7 @@ class _CouponText extends StatelessWidget {
         Text(
           _subtitle(hasCoupon),
           style: GoogleFonts.inter(
-            fontSize: 11,
+            fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.w500,
             color: hasCoupon
                 ? const Color(0xFF009933)
@@ -169,9 +171,9 @@ class _CouponText extends StatelessWidget {
   }
 
   String _subtitle(bool hasCoupon) {
-    if (hasCoupon) return 'Tiết kiệm được ${formatPrice(discount)}';
-    if (hasError) return 'Không tải được mã giảm giá. Nhấn để thử lại.';
-    if (isLoading) return 'Đang tải mã giảm giá...';
-    return 'Chọn hoặc nhập mã giảm giá';
+    if (hasCoupon) return AppStrings.checkoutCouponSaved(formatPrice(discount));
+    if (hasError) return AppStrings.checkoutCouponLoadError;
+    if (isLoading) return AppStrings.checkoutCouponLoading;
+    return AppStrings.checkoutCouponChooseOrEnter;
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/coupon_manual_code_form.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/coupon_voucher_card.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
@@ -55,7 +57,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
 
     if (match.code.isEmpty) {
       setState(() {
-        _errorMessage = 'Mã giảm giá không hợp lệ hoặc đã hết hạn';
+        _errorMessage = AppStrings.checkoutCouponInvalid;
       });
       return;
     }
@@ -63,7 +65,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
     if (match.minOrderAmount != null &&
         widget.subtotal < match.minOrderAmount!) {
       setState(() {
-        _errorMessage = 'Đơn hàng chưa đạt giá trị tối thiểu';
+        _errorMessage = AppStrings.checkoutCouponMinOrderNotMet;
       });
       return;
     }
@@ -83,21 +85,26 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 4, 4),
+          padding: const EdgeInsets.fromLTRB(
+            AppSizes.paddingMd,
+            AppSizes.radiusLg,
+            AppSizes.paddingXs,
+            AppSizes.paddingXs,
+          ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  'Chọn Sport Pro Voucher',
+                  AppStrings.checkoutCouponPickerTitle,
                   style: GoogleFonts.lexend(
-                    fontSize: 16,
+                    fontSize: AppSizes.fontXl,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close, size: 20),
+                icon: const Icon(Icons.close, size: AppSizes.iconMd),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -115,7 +122,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
           child: _buildCouponList(),
         ),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSizes.paddingMd),
           decoration: const BoxDecoration(
             border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
           ),
@@ -126,13 +133,13 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
               foregroundColor: Colors.white,
               minimumSize: const Size.fromHeight(48),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSizes.paddingSm),
               ),
             ),
             child: Text(
-              'OK',
+              AppStrings.ok,
               style: GoogleFonts.lexend(
-                fontSize: 14,
+                fontSize: AppSizes.fontLg,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -146,7 +153,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
     return Text(
       text,
       style: GoogleFonts.inter(
-        fontSize: 11,
+        fontSize: AppSizes.fontSm,
         fontWeight: FontWeight.w700,
         color: AppColors.textSecondary,
         letterSpacing: 0.5,
@@ -157,20 +164,20 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
   Widget _buildEmptyVouchers() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSizes.paddingXl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
               Icons.confirmation_num_outlined,
-              size: 48,
+              size: AppSizes.iconXxl,
               color: AppColors.textHint,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSizes.radiusLg),
             Text(
-              'Không có mã giảm giá nào',
+              AppStrings.checkoutCouponEmpty,
               style: GoogleFonts.inter(
-                fontSize: 13,
+                fontSize: AppSizes.forgotPasswordFontSize,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
               ),
@@ -185,7 +192,7 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
     if (widget.errorMessage != null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSizes.paddingXl),
           child: Text(
             widget.errorMessage!,
             textAlign: TextAlign.center,
@@ -211,12 +218,12 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
       physics: const BouncingScrollPhysics(),
       children: [
         if (eligible.isNotEmpty) ...[
-          _buildSectionLabel('MÃ GIẢM GIÁ KHẢ DỤNG'),
-          const SizedBox(height: 8),
+          _buildSectionLabel(AppStrings.checkoutCouponAvailableSection),
+          const SizedBox(height: AppSizes.paddingSm),
           ...eligible.map(
             (coupon) => CouponVoucherCard(
               coupon: coupon,
@@ -230,9 +237,9 @@ class _CouponSelectionSheetState extends State<CouponSelectionSheet> {
           ),
         ],
         if (ineligible.isNotEmpty) ...[
-          if (eligible.isNotEmpty) const SizedBox(height: 24),
-          _buildSectionLabel('MÃ KHÔNG KHẢ DỤNG'),
-          const SizedBox(height: 8),
+          if (eligible.isNotEmpty) const SizedBox(height: AppSizes.paddingXl),
+          _buildSectionLabel(AppStrings.checkoutCouponUnavailableSection),
+          const SizedBox(height: AppSizes.paddingSm),
           ...ineligible.map(
             (coupon) => CouponVoucherCard(
               coupon: coupon,

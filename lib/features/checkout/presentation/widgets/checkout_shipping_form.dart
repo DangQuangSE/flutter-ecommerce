@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_address_picker.dart';
 
@@ -31,39 +33,39 @@ class CheckoutShippingForm extends StatelessWidget {
           onAddressSelected: onAddressSelected,
         ),
         if (selectedAddress != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.radiusLg),
           const _ShippingEditHint(),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSizes.paddingMd),
           _CheckoutTextField(
-            label: 'Há»Œ VÃ€ TÃŠN',
+            label: AppStrings.checkoutFullNameLabel,
             controller: nameController,
             validator: (value) => value == null || value.trim().isEmpty
-                ? 'Vui lÃ²ng nháº­p há» vÃ  tÃªn'
+                ? AppStrings.checkoutFullNameRequired
                 : null,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSizes.paddingMd),
           _CheckoutTextField(
-            label: 'Sá» ÄIá»†N THOáº I',
+            label: AppStrings.checkoutPhoneLabel,
             controller: phoneController,
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Vui lÃ²ng nháº­p sá»‘ Ä‘iá»‡n thoáº¡i';
+                return AppStrings.checkoutPhoneRequired;
               }
               final phone = value.trim().replaceAll(RegExp(r'\s+'), '');
               if (!RegExp(r'^(0|\+84)[0-9]{9,10}$').hasMatch(phone)) {
-                return 'Sá»‘ Ä‘iá»‡n thoáº¡i khÃ´ng há»£p lá»‡ (VD: 0912345678)';
+                return AppStrings.checkoutPhoneInvalid;
               }
               return null;
             },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSizes.paddingMd),
           _CheckoutTextField(
-            label: 'Äá»ŠA CHá»ˆ GIAO HÃ€NG',
+            label: AppStrings.checkoutShippingAddressLabel,
             controller: addressController,
             maxLines: 2,
             validator: (value) => value == null || value.trim().isEmpty
-                ? 'Vui lÃ²ng nháº­p Ä‘á»‹a chá»‰ giao hÃ ng'
+                ? AppStrings.checkoutShippingAddressRequired
                 : null,
           ),
         ],
@@ -78,10 +80,10 @@ class _ShippingEditHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSizes.radiusLg),
       decoration: BoxDecoration(
         color: const Color(0xFFF0F7FF),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppSizes.paddingSm),
         border: Border.all(
           color: AppColors.primary.withValues(alpha: 0.2),
         ),
@@ -91,15 +93,15 @@ class _ShippingEditHint extends StatelessWidget {
         children: [
           Icon(
             Icons.edit_outlined,
-            size: 14,
+            size: AppSizes.fontLg,
             color: AppColors.primary.withValues(alpha: 0.7),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSizes.paddingSm),
           Expanded(
             child: Text(
-              'Báº¡n cÃ³ thá»ƒ chá»‰nh sá»­a thÃ´ng tin giao hÃ ng bÃªn dÆ°á»›i náº¿u cáº§n.',
+              AppStrings.checkoutShippingEditHint,
               style: GoogleFonts.inter(
-                fontSize: 11,
+                fontSize: AppSizes.fontSm,
                 color: AppColors.textSecondary,
                 height: 1.3,
               ),
@@ -134,13 +136,13 @@ class _CheckoutTextField extends StatelessWidget {
         Text(
           label,
           style: GoogleFonts.inter(
-            fontSize: 10,
+            fontSize: AppSizes.fontSm - 1,
             fontWeight: FontWeight.w700,
             color: AppColors.textSecondary,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppSizes.radiusSm),
         TextFormField(
           controller: controller,
           maxLines: maxLines,
@@ -155,18 +157,23 @@ class _CheckoutTextField extends StatelessWidget {
             isDense: true,
             filled: true,
             fillColor: const Color(0xFFF3F3F8),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.radiusLg,
+              vertical: AppSizes.radiusLg,
+            ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppSizes.paddingSm),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppSizes.paddingSm),
               borderSide:
                   const BorderSide(color: AppColors.primary, width: 1.5),
             ),
-            errorStyle: GoogleFonts.inter(fontSize: 11, color: AppColors.error),
+            errorStyle: GoogleFonts.inter(
+              fontSize: AppSizes.fontSm,
+              color: AppColors.error,
+            ),
           ),
         ),
       ],

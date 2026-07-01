@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/collapsible_panel.dart';
 import 'package:flutter_ecommerce/features/review/domain/entities/review_entity.dart';
@@ -59,8 +61,8 @@ class _ProductReviewsPanel extends StatelessWidget {
         if (state is ReviewLoading || state is ReviewInitial) {
           return const Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: CircularProgressIndicator(strokeWidth: 2),
+              padding: EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
+              child: AppLoadingView(size: AppSizes.paddingXl),
             ),
           );
         }

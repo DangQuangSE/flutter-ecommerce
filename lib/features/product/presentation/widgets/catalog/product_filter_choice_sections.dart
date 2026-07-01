@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/brand/domain/entities/brand_entity.dart';
 import 'package:flutter_ecommerce/features/product/presentation/utils/product_constants.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/catalog/product_filter_section_title.dart';
@@ -29,7 +30,7 @@ class ProductFilterBrandSection extends StatelessWidget {
       children: [
         const ProductFilterSectionTitle(AppStrings.productFilterBrand),
         if (loading)
-          const Center(child: CircularProgressIndicator(strokeWidth: 2))
+          const AppLoadingView(size: AppSizes.paddingXl)
         else if (error != null)
           Text(error!, style: const TextStyle(color: AppColors.error))
         else

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/payment/domain/entities/vnpay_payment_result.dart';
 import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -42,24 +44,12 @@ class _VnpayPaymentPageState extends State<VnpayPaymentPage> {
   }
 
   Future<void> _onCancelPressed() async {
-    final shouldCancel = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hủy thanh toán?'),
-        content: const Text(
-          'Bạn có chắc muốn hủy thanh toán VNPay? Đơn hàng vẫn ở trạng thái chờ thanh toán.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Tiếp tục'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Hủy'),
-          ),
-        ],
-      ),
+    final shouldCancel = await AppConfirmDialog.show(
+      context,
+      title: AppStrings.paymentCancelTitle,
+      message: AppStrings.paymentCancelMessage,
+      cancelLabel: AppStrings.paymentContinue,
+      confirmLabel: AppStrings.paymentCancel,
     );
     if (shouldCancel == true && mounted) {
       Navigator.of(context).pop();
@@ -72,7 +62,7 @@ class _VnpayPaymentPageState extends State<VnpayPaymentPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'VNPay',
+          AppStrings.paymentVnpayTitle,
           style: GoogleFonts.lexend(fontWeight: FontWeight.w800),
         ),
         leading: IconButton(
@@ -83,12 +73,7 @@ class _VnpayPaymentPageState extends State<VnpayPaymentPage> {
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
-          if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            ),
+          if (_isLoading) const AppLoadingView(),
         ],
       ),
     );

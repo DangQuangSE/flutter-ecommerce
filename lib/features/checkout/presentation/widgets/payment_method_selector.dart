@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,10 +17,10 @@ class PaymentMethodSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSizes.radiusLg),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
         ),
@@ -39,7 +40,7 @@ class PaymentMethodSelector extends StatelessWidget {
             selected: selected == CheckoutPaymentOption.cod,
             onTap: () => onChanged(CheckoutPaymentOption.cod),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSizes.paddingSm),
           _PaymentOptionTile(
             option: CheckoutPaymentOption.vnpay,
             icon: Icons.account_balance_wallet_outlined,
@@ -71,14 +72,17 @@ class _PaymentOptionTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppSizes.paddingSm),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.radiusLg,
+            vertical: AppSizes.radiusLg,
+          ),
           decoration: BoxDecoration(
             color: selected
                 ? AppColors.primary.withValues(alpha: 0.04)
                 : const Color(0xFFF3F3F8),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppSizes.paddingSm),
             border: Border.all(
               color: selected
                   ? AppColors.primary
@@ -90,10 +94,10 @@ class _PaymentOptionTile extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                size: 24,
+                size: AppSizes.paddingXl,
                 color: selected ? AppColors.primary : AppColors.textSecondary,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSizes.radiusLg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,7 +105,7 @@ class _PaymentOptionTile extends StatelessWidget {
                     Text(
                       option.label,
                       style: GoogleFonts.inter(
-                        fontSize: 13,
+                        fontSize: AppSizes.forgotPasswordFontSize,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
@@ -110,7 +114,7 @@ class _PaymentOptionTile extends StatelessWidget {
                     Text(
                       option.subtitle,
                       style: GoogleFonts.inter(
-                        fontSize: 11,
+                        fontSize: AppSizes.fontSm,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textSecondary,
                       ),
@@ -122,7 +126,7 @@ class _PaymentOptionTile extends StatelessWidget {
                 selected
                     ? Icons.radio_button_checked_rounded
                     : Icons.radio_button_off_rounded,
-                size: 22,
+                size: AppSizes.fontHeading,
                 color: selected ? AppColors.primary : AppColors.textSecondary,
               ),
             ],

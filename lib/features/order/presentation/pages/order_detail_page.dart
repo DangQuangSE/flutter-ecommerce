@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_item_entity.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
@@ -27,9 +28,7 @@ class OrderDetailPage extends StatelessWidget {
       body: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
           return switch (state) {
-            OrderDetailLoading() || OrderInitial() => const Center(
-                child: CircularProgressIndicator(),
-              ),
+            OrderDetailLoading() || OrderInitial() => const AppLoadingView(),
             OrderDetailError(:final message) => OrderDetailErrorView(
                 message: message,
                 onRetry: () {
@@ -42,7 +41,7 @@ class OrderDetailPage extends StatelessWidget {
                 onReviewRequested: (context, item) =>
                     _openWriteReview(context, order, item),
               ),
-            _ => const Center(child: CircularProgressIndicator()),
+            _ => const AppLoadingView(),
           };
         },
       ),

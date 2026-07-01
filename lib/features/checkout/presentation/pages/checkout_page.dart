@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_cubit.dart';
 import 'package:flutter_ecommerce/features/address/presentation/cubit/address_state.dart';
@@ -150,15 +152,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   void _showCheckoutError(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: AppColors.error,
-        content: Text(
-          message,
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-        ),
-      ),
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: AppSnackBarType.error,
     );
   }
 
@@ -238,9 +235,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
       context: context,
       barrierDismissible: true,
       builder: (dialogContext) => Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.paddingMd,
+          vertical: AppSizes.paddingXl,
+        ),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusRound)),
         ),
         child: CouponSelectionSheet(
           subtotal: subtotal,
@@ -261,9 +261,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String _formatPrice(double price) {
     final formatStr = price.toInt().toString();
     final buffer = StringBuffer();
-    for (int i = 0; i < formatStr.length; i++) {
-      buffer.write(formatStr[i]);
-      if ((formatStr.length - 1 - i) % 3 == 0 && i != formatStr.length - 1) {
+    for (var index = 0; index < formatStr.length; index++) {
+      buffer.write(formatStr[index]);
+      if ((formatStr.length - 1 - index) % 3 == 0 &&
+          index != formatStr.length - 1) {
         buffer.write('.');
       }
     }

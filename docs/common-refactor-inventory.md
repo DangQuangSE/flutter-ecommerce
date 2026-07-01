@@ -90,8 +90,19 @@ No feature imports should remain in `core/widgets`, `core/utils`, or `core/netwo
   - `coupon`: common snackbar in form flow, centralized coupon list/submit strings, common mutation loading, and cleaned mojibake labels in management list.
 - Removed obsolete feature-specific delete dialogs for brand/category.
 
+## Batch 6 Completed
+
+- Migrated priority 2 commerce common patterns for `cart`, `checkout`, `product`, `order`, and `payment`:
+  - `cart`: cart page now uses common loading/confirm dialog and centralized cart strings; custom design loading indicator uses `AppLoadingView`.
+  - `checkout`: shipping form, order summary, coupon selector/sheet, address picker, payment selector, and cart state wrapper now use centralized strings, `AppSizes`, and common loading/snackbar patterns.
+  - `payment`: VNPay cancel confirmation uses `AppConfirmDialog`; payment loading and result screen use common constants and `AppLoadingView`.
+  - `order`: detail/list state loading uses `AppLoadingView`; list state dimensions use `AppSizes`.
+  - `product`: home/list/detail/catalog/filter/review loading indicators use `AppLoadingView`; product detail feedback uses `AppSnackBar`.
+- Verification: `flutter analyze` passes with no issues after the batch.
+- Follow-up noted: `cart/presentation/widgets/custom_design_spec_card.dart` still owns a direct use case lookup through `sl<GetCustomDesignSpecUseCase>()`; move that state behind a cubit/bloc or parent-provided view model in a later architecture pass.
+
 ## Next Recommended Batches
 
-1. Commerce modules: migrate cart/checkout/product/order/payment repeated state, dialog, snackbar, image, and card primitives.
-2. User/support modules: migrate auth/profile/address/notification/chat repeated form, state, snackbar, and dialog primitives.
+1. User/support modules: migrate `auth`, `profile`, `address`, `notification`, `chat`, `location`, and `customizer` repeated form, state, snackbar, and dialog primitives.
+2. Commerce follow-up: move `CustomDesignSpecCard` use case access out of the widget and continue spacing/string cleanup in deeper order detail/list widgets.
 3. Admin order/dashboard and settings/shop cleanup: align remaining loading/snackbar/dialog patterns.

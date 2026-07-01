@@ -10,15 +10,33 @@ abstract final class AppSnackBar {
     required String message,
     AppSnackBarType type = AppSnackBarType.info,
     Duration duration = const Duration(seconds: 2),
+    Widget? icon,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: icon == null
+              ? Text(message)
+              : Row(
+                  children: [
+                    icon,
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(message)),
+                  ],
+                ),
           backgroundColor: _backgroundColor(type),
           behavior: SnackBarBehavior.floating,
           duration: duration,
+          action: actionLabel != null && onAction != null
+              ? SnackBarAction(
+                  label: actionLabel,
+                  textColor: Colors.white,
+                  onPressed: onAction,
+                )
+              : null,
         ),
       );
   }

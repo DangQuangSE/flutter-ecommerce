@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
+import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_custom_design_spec_usecase.dart';
 
@@ -75,14 +77,8 @@ class _CustomDesignSpecCardState extends State<CustomDesignSpecCard> {
     if (_isLoading) {
       return const Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: SizedBox(
-            width: 14,
-            height: 14,
-            child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0058BC))),
-          ),
+          padding: EdgeInsets.symmetric(vertical: AppSizes.paddingSm),
+          child: AppLoadingView(size: AppSizes.fontLg),
         ),
       );
     }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 
 class CheckoutOrderSummary extends StatelessWidget {
@@ -26,10 +28,10 @@ class CheckoutOrderSummary extends StatelessWidget {
     final finalPrice = subtotal - discount;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.paddingMd),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
         ),
@@ -44,37 +46,38 @@ class CheckoutOrderSummary extends StatelessWidget {
       child: Column(
         children: [
           _SummaryRow(
-            label: 'Táº¡m tÃ­nh ($totalItems sáº£n pháº©m)',
+            label:
+                '${AppStrings.checkoutSubtotalLabel} ($totalItems ${AppStrings.checkoutProductCountSuffix})',
             value: formatPrice(subtotal),
           ),
           if (discount > 0) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSizes.radiusMd),
             _SummaryRow(
-              label: 'Giáº£m giÃ¡ (Voucher)',
+              label: AppStrings.checkoutVoucherDiscountLabel,
               value: '-${formatPrice(discount)}',
               color: AppColors.error,
             ),
           ],
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSizes.radiusMd),
           const _SummaryRow(
-            label: 'Giao hÃ ng há»a tá»‘c',
-            value: 'Miá»…n phÃ­',
+            label: AppStrings.checkoutExpressShippingLabel,
+            value: AppStrings.checkoutFreeShipping,
             valueColor: Color(0xFF009933),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.radiusLg),
           Container(
             height: 1,
             color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.radiusLg),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                'Tá»”NG Cá»˜NG',
+                AppStrings.checkoutGrandTotalLabel,
                 style: GoogleFonts.lexend(
-                  fontSize: 13,
+                  fontSize: AppSizes.forgotPasswordFontSize,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                   letterSpacing: 0.5,
@@ -85,7 +88,7 @@ class CheckoutOrderSummary extends StatelessWidget {
                 child: Text(
                   formatPrice(finalPrice),
                   style: GoogleFonts.lexend(
-                    fontSize: 22,
+                    fontSize: AppSizes.fontHeading,
                     fontWeight: FontWeight.w900,
                     color: AppColors.primary,
                     fontStyle: FontStyle.italic,
@@ -123,7 +126,7 @@ class _SummaryRow extends StatelessWidget {
         Text(
           label,
           style: GoogleFonts.inter(
-            fontSize: 12,
+            fontSize: AppSizes.fontMd,
             fontWeight: FontWeight.w500,
             color: textColor,
           ),
@@ -131,7 +134,7 @@ class _SummaryRow extends StatelessWidget {
         Text(
           value,
           style: GoogleFonts.inter(
-            fontSize: 12,
+            fontSize: AppSizes.fontMd,
             fontWeight: FontWeight.w700,
             color: valueColor ?? color ?? AppColors.textPrimary,
           ),

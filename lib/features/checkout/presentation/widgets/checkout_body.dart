@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
@@ -66,7 +67,7 @@ class CheckoutBody extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSizes.paddingMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -74,7 +75,7 @@ class CheckoutBody extends StatelessWidget {
                     title: AppStrings.checkoutShippingSectionTitle,
                     icon: Icons.local_shipping_outlined,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSizes.radiusLg),
                   CheckoutShippingForm(
                     selectedAddress: selectedAddress,
                     onAddressSelected: onAddressSelected,
@@ -82,22 +83,22 @@ class CheckoutBody extends StatelessWidget {
                     phoneController: phoneController,
                     addressController: addressController,
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSizes.iconLg),
                   const CheckoutSectionHeader(
                     title: AppStrings.checkoutPaymentSectionTitle,
                     icon: Icons.payments_outlined,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSizes.radiusLg),
                   PaymentMethodSelector(
                     selected: selectedPayment,
                     onChanged: onPaymentChanged,
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSizes.iconLg),
                   const CheckoutSectionHeader(
                     title: AppStrings.checkoutCouponSectionTitle,
                     icon: Icons.local_offer_outlined,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSizes.radiusLg),
                   CheckoutCouponSelector(
                     selectedCoupon: selectedCoupon,
                     discount: discount,
@@ -105,13 +106,13 @@ class CheckoutBody extends StatelessWidget {
                     formatPrice: formatPrice,
                     onOpen: onOpenCoupon,
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSizes.iconLg),
                   CheckoutOrderSummary(
                     checkoutItems: checkoutItems,
                     discount: discount,
                     formatPrice: formatPrice,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSizes.fontDisplay),
                 ],
               ),
             ),
