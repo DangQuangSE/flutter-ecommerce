@@ -98,7 +98,7 @@ class _AddressAppBar extends StatelessWidget {
                 context.goNamed(AppRoutes.profile);
               }
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new_rounded,
               color: AppColors.textPrimary,
               size: AppSizes.iconMd,
