@@ -46,7 +46,7 @@ class OrderDetailItemCard extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -56,7 +56,7 @@ class OrderDetailItemCard extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 SizedBox(height: 6),
@@ -128,10 +128,10 @@ class _OrderItemImage extends StatelessWidget {
       width: 60,
       height: 68,
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F8),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.2),
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -154,7 +154,7 @@ class _ImageFallback extends StatelessWidget {
     return Center(
       child: Icon(
         Icons.image_not_supported_outlined,
-        color: AppColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
         size: 20,
       ),
     );

@@ -16,15 +16,16 @@ class OrderDetailSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
           ),
           boxShadow: [
             BoxShadow(
@@ -43,7 +44,7 @@ class OrderDetailSummary extends StatelessWidget {
             SizedBox(height: 12),
             Container(
               height: 1,
-              color: const Color(0xFFC1C6D7).withValues(alpha: 0.2),
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
             ),
             SizedBox(height: 12),
             Row(
@@ -55,7 +56,7 @@ class OrderDetailSummary extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -100,7 +101,7 @@ class _SummaryRow extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
@@ -108,7 +109,7 @@ class _SummaryRow extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

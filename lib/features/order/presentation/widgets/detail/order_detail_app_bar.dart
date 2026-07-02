@@ -17,14 +17,15 @@ class OrderDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 1,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
           height: 1,
         ),
       ),
@@ -38,7 +39,7 @@ class OrderDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
         icon: Icon(
           Icons.arrow_back_rounded,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
           size: 24,
         ),
       ),

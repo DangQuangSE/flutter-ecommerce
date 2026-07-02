@@ -49,6 +49,7 @@ class _DefaultToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return InkWell(
       onTap: onToggle,
       borderRadius: BorderRadius.circular(10),
@@ -57,10 +58,10 @@ class _DefaultToggle extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDefault
               ? AppColors.primary.withValues(alpha: 0.06)
-              : const Color(0xFFF8F9FC),
+              : theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isDefault ? AppColors.primary : const Color(0xFFE5E7EB),
+            color: isDefault ? AppColors.primary : theme.colorScheme.outlineVariant,
             width: isDefault ? 1.4 : 1,
           ),
         ),
@@ -69,7 +70,7 @@ class _DefaultToggle extends StatelessWidget {
             Icon(
               Icons.home_work_outlined,
               size: 18,
-              color: isDefault ? AppColors.primary : AppColors.textSecondary,
+              color: isDefault ? AppColors.primary : theme.colorScheme.onSurfaceVariant,
             ),
             SizedBox(width: 10),
             Expanded(
@@ -81,14 +82,14 @@ class _DefaultToggle extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isDefault ? AppColors.primary : AppColors.textPrimary,
+                      color: isDefault ? AppColors.primary : theme.colorScheme.onSurface,
                     ),
                   ),
                   Text(
                     AppStrings.addressDefaultOrderHint,
                     style: GoogleFonts.inter(
                       fontSize: AppSizes.fontSm,
-                      color: AppColors.textHint,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -102,7 +103,7 @@ class _DefaultToggle extends StatelessWidget {
                 color: isDefault ? AppColors.primary : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: isDefault ? AppColors.primary : const Color(0xFFD1D5DB),
+                  color: isDefault ? AppColors.primary : theme.colorScheme.outline,
                   width: 1.5,
                 ),
               ),

@@ -67,6 +67,7 @@ class OrderListItem extends StatelessWidget {
     final statusLabel = OrderStatusLabel.vi(order.status);
     final (_, statusColor) = OrderStatusLabel.badgeColors(order.status);
     final dateStr = DateFormat('dd/MM/yyyy').format(order.createdAt);
+    final theme = Theme.of(context);
 
     return GestureDetector(
       onTap: () => context.goNamed(
@@ -91,7 +92,7 @@ class OrderListItem extends StatelessWidget {
                       style: GoogleFonts.spaceMono(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                        color: theme.colorScheme.onSurface,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -120,7 +121,7 @@ class OrderListItem extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -149,7 +150,7 @@ class OrderListItem extends StatelessWidget {
                       style: GoogleFonts.spaceMono(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textHint,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -205,7 +206,7 @@ class _ImageFallback extends StatelessWidget {
     return Center(
       child: Icon(
         Icons.image_not_supported_outlined,
-        color: AppColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
         size: 20,
       ),
     );
