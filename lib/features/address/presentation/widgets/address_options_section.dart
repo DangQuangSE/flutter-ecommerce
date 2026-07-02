@@ -69,7 +69,7 @@ class _DefaultToggle extends StatelessWidget {
             Icon(
               Icons.home_work_outlined,
               size: 18,
-              color: isDefault ? AppColors.primary : AppColors.textSecondary,
+              color: isDefault ? AppColors.primary : AppColors.textSecondaryLight,
             ),
             SizedBox(width: 10),
             Expanded(
@@ -81,7 +81,7 @@ class _DefaultToggle extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isDefault ? AppColors.primary : AppColors.textPrimary,
+                      color: isDefault ? AppColors.primary : AppColors.textPrimaryLight,
                     ),
                   ),
                   Text(

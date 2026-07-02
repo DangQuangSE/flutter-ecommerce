@@ -74,7 +74,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
           style: GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 18),
         ),
         backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        foregroundColor: AppColors.textPrimaryLight,
         elevation: 0,
         surfaceTintColor: Colors.white,
       ),

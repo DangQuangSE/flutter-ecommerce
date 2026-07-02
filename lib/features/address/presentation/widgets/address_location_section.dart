@@ -117,16 +117,16 @@ class _LocationDropdown<T extends LocationEntity> extends StatelessWidget {
           initialValue: loaded == null ? null : selectedItem(loaded),
           menuMaxHeight: 280,
           isExpanded: true,
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimaryLight),
           icon: loading
               ? const AppLoadingView(size: AppSizes.iconSm)
               : Icon(Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.textSecondary),
+                  color: AppColors.textSecondaryLight),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
             prefixIcon: icon != null
-                ? Icon(icon, size: 18, color: AppColors.textSecondary)
+                ? Icon(icon, size: 18, color: AppColors.textSecondaryLight)
                 : null,
             filled: true,
             fillColor: const Color(0xFFF8F9FC),

@@ -34,7 +34,7 @@ class AddressFieldLabel extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimaryLight,
               ),
             ),
             if (isRequired)
@@ -83,12 +83,12 @@ class AddressTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+      style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimaryLight),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
         prefixIcon: icon != null
-            ? Icon(icon, size: 18, color: AppColors.textSecondary)
+            ? Icon(icon, size: 18, color: AppColors.textSecondaryLight)
             : null,
         filled: true,
         fillColor: const Color(0xFFF8F9FC),

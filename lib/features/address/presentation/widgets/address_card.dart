@@ -121,7 +121,7 @@ class AddressCard extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: AppSizes.fontXl,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryLight,
               letterSpacing: -0.3,
             ),
           ),
@@ -164,7 +164,7 @@ class AddressCard extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: AppSizes.fontLg,
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
+              color: AppColors.textSecondaryLight,
               height: 1.4,
             ),
           ),
@@ -283,7 +283,7 @@ class _IconActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDanger ? AppColors.error : AppColors.textSecondary;
+    final color = isDanger ? AppColors.error : AppColors.textSecondaryLight;
     return GestureDetector(
       onTap: onTap,
       child: Container(

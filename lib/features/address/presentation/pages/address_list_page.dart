@@ -100,7 +100,7 @@ class _AddressAppBar extends StatelessWidget {
             },
             icon: Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryLight,
               size: AppSizes.iconMd,
             ),
           ),
@@ -110,7 +110,7 @@ class _AddressAppBar extends StatelessWidget {
               style: GoogleFonts.lexend(
                 fontSize: AppSizes.fontXxl,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimaryLight,
                 letterSpacing: -0.5,
               ),
             ),
@@ -212,7 +212,7 @@ class _ErrorState extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: AppSizes.fontLg,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondaryLight,
               ),
             ),
             const SizedBox(height: AppSizes.paddingLg),
@@ -334,7 +334,7 @@ class _AddressListView extends StatelessWidget {
               style: GoogleFonts.lexend(
                 fontSize: AppSizes.fontXxl,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimaryLight,
               ),
             ),
             const SizedBox(height: AppSizes.paddingSm),
@@ -344,7 +344,7 @@ class _AddressListView extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: AppSizes.fontLg,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondaryLight,
               ),
             ),
           ],
