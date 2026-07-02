@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+
 
 class OrderDetailSection extends StatelessWidget {
   final String title;
@@ -17,14 +17,15 @@ class OrderDetailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFFC1C6D7).withValues(alpha: 0.3),
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
           ),
           boxShadow: [
             BoxShadow(
@@ -40,7 +41,7 @@ class OrderDetailSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 18, color: AppColors.textSecondary),
+                Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -48,7 +49,7 @@ class OrderDetailSection extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -88,7 +89,7 @@ class OrderDetailRow extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -100,7 +101,7 @@ class OrderDetailRow extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),

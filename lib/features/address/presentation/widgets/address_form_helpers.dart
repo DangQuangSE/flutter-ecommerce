@@ -24,6 +24,7 @@ class AddressFieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -34,7 +35,7 @@ class AddressFieldLabel extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             if (isRequired)
@@ -50,7 +51,7 @@ class AddressFieldLabel extends StatelessWidget {
               SizedBox(width: 6),
               Text(
                 optionalHint!,
-                style: GoogleFonts.inter(fontSize: 11, color: AppColors.textHint),
+                style: GoogleFonts.inter(fontSize: 11, color: theme.colorScheme.outline),
               ),
             ],
           ],
@@ -80,21 +81,22 @@ class AddressTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+      style: GoogleFonts.inter(fontSize: 14, color: theme.colorScheme.onSurface),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textHint),
+        hintStyle: GoogleFonts.inter(fontSize: 13, color: theme.colorScheme.onSurfaceVariant),
         prefixIcon: icon != null
-            ? Icon(icon, size: 18, color: AppColors.textSecondary)
+            ? Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant)
             : null,
         filled: true,
-        fillColor: const Color(0xFFF8F9FC),
+        fillColor: theme.colorScheme.surfaceContainerHighest,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        border: addressInputBorder(const Color(0xFFE5E7EB)),
-        enabledBorder: addressInputBorder(const Color(0xFFE5E7EB)),
+        border: addressInputBorder(theme.colorScheme.outlineVariant),
+        enabledBorder: addressInputBorder(theme.colorScheme.outlineVariant),
         focusedBorder: addressInputBorder(AppColors.primary, 1.6),
         errorBorder: addressInputBorder(Colors.red, 1.2),
         focusedErrorBorder: addressInputBorder(Colors.red, 1.6),

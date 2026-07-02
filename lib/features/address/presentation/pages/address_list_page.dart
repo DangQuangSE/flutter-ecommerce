@@ -22,7 +22,7 @@ class AddressListPage extends StatelessWidget {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: BlocConsumer<AddressCubit, AddressState>(
         listener: (context, state) {
@@ -66,6 +66,7 @@ class AddressListPage extends StatelessWidget {
 class _AddressAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: EdgeInsets.fromLTRB(
         8,
@@ -74,10 +75,10 @@ class _AddressAppBar extends StatelessWidget {
         12,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
+        color: theme.colorScheme.surface.withValues(alpha: 0.92),
         border: Border(
           bottom: BorderSide(
-            color: const Color(0xFFE2E8F0).withValues(alpha: 0.7),
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.7),
           ),
         ),
         boxShadow: [
@@ -100,7 +101,7 @@ class _AddressAppBar extends StatelessWidget {
             },
             icon: Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onSurface,
               size: AppSizes.iconMd,
             ),
           ),
@@ -110,7 +111,7 @@ class _AddressAppBar extends StatelessWidget {
               style: GoogleFonts.lexend(
                 fontSize: AppSizes.fontXxl,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
                 letterSpacing: -0.5,
               ),
             ),
@@ -181,6 +182,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -212,7 +214,7 @@ class _ErrorState extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: AppSizes.fontLg,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: AppSizes.paddingLg),
@@ -309,6 +311,7 @@ class _AddressListView extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingXl),
@@ -334,7 +337,7 @@ class _AddressListView extends StatelessWidget {
               style: GoogleFonts.lexend(
                 fontSize: AppSizes.fontXxl,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: AppSizes.paddingSm),
@@ -344,7 +347,7 @@ class _AddressListView extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: AppSizes.fontLg,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],

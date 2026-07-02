@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
@@ -64,19 +64,24 @@ class _AddressFormPageState extends State<AddressFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      
+
       appBar: AppBar(
         title: Text(
           _isEditing
               ? AppStrings.addressFormEditTitle
               : AppStrings.addressFormTitle,
-          style: GoogleFonts.lexend(fontWeight: FontWeight.w700, fontSize: 18),
+          style: GoogleFonts.lexend(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: theme.colorScheme.onSurface,
+          ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+        foregroundColor: theme.colorScheme.onSurface,
         elevation: 0,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: theme.colorScheme.surface,
       ),
       bottomNavigationBar:
           AddressSubmitBar(isEditing: _isEditing, onSubmit: _handleSubmit),
