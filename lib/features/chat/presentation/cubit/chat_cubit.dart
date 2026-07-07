@@ -205,6 +205,12 @@ class ChatCubit extends Cubit<ChatState> {
     return '$hour:$minute';
   }
 
+  void leaveChatRoom() {
+    if (state is ChatRoomLoaded) {
+      emit(ChatsLoaded(List.from(_cachedChats)));
+    }
+  }
+
   @override
   Future<void> close() {
     _botReplySubscription?.cancel();
