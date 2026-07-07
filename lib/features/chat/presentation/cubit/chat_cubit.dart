@@ -8,6 +8,7 @@ import 'package:flutter_ecommerce/features/chat/domain/usecases/get_messages_use
 import 'package:flutter_ecommerce/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/message_entity.dart';
+import 'package:flutter_ecommerce/core/utils/notification_service.dart';
 import 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
@@ -15,6 +16,7 @@ class ChatCubit extends Cubit<ChatState> {
   final GetMessagesUseCase _getMessagesUseCase;
   final SendMessageUseCase _sendMessageUseCase;
   final ChatRepository _repository;
+  final NotificationService _notificationService;
 
   StreamSubscription<MessageEntity>? _botReplySubscription;
   List<ChatEntity> _cachedChats = [];
@@ -24,10 +26,12 @@ class ChatCubit extends Cubit<ChatState> {
     required GetMessagesUseCase getMessagesUseCase,
     required SendMessageUseCase sendMessageUseCase,
     required ChatRepository repository,
+    required NotificationService notificationService,
   })  : _getChatsUseCase = getChatsUseCase,
         _getMessagesUseCase = getMessagesUseCase,
         _sendMessageUseCase = sendMessageUseCase,
         _repository = repository,
+        _notificationService = notificationService,
         super(const ChatInitial()) {
     // Listen to real-time inbound messages (WebSocket) app-wide.
     _botReplySubscription =
@@ -166,6 +170,15 @@ class ChatCubit extends Cubit<ChatState> {
         lastMessage: message.content,
         lastMessageTime: message.timestamp,
         unreadCount: isViewingRoom ? 0 : target.unreadCount + 1,
+      );
+    }
+    
+    if (!isViewingRoom) {
+      _notificationService.showNotification(
+        id: conversationId.hashCode,
+        title: 'Tin nhắn mới',
+        body: message.content,
+        payload: '/chat/$conversationId',
       );
     }
 

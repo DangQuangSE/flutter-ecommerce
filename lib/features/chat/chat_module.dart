@@ -11,6 +11,8 @@ import 'package:flutter_ecommerce/features/chat/domain/usecases/get_messages_use
 import 'package:flutter_ecommerce/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 
+import 'package:flutter_ecommerce/core/utils/notification_service.dart';
+
 void setupChatModule(GetIt sl) {
   sl.registerLazySingleton<ChatRemoteDataSource>(
     () => ChatRemoteDataSourceImpl(sl<DioClient>()),
@@ -37,6 +39,7 @@ void setupChatModule(GetIt sl) {
       getMessagesUseCase: sl<GetMessagesUseCase>(),
       sendMessageUseCase: sl<SendMessageUseCase>(),
       repository: sl<ChatRepository>(),
+      notificationService: sl<NotificationService>(),
     ),
   );
 }
