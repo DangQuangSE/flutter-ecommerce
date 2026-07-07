@@ -26,15 +26,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   StreamSubscription<ChatState>? _stateSubscription;
+  late final ChatCubit _chatCubit;
 
   @override
   void initState() {
     super.initState();
+    _chatCubit = context.read<ChatCubit>();
     Future.microtask(() {
       if (!mounted) return;
-      final chatCubit = context.read<ChatCubit>();
-      chatCubit.loadChatRoom(widget.chatId);
-      _stateSubscription = chatCubit.stream.listen((state) {
+      _chatCubit.loadChatRoom(widget.chatId);
+      _stateSubscription = _chatCubit.stream.listen((state) {
         if (state is ChatRoomLoaded) {
           _scrollToBottom();
         }
@@ -47,6 +48,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     _messageController.dispose();
     _scrollController.dispose();
     _stateSubscription?.cancel();
+    _chatCubit.leaveChatRoom();
     super.dispose();
   }
 

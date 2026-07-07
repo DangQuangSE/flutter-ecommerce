@@ -5,20 +5,24 @@ import 'package:flutter_ecommerce/features/notification/domain/repositories/noti
 import 'package:flutter_ecommerce/features/notification/domain/usecases/get_notifications_usecase.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_state.dart';
 import 'package:flutter_ecommerce/features/notification/data/datasources/notification_socket_client.dart';
+import 'package:flutter_ecommerce/core/utils/notification_service.dart';
 
 class NotificationCubit extends Cubit<NotificationState> {
   final GetNotificationsUseCase _getNotificationsUseCase;
   final NotificationRepository _repository;
   final NotificationSocketClient _socketClient;
+  final NotificationService _notificationService;
   StreamSubscription? _subscription;
 
   NotificationCubit({
     required GetNotificationsUseCase getNotificationsUseCase,
     required NotificationRepository repository,
     required NotificationSocketClient socketClient,
+    required NotificationService notificationService,
   })  : _getNotificationsUseCase = getNotificationsUseCase,
         _repository = repository,
         _socketClient = socketClient,
+        _notificationService = notificationService,
         super(const NotificationInitial()) {
     _socketClient.connect();
     _subscription = _socketClient.notifications.listen((notification) {
@@ -30,6 +34,13 @@ class NotificationCubit extends Cubit<NotificationState> {
         // If not loaded yet, just load them from API
         loadNotifications();
       }
+      
+      _notificationService.showNotification(
+        id: notification.id,
+        title: notification.title,
+        body: notification.description,
+        payload: '/orders/${notification.relatedId}', // Navigation payload
+      );
     });
   }
 

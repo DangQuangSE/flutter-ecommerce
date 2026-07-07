@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/app/router/app_router.dart';
@@ -15,8 +16,29 @@ import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notifi
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_state.dart';
 import 'package:flutter_ecommerce/core/utils/notification_service.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late final StreamSubscription<String> _payloadSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _payloadSub = sl<NotificationService>().payloadStream.stream.listen((payload) {
+      AppRouter.router.push(payload);
+    });
+  }
+
+  @override
+  void dispose() {
+    _payloadSub.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +73,7 @@ class App extends StatelessWidget {
                 id: notification.orderId,
                 title: 'New Order: #${notification.orderId}',
                 body: notification.message,
+                payload: '/admin/orders/${notification.orderId}',
               );
             },
             child: MaterialApp.router(
