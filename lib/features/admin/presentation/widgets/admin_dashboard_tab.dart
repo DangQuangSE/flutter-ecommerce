@@ -48,11 +48,6 @@ class AdminDashboardTab extends StatelessWidget {
                 children: [
                   _chatInboxButton(context),
                   _notificationBellButton(context),
-                  const CircleAvatar(
-                    radius: 16,
-                    backgroundImage: NetworkImage(
-                        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e'),
-                  ),
                 ],
               ),
             ],
