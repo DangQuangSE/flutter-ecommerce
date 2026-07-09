@@ -211,6 +211,17 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
+  void connect() {
+    // Will trigger _socketClient.connect() through repository calls if needed, 
+    // or we can expose a dedicated connect method in the repository.
+    // For now, loadChats() already calls connect().
+    loadChats();
+  }
+
+  void disconnect() {
+    // Optionally clear chats or just let the socket drop if repository had a disconnect.
+  }
+
   @override
   Future<void> close() {
     _botReplySubscription?.cancel();

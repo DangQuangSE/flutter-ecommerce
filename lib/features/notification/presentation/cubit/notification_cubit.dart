@@ -80,6 +80,14 @@ class NotificationCubit extends Cubit<NotificationState> {
     await _repository.markAllAsRead();
   }
 
+  void connect() {
+    _socketClient.connect();
+  }
+
+  void disconnect() {
+    _socketClient.disconnect();
+  }
+
   @override
   Future<void> close() {
     _subscription?.cancel();
