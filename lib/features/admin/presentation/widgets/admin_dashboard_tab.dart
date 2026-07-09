@@ -394,19 +394,32 @@ class AdminDashboardTab extends StatelessWidget {
                             ],
                           ),
                           title: Text(
-                            notif.message,
+                            notif.title.isNotEmpty ? notif.title : 'Thông báo mới',
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               fontWeight: notif.isRead ? FontWeight.w500 : FontWeight.bold,
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          subtitle: Text(
-                            AppStrings.adminNotificationOrderText(notif.orderId, notif.createdAt),
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                notif.message,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                AppStrings.adminNotificationOrderText(notif.orderId, notif.createdAt),
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
                         onTap: () {
                           Navigator.pop(sheetContext);

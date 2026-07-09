@@ -71,7 +71,7 @@ class _AppState extends State<App> {
               final notification = state.latestNotification!;
               sl<NotificationService>().showNotification(
                 id: notification.orderId,
-                title: 'New Order: #${notification.orderId}',
+                title: notification.title.isNotEmpty ? notification.title : 'New Notification: #${notification.orderId}',
                 body: notification.message,
                 payload: '/admin/orders/${notification.orderId}',
               );

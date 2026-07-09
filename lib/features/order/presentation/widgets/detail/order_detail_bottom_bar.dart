@@ -63,31 +63,7 @@ class OrderDetailBottomBar extends StatelessWidget {
                 ),
               ),
             ),
-            if (order.status.toUpperCase() == 'SHIPPED') ...[
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    AppStrings.orderTrackOrder,
-                    style: GoogleFonts.lexend(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+
             if (['PENDING', 'CONFIRMED', 'PROCESSING'].contains(order.status.toUpperCase())) ...[
               const SizedBox(width: 12),
               Expanded(

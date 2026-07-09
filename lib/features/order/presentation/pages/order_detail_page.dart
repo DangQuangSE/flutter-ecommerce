@@ -85,8 +85,16 @@ class OrderDetailPage extends StatelessWidget {
           title: const Text('Hủy Đơn Hàng'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (order.paymentMethod == 'VNPAY')
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
+              if (order.paymentMethod == 'VNPAY' || order.paymentMethod == 'BANK_TRANSFER')
                 const Padding(
                   padding: EdgeInsets.only(bottom: 16.0),
                   child: Text(
