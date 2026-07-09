@@ -21,20 +21,24 @@ class AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppSizes.paddingMd),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusXl),
         border: Border.all(
           color: address.isDefault
-              ? AppColors.primary.withValues(alpha: 0.3)
-              : const Color(0xFFE2E8F0),
+              ? colorScheme.primary.withValues(alpha: isDark ? 0.55 : 0.3)
+              : theme.dividerColor,
           width: address.isDefault ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.03),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -51,25 +55,28 @@ class AddressCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(),
+                  _buildHeader(context),
                   const SizedBox(height: 12),
                   _buildInfoRow(
+                    context,
                     Icons.person_outline_rounded,
                     address.fullName,
                   ),
                   const SizedBox(height: 6),
                   _buildInfoRow(
+                    context,
                     Icons.phone_outlined,
                     address.phoneNumber,
                   ),
                   const SizedBox(height: 6),
                   _buildInfoRow(
+                    context,
                     Icons.location_on_outlined,
                     address.formattedAddress,
                   ),
                   if (address.label != null && address.label!.isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    _buildLabelChip(),
+                    _buildLabelChip(context),
                   ],
                   const SizedBox(height: 12),
                   _buildActionRow(),
@@ -96,7 +103,9 @@ class AddressCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       children: [
         Container(
@@ -121,8 +130,7 @@ class AddressCard extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: AppSizes.fontXl,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-              letterSpacing: -0.3,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
@@ -150,11 +158,17 @@ class AddressCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 15, color: AppColors.textHint),
+        Icon(
+          icon,
+          size: 15,
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -164,7 +178,7 @@ class AddressCard extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: AppSizes.fontLg,
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
               height: 1.4,
             ),
           ),
@@ -173,14 +187,16 @@ class AddressCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLabelChip() {
+  Widget _buildLabelChip(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.accent.withValues(alpha: 0.08),
+        color: colorScheme.secondary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         border: Border.all(
-          color: AppColors.accent.withValues(alpha: 0.2),
+          color: colorScheme.secondary.withValues(alpha: 0.28),
         ),
       ),
       child: Text(
@@ -188,7 +204,7 @@ class AddressCard extends StatelessWidget {
         style: GoogleFonts.plusJakartaSans(
           fontSize: AppSizes.fontXs,
           fontWeight: FontWeight.w700,
-          color: AppColors.accent,
+          color: colorScheme.secondary,
         ),
       ),
     );
@@ -237,19 +253,21 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.06),
+          color: primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 15, color: AppColors.primary),
+            Icon(icon, size: 15, color: primary),
             const SizedBox(width: 5),
             Flexible(
               child: Text(
@@ -259,7 +277,7 @@ class _ActionButton extends StatelessWidget {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: AppSizes.fontMd,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: primary,
                 ),
               ),
             ),
@@ -283,7 +301,9 @@ class _IconActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDanger ? AppColors.error : AppColors.textSecondary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = isDanger ? colorScheme.error : colorScheme.onSurfaceVariant;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
