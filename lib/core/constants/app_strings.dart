@@ -116,7 +116,7 @@ abstract final class AppStrings {
   static const String profileDefaultName = 'Người dùng';
   static const String profileLoadError = 'Không tải được hồ sơ';
   static const String profileAccountSection = 'TÀI KHOẢN VÀ BẢO MẬT';
-  static const String profileSettingsSection = 'THIẾT LẬP VÀ TIN NHẮN';
+  static const String profileSettingsSection = 'THIẾT LẬP';
   static const String profilePersonalInfo = 'Thông tin cá nhân';
   static const String profileMyOrders = 'Đơn hàng của tôi';
   static const String profileShippingAddresses = 'Địa chỉ giao hàng';
