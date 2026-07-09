@@ -6,6 +6,7 @@ import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.da
 import 'package:flutter_ecommerce/features/order/domain/repositories/order_repository.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_order_by_id_usecase.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_orders_usecase.dart';
+import 'package:flutter_ecommerce/features/order/domain/usecases/cancel_order.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_state.dart';
@@ -24,6 +25,11 @@ class _FakeOrderRepository implements OrderRepository {
 
   @override
   Future<Result<OrderEntity>> getOrderById(int id) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<OrderEntity>> cancelOrder(int id, String reason) {
     throw UnimplementedError();
   }
 }
@@ -50,6 +56,7 @@ void main() {
     bloc = OrderBloc(
       getOrdersUseCase: GetOrdersUseCase(fakeRepo),
       getOrderByIdUseCase: GetOrderByIdUseCase(fakeRepo),
+      cancelOrderUseCase: CancelOrder(fakeRepo),
     );
   });
 

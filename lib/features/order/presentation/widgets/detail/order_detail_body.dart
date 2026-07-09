@@ -15,11 +15,13 @@ class OrderDetailBody extends StatelessWidget {
   final OrderEntity order;
   final void Function(BuildContext context, OrderItemEntity item)
       onReviewRequested;
+  final VoidCallback? onCancelRequested;
 
   const OrderDetailBody({
     super.key,
     required this.order,
     required this.onReviewRequested,
+    this.onCancelRequested,
   });
 
   @override
@@ -102,7 +104,10 @@ class OrderDetailBody extends StatelessWidget {
             ),
           ),
         ),
-        OrderDetailBottomBar(order: order),
+        OrderDetailBottomBar(
+          order: order,
+          onCancelRequested: onCancelRequested,
+        ),
       ],
     );
   }

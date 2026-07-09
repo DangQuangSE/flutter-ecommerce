@@ -9,10 +9,12 @@ import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.da
 
 class OrderDetailBottomBar extends StatelessWidget {
   final OrderEntity order;
+  final VoidCallback? onCancelRequested;
 
   const OrderDetailBottomBar({
     super.key,
     required this.order,
+    this.onCancelRequested,
   });
 
   @override
@@ -77,6 +79,31 @@ class OrderDetailBottomBar extends StatelessWidget {
                   ),
                   child: Text(
                     AppStrings.orderTrackOrder,
+                    style: GoogleFonts.lexend(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            if (['PENDING', 'CONFIRMED', 'PROCESSING'].contains(order.status.toUpperCase())) ...[
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: onCancelRequested,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Hủy đơn',
                     style: GoogleFonts.lexend(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
