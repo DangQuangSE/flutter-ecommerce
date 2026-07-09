@@ -27,13 +27,14 @@ class PricingFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.paddingLg,
         vertical: AppSizes.fontLg,
       ),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: theme.colorScheme.surface,
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -71,7 +72,7 @@ class PricingFooter extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: AppSizes.fontMd,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ),
@@ -117,6 +118,7 @@ class _PriceSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -126,7 +128,7 @@ class _PriceSummary extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontXs,
             fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
+            color: theme.colorScheme.onSurfaceVariant,
             letterSpacing: 0.5,
           ),
         ),
@@ -147,7 +149,7 @@ class _PriceSummary extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: AppSizes.fontXs + 1,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             AppSizes.spacingXs,
@@ -156,7 +158,7 @@ class _PriceSummary extends StatelessWidget {
                 AppStrings.customizerPrintingPriceHint,
                 style: GoogleFonts.inter(
                   fontSize: AppSizes.fontXs,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

@@ -16,16 +16,15 @@ class OrderDetailSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+            color: Theme.of(context).dividerColor,
           ),
           boxShadow: [
             BoxShadow(
@@ -38,13 +37,13 @@ class OrderDetailSummary extends StatelessWidget {
         child: Column(
           children: [
             _SummaryRow(
-              label: 'T\u1ea1m t\u00ednh',
+              label: AppStrings.orderSubtotal,
               value: formatOrderPrice(order.subtotal),
             ),
             SizedBox(height: 12),
             Container(
               height: 1,
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
             ),
             SizedBox(height: 12),
             Row(
@@ -56,7 +55,7 @@ class OrderDetailSummary extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.onSurface,
+                    color: AppColors.textPrimary,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -101,7 +100,7 @@ class _SummaryRow extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: AppColors.textSecondary,
           ),
         ),
         Text(
@@ -109,7 +108,7 @@ class _SummaryRow extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: AppColors.textPrimary,
           ),
         ),
       ],

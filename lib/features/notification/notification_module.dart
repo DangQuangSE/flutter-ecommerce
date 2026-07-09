@@ -9,6 +9,7 @@ import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_ecommerce/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:flutter_ecommerce/core/storage/auth_token_storage.dart';
 import 'package:flutter_ecommerce/features/notification/data/datasources/notification_socket_client.dart';
+import 'package:flutter_ecommerce/core/utils/notification_service.dart';
 
 void setupNotificationModule(GetIt sl) {
   sl.registerLazySingleton<NotificationRemoteDataSource>(
@@ -28,6 +29,7 @@ void setupNotificationModule(GetIt sl) {
       getNotificationsUseCase: sl<GetNotificationsUseCase>(),
       repository: sl<NotificationRepository>(),
       socketClient: sl<NotificationSocketClient>(),
+      notificationService: sl<NotificationService>(),
     ),
   );
 }

@@ -17,6 +17,7 @@ class CouponManualCodeForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -28,8 +29,14 @@ class CouponManualCodeForm extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   textCapitalization: TextCapitalization.characters,
+                  style: GoogleFonts.inter(color: theme.colorScheme.onSurface),
                   decoration: InputDecoration(
                     hintText: 'Nh\u1eadp m\u00e3 voucher',
+                    hintStyle: GoogleFonts.inter(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    filled: true,
+                    fillColor: theme.colorScheme.surfaceContainerHighest,
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -37,7 +44,7 @@ class CouponManualCodeForm extends StatelessWidget {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFC1C6D7)),
+                      borderSide: BorderSide(color: theme.dividerColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),

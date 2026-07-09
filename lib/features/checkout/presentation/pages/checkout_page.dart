@@ -193,7 +193,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ],
       child: Scaffold(
-        
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: const CheckoutAppBar(),
         body: CheckoutCartStateView(contentBuilder: _buildCheckoutContent),
       ),

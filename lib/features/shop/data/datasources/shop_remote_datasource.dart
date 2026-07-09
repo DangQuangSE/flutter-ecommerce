@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
@@ -10,6 +12,9 @@ abstract interface class ShopRemoteDataSource {
 
   /// Updates the shop profile (ADMIN only — DioClient attaches Bearer token).
   Future<ShopModel> updateShop(ShopModel shop);
+
+  /// Uploads a shop image to Cloudinary via the backend and returns the URL.
+  Future<String> uploadShopImage(File file, String type);
 }
 
 class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
@@ -53,6 +58,41 @@ class ShopRemoteDataSourceImpl implements ShopRemoteDataSource {
             e.message ??
             'Không thể cập nhật thông tin cửa hàng',
         statusCode: statusCode,
+      );
+    }
+  }
+
+  @override
+  Future<String> uploadShopImage(File file, String type) async {
+    try {
+      final fileName = file.uri.pathSegments.last;
+      final ext = fileName.split('.').last.toLowerCase();
+      final mime = switch (ext) {
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+        _ => 'image/jpeg',
+      };
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: fileName,
+          contentType: DioMediaType.parse(mime),
+        ),
+        'type': type,
+      });
+      final response = await _dioClient.dio.post<Map<String, dynamic>>(
+        ApiConstants.adminShopUploadImage,
+        data: formData,
+      );
+      final url = response.data?['data']?['url'] as String?;
+      if (url == null) throw const ParseException('URL ảnh không hợp lệ');
+      return url;
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Không thể tải ảnh lên',
+        statusCode: e.response?.statusCode,
       );
     }
   }

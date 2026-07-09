@@ -66,7 +66,6 @@ class AddressListPage extends StatelessWidget {
 class _AddressAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
       padding: EdgeInsets.fromLTRB(
         8,
@@ -75,10 +74,10 @@ class _AddressAppBar extends StatelessWidget {
         12,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withValues(alpha: 0.92),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.7),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.7),
           ),
         ),
         boxShadow: [
@@ -101,7 +100,7 @@ class _AddressAppBar extends StatelessWidget {
             },
             icon: Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: theme.colorScheme.onSurface,
+              color: AppColors.textPrimary,
               size: AppSizes.iconMd,
             ),
           ),
@@ -111,16 +110,14 @@ class _AddressAppBar extends StatelessWidget {
               style: GoogleFonts.lexend(
                 fontSize: AppSizes.fontXxl,
                 fontWeight: FontWeight.w800,
-                color: theme.colorScheme.onSurface,
+                color: AppColors.textPrimary,
                 letterSpacing: -0.5,
               ),
             ),
           ),
           BlocBuilder<AddressCubit, AddressState>(
             builder: (context, state) {
-              final count = state is AddressLoaded
-                  ? state.addresses.length
-                  : 0;
+              final count = state is AddressLoaded ? state.addresses.length : 0;
               if (count == 0) return const SizedBox.shrink();
               return Container(
                 padding: const EdgeInsets.symmetric(
@@ -159,8 +156,7 @@ class _BodyContent extends StatelessWidget {
     return switch (state) {
       AddressInitial() || AddressLoading() => _LoadingState(),
       AddressError(:final message) => _ErrorState(message: message),
-      AddressLoaded(:final addresses, :final isSubmitting) =>
-        _AddressListView(
+      AddressLoaded(:final addresses, :final isSubmitting) => _AddressListView(
           addresses: addresses,
           isSubmitting: isSubmitting,
           topPadding: topPadding,
@@ -182,7 +178,6 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -214,7 +209,7 @@ class _ErrorState extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: AppSizes.fontLg,
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: AppSizes.paddingLg),
@@ -304,14 +299,12 @@ class _AddressListView extends StatelessWidget {
             },
           ),
         ),
-        if (isSubmitting)
-          const Positioned.fill(child: AppLoadingView()),
+        if (isSubmitting) const Positioned.fill(child: AppLoadingView()),
       ],
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingXl),
@@ -337,7 +330,7 @@ class _AddressListView extends StatelessWidget {
               style: GoogleFonts.lexend(
                 fontSize: AppSizes.fontXxl,
                 fontWeight: FontWeight.w800,
-                color: theme.colorScheme.onSurface,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: AppSizes.paddingSm),
@@ -347,7 +340,7 @@ class _AddressListView extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: AppSizes.fontLg,
                 fontWeight: FontWeight.w500,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.textSecondary,
               ),
             ),
           ],

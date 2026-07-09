@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/message_entity.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/widgets/detail/chat_detail_app_bar.dart';
+import 'package:flutter_ecommerce/features/chat/presentation/widgets/detail/chat_detail_skeleton.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/widgets/detail/chat_input_bar.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/widgets/detail/chat_message_list.dart';
 
@@ -26,15 +26,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   StreamSubscription<ChatState>? _stateSubscription;
+  late final ChatCubit _chatCubit;
 
   @override
   void initState() {
     super.initState();
+    _chatCubit = context.read<ChatCubit>();
     Future.microtask(() {
       if (!mounted) return;
-      final chatCubit = context.read<ChatCubit>();
-      chatCubit.loadChatRoom(widget.chatId);
-      _stateSubscription = chatCubit.stream.listen((state) {
+      _chatCubit.loadChatRoom(widget.chatId);
+      _stateSubscription = _chatCubit.stream.listen((state) {
         if (state is ChatRoomLoaded) {
           _scrollToBottom();
         }
@@ -47,6 +48,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     _messageController.dispose();
     _scrollController.dispose();
     _stateSubscription?.cancel();
+    _chatCubit.leaveChatRoom();
     super.dispose();
   }
 
@@ -77,7 +79,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       builder: (context, state) {
         ChatEntity? chatMetadata;
         List<MessageEntity> messages = [];
-        bool isLoading = state is ChatLoading;
+        final isWaitingForRoom = state is ChatInitial || state is ChatLoading;
 
         if (state is ChatRoomLoaded) {
           chatMetadata = state.chat;
@@ -90,8 +92,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           body: Column(
             children: [
               Expanded(
-                child: isLoading
-                    ? const AppLoadingView()
+                child: isWaitingForRoom
+                    ? const ChatMessagesSkeleton()
                     : ChatMessageList(
                         messages: messages,
                         chat: chatMetadata,

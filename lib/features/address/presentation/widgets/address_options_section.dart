@@ -61,7 +61,7 @@ class _DefaultToggle extends StatelessWidget {
               : theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isDefault ? AppColors.primary : theme.colorScheme.outlineVariant,
+            color: isDefault ? AppColors.primary : theme.dividerColor,
             width: isDefault ? 1.4 : 1,
           ),
         ),
@@ -70,7 +70,9 @@ class _DefaultToggle extends StatelessWidget {
             Icon(
               Icons.home_work_outlined,
               size: 18,
-              color: isDefault ? AppColors.primary : theme.colorScheme.onSurfaceVariant,
+              color: isDefault
+                  ? AppColors.primary
+                  : theme.colorScheme.onSurfaceVariant,
             ),
             SizedBox(width: 10),
             Expanded(
@@ -82,7 +84,9 @@ class _DefaultToggle extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isDefault ? AppColors.primary : theme.colorScheme.onSurface,
+                      color: isDefault
+                          ? AppColors.primary
+                          : theme.colorScheme.onSurface,
                     ),
                   ),
                   Text(
@@ -103,7 +107,8 @@ class _DefaultToggle extends StatelessWidget {
                 color: isDefault ? AppColors.primary : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: isDefault ? AppColors.primary : theme.colorScheme.outline,
+                  color:
+                      isDefault ? AppColors.primary : const Color(0xFFD1D5DB),
                   width: 1.5,
                 ),
               ),

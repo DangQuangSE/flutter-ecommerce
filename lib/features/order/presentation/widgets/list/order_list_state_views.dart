@@ -113,13 +113,12 @@ class _MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(AppSizes.paddingXl),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(AppSizes.paddingXl),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -129,7 +128,7 @@ class _MessageCard extends StatelessWidget {
           Text(
             title,
             style: GoogleFonts.lexend(
-              color: theme.colorScheme.onSurface,
+              color: AppColors.textPrimary,
               fontSize: AppSizes.submitButtonFontSize,
               fontWeight: FontWeight.w700,
             ),
@@ -140,7 +139,7 @@ class _MessageCard extends StatelessWidget {
             Text(
               subtitle!,
               style: GoogleFonts.plusJakartaSans(
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.textSecondary,
                 fontSize: AppSizes.fontMd,
               ),
               textAlign: TextAlign.center,

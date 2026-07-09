@@ -51,7 +51,10 @@ class AddressFieldLabel extends StatelessWidget {
               SizedBox(width: 6),
               Text(
                 optionalHint!,
-                style: GoogleFonts.inter(fontSize: 11, color: theme.colorScheme.outline),
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ],
@@ -85,18 +88,23 @@ class AddressTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      style: GoogleFonts.inter(fontSize: 14, color: theme.colorScheme.onSurface),
+      style:
+          GoogleFonts.inter(fontSize: 14, color: theme.colorScheme.onSurface),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.inter(fontSize: 13, color: theme.colorScheme.onSurfaceVariant),
+        hintStyle: GoogleFonts.inter(
+          fontSize: 13,
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+        ),
         prefixIcon: icon != null
             ? Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant)
             : null,
         filled: true,
         fillColor: theme.colorScheme.surfaceContainerHighest,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        border: addressInputBorder(theme.colorScheme.outlineVariant),
-        enabledBorder: addressInputBorder(theme.colorScheme.outlineVariant),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        border: addressInputBorder(theme.dividerColor),
+        enabledBorder: addressInputBorder(theme.dividerColor),
         focusedBorder: addressInputBorder(AppColors.primary, 1.6),
         errorBorder: addressInputBorder(Colors.red, 1.2),
         focusedErrorBorder: addressInputBorder(Colors.red, 1.6),

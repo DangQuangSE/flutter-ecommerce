@@ -227,6 +227,7 @@ class _IncomingAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final avatarUrl = avatar;
     return Container(
       width: 32,
       height: 32,
@@ -236,11 +237,9 @@ class _IncomingAvatar extends StatelessWidget {
         border: Border.all(color: Theme.of(context).dividerColor, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Image.network(
-        avatar ??
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuApsVdGBPiD4UfQ4dq1G7LbkH4_du0P8atXrOzXMPxXIPdU9Evf2fHBiv7n7rkz7-2QwAtRh9jhucCQIhGfbTu8TG-hNBBUayau1uU9dh_oWUZ3jDss2SKaH07vLDY0FuMAutm_7fkiDrxd54uP7jBTk4wMGALX7txCZ23xCJ5rodhCMHV2xtkumkyv6Ln5L36hTGU5DuLjTK5VgukX5QbiLdM1cTUlixcCjb3dHVfOIvJn9iU91V3MsOjneh2RJEq60HzZhkyXIPs',
-        fit: BoxFit.cover,
-      ),
+      child: avatarUrl == null
+          ? ColoredBox(color: AppColors.divider.withValues(alpha: 0.5))
+          : Image.network(avatarUrl, fit: BoxFit.cover),
     );
   }
 }

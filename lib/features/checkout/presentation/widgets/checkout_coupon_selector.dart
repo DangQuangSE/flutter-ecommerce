@@ -34,6 +34,7 @@ class CheckoutCouponSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasCoupon = selectedCoupon != null;
+    final theme = Theme.of(context);
 
     return BlocBuilder<CouponCubit, CouponState>(
       builder: (context, couponState) {
@@ -64,7 +65,7 @@ class CheckoutCouponSelector extends StatelessWidget {
               vertical: AppSizes.fontLg,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               border: Border.all(
                 color: hasCoupon
@@ -139,6 +140,7 @@ class _CouponText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasCoupon = selectedCoupon != null;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +152,7 @@ class _CouponText extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: AppSizes.forgotPasswordFontSize,
             fontWeight: FontWeight.w700,
-            color: hasCoupon ? AppColors.primary : AppColors.textPrimary,
+            color: hasCoupon ? AppColors.primary : theme.colorScheme.onSurface,
           ),
         ),
         SizedBox(height: 2),

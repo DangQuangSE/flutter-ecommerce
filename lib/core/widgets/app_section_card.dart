@@ -70,7 +70,7 @@ class AppSectionCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: AppSizes.radiusLg),
-            child: Divider(height: 1, color: theme.colorScheme.outlineVariant),
+            child: Divider(height: 1, color: theme.dividerColor),
           ),
           Padding(
             padding: const EdgeInsets.all(AppSizes.paddingMd),

@@ -109,32 +109,37 @@ class _LocationDropdown<T extends LocationEntity> extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LocationCubit, LocationState>(
       builder: (context, state) {
+        final theme = Theme.of(context);
         final loaded = state is LocationLoaded ? state : null;
         final loading = loaded == null || isLoading(loaded);
-        final theme = Theme.of(context);
         return DropdownButtonFormField<T>(
           key: ValueKey(
               'loc_${hint}_${loaded == null ? null : selectedItem(loaded)?.code}'),
           initialValue: loaded == null ? null : selectedItem(loaded),
           menuMaxHeight: 280,
           isExpanded: true,
-          style: GoogleFonts.inter(fontSize: 14, color: theme.colorScheme.onSurface),
+          style: GoogleFonts.inter(
+              fontSize: 14, color: theme.colorScheme.onSurface),
           icon: loading
               ? const AppLoadingView(size: AppSizes.iconSm)
               : Icon(Icons.keyboard_arrow_down_rounded,
                   color: theme.colorScheme.onSurfaceVariant),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(fontSize: 13, color: theme.colorScheme.onSurfaceVariant),
+            hintStyle: GoogleFonts.inter(
+              fontSize: 13,
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+            ),
             prefixIcon: icon != null
-                ? Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant)
+                ? Icon(icon,
+                    size: 18, color: theme.colorScheme.onSurfaceVariant)
                 : null,
             filled: true,
             fillColor: theme.colorScheme.surfaceContainerHighest,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-            border: addressInputBorder(theme.colorScheme.outlineVariant),
-            enabledBorder: addressInputBorder(theme.colorScheme.outlineVariant),
+            border: addressInputBorder(theme.dividerColor),
+            enabledBorder: addressInputBorder(theme.dividerColor),
             focusedBorder: addressInputBorder(AppColors.primary, 1.6),
             errorBorder: addressInputBorder(Colors.red, 1.2),
             focusedErrorBorder: addressInputBorder(Colors.red, 1.6),
