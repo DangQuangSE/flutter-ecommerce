@@ -222,12 +222,6 @@ class ProfilePage extends StatelessWidget {
         ),
         SizedBox(height: 10),
         ProfileMenuRow(
-          icon: Icons.payment_outlined,
-          label: AppStrings.profilePaymentMethods,
-          onTap: () => context.goNamed(AppRoutes.orderList),
-        ),
-        SizedBox(height: 10),
-        ProfileMenuRow(
           icon: Icons.storefront_outlined,
           label: AppStrings.shopInfoMenuLabel,
           onTap: () => context.pushNamed(AppRoutes.shopInfo),
@@ -241,12 +235,6 @@ class ProfilePage extends StatelessWidget {
           icon: Icons.notifications_none_rounded,
           label: AppStrings.profileAppNotifications,
           onTap: () => context.pushNamed(AppRoutes.notificationList),
-        ),
-        SizedBox(height: 10),
-        ProfileMenuRow(
-          icon: Icons.chat_bubble_outline_rounded,
-          label: AppStrings.profileInbox,
-          onTap: () => context.pushNamed(AppRoutes.chatList),
         ),
         SizedBox(height: 10),
         ProfileMenuRow(
