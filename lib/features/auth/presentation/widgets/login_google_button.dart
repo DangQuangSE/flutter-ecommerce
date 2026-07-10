@@ -57,13 +57,13 @@ class _LoginGoogleButtonState extends State<LoginGoogleButton>
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             border: Border.all(
-              color: AppColors.borderGray.withValues(alpha: 0.5),
+              color: const Color(0xFFE0E0E0),
               width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 6,
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
             ],
@@ -71,21 +71,17 @@ class _LoginGoogleButtonState extends State<LoginGoogleButton>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                AppStrings.googleLogoLetter,
-                style: GoogleFonts.lexend(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF4285F4),
-                ),
+              CustomPaint(
+                size: const Size(20, 20),
+                painter: const _GoogleLogoPainter(),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 12),
               Text(
-                AppStrings.googleBrandName,
-                style: GoogleFonts.lexend(
+                'Tiếp tục với Google',
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimaryLight,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -95,4 +91,51 @@ class _LoginGoogleButtonState extends State<LoginGoogleButton>
       ),
     );
   }
+}
+
+class _GoogleLogoPainter extends CustomPainter {
+  const _GoogleLogoPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double length = size.width;
+    final double thickness = length / 4.5;
+    final bounds = Rect.fromLTWH(0, 0, length, length);
+    final drawBounds = bounds.deflate(thickness / 2);
+
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = thickness
+      ..strokeCap = StrokeCap.butt;
+
+    // Helper to draw segments
+    void drawArc(double startAngle, double sweepAngle, Color color) {
+      canvas.drawArc(drawBounds, startAngle, sweepAngle, false, paint..color = color);
+    }
+
+    // Drawing the arcs using official Google colors
+    drawArc(3.5, 1.9, const Color(0xFFEA4335));   // Red (Top)
+    drawArc(2.5, 1.0, const Color(0xFFFBBC05));   // Yellow (Left)
+    drawArc(0.9, 1.6, const Color(0xFF34A853));   // Green (Bottom)
+    drawArc(-0.18, 1.1, const Color(0xFF4285F4)); // Blue (Right)
+
+    // Draw the horizontal bar to complete the "G"
+    final center = bounds.center;
+    final barPaint = Paint()
+      ..color = const Color(0xFF4285F4)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRect(
+      Rect.fromLTRB(
+        center.dx,
+        center.dy - (thickness / 2),
+        center.dx + (length / 2),
+        center.dy + (thickness / 2),
+      ),
+      barPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -51,7 +51,7 @@ class AuthBrandHeader extends StatelessWidget {
           subtitle.toUpperCase(),
           style: GoogleFonts.plusJakartaSans(
             fontSize: 10,
-            color: AppColors.textSecondary.withValues(alpha: 0.8),
+            color: AppColors.textSecondaryLight.withValues(alpha: 0.95),
             fontWeight: FontWeight.w700,
             letterSpacing: 2.2,
           ),

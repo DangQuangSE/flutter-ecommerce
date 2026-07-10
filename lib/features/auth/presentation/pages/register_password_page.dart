@@ -266,7 +266,7 @@ class _PasswordCard extends StatelessWidget {
                         'Hoàn tất đăng ký cho $email',
                         style: GoogleFonts.inter(
                           fontSize: AppSizes.fontLg - 1, // 13
-                          color: AppColors.textSecondary,
+                          color: AppColors.textSecondaryLight,
                           height: 1.4,
                         ),
                       ),

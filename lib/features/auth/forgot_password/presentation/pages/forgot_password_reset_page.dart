@@ -97,7 +97,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
                       'Tạo mật khẩu mới cho ${widget.extra.email}',
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryLight,
                       ),
                     ),
                     SizedBox(height: 32),
@@ -196,7 +196,7 @@ class _ForgotPasswordResetPageState extends State<ForgotPasswordResetPage> {
             fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 1.2,
-            color: AppColors.textSecondary,
+            color: AppColors.textSecondaryLight,
           ),
         ),
         SizedBox(height: 8),

@@ -93,7 +93,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
                       'Nhập email đã đăng ký để nhận mã OTP đặt lại mật khẩu.',
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryLight,
                       ),
                     ),
                     SizedBox(height: 32),
@@ -103,7 +103,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.2,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryLight,
                       ),
                     ),
                     SizedBox(height: 8),

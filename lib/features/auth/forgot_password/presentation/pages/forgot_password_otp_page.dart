@@ -167,7 +167,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                     ),
                     style: GoogleFonts.inter(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: AppColors.textSecondaryLight,
                     ),
                   ),
                   if (widget.extra.neutralMessage.isNotEmpty) ...[
@@ -176,7 +176,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       widget.extra.neutralMessage,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryLight,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -186,7 +186,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                     AppStrings.forgotPasswordOtpHelp,
                     style: GoogleFonts.inter(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: AppColors.textSecondaryLight,
                     ),
                   ),
                   SizedBox(height: 32),
@@ -259,7 +259,7 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                       AppStrings.forgotPasswordBackToEmail,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryLight,
                       ),
                     ),
                   ),

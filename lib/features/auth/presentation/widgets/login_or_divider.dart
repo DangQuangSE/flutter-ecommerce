@@ -12,8 +12,8 @@ class LoginOrDivider extends StatelessWidget {
       children: [
         Expanded(
           child: Divider(
-            color: AppColors.divider.withValues(alpha: 0.6),
-            thickness: 1,
+            color: AppColors.divider.withValues(alpha: 0.95),
+            thickness: 1.2,
           ),
         ),
         Padding(
@@ -23,14 +23,14 @@ class LoginOrDivider extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary.withValues(alpha: 0.6),
+              color: AppColors.textSecondaryLight.withValues(alpha: 0.9),
             ),
           ),
         ),
         Expanded(
           child: Divider(
-            color: AppColors.divider.withValues(alpha: 0.6),
-            thickness: 1,
+            color: AppColors.divider.withValues(alpha: 0.95),
+            thickness: 1.2,
           ),
         ),
       ],
