@@ -313,7 +313,7 @@ class _OtpCard extends StatelessWidget {
                       AppStrings.otpSentToEmail(email),
                       style: GoogleFonts.inter(
                         fontSize: AppSizes.fontLg - 1, // 13
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryLight,
                         height: 1.4,
                       ),
                     ),

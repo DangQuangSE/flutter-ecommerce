@@ -5,6 +5,7 @@ import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
 import 'package:flutter_ecommerce/features/address/domain/entities/address_entity.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/utils/cart_item_pricing.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_coupon_selector.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_order_summary.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_section_header.dart';
@@ -12,10 +13,12 @@ import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkou
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/checkout_sticky_footer.dart';
 import 'package:flutter_ecommerce/features/checkout/presentation/widgets/payment_method_selector.dart';
 import 'package:flutter_ecommerce/features/coupon/domain/entities/coupon_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
 
 class CheckoutBody extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final List<CartItemEntity> checkoutItems;
+  final CustomDesignSpecSnapshot? specSnapshot;
   final AddressEntity? selectedAddress;
   final CouponEntity? selectedCoupon;
   final CheckoutPaymentOption selectedPayment;
@@ -38,6 +41,7 @@ class CheckoutBody extends StatelessWidget {
     super.key,
     required this.formKey,
     required this.checkoutItems,
+    this.specSnapshot,
     required this.selectedAddress,
     required this.selectedCoupon,
     required this.selectedPayment,
@@ -56,7 +60,12 @@ class CheckoutBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final checkoutTotalPrice = checkoutItems.fold(
       0.0,
-      (sum, e) => sum + (e.price + e.printingPrice) * e.quantity,
+      (sum, e) {
+        final spec = e.customDesignId != null
+            ? specSnapshot?.specOf(e.customDesignId!)
+            : null;
+        return sum + (e.price + resolvedDisplayPrintingPrice(e, spec: spec)) * e.quantity;
+      },
     );
     final discount = calculateDiscount(checkoutTotalPrice);
 
@@ -109,6 +118,7 @@ class CheckoutBody extends StatelessWidget {
                   const SizedBox(height: AppSizes.iconLg),
                   CheckoutOrderSummary(
                     checkoutItems: checkoutItems,
+                    specSnapshot: specSnapshot,
                     discount: discount,
                     formatPrice: formatPrice,
                   ),

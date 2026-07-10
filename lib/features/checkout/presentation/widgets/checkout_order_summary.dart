@@ -5,15 +5,19 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/utils/cart_item_pricing.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
 
 class CheckoutOrderSummary extends StatelessWidget {
   final List<CartItemEntity> checkoutItems;
+  final CustomDesignSpecSnapshot? specSnapshot;
   final double discount;
   final String Function(double price) formatPrice;
 
   const CheckoutOrderSummary({
     super.key,
     required this.checkoutItems,
+    this.specSnapshot,
     required this.discount,
     required this.formatPrice,
   });
@@ -24,7 +28,12 @@ class CheckoutOrderSummary extends StatelessWidget {
     final totalItems = checkoutItems.fold(0, (sum, e) => sum + e.quantity);
     final subtotal = checkoutItems.fold(
       0.0,
-      (sum, e) => sum + (e.price + e.printingPrice) * e.quantity,
+      (sum, e) {
+        final spec = e.customDesignId != null
+            ? specSnapshot?.specOf(e.customDesignId!)
+            : null;
+        return sum + (e.price + resolvedDisplayPrintingPrice(e, spec: spec)) * e.quantity;
+      },
     );
     final finalPrice = subtotal - discount;
 

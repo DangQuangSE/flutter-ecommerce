@@ -11,11 +11,14 @@ import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_state.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/utils/cart_item_pricing.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_empty_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_error_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_item_card.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_order_summary.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_sticky_footer.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -105,13 +108,24 @@ class _CartPageState extends State<CartPage> {
       _hasInitializedSelection = true;
     }
 
+    final specState = context.watch<CustomDesignSpecCubit>().state;
+    final specSnapshot =
+        specState is CustomDesignSpecSnapshot ? specState : null;
+
     final selectedItems =
         state.items.where((item) => _selectedItemIds.contains(item.itemId));
     final selectedTotalItems =
         selectedItems.fold(0, (sum, item) => sum + item.quantity);
     final selectedTotalPrice = selectedItems.fold(
       0.0,
-      (sum, item) => sum + (item.price + item.printingPrice) * item.quantity,
+      (sum, item) {
+        final spec = item.customDesignId != null
+            ? specSnapshot?.specOf(item.customDesignId!)
+            : null;
+        final printingPrice =
+            resolvedDisplayPrintingPrice(item, spec: spec);
+        return sum + (item.price + printingPrice) * item.quantity;
+      },
     );
 
     return Column(

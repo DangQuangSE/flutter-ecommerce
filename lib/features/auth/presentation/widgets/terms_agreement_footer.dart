@@ -24,7 +24,7 @@ class TermsAgreementFooter extends StatelessWidget {
         text: TextSpan(
           style: GoogleFonts.inter(
             fontSize: AppSizes.fontLg - 2, // 12
-            color: AppColors.textSecondary,
+            color: AppColors.textPrimaryLight,
             height: 1.4,
           ),
           children: [

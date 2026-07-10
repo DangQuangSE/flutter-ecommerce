@@ -101,46 +101,46 @@ class CustomizerPageState extends State<CustomizerPage> {
     return null;
   }
 
-  double get printingMethodCost {
-    return selectedMaterial?.basePrice ??
-        (printMethod == AppStrings.customizerDefaultPrintMethod
-            ? PrintingConstants.heatTransferCost
-            : PrintingConstants.reflectiveDecalCost);
-  }
-
+  /// Per-type unit price, backend-configured with a sensible fallback
+  /// (e.g. heat-transfer text layer ≈ 10k).
   double get textUnitPrice {
-    final state = context.read<CustomizerCubit>().state;
-    if (state case CustomizerLoaded(:final printingConfigs)) {
+    if (context.read<CustomizerCubit>().state
+        case CustomizerLoaded(:final printingConfigs)) {
       try {
         return printingConfigs.priceConfigs
             .firstWhere((config) => config.type == 'TEXT')
             .unitPrice;
       } catch (_) {}
     }
-    return 10000.0;
+    return PrintingConstants.extraLayerCost;
   }
 
+  /// Per-type unit price, backend-configured with a sensible fallback
+  /// (e.g. logo ≈ 30k).
   double get imageUnitPrice {
-    final state = context.read<CustomizerCubit>().state;
-    if (state case CustomizerLoaded(:final printingConfigs)) {
+    if (context.read<CustomizerCubit>().state
+        case CustomizerLoaded(:final printingConfigs)) {
       try {
         return printingConfigs.priceConfigs
             .firstWhere((config) => config.type == 'IMAGE')
             .unitPrice;
       } catch (_) {}
     }
-    return 25000.0;
+    return PrintingConstants.logoLayerCost;
   }
 
+  /// Each layer stacks at its own type's unit price — no flat material/method
+  /// fee added on top.
+  ///   printingPrice = textLayerCount × textUnitPrice
+  ///                 + logoLayerCount × imageUnitPrice
   double get totalPrintingPrice {
     if (layers.isEmpty) return 0.0;
     final textLayerCount =
         layers.where((layer) => layer.type == LayerType.text).length;
-    final imageLayerCount =
+    final logoLayerCount =
         layers.where((layer) => layer.type == LayerType.logo).length;
-    return printingMethodCost +
-        (textLayerCount * textUnitPrice) +
-        (imageLayerCount * imageUnitPrice);
+    return (textLayerCount * textUnitPrice) +
+        (logoLayerCount * imageUnitPrice);
   }
 
   double get totalPrice =>

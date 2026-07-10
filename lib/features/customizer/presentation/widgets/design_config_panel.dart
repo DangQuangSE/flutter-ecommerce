@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/constants/printing_constants.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
@@ -181,7 +182,7 @@ class _MaterialSection extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: AppSizes.paddingSm + 2),
                 child: MaterialCard(
                   title: material.name,
-                  priceAdd: '+${_formatPrice(material.basePrice)}',
+                  priceAdd: '+${_formatPrice(_materialDisplayPrice(material))}',
                   desc: material.description,
                   isSelected: isSelected,
                   onTap: () => onPrintMethodChanged(material.name),
@@ -203,6 +204,16 @@ class _MaterialSection extends StatelessWidget {
       }
     }
     return '${buffer.toString()}đ';
+  }
+
+  /// Material display prices (overrides backend values for consistency).
+  double _materialDisplayPrice(PrintingMaterialEntity material) {
+    return switch (material.id) {
+      PrintingConstants.heatTransferId => PrintingConstants.heatTransferCost,
+      PrintingConstants.reflectiveDecalId =>
+        PrintingConstants.reflectiveDecalCost,
+      _ => material.basePrice,
+    };
   }
 }
 

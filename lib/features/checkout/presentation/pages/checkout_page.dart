@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/payment_method_constants.dart';
@@ -207,23 +209,36 @@ class _CheckoutPageState extends State<CheckoutPage> {
             .toList()
         : state.items;
 
-    return CheckoutBody(
-      formKey: _formKey,
-      checkoutItems: checkoutItems,
-      selectedAddress: _selectedAddress,
-      selectedCoupon: _selectedCoupon,
-      selectedPayment: _selectedPayment,
-      nameController: _nameController,
-      phoneController: _phoneController,
-      addressController: _addressController,
-      onAddressSelected: _onAddressSelected,
-      onPaymentChanged: (option) {
-        setState(() => _selectedPayment = option);
+    final specCubit = context.read<CustomDesignSpecCubit>();
+    for (final item in checkoutItems) {
+      final designId = item.customDesignId;
+      if (designId != null) specCubit.loadSpec(designId);
+    }
+
+    return BlocBuilder<CustomDesignSpecCubit, CustomDesignSpecState>(
+      builder: (context, specState) {
+        final specSnapshot =
+            specState is CustomDesignSpecSnapshot ? specState : null;
+        return CheckoutBody(
+          formKey: _formKey,
+          checkoutItems: checkoutItems,
+          specSnapshot: specSnapshot,
+          selectedAddress: _selectedAddress,
+          selectedCoupon: _selectedCoupon,
+          selectedPayment: _selectedPayment,
+          nameController: _nameController,
+          phoneController: _phoneController,
+          addressController: _addressController,
+          onAddressSelected: _onAddressSelected,
+          onPaymentChanged: (option) {
+            setState(() => _selectedPayment = option);
+          },
+          calculateDiscount: _calculateDiscount,
+          formatPrice: _formatPrice,
+          onOpenCoupon: _openCouponDialog,
+          onConfirm: () => _submitOrder(context, checkoutItems),
+        );
       },
-      calculateDiscount: _calculateDiscount,
-      formatPrice: _formatPrice,
-      onOpenCoupon: _openCouponDialog,
-      onConfirm: () => _submitOrder(context, checkoutItems),
     );
   }
 

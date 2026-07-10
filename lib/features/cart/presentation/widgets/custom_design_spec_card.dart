@@ -7,6 +7,7 @@ import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/utils/cart_item_pricing.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
@@ -84,19 +85,19 @@ class _CustomDesignSpecContent extends StatelessWidget {
         spec?.materialName ?? AppStrings.customDesignSpecUnavailable;
     final textLines = spec?.numTextLines ?? 0;
     final images = spec?.numImages ?? 0;
-    final totalPrintingPrice = spec?.totalPrintingPrice ?? 0;
-    final materialBasePrice = spec?.materialBasePrice ?? 0;
     final textUnitPrice = spec?.textUnitPrice ?? 0;
     final imageUnitPrice = spec?.imageUnitPrice ?? 0;
-    final printingPrice =
-        totalPrintingPrice > 0 ? totalPrintingPrice : fallbackPrintingPrice;
 
+    // Per-type pricing: textLayers × textUnitPrice + logoLayers × imageUnitPrice
+    // Material base price is NOT added on top.
     final textCost = textLines * textUnitPrice;
     final imageCost = images * imageUnitPrice;
+    final printingPrice = resolvedPrintingPriceFromSpec(
+      spec: spec,
+      fallbackPrintingPrice: fallbackPrintingPrice,
+    );
 
-    final materialValueText = materialBasePrice > 0
-        ? '${materialText.toUpperCase()} (+${formatPrice(materialBasePrice)})'
-        : materialText.toUpperCase();
+    final materialValueText = materialText.toUpperCase();
     final textValueText = textUnitPrice > 0
         ? '${AppStrings.customDesignSpecTextLines(textLines)} (+${formatPrice(textCost)})'
         : AppStrings.customDesignSpecTextLines(textLines);
@@ -133,7 +134,7 @@ class _CustomDesignSpecContent extends StatelessWidget {
           isBlueValue: true,
           isBoldValue: true,
         ),
-        if (textUnitPrice > 0 && imageUnitPrice > 0) ...[
+        if (textUnitPrice > 0 || imageUnitPrice > 0) ...[
           SizedBox(height: AppSizes.paddingSm),
           _PricingFormulaHint(
             textUnitPrice: textUnitPrice,

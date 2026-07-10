@@ -200,7 +200,7 @@ abstract final class AppStrings {
     String textUnitPrice,
     String imageUnitPrice,
   ) =>
-      'Công thức tính giá in ấn: Giá phôi in + (Số lớp chữ x $textUnitPrice/lớp) + (Số logo x $imageUnitPrice/ảnh)';
+      'Công thức: (Số lớp chữ x $textUnitPrice/lớp) + (Số logo x $imageUnitPrice/ảnh)';
 
   // Product catalog / filter
   static const String productSearchHint = 'Tìm kiếm sản phẩm...';
@@ -237,10 +237,6 @@ abstract final class AppStrings {
   static const String productHomeFeaturedEmpty =
       'Không có sản phẩm nổi bật nào.';
   static const String productHomeLoadError = 'Đã xảy ra lỗi khi tải trang chủ.';
-  static const String productHomeCategoryRunning = 'Giày Chạy';
-  static const String productHomeCategoryApparel = 'Trang Phục';
-  static const String productHomeCategoryAccessories = 'Phụ Kiện';
-  static const String productHomeCategoryEquipment = 'Dụng Cụ';
   static const String productHomeHeroEyebrow = 'DÒNG SẢN PHẨM MỚI NHẤT';
   static const String productHomeHeroTitle = 'BỨT PHÁ GIỚI HẠN';
   static const String productHomeHeroSubtitle =
@@ -300,7 +296,7 @@ abstract final class AppStrings {
   static const String customizerUploadLogoHint = 'PNG, JPG, SVG (Tối đa 5MB)';
   static const String customizerTotalProduct = 'TỔNG CỘNG SẢN PHẨM';
   static const String customizerPrintingPriceLabel = 'Giá in thêm';
-  static const String customizerPrintingPriceHint = '(Gồm phôi & lớp in)';
+  static const String customizerPrintingPriceHint = '(Theo số lớp & logo)';
   static const String customizerSelectedColor = 'Selected Color';
   static String customizerSportFontLabel(String font) =>
       '$font ($customizerSportFontSuffix)';

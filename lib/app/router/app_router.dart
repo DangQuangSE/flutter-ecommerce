@@ -506,19 +506,38 @@ class AppRouter {
       GoRoute(
         path: '/products',
         name: AppRoutes.productList,
-        pageBuilder: (context, state) => _fadeThroughPage(
-          state: state,
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (_) =>
-                    sl<ProductCatalogBloc>()..add(ProductCatalogFetch()),
-              ),
-              BlocProvider(create: (_) => sl<ProductFilterOptionsCubit>()),
-            ],
-            child: const ProductCatalogPage(),
-          ),
-        ),
+        pageBuilder: (context, state) {
+          // Home category tap passes {categoryId, categoryName} so the catalog
+          // opens pre-filtered to that category.
+          final extra = state.extra;
+          final initialCategoryId =
+              extra is Map ? extra['categoryId'] as int? : null;
+          final initialCategoryName =
+              extra is Map ? extra['categoryName'] as String? : null;
+          return _fadeThroughPage(
+            state: state,
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) {
+                    final bloc = sl<ProductCatalogBloc>();
+                    if (initialCategoryId != null) {
+                      bloc.add(ProductCatalogFilterChanged(
+                        categoryId: initialCategoryId,
+                        categoryName: initialCategoryName,
+                      ));
+                    } else {
+                      bloc.add(ProductCatalogFetch());
+                    }
+                    return bloc;
+                  },
+                ),
+                BlocProvider(create: (_) => sl<ProductFilterOptionsCubit>()),
+              ],
+              child: const ProductCatalogPage(),
+            ),
+          );
+        },
         routes: [
           GoRoute(
             path: ':productId',
@@ -570,6 +589,7 @@ class AppRouter {
             BlocProvider(
                 create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
             BlocProvider.value(value: sl<AddressCubit>()..loadAddresses()),
+            BlocProvider(create: (_) => sl<CustomDesignSpecCubit>()),
           ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),
