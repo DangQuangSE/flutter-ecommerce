@@ -8,4 +8,5 @@ abstract interface class OrderRemoteDataSource {
   });
 
   Future<OrderModel> getOrderById(int id);
+  Future<OrderModel> cancelOrder(int id, String reason);
 }

@@ -66,6 +66,14 @@ class AdminNotificationCubit extends Cubit<AdminNotificationState> {
     }
   }
 
+  void connect() {
+    _socketClient.connect();
+  }
+
+  void disconnect() {
+    _socketClient.disconnect();
+  }
+
   @override
   Future<void> close() {
     _subscription?.cancel();

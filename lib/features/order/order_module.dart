@@ -7,6 +7,7 @@ import 'package:flutter_ecommerce/features/order/data/repositories/order_reposit
 import 'package:flutter_ecommerce/features/order/domain/repositories/order_repository.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_order_by_id_usecase.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_orders_usecase.dart';
+import 'package:flutter_ecommerce/features/order/domain/usecases/cancel_order.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_bloc.dart';
 
 void setupOrderModule(GetIt sl) {
@@ -22,10 +23,14 @@ void setupOrderModule(GetIt sl) {
   sl.registerFactory<GetOrderByIdUseCase>(
     () => GetOrderByIdUseCase(sl<OrderRepository>()),
   );
+  sl.registerFactory<CancelOrder>(
+    () => CancelOrder(sl<OrderRepository>()),
+  );
   sl.registerFactory<OrderBloc>(
     () => OrderBloc(
       getOrdersUseCase: sl<GetOrdersUseCase>(),
       getOrderByIdUseCase: sl<GetOrderByIdUseCase>(),
+      cancelOrderUseCase: sl<CancelOrder>(),
     ),
   );
 }

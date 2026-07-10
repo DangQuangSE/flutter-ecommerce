@@ -46,4 +46,17 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     final data = response.data?['data'] as Map<String, dynamic>;
     return OrderModel.fromJson(data);
   }
+
+  @override
+  Future<OrderModel> cancelOrder(int id, String reason) async {
+    final response = await _dioClient.dio.post<Map<String, dynamic>>(
+      '${ApiConstants.orders}/$id/cancel',
+      data: {
+        'cancelReason': reason,
+      },
+    );
+
+    final data = response.data?['data'] as Map<String, dynamic>;
+    return OrderModel.fromJson(data);
+  }
 }

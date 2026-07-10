@@ -8,6 +8,9 @@ abstract final class CustomerOrderFilter {
     'Đang giao',
     'Đã giao',
     'Đã hủy',
+    'Yêu cầu trả hàng',
+    'Đã trả hàng',
+    'Đã hoàn tiền',
   ];
 
   static const defaultPill = 'Tất cả';
@@ -21,6 +24,9 @@ abstract final class CustomerOrderFilter {
       'Đang giao' => status == 'SHIPPED',
       'Đã giao' => status == 'DELIVERED',
       'Đã hủy' => status == 'CANCELLED',
+      'Yêu cầu trả hàng' => status == 'RETURN_REQUESTED',
+      'Đã trả hàng' => status == 'RETURNED',
+      'Đã hoàn tiền' => status == 'REFUNDED',
       _ => true,
     };
   }
