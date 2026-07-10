@@ -51,8 +51,6 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cần truy cập ảnh để upload ảnh sản phẩm</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Ứng dụng cần vị trí của bạn để chỉ đường tới cửa hàng.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

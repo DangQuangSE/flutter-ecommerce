@@ -692,11 +692,8 @@ abstract final class AppStrings {
 
   // ── Shop map & directions (user-facing) ───────────────────────────────────
   static const String shopGetDirections = 'Chỉ đường';
-  static const String shopStartNavigation = 'Bắt đầu';
   static const String shopDirectionsLoading = 'Đang tìm đường...';
   static const String shopMapOpenError = 'Không thể mở Google Maps.';
-  static const String shopDirectionsCloseLabel = 'Đóng chỉ đường';
-  static const String shopLocationSettingsLabel = 'Mở cài đặt';
   static const String shopMapUnavailable =
       'Chưa có vị trí bản đồ cho cửa hàng này.';
 
