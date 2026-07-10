@@ -6,11 +6,37 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 
-class ProductHomeHeroSection extends StatelessWidget {
+class ProductHomeHeroSection extends StatefulWidget {
+  const ProductHomeHeroSection({super.key});
+
+  @override
+  State<ProductHomeHeroSection> createState() => _ProductHomeHeroSectionState();
+}
+
+class _ProductHomeHeroSectionState extends State<ProductHomeHeroSection>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _zoomController;
+  late final Animation<double> _zoomAnimation;
   static const _heroImageUrl =
       'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c';
 
-  const ProductHomeHeroSection({super.key});
+  @override
+  void initState() {
+    super.initState();
+    _zoomController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 18),
+    )..repeat(reverse: true);
+    _zoomAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(parent: _zoomController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _zoomController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +77,15 @@ class ProductHomeHeroSection extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(_heroImageUrl, fit: BoxFit.cover),
+              AnimatedBuilder(
+                animation: _zoomAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _zoomAnimation.value,
+                    child: Image.network(_heroImageUrl, fit: BoxFit.cover),
+                  );
+                },
+              ),
               const _HeroOverlay(),
               const _HeroContent(),
             ],
@@ -83,8 +117,87 @@ class _HeroOverlay extends StatelessWidget {
   }
 }
 
-class _HeroContent extends StatelessWidget {
+class _HeroContent extends StatefulWidget {
   const _HeroContent();
+
+  @override
+  State<_HeroContent> createState() => _HeroContentState();
+}
+
+class _HeroContentState extends State<_HeroContent>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _titleOpacity;
+  late final Animation<Offset> _titleSlide;
+  late final Animation<double> _subOpacity;
+  late final Animation<Offset> _subSlide;
+  late final Animation<double> _btnOpacity;
+  late final Animation<Offset> _btnSlide;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _titleOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+      ),
+    );
+    _titleSlide = Tween<Offset>(
+      begin: const Offset(0.0, 0.25),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.fastOutSlowIn),
+      ),
+    );
+
+    _subOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.25, 0.75, curve: Curves.easeOut),
+      ),
+    );
+    _subSlide = Tween<Offset>(
+      begin: const Offset(0.0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.25, 0.75, curve: Curves.fastOutSlowIn),
+      ),
+    );
+
+    _btnOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
+      ),
+    );
+    _btnSlide = Tween<Offset>(
+      begin: const Offset(0.0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
+      ),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,49 +207,67 @@ class _HeroContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Transform(
-            transform: Matrix4.skewX(-0.10),
-            child: Text.rich(
-              TextSpan(
-                children: [
+          SlideTransition(
+            position: _titleSlide,
+            child: FadeTransition(
+              opacity: _titleOpacity,
+              child: Transform(
+                transform: Matrix4.skewX(-0.10),
+                child: Text.rich(
                   TextSpan(
-                    text: 'BỨT PHÁ\n',
-                    style: GoogleFonts.lexend(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.white,
-                      height: 1.15,
-                      letterSpacing: -0.5,
-                    ),
+                    children: [
+                      TextSpan(
+                        text: 'BỨT PHÁ\n',
+                        style: GoogleFonts.lexend(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.white,
+                          height: 1.15,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'GIỚI HẠN',
+                        style: GoogleFonts.lexend(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.accent,
+                          height: 1.15,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
                   ),
-                  TextSpan(
-                    text: 'GIỚI HẠN',
-                    style: GoogleFonts.lexend(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.accent,
-                      height: 1.15,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            AppStrings.productHomeHeroSubtitle,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: AppColors.white.withValues(alpha: 0.8),
-              height: 1.4,
+          SlideTransition(
+            position: _subSlide,
+            child: FadeTransition(
+              opacity: _subOpacity,
+              child: Text(
+                AppStrings.productHomeHeroSubtitle,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.white.withValues(alpha: 0.8),
+                  height: 1.4,
+            ),
+          ),
             ),
           ),
           const SizedBox(height: 20),
-          _HeroCta(
-            label: AppStrings.productHomeHeroCta,
-            onPressed: () => context.goNamed(AppRoutes.productList),
+          SlideTransition(
+            position: _btnSlide,
+            child: FadeTransition(
+              opacity: _btnOpacity,
+              child: _HeroCta(
+                label: AppStrings.productHomeHeroCta,
+                onPressed: () => context.goNamed(AppRoutes.productList),
+              ),
+            ),
           ),
         ],
       ),
