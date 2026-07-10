@@ -101,18 +101,46 @@ class CustomizerPageState extends State<CustomizerPage> {
     return null;
   }
 
-  /// Simpler pricing model: each printed layer (text or logo) is charged at
-  /// the selected material's base price.
-  ///   printingPrice = materialPrice × (textLayerCount + logoLayerCount)
+  /// Per-type unit price, backend-configured with a sensible fallback
+  /// (e.g. heat-transfer text layer ≈ 10k).
+  double get textUnitPrice {
+    if (context.read<CustomizerCubit>().state
+        case CustomizerLoaded(:final printingConfigs)) {
+      try {
+        return printingConfigs.priceConfigs
+            .firstWhere((config) => config.type == 'TEXT')
+            .unitPrice;
+      } catch (_) {}
+    }
+    return PrintingConstants.extraLayerCost;
+  }
+
+  /// Per-type unit price, backend-configured with a sensible fallback
+  /// (e.g. logo ≈ 30k).
+  double get imageUnitPrice {
+    if (context.read<CustomizerCubit>().state
+        case CustomizerLoaded(:final printingConfigs)) {
+      try {
+        return printingConfigs.priceConfigs
+            .firstWhere((config) => config.type == 'IMAGE')
+            .unitPrice;
+      } catch (_) {}
+    }
+    return PrintingConstants.logoLayerCost;
+  }
+
+  /// Each layer stacks at its own type's unit price — no flat material/method
+  /// fee added on top.
+  ///   printingPrice = textLayerCount × textUnitPrice
+  ///                 + logoLayerCount × imageUnitPrice
   double get totalPrintingPrice {
     if (layers.isEmpty) return 0.0;
-    final layerCount = layers
-        .where((layer) =>
-            layer.type == LayerType.text || layer.type == LayerType.logo)
-        .length;
-    final materialPrice =
-        selectedMaterial?.basePrice ?? PrintingConstants.heatTransferCost;
-    return materialPrice * layerCount;
+    final textLayerCount =
+        layers.where((layer) => layer.type == LayerType.text).length;
+    final logoLayerCount =
+        layers.where((layer) => layer.type == LayerType.logo).length;
+    return (textLayerCount * textUnitPrice) +
+        (logoLayerCount * imageUnitPrice);
   }
 
   double get totalPrice =>
