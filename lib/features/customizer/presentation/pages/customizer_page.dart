@@ -101,46 +101,18 @@ class CustomizerPageState extends State<CustomizerPage> {
     return null;
   }
 
-  double get printingMethodCost {
-    return selectedMaterial?.basePrice ??
-        (printMethod == AppStrings.customizerDefaultPrintMethod
-            ? PrintingConstants.heatTransferCost
-            : PrintingConstants.reflectiveDecalCost);
-  }
-
-  double get textUnitPrice {
-    final state = context.read<CustomizerCubit>().state;
-    if (state case CustomizerLoaded(:final printingConfigs)) {
-      try {
-        return printingConfigs.priceConfigs
-            .firstWhere((config) => config.type == 'TEXT')
-            .unitPrice;
-      } catch (_) {}
-    }
-    return 10000.0;
-  }
-
-  double get imageUnitPrice {
-    final state = context.read<CustomizerCubit>().state;
-    if (state case CustomizerLoaded(:final printingConfigs)) {
-      try {
-        return printingConfigs.priceConfigs
-            .firstWhere((config) => config.type == 'IMAGE')
-            .unitPrice;
-      } catch (_) {}
-    }
-    return 25000.0;
-  }
-
+  /// Simpler pricing model: each printed layer (text or logo) is charged at
+  /// the selected material's base price.
+  ///   printingPrice = materialPrice × (textLayerCount + logoLayerCount)
   double get totalPrintingPrice {
     if (layers.isEmpty) return 0.0;
-    final textLayerCount =
-        layers.where((layer) => layer.type == LayerType.text).length;
-    final imageLayerCount =
-        layers.where((layer) => layer.type == LayerType.logo).length;
-    return printingMethodCost +
-        (textLayerCount * textUnitPrice) +
-        (imageLayerCount * imageUnitPrice);
+    final layerCount = layers
+        .where((layer) =>
+            layer.type == LayerType.text || layer.type == LayerType.logo)
+        .length;
+    final materialPrice =
+        selectedMaterial?.basePrice ?? PrintingConstants.heatTransferCost;
+    return materialPrice * layerCount;
   }
 
   double get totalPrice =>
