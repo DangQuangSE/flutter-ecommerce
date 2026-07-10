@@ -10,7 +10,6 @@ import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_state.da
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_cover_header.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_error_view.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_info_row.dart';
-import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_map_section.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_rating_row.dart';
 
 class ShopInfoPage extends StatelessWidget {
@@ -76,7 +75,6 @@ class _ShopContent extends StatelessWidget {
           SizedBox(height: AppSizes.paddingXl + AppSizes.paddingMd),
           _ShopNameSection(shop: shop),
           AppSizes.spacingMd,
-          ShopMapSection(shop: shop),
           const Divider(height: AppSizes.paddingXl),
           _ShopDetailsSection(shop: shop),
           AppSizes.spacingLg,

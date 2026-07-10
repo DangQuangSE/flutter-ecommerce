@@ -120,7 +120,7 @@ void main() {
       home: Scaffold(
         body: BlocProvider<DirectionsCubit>.value(
           value: cubit,
-          child: ShopMapSection(shop: shop),
+          child: ShopMapSection(shop: shop, height: 260),
         ),
       ),
     );

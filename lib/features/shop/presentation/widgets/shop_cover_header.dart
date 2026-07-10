@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/features/shop/domain/entities/shop_entity.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_map_section.dart';
 
-/// Displays the cover banner and the circular logo stacked at its bottom.
-/// The cover height scales with the screen width so it stays proportional
-/// across phone and tablet sizes.
+/// The store map doubles as the page header, with the circular logo
+/// overlapping its bottom-left corner. The map height scales with the screen
+/// width so it stays proportional across phone and tablet sizes.
 class ShopCoverHeader extends StatelessWidget {
   final ShopEntity shop;
 
@@ -14,53 +15,19 @@ class ShopCoverHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final coverHeight = MediaQuery.of(context).size.width * AppSizes.shopCoverRatio;
+    final mapHeight = MediaQuery.of(context).size.width * AppSizes.shopCoverRatio;
     return SizedBox(
-      height: coverHeight + AppSizes.shopLogoSize / 2,
+      height: mapHeight + AppSizes.shopLogoSize / 2,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          _CoverImage(coverUrl: shop.coverUrl, height: coverHeight),
+          ShopMapSection(shop: shop, height: mapHeight),
           Positioned(
             bottom: 0,
             left: AppSizes.paddingMd,
             child: _LogoAvatar(logoUrl: shop.logoUrl, name: shop.name),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CoverImage extends StatelessWidget {
-  final String? coverUrl;
-  final double height;
-
-  const _CoverImage({this.coverUrl, required this.height});
-
-  @override
-  Widget build(BuildContext context) {
-    if (coverUrl == null || coverUrl!.isEmpty) {
-      return _placeholder();
-    }
-    return CachedNetworkImage(
-      imageUrl: coverUrl!,
-      width: double.infinity,
-      height: height,
-      fit: BoxFit.cover,
-      errorWidget: (_, __, ___) => _placeholder(),
-    );
-  }
-
-  Widget _placeholder() {
-    return Container(
-      width: double.infinity,
-      height: height,
-      color: AppColors.primary.withValues(alpha: 0.15),
-      child: const Icon(
-        Icons.store_mall_directory_rounded,
-        size: AppSizes.iconXl,
-        color: AppColors.primary,
       ),
     );
   }

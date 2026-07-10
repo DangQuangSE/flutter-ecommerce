@@ -13,23 +13,24 @@ import 'package:flutter_ecommerce/features/shop/domain/entities/shop_entity.dart
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_map_directions_fab.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_map_placeholder.dart';
 
-/// The real (OpenStreetMap) map at the top of the customer store screen: shows
-/// the store marker and, on tap of "Chỉ đường", hands off straight to the
-/// Google Maps app for turn-by-turn directions (no in-app route preview).
-/// Resolves the store coordinate from the saved lat/lng, falling back to
-/// geocoding the address.
+/// The real (OpenStreetMap) map at the top of the customer store screen —
+/// it IS the header (the shop logo overlaps its bottom-left corner, replacing
+/// what used to be a plain cover photo, see `ShopCoverHeader`) — shows the
+/// store marker and, on tap of "Chỉ đường", hands off straight to the Google
+/// Maps app for turn-by-turn directions (no in-app route preview). Resolves
+/// the store coordinate from the saved lat/lng, falling back to geocoding
+/// the address.
 class ShopMapSection extends StatefulWidget {
   final ShopEntity shop;
+  final double height;
 
-  const ShopMapSection({super.key, required this.shop});
+  const ShopMapSection({super.key, required this.shop, required this.height});
 
   @override
   State<ShopMapSection> createState() => _ShopMapSectionState();
 }
 
 class _ShopMapSectionState extends State<ShopMapSection> {
-  static const double _mapHeight = 260;
-
   GeoPoint? _storePoint;
   bool _resolving = true;
   bool _launchingDirections = false;
@@ -92,9 +93,9 @@ class _ShopMapSectionState extends State<ShopMapSection> {
   @override
   Widget build(BuildContext context) {
     if (_resolving) {
-      return const SizedBox(
-        height: _mapHeight,
-        child: Center(
+      return SizedBox(
+        height: widget.height,
+        child: const Center(
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
@@ -103,10 +104,10 @@ class _ShopMapSectionState extends State<ShopMapSection> {
     }
     final point = _storePoint;
     if (point == null) {
-      return const ShopMapPlaceholder(height: _mapHeight);
+      return ShopMapPlaceholder(height: widget.height);
     }
     return SizedBox(
-      height: _mapHeight,
+      height: widget.height,
       child: Stack(
         children: [
           Positioned.fill(
