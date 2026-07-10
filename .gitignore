@@ -36,6 +36,9 @@ migrate_working_dir/
 # Opencode project configuration
 .opencode/
 
+# Claude Code project configuration (agent/skill configs, local to each dev)
+.claude/
+
 # Symbolication related
 app.*.symbols
 
