@@ -31,3 +31,13 @@ final class DomainFailure extends Failure {
 final class AuthFailure extends Failure {
   const AuthFailure(super.message);
 }
+
+/// Device-location failure. [permanentlyDenied] lets the UI offer an
+/// "open settings" shortcut instead of re-prompting a dialog that won't show.
+final class LocationFailure extends Failure {
+  final bool permanentlyDenied;
+  const LocationFailure(super.message, {this.permanentlyDenied = false});
+
+  @override
+  List<Object> get props => [message, permanentlyDenied];
+}

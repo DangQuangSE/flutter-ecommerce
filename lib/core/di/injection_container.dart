@@ -24,6 +24,7 @@ import 'package:flutter_ecommerce/features/checkout/checkout_module.dart';
 import 'package:flutter_ecommerce/features/color/color_module.dart';
 import 'package:flutter_ecommerce/features/coupon/coupon_module.dart';
 import 'package:flutter_ecommerce/features/customizer/customizer_module.dart';
+import 'package:flutter_ecommerce/features/geo/geo_module.dart';
 import 'package:flutter_ecommerce/features/location/location_module.dart';
 import 'package:flutter_ecommerce/features/notification/notification_module.dart';
 import 'package:flutter_ecommerce/features/order/order_module.dart';
@@ -92,6 +93,7 @@ Future<void> configureDependencies() async {
   setupCartModule(sl);
   setupProfileModule(sl);
   setupShopModule(sl);
+  setupGeoModule(sl);
   setupNotificationModule(sl);
   setupChatModule(sl);
   setupCheckoutModule(sl);

@@ -12,6 +12,8 @@ import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.d
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_order_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/pages/admin_order_list_page.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:flutter_ecommerce/features/geo/presentation/cubit/store_location_picker_cubit.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_dashboard_tab.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_management_tab.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_location_tab.dart';
@@ -27,9 +29,40 @@ class AdminDashboardPage extends StatefulWidget {
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   int _currentIndex = 0;
   AdminOrderCubit? _adminOrderCubit;
+  ShopCubit? _shopCubit;
+
+  /// Built lazily so the Location tab's real map + shop load only fire once the
+  /// admin actually opens that tab (R10 — IndexedStack is eager).
+  bool _locationVisited = false;
+  static const int _locationTabIndex = 3;
 
   AdminOrderCubit get _ordersCubit {
     return _adminOrderCubit ??= sl<AdminOrderCubit>()..loadOrders();
+  }
+
+  ShopCubit get _shopConfigCubit {
+    return _shopCubit ??= sl<ShopCubit>()..loadShop();
+  }
+
+  void _onNavTap(int index) {
+    setState(() {
+      _currentIndex = index;
+      if (index == _locationTabIndex) _locationVisited = true;
+    });
+  }
+
+  /// Location tab, provided with its cubits and built only after first visit.
+  Widget _buildLocationTab() {
+    if (!_locationVisited) return const SizedBox.shrink();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _shopConfigCubit),
+        BlocProvider(create: (_) => sl<StoreLocationPickerCubit>()),
+      ],
+      child: AdminLocationTab(
+        onBackToDashboard: () => setState(() => _currentIndex = 0),
+      ),
+    );
   }
 
   @override
@@ -44,13 +77,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   void dispose() {
     _adminOrderCubit?.close();
+    _shopCubit?.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: BlocConsumer<AdminBloc, AdminState>(
         listener: (context, state) {
           if (state is AdminLoaded && state.message != null) {
@@ -85,8 +118,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   value: _ordersCubit,
                   child: const AdminOrderListPage(showAppBar: false),
                 ),
-                AdminLocationTab(
-                    onBackToDashboard: () => setState(() => _currentIndex = 0)),
+                _buildLocationTab(),
                 const AdminProfileTab(),
               ],
             );
@@ -118,12 +150,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
+              onTap: _onNavTap,
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.transparent,
               elevation: 0,
               selectedItemColor: AppColors.primary,
-              unselectedItemColor: AppColors.textSecondary.withValues(alpha: 0.7),
+              unselectedItemColor:
+                  AppColors.textSecondary.withValues(alpha: 0.7),
               selectedLabelStyle: GoogleFonts.inter(
                   fontWeight: FontWeight.w600, fontSize: AppSizes.fontSm),
               unselectedLabelStyle: GoogleFonts.inter(
@@ -131,8 +164,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               items: const [
                 BottomNavigationBarItem(
                     icon: Icon(Icons.dashboard_rounded, size: AppSizes.iconNav),
-                    activeIcon:
-                        Icon(Icons.dashboard_rounded, size: AppSizes.iconNavActive),
+                    activeIcon: Icon(Icons.dashboard_rounded,
+                        size: AppSizes.iconNavActive),
                     label: AppStrings.adminNavOverview),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.tune_rounded, size: AppSizes.iconNav),
@@ -140,19 +173,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         Icon(Icons.tune_rounded, size: AppSizes.iconNavActive),
                     label: AppStrings.adminNavManagement),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.receipt_long_rounded, size: AppSizes.iconNav),
+                    icon: Icon(Icons.receipt_long_rounded,
+                        size: AppSizes.iconNav),
                     activeIcon: Icon(Icons.receipt_long_rounded,
                         size: AppSizes.iconNavActive),
                     label: AppStrings.adminNavOrders),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.location_on_rounded, size: AppSizes.iconNav),
+                    icon:
+                        Icon(Icons.location_on_rounded, size: AppSizes.iconNav),
                     activeIcon: Icon(Icons.location_on_rounded,
                         size: AppSizes.iconNavActive),
                     label: AppStrings.adminNavStore),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.person_rounded, size: AppSizes.iconNav),
-                    activeIcon:
-                        Icon(Icons.person_rounded, size: AppSizes.iconNavActive),
+                    activeIcon: Icon(Icons.person_rounded,
+                        size: AppSizes.iconNavActive),
                     label: AppStrings.adminNavProfile),
               ],
             ),

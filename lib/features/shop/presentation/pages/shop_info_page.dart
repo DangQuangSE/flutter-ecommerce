@@ -10,6 +10,7 @@ import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_state.da
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_cover_header.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_error_view.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_info_row.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_map_section.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_rating_row.dart';
 
 class ShopInfoPage extends StatelessWidget {
@@ -18,7 +19,6 @@ class ShopInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor ??
             Theme.of(context).colorScheme.surface,
@@ -32,21 +32,20 @@ class ShopInfoPage extends StatelessWidget {
             fontSize: AppSizes.fontXxl,
           ),
         ),
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SafeArea(
         child: BlocBuilder<ShopCubit, ShopState>(
           builder: (context, state) => switch (state) {
             ShopInitial() => Center(
                 child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
             ShopLoading() => Center(
                 child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
             ShopLoaded(:final shop) => _ShopContent(shop: shop),
@@ -76,6 +75,8 @@ class _ShopContent extends StatelessWidget {
           ShopCoverHeader(shop: shop),
           SizedBox(height: AppSizes.paddingXl + AppSizes.paddingMd),
           _ShopNameSection(shop: shop),
+          AppSizes.spacingMd,
+          ShopMapSection(shop: shop),
           const Divider(height: AppSizes.paddingXl),
           _ShopDetailsSection(shop: shop),
           AppSizes.spacingLg,
