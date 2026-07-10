@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
+import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
+import 'package:flutter_ecommerce/features/category/presentation/cubit/category_state.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/shared/product_tactile_card.dart';
 import 'package:flutter_ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:flutter_ecommerce/features/product/presentation/widgets/home/product_home_hero_section.dart';
@@ -34,56 +38,77 @@ class ProductHomeContent extends StatelessWidget {
 }
 
 class _HomeCategorySection extends StatelessWidget {
-  static const _categories = [
-    _HomeCategory(
-      title: AppStrings.productHomeCategoryRunning,
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuATtvA9dpwpeZk45mc9bEBjeatBPszQFU0FYFVfZbFEUJ7HRwIHMRwHzAy55ziexRfDl324LqvYrMaboFgsiysd-bPLAW1MvDpMR0arf8p03vEseyN9zgQ53g8yYVuhoqBu7EDrKqcqYwegqNKBTHitNy5_cvQ4c8xL9TE2Q0r9eER1Zk0qxIVhAhNgV1_zzUT5JpdYv0ylO3P5F0jK5tF2r7MP1DrHGpsqZp_Cox8dCPrFXgbgBuprKEoar3JX7cS8IEKaBkXojMA',
-    ),
-    _HomeCategory(
-      title: AppStrings.productHomeCategoryApparel,
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuB717wQyS9AeENXDPoVWHtgsZS4I3An4etSvXGYlLQlv7KUi9-JhnR3VvdBFzpd35CYGm2yqeQADcqbXIcx_bZuMkNcb4ftRm6cv-d4zNMRKi2puai365v2sDoJTneRoT4LtNAufZpClH6mTsNQ3BOSGKcKAjxSl82R8MwKU9vlYATmJq8p_2iUVerLZLjK8CYZwIDbK_ZcBtBlFWMqvPJikuNwPySWj9CK3N5jcGysAjyUsPR5JZ-okI-Na1ctcuGdiuvpt5QT1xk',
-    ),
-    _HomeCategory(
-      title: AppStrings.productHomeCategoryAccessories,
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAqN3fOwg4iAv0K-OFpyptPcv5kI3Iv1cGfh6c3Rzx9NckeONlTagtHJF5OHW9T3H5tYeLq4zwHCRDAQhx2GpRPpSxZ5oO-XPyY1BkNZcw1H2M5XLooFtSRUmwQOFw4AzhzWgn5dege0eP0pSyXVJtWAjWYa1EnShBUT4WiPy4EhfA7rn4CpsyurmFWbHsB948-EkN9cMIgdSCT67_JVLPqnasX_UxQbBvmlAj2dLE8V1OHBXFEmFOKqyw_JDoxodxB5EdVGZy2jVI',
-    ),
-    _HomeCategory(
-      title: AppStrings.productHomeCategoryEquipment,
-      imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuCbXbEZkYN1PdBUeNwKfJKjjlBmd9AR-t3-OPPhAkxmS-Mgz39vRedxqhOq56wfXTGDPZbfO8HoGyJO5Qe5y34MjqP8pNlntjOGCbOz4huinr3D1M3fBM9zdSaNreqm8JVPI7GaG5s7z6Ol4nZNEt9w_BS5mLwpzD_KieykR9Jljkmk90gdb-zkjv55_oik-Ls1z_O6DBp-rgO6h81liKqVsjE71gmEQjfTU28A42cFidqRRk_MuQaKDdET5xZBolS-dRy434N85hg',
-    ),
-  ];
-
   const _HomeCategorySection();
+
+  static const double _stripHeight = 120;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingMd),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const _HomeSectionHeader(),
-          SizedBox(height: AppSizes.fontLg),
-          SizedBox(
-            height: 120,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
-              itemCount: _categories.length,
-              separatorBuilder: (context, index) =>
-                  SizedBox(width: AppSizes.radiusLg),
-              itemBuilder: (context, index) => _HomeCategoryCard(
-                category: _categories[index],
+    return BlocBuilder<CategoryCubit, CategoryState>(
+      builder: (context, state) {
+        // Hide the whole section on error so the rest of the home page
+        // (hero + featured products) still renders normally.
+        if (state is CategoryError) return const SizedBox.shrink();
+
+        final categories = state is CategoryLoaded
+            ? state.categories.where((c) => c.isActive).toList()
+            : const <CategoryEntity>[];
+        final isLoading = state is CategoryLoading || state is CategoryInitial;
+
+        if (!isLoading && categories.isEmpty) return const SizedBox.shrink();
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingMd),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const _HomeSectionHeader(),
+              const SizedBox(height: AppSizes.fontLg),
+              SizedBox(
+                height: _stripHeight,
+                child: isLoading
+                    ? const _HomeCategoryStripPlaceholder()
+                    : ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.paddingLg),
+                        itemCount: categories.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: AppSizes.radiusLg),
+                        itemBuilder: (context, index) => _HomeCategoryCard(
+                          category: categories[index],
+                        ),
+                      ),
               ),
-            ),
+            ],
           ),
-        ],
+        );
+      },
+    );
+  }
+}
+
+class _HomeCategoryStripPlaceholder extends StatelessWidget {
+  const _HomeCategoryStripPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
+      itemCount: 4,
+      separatorBuilder: (context, index) =>
+          const SizedBox(width: AppSizes.radiusLg),
+      itemBuilder: (context, index) => Container(
+        width: 140,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color ??
+              Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+          border: Border.all(color: Theme.of(context).dividerColor),
+        ),
       ),
     );
   }
@@ -127,18 +152,31 @@ class _HomeSectionHeader extends StatelessWidget {
 }
 
 class _HomeCategoryCard extends StatelessWidget {
-  final _HomeCategory category;
+  final CategoryEntity category;
 
   const _HomeCategoryCard({required this.category});
 
+  void _openCategory(BuildContext context) {
+    context.goNamed(
+      AppRoutes.productList,
+      extra: {
+        'categoryId': category.id,
+        'categoryName': category.name,
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final imageUrl = category.imageUrl;
+    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
     return GestureDetector(
-      onTap: () => context.goNamed(AppRoutes.productList),
+      onTap: () => _openCategory(context),
       child: Container(
         width: 140,
         decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
+          color: Theme.of(context).cardTheme.color ??
+              Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.radiusXl),
           border: Border.all(color: Theme.of(context).dividerColor),
         ),
@@ -146,7 +184,15 @@ class _HomeCategoryCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(category.imageUrl, fit: BoxFit.cover),
+            if (hasImage)
+              Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const _HomeCategoryImageFallback(),
+              )
+            else
+              const _HomeCategoryImageFallback(),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -164,7 +210,9 @@ class _HomeCategoryCard extends StatelessWidget {
               left: AppSizes.radiusLg,
               right: AppSizes.radiusLg,
               child: Text(
-                category.title,
+                category.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: AppSizes.fontMd,
                   fontWeight: FontWeight.w800,
@@ -175,6 +223,23 @@ class _HomeCategoryCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HomeCategoryImageFallback extends StatelessWidget {
+  const _HomeCategoryImageFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.primary.withValues(alpha: 0.15),
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.category_outlined,
+        color: AppColors.primary.withValues(alpha: 0.6),
+        size: AppSizes.fontXxl,
       ),
     );
   }
@@ -282,14 +347,4 @@ class _FeaturedProductsEmptyState extends StatelessWidget {
       ),
     );
   }
-}
-
-class _HomeCategory {
-  final String title;
-  final String imageUrl;
-
-  const _HomeCategory({
-    required this.title,
-    required this.imageUrl,
-  });
 }

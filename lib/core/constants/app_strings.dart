@@ -237,10 +237,6 @@ abstract final class AppStrings {
   static const String productHomeFeaturedEmpty =
       'Không có sản phẩm nổi bật nào.';
   static const String productHomeLoadError = 'Đã xảy ra lỗi khi tải trang chủ.';
-  static const String productHomeCategoryRunning = 'Giày Chạy';
-  static const String productHomeCategoryApparel = 'Trang Phục';
-  static const String productHomeCategoryAccessories = 'Phụ Kiện';
-  static const String productHomeCategoryEquipment = 'Dụng Cụ';
   static const String productHomeHeroEyebrow = 'DÒNG SẢN PHẨM MỚI NHẤT';
   static const String productHomeHeroTitle = 'BỨT PHÁ GIỚI HẠN';
   static const String productHomeHeroSubtitle =
