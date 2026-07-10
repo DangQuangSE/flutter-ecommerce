@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/features/geo/domain/entities/geo_point.dart';
-import 'package:flutter_ecommerce/features/geo/domain/maps_url_builder.dart';
 import 'package:flutter_ecommerce/features/geo/presentation/cubit/directions_cubit.dart';
 import 'package:flutter_ecommerce/features/geo/presentation/widgets/store_map_view.dart';
 import 'package:flutter_ecommerce/features/shop/domain/entities/shop_entity.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/shop_directions_launcher.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_map_directions_fab.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_map_placeholder.dart';
 
@@ -43,6 +42,8 @@ class _ShopMapSectionState extends State<ShopMapSection> {
 
   Future<void> _resolveStorePoint() async {
     final shop = widget.shop;
+    // Resolved synchronously (no await) when possible, so the marker never
+    // flashes a loading spinner for the common already-has-coordinates case.
     if (shop.hasCoordinates) {
       setState(() {
         _storePoint =
@@ -51,10 +52,7 @@ class _ShopMapSectionState extends State<ShopMapSection> {
       });
       return;
     }
-    final address = shop.address;
-    final resolved = (address == null || address.isEmpty)
-        ? null
-        : await context.read<DirectionsCubit>().geocodeStoreAddress(address);
+    final resolved = await resolveShopPoint(shop, context.read<DirectionsCubit>());
     if (!mounted) return;
     setState(() {
       _storePoint = resolved;
@@ -67,17 +65,8 @@ class _ShopMapSectionState extends State<ShopMapSection> {
     if (point == null || _launchingDirections) return;
 
     setState(() => _launchingDirections = true);
-    // No origin: Google Maps fills it in from the device's current location.
-    final uri = buildGoogleMapsDirectionsUri(
-      destination: point,
-      destinationPlaceId: widget.shop.placeId,
-    );
-    bool launched;
-    try {
-      launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {
-      launched = false;
-    }
+    final launched =
+        await launchDirectionsTo(point, placeId: widget.shop.placeId);
     if (!mounted) return;
     setState(() => _launchingDirections = false);
     if (!launched) {

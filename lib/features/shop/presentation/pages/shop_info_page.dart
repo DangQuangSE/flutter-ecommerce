@@ -8,6 +8,7 @@ import 'package:flutter_ecommerce/features/shop/domain/entities/shop_entity.dart
 import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_state.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_cover_header.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_directions_row.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_error_view.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_info_row.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_rating_row.dart';
@@ -134,6 +135,7 @@ class _ShopDetailsSection extends StatelessWidget {
               icon: Icons.location_on_outlined,
               text: shop.address!,
             ),
+          ShopDirectionsRow(shop: shop),
           if (shop.phone != null && shop.phone!.isNotEmpty)
             ShopInfoRow(
               icon: Icons.phone_outlined,
