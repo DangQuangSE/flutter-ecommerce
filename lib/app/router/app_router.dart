@@ -589,6 +589,7 @@ class AppRouter {
             BlocProvider(
                 create: (_) => sl<CouponCubit>()..loadUserAvailableCoupons()),
             BlocProvider.value(value: sl<AddressCubit>()..loadAddresses()),
+            BlocProvider(create: (_) => sl<CustomDesignSpecCubit>()),
           ],
           child: CheckoutPage(cartItemIds: state.extra as List<int>?),
         ),

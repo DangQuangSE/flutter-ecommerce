@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/utils/cart_item_pricing.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/widgets/custom_design_spec_card.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItemEntity item;
@@ -35,38 +40,59 @@ class CartItemCard extends StatelessWidget {
         item.isCustomizable ? 'TRANG BỊ HIỆU NĂNG' : 'THỜI TRANG THỂ THAO';
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildCheckbox(),
-                _buildThumbnail(context, isDark),
-                SizedBox(width: 12),
-                Expanded(child: _buildDetails(context, category, isDark)),
-              ],
+    final designId = item.customDesignId;
+
+    Widget content(double displayPrintingPrice) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color ??
+                Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          if (item.customDesignId != null) _buildDesignSection(context, isDark),
-        ],
-      ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildCheckbox(),
+                    _buildThumbnail(context, isDark),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: _buildDetails(
+                        context,
+                        category,
+                        isDark,
+                        displayPrintingPrice,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (designId != null) _buildDesignSection(context, isDark),
+            ],
+          ),
+        );
+
+    if (designId == null) return content(item.printingPrice);
+
+    return BlocSelector<CustomDesignSpecCubit, CustomDesignSpecState,
+        CustomDesignSpecEntity?>(
+      selector: (state) =>
+          state is CustomDesignSpecSnapshot ? state.specOf(designId) : null,
+      builder: (context, spec) {
+        return content(resolvedDisplayPrintingPrice(item, spec: spec));
+      },
     );
   }
 
@@ -114,11 +140,16 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDetails(BuildContext context, String category, bool isDark) {
+  Widget _buildDetails(
+    BuildContext context,
+    String category,
+    bool isDark,
+    double displayPrintingPrice,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildHeaderRow(context, category),
+        _buildHeaderRow(context, category, displayPrintingPrice),
         SizedBox(height: 6),
         Text(
           'Màu sắc: ${item.color ?? "N/A"}    Kích cỡ: ${item.size ?? "N/A"}',
@@ -130,7 +161,7 @@ class CartItemCard extends StatelessWidget {
         ),
         if (item.customDesignId != null) ...[
           SizedBox(height: 6),
-          _buildCustomBadge(),
+          _buildCustomBadge(displayPrintingPrice),
         ],
         SizedBox(height: 10),
         _buildBottomRow(context, category),
@@ -138,7 +169,11 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderRow(BuildContext context, String category) {
+  Widget _buildHeaderRow(
+    BuildContext context,
+    String category,
+    double displayPrintingPrice,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +207,7 @@ class CartItemCard extends StatelessWidget {
         ),
         SizedBox(width: 8),
         Text(
-          formatPrice(item.price + item.printingPrice),
+          formatPrice(item.price + displayPrintingPrice),
           style: GoogleFonts.lexend(
             fontSize: 14,
             fontWeight: FontWeight.w900,
@@ -184,7 +219,7 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomBadge() {
+  Widget _buildCustomBadge(double displayPrintingPrice) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
@@ -199,7 +234,7 @@ class CartItemCard extends StatelessWidget {
               size: 10, color: Color(0xFF0058BC)),
           SizedBox(width: 4),
           Text(
-            'IN TÙY CHỌN: +${formatPrice(item.printingPrice)}',
+            'IN TÙY CHỌN: +${formatPrice(displayPrintingPrice)}',
             style: GoogleFonts.inter(
               fontSize: 9,
               fontWeight: FontWeight.w800,

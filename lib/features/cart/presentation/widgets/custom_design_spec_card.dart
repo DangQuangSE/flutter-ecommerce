@@ -7,6 +7,7 @@ import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/utils/cart_item_pricing.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
@@ -91,11 +92,10 @@ class _CustomDesignSpecContent extends StatelessWidget {
     // Material base price is NOT added on top.
     final textCost = textLines * textUnitPrice;
     final imageCost = images * imageUnitPrice;
-    final computedTotal = textCost + imageCost;
-    final totalPrintingPrice = spec?.totalPrintingPrice ?? 0;
-    final printingPrice = computedTotal > 0
-        ? computedTotal
-        : (totalPrintingPrice > 0 ? totalPrintingPrice : fallbackPrintingPrice);
+    final printingPrice = resolvedPrintingPriceFromSpec(
+      spec: spec,
+      fallbackPrintingPrice: fallbackPrintingPrice,
+    );
 
     final materialValueText = materialText.toUpperCase();
     final textValueText = textUnitPrice > 0
