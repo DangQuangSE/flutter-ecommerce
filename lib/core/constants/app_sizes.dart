@@ -47,6 +47,8 @@ abstract final class AppSizes {
   // Shop profile
   static const double shopCoverRatio =
       0.42; // cover height = screenWidth * ratio
+  static const double shopCoverMaxHeight =
+      280.0; // caps the ratio above on wide/tablet/web viewports
   static const double shopLogoSize = 80.0;
   static const double iconXl = 64.0;
   static const double fontDisplay = 32.0;
