@@ -174,15 +174,22 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.radiusMd,
         vertical: AppSizes.paddingXs,
       ),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDark
+            ? const Color(0xFF334155).withValues(alpha: 0.5)
+            : AppColors.white,
         borderRadius: BorderRadius.circular(AppSizes.radiusRound),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(
+          color: isDark
+              ? const Color(0xFF475569).withValues(alpha: 0.5)
+              : AppColors.divider,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
