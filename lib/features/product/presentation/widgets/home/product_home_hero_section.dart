@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,7 +42,7 @@ class ProductHomeHeroSection extends StatelessWidget {
           ],
         ),
         child: Container(
-          height: 390,
+          height: 380,
           decoration: BoxDecoration(
             color: AppColors.black,
             borderRadius: BorderRadius.circular(22),
@@ -54,120 +53,11 @@ class ProductHomeHeroSection extends StatelessWidget {
             children: [
               Image.network(_heroImageUrl, fit: BoxFit.cover),
               const _HeroOverlay(),
-              Positioned(
-                top: 20,
-                right: 20,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.bolt_rounded,
-                            color: Color(0xFFFFB300),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'PRO-CARBON',
-                            style: GoogleFonts.spaceMono(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.15),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'SPECIFICATION',
-                            style: GoogleFonts.spaceMono(
-                              fontSize: 8,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.accent,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          _buildSpecRow('ENERGY', '85%'),
-                          const SizedBox(height: 4),
-                          _buildSpecRow('WEIGHT', '180G'),
-                          const SizedBox(height: 4),
-                          _buildSpecRow('PLATE', '3D-CARBON'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               const _HeroContent(),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSpecRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.spaceMono(
-            fontSize: 9,
-            fontWeight: FontWeight.w500,
-            color: Colors.white70,
-          ),
-        ),
-        Text(
-          value,
-          style: GoogleFonts.spaceMono(
-            fontSize: 9,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -184,7 +74,7 @@ class _HeroOverlay extends StatelessWidget {
           end: Alignment.topCenter,
           colors: [
             Colors.black87,
-            Colors.black38,
+            Colors.black26,
             Colors.transparent,
           ],
         ),
@@ -204,32 +94,33 @@ class _HeroContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _HeroEyebrow(),
-          const SizedBox(height: 14),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: 'BỨT PHÁ\n',
-                  style: GoogleFonts.lexend(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.white,
-                    height: 1.1,
+          Transform(
+            transform: Matrix4.skewX(-0.10),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'BỨT PHÁ\n',
+                    style: GoogleFonts.lexend(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.white,
+                      height: 1.15,
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                ),
-                TextSpan(
-                  text: 'GIỚI HẠN',
-                  style: GoogleFonts.lexend(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.accent,
-                    height: 1.1,
+                  TextSpan(
+                    text: 'GIỚI HẠN',
+                    style: GoogleFonts.lexend(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.accent,
+                      height: 1.15,
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -246,94 +137,6 @@ class _HeroContent extends StatelessWidget {
           _HeroCta(
             label: AppStrings.productHomeHeroCta,
             onPressed: () => context.goNamed(AppRoutes.productList),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PulsingDot extends StatefulWidget {
-  const _PulsingDot();
-
-  @override
-  State<_PulsingDot> createState() => _PulsingDotState();
-}
-
-class _PulsingDotState extends State<_PulsingDot>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _animation,
-      child: Container(
-        width: 8,
-        height: 8,
-        decoration: const BoxDecoration(
-          color: AppColors.accent,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.accent,
-              blurRadius: 6,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HeroEyebrow extends StatelessWidget {
-  const _HeroEyebrow();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(AppSizes.radiusRound),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const _PulsingDot(),
-          const SizedBox(width: 8),
-          Text(
-            AppStrings.productHomeHeroEyebrow,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: AppColors.white,
-              letterSpacing: 1.5,
-            ),
           ),
         ],
       ),
