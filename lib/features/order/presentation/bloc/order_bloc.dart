@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_order_by_id_usecase.dart';
 import 'package:flutter_ecommerce/features/order/domain/usecases/get_orders_usecase.dart';
+import 'package:flutter_ecommerce/features/order/domain/usecases/cancel_order.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_event.dart';
 import 'package:flutter_ecommerce/features/order/presentation/bloc/order_state.dart';
 import 'package:flutter_ecommerce/features/order/presentation/utils/customer_order_filter.dart';
@@ -11,17 +12,21 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
   final GetOrdersUseCase _getOrdersUseCase;
   final GetOrderByIdUseCase _getOrderByIdUseCase;
+  final CancelOrder _cancelOrderUseCase;
 
   OrderBloc({
     required GetOrdersUseCase getOrdersUseCase,
     required GetOrderByIdUseCase getOrderByIdUseCase,
+    required CancelOrder cancelOrderUseCase,
   })  : _getOrdersUseCase = getOrdersUseCase,
         _getOrderByIdUseCase = getOrderByIdUseCase,
+        _cancelOrderUseCase = cancelOrderUseCase,
         super(const OrderInitial()) {
     on<OrderListRequested>(_onListRequested);
     on<OrderListLoadMoreRequested>(_onLoadMoreRequested);
     on<OrderFilterChanged>(_onFilterChanged);
     on<OrderDetailRequested>(_onDetailRequested);
+    on<CancelOrderRequested>(_onCancelOrderRequested);
   }
 
   Future<void> _onListRequested(
@@ -118,6 +123,25 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         emit(OrderDetailLoaded(order: data));
       case ResultFailure(:final failure):
         emit(OrderDetailError(failure.message));
+    }
+  }
+
+  Future<void> _onCancelOrderRequested(
+    CancelOrderRequested event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(const CancelOrderLoading());
+
+    final result = await _cancelOrderUseCase(CancelOrderParams(
+      orderId: event.orderId,
+      reason: event.reason,
+    ));
+
+    switch (result) {
+      case Success(:final data):
+        emit(CancelOrderSuccess(order: data));
+      case ResultFailure(:final failure):
+        emit(CancelOrderError(failure.message));
     }
   }
 }

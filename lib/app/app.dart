@@ -6,6 +6,7 @@ import 'package:flutter_ecommerce/app/theme/app_theme.dart';
 import 'package:flutter_ecommerce/core/constants/app_constants.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_ecommerce/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce/features/category/presentation/cubit/category_cubit.dart';
 import 'package:flutter_ecommerce/features/profile/presentation/cubit/profile_cubit.dart';
@@ -67,26 +68,40 @@ class _AppState extends State<App> {
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
-          return BlocListener<AdminNotificationCubit, AdminNotificationState>(
-            listenWhen: (previous, current) =>
-                previous.latestNotification != current.latestNotification &&
-                current.latestNotification != null,
+          return BlocListener<AuthBloc, AuthState>(
+            listenWhen: (previous, current) => previous.runtimeType != current.runtimeType,
             listener: (context, state) {
-              final notification = state.latestNotification!;
-              sl<NotificationService>().showNotification(
-                id: notification.orderId,
-                title: 'New Order: #${notification.orderId}',
-                body: notification.message,
-                payload: '/admin/orders/${notification.orderId}',
-              );
+              if (state is AuthAuthenticated) {
+                context.read<NotificationCubit>().connect();
+                context.read<AdminNotificationCubit>().connect();
+                context.read<ChatCubit>().connect();
+              } else if (state is AuthUnauthenticated) {
+                context.read<NotificationCubit>().disconnect();
+                context.read<AdminNotificationCubit>().disconnect();
+                context.read<ChatCubit>().disconnect();
+              }
             },
-            child: MaterialApp.router(
-              title: AppConstants.appName,
-              theme: AppTheme.light(),
-              darkTheme: AppTheme.dark(),
-              themeMode: themeMode,
-              routerConfig: AppRouter.router,
-              debugShowCheckedModeBanner: false,
+            child: BlocListener<AdminNotificationCubit, AdminNotificationState>(
+              listenWhen: (previous, current) =>
+                  previous.latestNotification != current.latestNotification &&
+                  current.latestNotification != null,
+              listener: (context, state) {
+                final notification = state.latestNotification!;
+                sl<NotificationService>().showNotification(
+                  id: notification.orderId,
+                  title: notification.title.isNotEmpty ? notification.title : 'New Notification: #${notification.orderId}',
+                  body: notification.message,
+                  payload: '/admin/orders/${notification.orderId}',
+                );
+              },
+              child: MaterialApp.router(
+                title: AppConstants.appName,
+                theme: AppTheme.light(),
+                darkTheme: AppTheme.dark(),
+                themeMode: themeMode,
+                routerConfig: AppRouter.router,
+                debugShowCheckedModeBanner: false,
+              ),
             ),
           );
         },

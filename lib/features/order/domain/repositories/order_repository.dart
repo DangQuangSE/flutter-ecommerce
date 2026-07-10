@@ -9,4 +9,5 @@ abstract interface class OrderRepository {
   });
 
   Future<Result<OrderEntity>> getOrderById(int id);
+  Future<Result<OrderEntity>> cancelOrder(int id, String reason);
 }

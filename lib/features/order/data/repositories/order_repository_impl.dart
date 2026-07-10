@@ -37,4 +37,16 @@ class OrderRepositoryImpl implements OrderRepository {
       return ResultFailure(DomainFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Result<OrderEntity>> cancelOrder(int id, String reason) async {
+    try {
+      final order = await _remoteDataSource.cancelOrder(id, reason);
+      return Success(order);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    } catch (e) {
+      return ResultFailure(DomainFailure(e.toString()));
+    }
+  }
 }

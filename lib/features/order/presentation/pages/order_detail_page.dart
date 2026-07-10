@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_entity.dart';
 import 'package:flutter_ecommerce/features/order/domain/entities/order_item_entity.dart';
@@ -21,11 +22,22 @@ class OrderDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-      appBar: const OrderDetailAppBar(),
-      body: BlocBuilder<OrderBloc, OrderState>(
-        builder: (context, state) {
+    return BlocListener<OrderBloc, OrderState>(
+      listenWhen: (previous, current) =>
+          current is CancelOrderSuccess || current is CancelOrderError,
+      listener: (context, state) {
+        if (state is CancelOrderSuccess) {
+          AppSnackBar.show(context, message: 'Hủy đơn hàng thành công', type: AppSnackBarType.success);
+          final id = int.tryParse(orderId) ?? 0;
+          context.read<OrderBloc>().add(OrderDetailRequested(id));
+        } else if (state is CancelOrderError) {
+          AppSnackBar.show(context, message: state.message, type: AppSnackBarType.error);
+        }
+      },
+      child: Scaffold(
+        appBar: const OrderDetailAppBar(),
+        body: BlocBuilder<OrderBloc, OrderState>(
+          builder: (context, state) {
           return switch (state) {
             OrderDetailLoading() || OrderInitial() => const AppLoadingView(),
             OrderDetailError(:final message) => OrderDetailErrorView(
@@ -39,12 +51,13 @@ class OrderDetailPage extends StatelessWidget {
                 order: order,
                 onReviewRequested: (context, item) =>
                     _openWriteReview(context, order, item),
+                onCancelRequested: () => _showCancelDialog(context, order),
               ),
             _ => const AppLoadingView(),
           };
         },
       ),
-    );
+    ));
   }
 
   Future<void> _openWriteReview(
@@ -61,5 +74,67 @@ class OrderDetailPage extends StatelessWidget {
     if (reviewed == true && context.mounted) {
       context.read<OrderBloc>().add(OrderDetailRequested(order.id));
     }
+  }
+
+  void _showCancelDialog(BuildContext context, OrderEntity order) {
+    final reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Hủy Đơn Hàng'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
+              if (order.paymentMethod == 'VNPAY' || order.paymentMethod == 'BANK_TRANSFER')
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 16.0),
+                  child: Text(
+                    'Admin sẽ liên hệ hoàn tiền qua số điện thoại mà khách hàng đã đặt hàng.',
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              TextField(
+                controller: reasonController,
+                decoration: const InputDecoration(
+                  labelText: 'Lý do hủy đơn',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Đóng'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (reasonController.text.trim().isEmpty) {
+                  AppSnackBar.show(dialogContext, message: 'Vui lòng nhập lý do hủy đơn', type: AppSnackBarType.error);
+                  return;
+                }
+                Navigator.pop(dialogContext);
+                context.read<OrderBloc>().add(CancelOrderRequested(
+                      orderId: order.id,
+                      reason: reasonController.text.trim(),
+                    ));
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Xác nhận Hủy', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
