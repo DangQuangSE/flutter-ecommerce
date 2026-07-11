@@ -45,6 +45,7 @@ class _PlacesSearchFieldState extends State<PlacesSearchField> {
     return TextField(
       controller: widget.controller,
       onChanged: _onChanged,
+      style: const TextStyle(color: AppColors.black),
       decoration: InputDecoration(
         hintText: AppStrings.adminLocationSearchHint,
         filled: true,

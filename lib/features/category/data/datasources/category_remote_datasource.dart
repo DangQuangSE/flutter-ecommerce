@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/features/category/data/network/category_api_client.dart';
 import 'package:flutter_ecommerce/features/category/data/models/category_model.dart';
@@ -12,6 +15,7 @@ abstract interface class CategoryRemoteDataSource {
   Future<CategoryModel> update(int id, CategoryModel category);
   Future<void> delete(int id);
   Future<void> updateStatus(int id, {required bool isActive});
+  Future<String> uploadCategoryImage(File file);
 }
 
 class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
@@ -115,11 +119,26 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
     );
   }
 
-  CategoryModel _parseSingle(dynamic body) {
-    final data = (body as Map<String, dynamic>)['data'];
-    if (data is! Map<String, dynamic>) {
+  CategoryModel _parseSingle(dynamic data) {
+    if (data is! Map<String, dynamic> || data['data'] is! Map<String, dynamic>) {
       throw const ParseException('Phản hồi danh mục không hợp lệ');
     }
-    return CategoryModel.fromJson(data);
+    return CategoryModel.fromJson(data['data'] as Map<String, dynamic>);
+  }
+
+  @override
+  Future<String> uploadCategoryImage(File file) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(file.path),
+    });
+    final response = await _client.dio.post(
+      '$_adminCategories/upload-image',
+      data: formData,
+    );
+    final data = (response.data as Map<String, dynamic>)['data'];
+    if (data is! Map<String, dynamic> || data['url'] is! String) {
+      throw const ParseException('Upload failed: Invalid response format');
+    }
+    return data['url'] as String;
   }
 }

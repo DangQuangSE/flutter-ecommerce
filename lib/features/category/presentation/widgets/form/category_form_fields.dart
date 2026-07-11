@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
@@ -9,7 +11,9 @@ import 'package:flutter_ecommerce/features/category/domain/entities/category_ent
 class CategoryFormFields extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController descriptionController;
-  final TextEditingController imageUrlController;
+  final String? existingImageUrl;
+  final File? imageFile;
+  final VoidCallback onPickImage;
   final TextEditingController displayOrderController;
   final List<CategoryEntity> parentOptions;
   final int? parentId;
@@ -23,7 +27,9 @@ class CategoryFormFields extends StatelessWidget {
     super.key,
     required this.nameController,
     required this.descriptionController,
-    required this.imageUrlController,
+    this.existingImageUrl,
+    this.imageFile,
+    required this.onPickImage,
     required this.displayOrderController,
     required this.parentOptions,
     required this.parentId,
@@ -77,11 +83,20 @@ class CategoryFormFields extends StatelessWidget {
           onChanged: onParentChanged,
         ),
         const _FieldLabel(AppStrings.categoryImageLabel),
-        TextFormField(
-          controller: imageUrlController,
-          decoration: _decoration(AppStrings.categoryImageHint, context),
-          keyboardType: TextInputType.url,
+        GestureDetector(
+          onTap: onPickImage,
+          child: Container(
+            height: 160,
+            decoration: BoxDecoration(
+              color: AppColors.inputBgLight,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+              border: Border.all(color: AppColors.borderLight),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: _buildImagePreview(),
+          ),
         ),
+        SizedBox(height: AppSizes.paddingMd),
         const _FieldLabel(AppStrings.categoryDisplayOrderLabel),
         TextFormField(
           controller: displayOrderController,
@@ -101,6 +116,37 @@ class CategoryFormFields extends StatelessWidget {
           subtitle: AppStrings.categoryCustomizableSubtitle,
           value: isCustomizable,
           onChanged: onCustomizableChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImagePreview() {
+    if (imageFile != null) {
+      return Image.file(imageFile!, fit: BoxFit.cover);
+    }
+    if (existingImageUrl != null && existingImageUrl!.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: existingImageUrl!,
+        fit: BoxFit.cover,
+        placeholder: (context, url) =>
+            const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Icon(
+          Icons.broken_image,
+          color: AppColors.textHint,
+          size: 40,
+        ),
+      );
+    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.add_photo_alternate,
+            size: 40, color: AppColors.textHint),
+        SizedBox(height: AppSizes.paddingXs),
+        Text(
+          'Nhấn để tải ảnh lên',
+          style: TextStyle(color: AppColors.textHint),
         ),
       ],
     );

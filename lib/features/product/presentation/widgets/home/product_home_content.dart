@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -274,11 +275,11 @@ class _HomeCategoryCardState extends State<_HomeCategoryCard> {
             fit: StackFit.expand,
             children: [
               if (hasImage)
-                Image.network(
-                  imageUrl,
+                CachedNetworkImage(
+                  imageUrl: imageUrl!,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const _HomeCategoryImageFallback(),
+                  placeholder: (context, url) => const _HomeCategoryImageFallback(),
+                  errorWidget: (context, url, error) => const _HomeCategoryImageFallback(),
                 )
               else
                 const _HomeCategoryImageFallback(),
