@@ -27,6 +27,10 @@ class AdminOrderItemEntity extends Equatable {
     this.printingPrice,
   });
 
+  bool get hasCustomPrinting => customDesignId != null;
+  double get productLineTotal => price * quantity;
+  double get printingLineTotal => (printingPrice ?? 0) * quantity;
+
   @override
   List<Object?> get props => [
         id,

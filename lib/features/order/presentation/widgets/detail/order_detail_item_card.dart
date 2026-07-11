@@ -59,6 +59,20 @@ class OrderDetailItemCard extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                if (item.hasCustomPrinting) ...[
+                  SizedBox(height: 4),
+                  Text(
+                    AppStrings.orderCustomPrinting(
+                      item.customDesignId!,
+                      formatOrderPrice(item.printingLineTotal),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
                 SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

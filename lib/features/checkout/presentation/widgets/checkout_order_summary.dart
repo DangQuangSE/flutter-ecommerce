@@ -26,15 +26,7 @@ class CheckoutOrderSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final totalItems = checkoutItems.fold(0, (sum, e) => sum + e.quantity);
-    final subtotal = checkoutItems.fold(
-      0.0,
-      (sum, e) {
-        final spec = e.customDesignId != null
-            ? specSnapshot?.specOf(e.customDesignId!)
-            : null;
-        return sum + (e.price + resolvedDisplayPrintingPrice(e, spec: spec)) * e.quantity;
-      },
-    );
+    final subtotal = backendCartSubtotal(checkoutItems);
     final finalPrice = subtotal - discount;
 
     return Container(

@@ -489,11 +489,25 @@ class _ItemCard extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                if (item.hasCustomPrinting) ...[
+                  SizedBox(height: 4),
+                  Text(
+                    AppStrings.orderCustomPrinting(
+                      item.customDesignId!,
+                      currencyFormat.format(item.printingLineTotal),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
           Text(
-            currencyFormat.format(item.price * item.quantity),
+            currencyFormat.format(item.productLineTotal),
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w600,

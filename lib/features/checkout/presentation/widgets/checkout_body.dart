@@ -58,15 +58,7 @@ class CheckoutBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkoutTotalPrice = checkoutItems.fold(
-      0.0,
-      (sum, e) {
-        final spec = e.customDesignId != null
-            ? specSnapshot?.specOf(e.customDesignId!)
-            : null;
-        return sum + (e.price + resolvedDisplayPrintingPrice(e, spec: spec)) * e.quantity;
-      },
-    );
+    final checkoutTotalPrice = backendCartSubtotal(checkoutItems);
     final discount = calculateDiscount(checkoutTotalPrice);
 
     return Form(

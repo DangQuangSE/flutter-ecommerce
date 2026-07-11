@@ -597,6 +597,8 @@ abstract final class AppStrings {
   static const String orderContinueShopping = 'TIẾP TỤC MUA SẮM';
   static const String orderTrackOrder = 'THEO DÕI ĐƠN';
   static const String orderSubtotal = 'Tạm tính';
+  static String orderCustomPrinting(int designId, String price) =>
+      'In tùy chỉnh #$designId · +$price';
   static const String orderWriteReviewAction = 'Đánh giá';
   static const String orderReviewedLabel = 'Đã đánh giá';
 
