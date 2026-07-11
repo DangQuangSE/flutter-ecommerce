@@ -24,7 +24,7 @@ dependencies:
   # Navigation
   go_router: ^14.0.0
   app_links: ^6.3.2
-  webview_flutter: ^4.10.0
+  flutter_inappwebview: ^6.1.5
 
   # Maps & location (key-free: flutter_map + OpenStreetMap tiles)
   flutter_map: ^7.0.2

@@ -5,7 +5,7 @@ import 'package:flutter_ecommerce/core/widgets/dialogs/app_confirm_dialog.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/features/payment/domain/entities/vnpay_payment_result.dart';
 import 'package:flutter_ecommerce/features/payment/presentation/models/vnpay_payment_extra.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class VnpayPaymentPage extends StatefulWidget {
   final VnpayPaymentExtra extra;
@@ -17,31 +17,7 @@ class VnpayPaymentPage extends StatefulWidget {
 }
 
 class _VnpayPaymentPageState extends State<VnpayPaymentPage> {
-  late final WebViewController _controller;
   bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (_) => setState(() => _isLoading = false),
-          onNavigationRequest: (request) {
-            final uri = Uri.tryParse(request.url);
-            if (uri != null &&
-                uri.scheme == 'sportpro' &&
-                uri.host == 'payment-result') {
-              Navigator.of(context).pop(VnpayPaymentResult.fromUri(uri));
-              return NavigationDecision.prevent;
-            }
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.extra.paymentUrl));
-  }
 
   Future<void> _onCancelPressed() async {
     final shouldCancel = await AppConfirmDialog.show(
@@ -72,7 +48,31 @@ class _VnpayPaymentPageState extends State<VnpayPaymentPage> {
       ),
       body: Stack(
         children: [
-          WebViewWidget(controller: _controller),
+          InAppWebView(
+            initialUrlRequest: URLRequest(url: WebUri(widget.extra.paymentUrl)),
+            initialSettings: InAppWebViewSettings(
+              javaScriptEnabled: true,
+              useShouldOverrideUrlLoading: true,
+            ),
+            onLoadStop: (controller, url) {
+              setState(() => _isLoading = false);
+            },
+            shouldOverrideUrlLoading: (controller, navigationAction) async {
+              final uri = navigationAction.request.url;
+              if (uri != null &&
+                  uri.scheme == 'sportpro' &&
+                  uri.host == 'payment-result') {
+                Navigator.of(context).pop(VnpayPaymentResult.fromUri(uri));
+                return NavigationActionPolicy.CANCEL;
+              }
+              return NavigationActionPolicy.ALLOW;
+            },
+            onReceivedServerTrustAuthRequest: (controller, challenge) async {
+              return ServerTrustAuthResponse(
+                action: ServerTrustAuthResponseAction.PROCEED,
+              );
+            },
+          ),
           if (_isLoading) const AppLoadingView(),
         ],
       ),
