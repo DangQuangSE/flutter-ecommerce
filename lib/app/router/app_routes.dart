@@ -25,6 +25,7 @@ abstract final class AppRoutes {
 
   static const String orderList = 'order-list';
   static const String orderDetail = 'order-detail';
+  static const String orderDesignViewer = 'order-design-viewer';
   static const String writeReview = 'write-review';
 
   static const String profile = 'profile';
@@ -51,6 +52,7 @@ abstract final class AppRoutes {
   static const String adminReviews = 'admin-reviews';
   static const String adminOrders = 'admin-orders';
   static const String adminOrderDetail = 'admin-order-detail';
+  static const String adminOrderDesignViewer = 'admin-order-design-viewer';
   static const String adminSizeGroups = 'admin-size-groups';
   static const String adminSizeGroupCreate = 'admin-size-group-create';
   static const String adminSizeGroupEdit = 'admin-size-group-edit';

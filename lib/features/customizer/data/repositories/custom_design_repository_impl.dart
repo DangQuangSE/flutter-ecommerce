@@ -7,6 +7,7 @@ import 'package:flutter_ecommerce/features/customizer/domain/entities/existing_d
 import 'package:flutter_ecommerce/features/customizer/domain/repositories/custom_design_repository.dart';
 
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/design_viewer_role.dart';
 
 class CustomDesignRepositoryImpl implements CustomDesignRepository {
   final CustomDesignRemoteDataSource _dataSource;
@@ -44,6 +45,8 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
     try {
       final result = await _dataSource.getExistingDesign(id);
       return Success(ExistingDesignEntity(
+        designImageUrl: result.designImageUrl,
+        backDesignImageUrl: result.backDesignImageUrl,
         designMetadata: result.designMetadata,
         backDesignMetadata: result.backDesignMetadata,
         printingMaterialName: result.printingMaterialName,
@@ -54,6 +57,29 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
       ));
     } on AppException catch (e) {
       return ResultFailure(NetworkFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Result<ExistingDesignEntity>> getDesignForViewer(
+    int id, {
+    required DesignViewerRole role,
+  }) async {
+    try {
+      final result = await _dataSource.getExistingDesign(id, role: role);
+      return Success(ExistingDesignEntity(
+        designImageUrl: result.designImageUrl,
+        backDesignImageUrl: result.backDesignImageUrl,
+        designMetadata: result.designMetadata,
+        backDesignMetadata: result.backDesignMetadata,
+        printingMaterialName: result.printingMaterialName,
+        printingMaterialId: result.printingMaterialId,
+        numTextLines: result.numTextLines,
+        numImages: result.numImages,
+        totalPrintingPrice: result.totalPrintingPrice,
+      ));
+    } on AppException catch (error) {
+      return ResultFailure(NetworkFailure(error.message));
     }
   }
 

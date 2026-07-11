@@ -597,6 +597,23 @@ abstract final class AppStrings {
   static const String orderContinueShopping = 'TIẾP TỤC MUA SẮM';
   static const String orderTrackOrder = 'THEO DÕI ĐƠN';
   static const String orderSubtotal = 'Tạm tính';
+  static String orderCustomPrinting(int designId, String price) =>
+      'In tùy chỉnh #$designId · +$price';
+  static const String designViewerTitle = 'Chi tiết bản thiết kế';
+  static const String designViewerFront = 'Mặt trước';
+  static const String designViewerBack = 'Mặt sau';
+  static const String designViewerLayers = 'Thành phần thiết kế';
+  static const String designViewerNoLayers = 'Không có thành phần ở mặt này';
+  static const String designViewerLimited =
+      'Metadata không đầy đủ; ảnh preview vẫn là bản thiết kế chính xác.';
+  static const String designViewerOpenPreview = 'Mở preview';
+  static const String designViewerOpenFailed = 'Không thể mở ảnh preview';
+  static const String designViewerViewAction = 'Xem thiết kế';
+  static const String designViewerMaterial = 'Chất liệu';
+  static const String designViewerPrintingPrice = 'Phí in';
+  static const String designViewerInvalidId = 'Mã thiết kế không hợp lệ';
+  static const String designViewerAssetAvailable = 'Có file logo';
+  static const String designViewerAssetUnavailable = 'Không có file logo gốc';
   static const String orderWriteReviewAction = 'Đánh giá';
   static const String orderReviewedLabel = 'Đã đánh giá';
 

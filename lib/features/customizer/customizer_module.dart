@@ -11,6 +11,8 @@ import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_printi
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/save_custom_design_usecase.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_design_for_viewer_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/design_viewer_cubit.dart';
 
 void setupCustomizerModule(GetIt sl) {
   sl.registerLazySingleton<CustomDesignRemoteDataSource>(
@@ -30,6 +32,12 @@ void setupCustomizerModule(GetIt sl) {
   );
   sl.registerLazySingleton<GetCustomDesignSpecUseCase>(
     () => GetCustomDesignSpecUseCase(sl<CustomDesignRepository>()),
+  );
+  sl.registerLazySingleton<GetDesignForViewerUseCase>(
+    () => GetDesignForViewerUseCase(sl<CustomDesignRepository>()),
+  );
+  sl.registerFactory<DesignViewerCubit>(
+    () => DesignViewerCubit(sl<GetDesignForViewerUseCase>()),
   );
   sl.registerFactory<CustomizerCubit>(
     () => CustomizerCubit(

@@ -1,4 +1,6 @@
 class ExistingDesignEntity {
+  final String? designImageUrl;
+  final String? backDesignImageUrl;
   final String designMetadata;
   final String backDesignMetadata;
   final String printingMaterialName;
@@ -8,6 +10,8 @@ class ExistingDesignEntity {
   final double totalPrintingPrice;
 
   const ExistingDesignEntity({
+    this.designImageUrl,
+    this.backDesignImageUrl,
     required this.designMetadata,
     this.backDesignMetadata = '',
     required this.printingMaterialName,

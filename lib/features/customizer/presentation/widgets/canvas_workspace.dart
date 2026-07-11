@@ -91,27 +91,6 @@ class CanvasWorkspace extends StatelessWidget {
                         fit: BoxFit.contain,
                       ),
                     ),
-                    if (!isFrontView)
-                      Positioned(
-                        top: AppSizes.paddingMd - 4,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: AppSizes.paddingXs),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.6),
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radiusLg),
-                          ),
-                          child: Text(
-                            'MẶT SAU (BACK VIEW)',
-                            style: GoogleFonts.inter(
-                              fontSize: AppSizes.fontXs,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
                     LayerOverlayStack(
                       layers: visibleLayers,
                       activeLayerId: activeLayerId,

@@ -1,6 +1,9 @@
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
 
+double backendCartSubtotal(Iterable<CartItemEntity> items) =>
+    items.fold(0.0, (sum, item) => sum + item.itemTotal);
+
 double resolvedDisplayPrintingPrice(
   CartItemEntity item, {
   CustomDesignSpecEntity? spec,

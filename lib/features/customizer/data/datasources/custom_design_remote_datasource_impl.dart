@@ -9,6 +9,7 @@ import 'package:flutter_ecommerce/features/customizer/data/datasources/custom_de
 import 'package:flutter_ecommerce/features/customizer/data/models/printing_config_model.dart';
 
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/design_viewer_role.dart';
 
 class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
   final DioClient _dioClient;
@@ -73,6 +74,8 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
   @override
   Future<
       ({
+        String? designImageUrl,
+        String? backDesignImageUrl,
         String designMetadata,
         String backDesignMetadata,
         String printingMaterialName,
@@ -80,13 +83,17 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
         int numTextLines,
         int numImages,
         double totalPrintingPrice,
-      })> getExistingDesign(int id) async {
+      })> getExistingDesign(int id, {DesignViewerRole role = DesignViewerRole.customer}) async {
     try {
-      final response =
-          await _dioClient.dio.get(ApiConstants.customDesignById(id));
+      final path = role == DesignViewerRole.admin
+          ? ApiConstants.adminCustomDesignById(id)
+          : ApiConstants.customDesignById(id);
+      final response = await _dioClient.dio.get(path);
       final body = response.data as Map<String, dynamic>;
       final data = body['data'] as Map<String, dynamic>;
       return (
+        designImageUrl: data['designImageUrl'] as String?,
+        backDesignImageUrl: data['backDesignImageUrl'] as String?,
         designMetadata: data['designMetadata'] as String? ?? '',
         backDesignMetadata:
             data['backDesignMetadata'] as String? ?? '',

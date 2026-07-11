@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
@@ -59,6 +61,27 @@ class OrderDetailItemCard extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                if (item.hasCustomPrinting) ...[
+                  SizedBox(height: 4),
+                  Text(
+                    AppStrings.orderCustomPrinting(
+                      item.customDesignId!,
+                      formatOrderPrice(item.printingLineTotal),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.pushNamed(
+                      AppRoutes.orderDesignViewer,
+                      pathParameters: {'orderId': order.id.toString(), 'designId': item.customDesignId.toString()},
+                    ),
+                    child: const Text(AppStrings.designViewerViewAction),
+                  ),
+                ],
                 SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

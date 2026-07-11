@@ -25,11 +25,17 @@ class AdminOrderItemModel extends AdminOrderItemEntity {
       color: json['color'] as String? ?? '',
       quantity: json['quantity'] as int? ?? 0,
       price: (json['price'] as num).toDouble(),
-      customDesignId: json['customDesignId'] as int?,
+      customDesignId: _parseOptionalInt(json['customDesignId']),
       designImageUrl: json['designImageUrl'] as String?,
       printingPrice: json['printingPrice'] != null
           ? (json['printingPrice'] as num).toDouble()
           : null,
     );
   }
+
+  static int? _parseOptionalInt(Object? value) => switch (value) {
+        num number => number.toInt(),
+        String text => int.tryParse(text),
+        _ => null,
+      };
 }

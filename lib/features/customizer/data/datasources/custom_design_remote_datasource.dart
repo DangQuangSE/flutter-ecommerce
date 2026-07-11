@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_config_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/design_viewer_role.dart';
 
 abstract interface class CustomDesignRemoteDataSource {
   Future<int> saveDesign({
@@ -16,6 +17,8 @@ abstract interface class CustomDesignRemoteDataSource {
 
   Future<
       ({
+        String? designImageUrl,
+        String? backDesignImageUrl,
         String designMetadata,
         String backDesignMetadata,
         String printingMaterialName,
@@ -23,5 +26,5 @@ abstract interface class CustomDesignRemoteDataSource {
         int numTextLines,
         int numImages,
         double totalPrintingPrice,
-      })> getExistingDesign(int id);
+      })> getExistingDesign(int id, {DesignViewerRole role = DesignViewerRole.customer});
 }

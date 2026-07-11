@@ -10,6 +10,9 @@ class OrderItemModel extends OrderItemEntity {
     required super.price,
     super.imageUrl,
     super.isReviewed,
+    super.customDesignId,
+    super.designImageUrl,
+    super.printingPrice,
   });
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +25,15 @@ class OrderItemModel extends OrderItemEntity {
       price: (json['price'] as num).toDouble(),
       imageUrl: json['designImageUrl'] as String?,
       isReviewed: json['isReviewed'] as bool? ?? false,
+      customDesignId: _parseOptionalInt(json['customDesignId']),
+      designImageUrl: json['designImageUrl'] as String?,
+      printingPrice: (json['printingPrice'] as num?)?.toDouble() ?? 0,
     );
   }
+
+  static int? _parseOptionalInt(Object? value) => switch (value) {
+        num number => number.toInt(),
+        String text => int.tryParse(text),
+        _ => null,
+      };
 }

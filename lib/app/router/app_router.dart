@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
+import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/di/injection_container.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/bloc/forgot_password_bloc.dart';
 import 'package:flutter_ecommerce/features/auth/forgot_password/presentation/models/forgot_password_otp_extra.dart';
@@ -50,6 +51,9 @@ import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_entry_pa
 import 'package:flutter_ecommerce/features/chat/presentation/pages/chat_detail_page.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/entities/design_viewer_role.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/cubit/design_viewer_cubit.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/design_viewer_page.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/bloc/admin_product_list_bloc.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_detail_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/product/presentation/cubit/admin_product_form_cubit.dart';
@@ -457,6 +461,24 @@ class AppRouter {
                 child: AdminOrderDetailPage(orderId: orderId),
               );
             },
+            routes: [
+              GoRoute(
+                path: 'design/:designId',
+                name: AppRoutes.adminOrderDesignViewer,
+                builder: (context, state) {
+                  final id = int.tryParse(state.pathParameters['designId'] ?? '');
+                  if (id == null || id <= 0) {
+                    return const Scaffold(
+                      body: Center(child: Text(AppStrings.designViewerInvalidId)),
+                    );
+                  }
+                  return BlocProvider(
+                    create: (_) => sl<DesignViewerCubit>()..load(id, DesignViewerRole.admin),
+                    child: DesignViewerPage(designId: id, role: DesignViewerRole.admin),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -650,6 +672,22 @@ class AppRouter {
               );
             },
             routes: [
+              GoRoute(
+                path: 'design/:designId',
+                name: AppRoutes.orderDesignViewer,
+                builder: (context, state) {
+                  final id = int.tryParse(state.pathParameters['designId'] ?? '');
+                  if (id == null || id <= 0) {
+                    return const Scaffold(
+                      body: Center(child: Text(AppStrings.designViewerInvalidId)),
+                    );
+                  }
+                  return BlocProvider(
+                    create: (_) => sl<DesignViewerCubit>()..load(id, DesignViewerRole.customer),
+                    child: DesignViewerPage(designId: id, role: DesignViewerRole.customer),
+                  );
+                },
+              ),
               GoRoute(
                 path: 'write-review',
                 name: AppRoutes.writeReview,
