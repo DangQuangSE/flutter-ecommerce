@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_page.dart';
@@ -23,4 +25,6 @@ abstract interface class CategoryRepository {
   Future<Result<void>> delete(int id);
 
   Future<Result<void>> updateStatus(int id, {required bool isActive});
+
+  Future<Result<String>> uploadCategoryImage(File file);
 }

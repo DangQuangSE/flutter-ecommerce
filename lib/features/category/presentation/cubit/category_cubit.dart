@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
@@ -59,6 +61,14 @@ class CategoryCubit extends Cubit<CategoryState> {
     return switch (result) {
       Success(:final data) => data,
       ResultFailure() => const <CategoryTreeNode>[],
+    };
+  }
+
+  Future<String?> uploadImage(File file) async {
+    final result = await _repository.uploadCategoryImage(file);
+    return switch (result) {
+      Success(:final data) => data,
+      ResultFailure() => null,
     };
   }
 

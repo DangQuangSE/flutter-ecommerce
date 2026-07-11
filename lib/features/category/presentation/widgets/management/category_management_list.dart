@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
@@ -168,10 +169,14 @@ class _CategoryImage extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: imageUrl != null && imageUrl.isNotEmpty
-          ? Image.network(
-              imageUrl,
+          ? CachedNetworkImage(
+              imageUrl: imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Icon(
+              errorWidget: (_, __, ___) => Icon(
+                Icons.category_rounded,
+                color: AppColors.primary,
+              ),
+              placeholder: (_, __) => Icon(
                 Icons.category_rounded,
                 color: AppColors.primary,
               ),

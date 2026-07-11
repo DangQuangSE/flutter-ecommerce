@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
@@ -38,6 +40,22 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
   late bool _isCustomizable;
   bool _submitting = false;
 
+  File? _imageFile;
+  String? _existingImageUrl;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920,
+      maxHeight: 1920,
+      imageQuality: 85,
+    );
+    if (file != null) {
+      setState(() => _imageFile = File(file.path));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +63,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
     _nameController = TextEditingController(text: category?.name ?? '');
     _descriptionController =
         TextEditingController(text: category?.description ?? '');
-    _imageUrlController = TextEditingController(text: category?.imageUrl ?? '');
+    _existingImageUrl = category?.imageUrl;
     _displayOrderController = TextEditingController(
       text: category?.displayOrder?.toString() ?? '',
     );
@@ -58,7 +76,6 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _imageUrlController.dispose();
     _displayOrderController.dispose();
     super.dispose();
   }
@@ -72,18 +89,32 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
     FocusScope.of(context).unfocus();
     setState(() => _submitting = true);
 
+    final cubit = context.read<CategoryCubit>();
+
+    String? finalImageUrl = _existingImageUrl;
+    if (_imageFile != null) {
+      final uploadedUrl = await cubit.uploadImage(_imageFile!);
+      if (uploadedUrl == null) {
+        if (mounted) {
+          setState(() => _submitting = false);
+          _showSnack('Lỗi tải ảnh lên', isError: true);
+        }
+        return;
+      }
+      finalImageUrl = uploadedUrl;
+    }
+
     final draft = CategoryEntity(
       id: widget.category?.id,
       name: _nameController.text.trim(),
       description: _emptyToNull(_descriptionController.text),
       parentId: _parentId,
-      imageUrl: _emptyToNull(_imageUrlController.text),
+      imageUrl: finalImageUrl,
       displayOrder: int.tryParse(_displayOrderController.text.trim()),
       isActive: _isActive,
       isCustomizable: _isCustomizable,
     );
 
-    final cubit = context.read<CategoryCubit>();
     final error = widget.isEditing
         ? await cubit.update(widget.category!.id!, draft)
         : await cubit.create(draft);
@@ -134,7 +165,9 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
             CategoryFormFields(
               nameController: _nameController,
               descriptionController: _descriptionController,
-              imageUrlController: _imageUrlController,
+              existingImageUrl: _existingImageUrl,
+              imageFile: _imageFile,
+              onPickImage: _pickImage,
               displayOrderController: _displayOrderController,
               parentOptions: _parentOptions,
               parentId: _parentId,
