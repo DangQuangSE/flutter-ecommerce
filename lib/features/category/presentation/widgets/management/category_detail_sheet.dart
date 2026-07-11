@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/features/category/domain/entities/category_entity.dart';
@@ -38,6 +39,30 @@ class CategoryDetailSheet extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
+          if (category.imageUrl != null && category.imageUrl!.isNotEmpty) ...[
+            SizedBox(height: 16),
+            Container(
+              height: 160,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.divider),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: CachedNetworkImage(
+                imageUrl: category.imageUrl!,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorWidget: (context, url, error) => const Icon(
+                  Icons.broken_image,
+                  color: AppColors.textHint,
+                  size: 40,
+                ),
+              ),
+            ),
+          ],
           SizedBox(height: 12),
           _DetailRow(label: 'ID', value: '${category.id ?? '—'}'),
           _DetailRow(label: 'Slug', value: category.slug ?? '—'),

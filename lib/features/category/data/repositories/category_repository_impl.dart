@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
@@ -55,6 +57,11 @@ class CategoryRepositoryImpl implements CategoryRepository {
   @override
   Future<Result<void>> updateStatus(int id, {required bool isActive}) {
     return _guard(() => _remoteDataSource.updateStatus(id, isActive: isActive));
+  }
+
+  @override
+  Future<Result<String>> uploadCategoryImage(File file) {
+    return _guard(() => _remoteDataSource.uploadCategoryImage(file));
   }
 
   /// Runs [action], mapping known exceptions to the corresponding [Failure].

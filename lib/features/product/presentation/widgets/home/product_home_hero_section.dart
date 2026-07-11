@@ -17,8 +17,7 @@ class _ProductHomeHeroSectionState extends State<ProductHomeHeroSection>
     with SingleTickerProviderStateMixin {
   late final AnimationController _zoomController;
   late final Animation<double> _zoomAnimation;
-  static const _heroImageUrl =
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDfNUm_0FHTlwMSO97i6w_ybGmHoVLk34xXuVJ138ODeFyymicdmeoElKE4Dw81L669C3EY5e3nBvEaHO2ATTV4XRAbGpQa9oJk7YDslOWIh5l3Cet1fbGGmoW6374uazzBD6RKNWmaZ_9VmgeDnFssIy9zvvN1_YLcGOe8LXyWG63NcbpAyus8mOU5IT6-HZBiyV8msC80n3Zzr4JIoddV8XatdZ_RGD-GClcpI9keO_oHzq8zRr6z6giBAQ6BwerYe3LWlHOp31c';
+  static const _heroAssetPath = 'assets/images/hero_banner.png';
 
   @override
   void initState() {
@@ -82,7 +81,11 @@ class _ProductHomeHeroSectionState extends State<ProductHomeHeroSection>
                 builder: (context, child) {
                   return Transform.scale(
                     scale: _zoomAnimation.value,
-                    child: Image.network(_heroImageUrl, fit: BoxFit.cover),
+                    child: Image.asset(
+                      _heroAssetPath,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
+                    ),
                   );
                 },
               ),
@@ -101,16 +104,17 @@ class _HeroOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DecoratedBox(
+    return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
           colors: [
-            Colors.black87,
-            Colors.black26,
+            Colors.black.withValues(alpha: 0.85),
+            Colors.black.withValues(alpha: 0.4),
             Colors.transparent,
           ],
+          stops: const [0.0, 0.6, 1.0],
         ),
       ),
     );
@@ -212,28 +216,52 @@ class _HeroContentState extends State<_HeroContent>
             child: FadeTransition(
               opacity: _titleOpacity,
               child: Transform(
-                transform: Matrix4.skewX(-0.10),
+                transform: Matrix4.skewX(-0.15),
                 child: Text.rich(
                   TextSpan(
                     children: [
                       TextSpan(
                         text: 'BỨT PHÁ\n',
-                        style: GoogleFonts.lexend(
-                          fontSize: 34,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: 48,
                           fontWeight: FontWeight.w900,
                           color: AppColors.white,
-                          height: 1.15,
-                          letterSpacing: -0.5,
+                          height: 1.05,
+                          letterSpacing: 0.5,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(0, 4),
+                              blurRadius: 8,
+                              color: Colors.black.withValues(alpha: 0.6),
+                            ),
+                            Shadow(
+                              offset: const Offset(0, 12),
+                              blurRadius: 20,
+                              color: Colors.black.withValues(alpha: 0.4),
+                            ),
+                          ],
                         ),
                       ),
                       TextSpan(
                         text: 'GIỚI HẠN',
-                        style: GoogleFonts.lexend(
-                          fontSize: 34,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: 48,
                           fontWeight: FontWeight.w900,
-                          color: AppColors.accent,
-                          height: 1.15,
-                          letterSpacing: -0.5,
+                          color: AppColors.primary,
+                          height: 1.05,
+                          letterSpacing: 0.5,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(0, 4),
+                              blurRadius: 8,
+                              color: Colors.black.withValues(alpha: 0.6),
+                            ),
+                            Shadow(
+                              offset: const Offset(0, 12),
+                              blurRadius: 20,
+                              color: Colors.black.withValues(alpha: 0.4),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -251,11 +279,18 @@ class _HeroContentState extends State<_HeroContent>
                 AppStrings.productHomeHeroSubtitle,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.white.withValues(alpha: 0.8),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.white,
                   height: 1.4,
-            ),
-          ),
+                  shadows: [
+                    Shadow(
+                      offset: const Offset(0, 2),
+                      blurRadius: 6,
+                      color: Colors.black.withValues(alpha: 0.8),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -326,11 +361,11 @@ class _HeroCtaState extends State<_HeroCta>
         child: Container(
           padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
           decoration: BoxDecoration(
-            color: AppColors.accent,
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: AppColors.accent.withValues(alpha: 0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -360,7 +395,7 @@ class _HeroCtaState extends State<_HeroCta>
                   child: Icon(
                     Icons.arrow_forward_rounded,
                     size: 18,
-                    color: AppColors.accent,
+                    color: AppColors.primary,
                   ),
                 ),
               ),
