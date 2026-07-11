@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_ecommerce/app/router/app_routes.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
@@ -200,7 +202,8 @@ class _OrderDetailBody extends StatelessWidget {
               title: AppStrings.adminOrderItemsSection(order.items.length),
               icon: Icons.shopping_bag_outlined,
               children: order.items
-                  .map((item) => _ItemCard(
+                      .map((item) => _ItemCard(
+                        orderId: order.id,
                         item: item,
                         currencyFormat: currencyFormat,
                       ))
@@ -441,10 +444,12 @@ class _DetailRow extends StatelessWidget {
 }
 
 class _ItemCard extends StatelessWidget {
+  final int orderId;
   final AdminOrderItemEntity item;
   final NumberFormat currencyFormat;
 
   const _ItemCard({
+    required this.orderId,
     required this.item,
     required this.currencyFormat,
   });
@@ -501,6 +506,13 @@ class _ItemCard extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: AppColors.primary,
                     ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.pushNamed(
+                      AppRoutes.adminOrderDesignViewer,
+                      pathParameters: {'orderId': orderId.toString(), 'designId': item.customDesignId.toString()},
+                    ),
+                    child: const Text(AppStrings.designViewerViewAction),
                   ),
                 ],
               ],

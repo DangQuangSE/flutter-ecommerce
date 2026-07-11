@@ -31,12 +31,12 @@ Order detail hiện chỉ cho biết đơn có custom printing và phí in, như
 
 ## Functional Requirements
 
-1. FR-01: Add a typed route to `DesignViewerPage` with `customDesignId` and viewer role/mode.
+1. FR-01: Add role-fixed named routes to `DesignViewerPage` with `customDesignId`; route builders choose customer/admin mode without user-controlled role input.
 2. FR-02: User order detail and admin order detail expose a clear action on custom-printing items to open the viewer.
 3. FR-03: Customer loading uses `GET /api/custom-designs/{id}`; admin loading uses `GET /api/admin/custom-designs/{id}`.
 4. FR-04: Extend the Flutter design entity/model to retain front/back preview URLs, front/back metadata, material information, counts, and printing price.
-5. FR-05: Reuse the customizer canvas through an explicit `readOnly` mode that disables drag, resize, delete, add, edit, save, and persistence.
-6. FR-06: Viewer supports front/back switching, zoom/pan of the viewing surface, canvas layer selection, and layer-list selection.
+5. FR-05: Reuse customizer design language and passive presentation primitives where compatible, while using a dedicated immutable preview viewport that exposes no editor callbacks or persistence.
+6. FR-06: Viewer supports front/back switching, zoom/pan of the rendered preview, and layer selection from a synchronized layer list/details panel.
 7. FR-07: Text layer details include side, content, font, color, font size, and stored coordinates.
 8. FR-08: Logo layer details include side, stored coordinates, and asset availability. Missing local logo files must not crash rendering.
 9. FR-09: When metadata is absent or malformed, show the rendered preview and a user-facing limited-detail warning.
@@ -51,7 +51,7 @@ Order detail hiện chỉ cho biết đơn có custom printing và phí in, như
 - Security: customer access remains ownership-checked; admin access uses the admin endpoint and existing authorization token.
 - Reliability: 100% of null, empty, malformed, or legacy metadata cases render preview/fallback instead of throwing an uncaught exception.
 - Layout: no overflow at 360×640 and 428×926 logical-pixel viewports.
-- Maintainability: no duplicate editable/view-only canvas implementation; behavior is controlled by typed immutable parameters.
+- Maintainability: preview/inspection code remains independent from editable CustomizerCubit state, while shared passive controls/styles are reused where compatible.
 
 ---
 
@@ -59,7 +59,7 @@ Order detail hiện chỉ cho biết đơn có custom printing và phí in, như
 
 - [ ] Entry points: custom designs open from both user and admin order details.
 - [ ] Read-only safety: 0 add/edit/move/resize/delete/save operations are available or triggered in viewer mode.
-- [ ] Layer inspection: all parseable front/back layers appear in the layer list and can be selected.
+- [ ] Layer inspection: all parseable front/back layers appear in the layer list and can be selected without relying on device-dependent canvas coordinates.
 - [ ] Fallback safety: malformed metadata and missing logo files produce 0 crashes in automated tests.
 - [ ] Authorization: user and admin viewer requests use their correct endpoints in 100% of repository tests.
 - [ ] Admin preview: front/back URL actions map to the correct stored preview in widget tests.
@@ -83,4 +83,3 @@ Order detail hiện chỉ cho biết đơn có custom printing và phí in, như
 - Backend continues returning `designImageUrl`, `backDesignImageUrl`, `designMetadata`, and `backDesignMetadata` from both design-detail endpoints.
 - Rendered preview URLs remain accessible to authenticated app users through the current Cloudinary configuration.
 - Existing metadata JSON remains compatible with `DesignLayer.fromJson` for parseable designs.
-

@@ -71,6 +71,8 @@ abstract final class ApiConstants {
 
   static const String customDesigns = '/api/custom-designs';
   static String customDesignById(int id) => '/api/custom-designs/$id';
+  static String adminCustomDesignById(int id) =>
+      '/api/admin/custom-designs/$id';
 
   // Size Groups
   static const String sizeGroups = '/api/size-groups';
