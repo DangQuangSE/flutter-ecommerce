@@ -24,7 +24,12 @@ dependencies:
   # Navigation
   go_router: ^14.0.0
   app_links: ^6.3.2
-  webview_flutter: ^4.10.0
+  flutter_inappwebview: ^6.1.5
+
+  # Maps & location (key-free: flutter_map + OpenStreetMap tiles)
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  url_launcher: ^6.3.1
 
   # Networking
   dio: ^5.0.0
@@ -57,6 +62,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  # Lets widget tests fake url_launcher's platform channel (swap
+  # UrlLauncherPlatform.instance) instead of hitting the real platform.
+  url_launcher_platform_interface: ^2.3.2
 
   # Code generation
   build_runner: ^2.4.0

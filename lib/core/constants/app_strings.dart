@@ -690,6 +690,13 @@ abstract final class AppStrings {
   static const String shopLoadError =
       'Không thể tải thông tin cửa hàng. Vui lòng thử lại sau.';
 
+  // ── Shop map & directions (user-facing) ───────────────────────────────────
+  static const String shopGetDirections = 'Chỉ đường';
+  static const String shopDirectionsLoading = 'Đang tìm đường...';
+  static const String shopMapOpenError = 'Không thể mở Google Maps.';
+  static const String shopMapUnavailable =
+      'Chưa có vị trí bản đồ cho cửa hàng này.';
+
   // ── Admin shop config ─────────────────────────────────────────────────────
   static const String adminShopConfigTitle = 'Cấu hình cửa hàng';
   static const String shopSaveChanges = 'Lưu thay đổi';
@@ -930,6 +937,14 @@ abstract final class AppStrings {
   static const String adminLocationTitle = 'Vị trí của cửa hàng';
   static const String adminShowroomName = 'Sport Pro Showroom';
   static const String adminShowroomLabel = 'SHOWROOM';
+
+  // Admin store-location picker (real map)
+  static const String adminLocationSearchHint = 'Tìm địa chỉ cửa hàng...';
+  static const String adminLocationSave = 'Lưu vị trí';
+  static const String adminLocationSaving = 'Đang lưu...';
+  static const String adminLocationSaveSuccess = 'Đã cập nhật vị trí cửa hàng';
+  static const String adminLocationNoSelection =
+      'Tìm địa chỉ hoặc chạm bản đồ để chọn vị trí cửa hàng';
 
   // Admin profile tab
   static const String adminRoleLabel = 'QUẢN TRỊ VIÊN';

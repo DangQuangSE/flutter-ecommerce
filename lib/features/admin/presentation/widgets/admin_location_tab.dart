@@ -1,148 +1,162 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_location_save_bar.dart';
+import 'package:flutter_ecommerce/features/geo/domain/entities/geo_point.dart';
+import 'package:flutter_ecommerce/features/geo/domain/entities/place_suggestion.dart';
+import 'package:flutter_ecommerce/features/geo/presentation/cubit/store_location_picker_cubit.dart';
+import 'package:flutter_ecommerce/features/geo/presentation/cubit/store_location_picker_state.dart';
+import 'package:flutter_ecommerce/features/geo/presentation/widgets/places_search_field.dart';
+import 'package:flutter_ecommerce/features/geo/presentation/widgets/places_suggestion_list.dart';
+import 'package:flutter_ecommerce/features/geo/presentation/widgets/store_map_view.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_state.dart';
+import 'package:flutter_ecommerce/features/shop/presentation/widgets/shop_error_view.dart';
 
-class AdminLocationTab extends StatelessWidget {
+/// Admin store-location picker on a real (OpenStreetMap) map. Flow: search an
+/// address (Nominatim) → drop the pin → tap the map to fine-tune → save. Saving
+/// writes the same `shop.latitude/longitude` the customer screen reads, so the
+/// two stay in sync. Requires `ShopCubit` + `StoreLocationPickerCubit` in scope
+/// (provided by `AdminDashboardPage`).
+class AdminLocationTab extends StatefulWidget {
   final VoidCallback onBackToDashboard;
 
   const AdminLocationTab({super.key, required this.onBackToDashboard});
+
+  @override
+  State<AdminLocationTab> createState() => _AdminLocationTabState();
+}
+
+class _AdminLocationTabState extends State<AdminLocationTab> {
+  static const double _mapZoom = 16;
+
+  final TextEditingController _searchController = TextEditingController();
+  final MapController _mapController = MapController();
+  bool _saving = false;
+  bool _seeded = false;
+  bool _mapReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_seedFromShop);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _mapController.dispose();
+    super.dispose();
+  }
+
+  /// Seeds the picker with the shop's saved location, once, when it's available.
+  void _seedFromShop() {
+    if (!mounted || _seeded) return;
+    final shopState = context.read<ShopCubit>().state;
+    if (shopState is! ShopLoaded) return;
+    _seeded = true;
+    final shop = shopState.shop;
+    final point = shop.hasCoordinates
+        ? GeoPoint(latitude: shop.latitude!, longitude: shop.longitude!)
+        : null;
+    context.read<StoreLocationPickerCubit>().initialize(
+          point: point,
+          address: shop.address ?? '',
+        );
+    _searchController.text = shop.address ?? '';
+  }
+
+  void _onPickerChanged(BuildContext context, StoreLocationPickerState state) {
+    if (state is StoreLocationPickerReady) {
+      final point = state.point;
+      if (point != null) _animateTo(point);
+      if (state.address.isNotEmpty && _searchController.text != state.address) {
+        _searchController.text = state.address;
+      }
+    } else if (state is StoreLocationPickerError) {
+      _showSnack(state.message, AppColors.error);
+    }
+  }
+
+  void _animateTo(GeoPoint point) {
+    if (!_mapReady) return;
+    _mapController.move(LatLng(point.latitude, point.longitude), _mapZoom);
+  }
+
+  /// Once the map is laid out, recentre on the already-seeded/selected point
+  /// (a seed can land before the map is ready).
+  void _onMapReady() {
+    _mapReady = true;
+    final state = context.read<StoreLocationPickerCubit>().state;
+    if (state is StoreLocationPickerReady && state.point != null) {
+      _animateTo(state.point!);
+    }
+  }
+
+  Future<void> _save() async {
+    final shopState = context.read<ShopCubit>().state;
+    final pickerState = context.read<StoreLocationPickerCubit>().state;
+    if (shopState is! ShopLoaded ||
+        pickerState is! StoreLocationPickerReady ||
+        pickerState.point == null) {
+      return;
+    }
+    setState(() => _saving = true);
+    // copyWith from the loaded shop so name/phone/hours/logo/cover are preserved
+    // (the backend does a full overwrite — never build a fresh entity here).
+    final draft = shopState.shop.copyWith(
+      latitude: pickerState.point!.latitude,
+      longitude: pickerState.point!.longitude,
+      // No Google Place ID with the OSM/Nominatim stack — clear any stale one so
+      // the customer hand-off routes by coordinate.
+      placeId: () => null,
+      address: pickerState.address.isNotEmpty ? pickerState.address : null,
+    );
+    final error = await context.read<ShopCubit>().updateShop(draft);
+    if (!mounted) return;
+    setState(() => _saving = false);
+    _showSnack(
+      error ?? AppStrings.adminLocationSaveSuccess,
+      error == null ? AppColors.success : AppColors.error,
+    );
+  }
+
+  void _showSnack(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: onBackToDashboard,
-                  child: Icon(Icons.arrow_back_ios_new_rounded,
-                      size: 18, color: AppColors.textPrimary),
-                ),
-                SizedBox(width: 16),
-                Text(
-                  AppStrings.adminLocationTitle,
-                  style: GoogleFonts.lexend(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary),
-                ),
-              ],
-            ),
-          ),
+          _LocationHeader(onBack: widget.onBackToDashboard),
           Expanded(
-            child: Stack(
-              children: [
-                Container(
-                  color: Theme.of(context).colorScheme.surface,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: CustomPaint(painter: MapMockGridPainter()),
-                      ),
-                      Center(
-                        child: TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0.0, end: 1.0),
-                          duration: const Duration(milliseconds: 800),
-                          curve: Curves.elasticOut,
-                          builder: (context, val, child) {
-                            return Transform.translate(
-                              offset: Offset(0, -20 * (1.0 - val)),
-                              child: Transform.scale(
-                                scale: val,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).cardTheme.color,
-                                        borderRadius: BorderRadius.circular(20),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: Colors.black
-                                                  .withValues(alpha: 0.12),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 4)),
-                                        ],
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 5),
-                                      child: Text(
-                                        AppStrings.adminShowroomName,
-                                        style: GoogleFonts.inter(
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.w700,
-                                            color: AppColors.primary),
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Icon(Icons.location_on_rounded,
-                                        size: 48, color: AppColors.primary),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+            child: MultiBlocListener(
+              listeners: [
+                BlocListener<ShopCubit, ShopState>(
+                  listener: (_, __) => _seedFromShop(),
                 ),
-                Positioned(
-                  left: 20,
-                  right: 20,
-                  bottom: 20,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardTheme.color,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4)),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(6)),
-                          child: Text(AppStrings.adminShowroomLabel,
-                              style: GoogleFonts.inter(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.primary)),
-                        ),
-                        SizedBox(height: 8),
-                        Text(AppStrings.adminShowroomName,
-                            style: GoogleFonts.lexend(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.textPrimary)),
-                        SizedBox(height: 14),
-                        _infoRow(Icons.location_on_rounded,
-                            '123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh'),
-                        SizedBox(height: 10),
-                        _infoRow(Icons.phone_rounded, '0909 123 456'),
-                        SizedBox(height: 10),
-                        _infoRow(
-                            Icons.access_time_filled_rounded, '08:00 - 21:00'),
-                      ],
-                    ),
-                  ),
+                BlocListener<StoreLocationPickerCubit,
+                    StoreLocationPickerState>(
+                  listener: _onPickerChanged,
                 ),
               ],
+              child: BlocBuilder<ShopCubit, ShopState>(
+                builder: _buildShopGate,
+              ),
             ),
           ),
         ],
@@ -150,62 +164,141 @@ class AdminLocationTab extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(IconData icon, String text) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  /// Exposes the shop-load Loading/Error states before showing the picker,
+  /// per the grading rule that every async op has visible states.
+  Widget _buildShopGate(BuildContext context, ShopState shopState) {
+    return switch (shopState) {
+      ShopError(:final message) => ShopErrorView(
+          message: message,
+          onRetry: () => context.read<ShopCubit>().loadShop(),
+        ),
+      ShopLoaded() =>
+        BlocBuilder<StoreLocationPickerCubit, StoreLocationPickerState>(
+          builder: _buildContent,
+        ),
+      _ => const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          ),
+        ),
+    };
+  }
+
+  Widget _buildContent(BuildContext context, StoreLocationPickerState state) {
+    final ready = state is StoreLocationPickerReady
+        ? state
+        : const StoreLocationPickerReady();
+    final point = ready.point;
+    final pickerCubit = context.read<StoreLocationPickerCubit>();
+    return Stack(
       children: [
-        Icon(icon, size: 16, color: AppColors.primary),
-        SizedBox(width: 8),
-        Expanded(
-          child: Text(text,
-              style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary)),
+        Positioned.fill(
+          child: StoreMapView(
+            center: point ?? StoreMapView.fallbackCenter,
+            storeMarker: point,
+            initialZoom: _mapZoom,
+            controller: _mapController,
+            onMapReady: _onMapReady,
+            onMapTap: pickerCubit.setPoint,
+          ),
+        ),
+        Positioned(
+          top: AppSizes.paddingMd,
+          left: AppSizes.paddingMd,
+          right: AppSizes.paddingMd,
+          child: _SearchArea(
+            controller: _searchController,
+            state: ready,
+            onSearch: pickerCubit.search,
+            onSelected: (suggestion) {
+              FocusScope.of(context).unfocus();
+              pickerCubit.selectSuggestion(suggestion);
+            },
+          ),
+        ),
+        Positioned(
+          left: AppSizes.paddingMd,
+          right: AppSizes.paddingMd,
+          bottom: AppSizes.paddingMd,
+          child: AdminLocationSaveBar(
+            address: ready.address,
+            canSave: ready.canSave,
+            saving: _saving,
+            onSave: _save,
+          ),
         ),
       ],
     );
   }
 }
 
-class MapMockGridPainter extends CustomPainter {
+class _LocationHeader extends StatelessWidget {
+  final VoidCallback onBack;
+
+  const _LocationHeader({required this.onBack});
+
   @override
-  void paint(Canvas canvas, Size size) {
-    final roadPaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 24.0
-      ..strokeCap = StrokeCap.round;
-
-    final secondaryRoadPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.7)
-      ..strokeWidth = 14.0
-      ..strokeCap = StrokeCap.round;
-
-    final riverPaint = Paint()
-      ..color = const Color(0xFFBAE6FD)
-      ..strokeWidth = 40.0
-      ..strokeCap = StrokeCap.round;
-
-    final riverPath = Path()
-      ..moveTo(0, size.height * 0.25)
-      ..quadraticBezierTo(size.width * 0.4, size.height * 0.2, size.width * 0.8,
-          size.height * 0.5)
-      ..lineTo(size.width, size.height * 0.55);
-    canvas.drawPath(riverPath, riverPaint);
-
-    canvas.drawLine(Offset(0, size.height * 0.5),
-        Offset(size.width, size.height * 0.5), roadPaint);
-    canvas.drawLine(Offset(size.width * 0.4, 0),
-        Offset(size.width * 0.4, size.height), roadPaint);
-
-    canvas.drawLine(Offset(0, size.height * 0.8),
-        Offset(size.width, size.height * 0.75), secondaryRoadPaint);
-    canvas.drawLine(Offset(size.width * 0.75, 0),
-        Offset(size.width * 0.75, size.height), secondaryRoadPaint);
-    canvas.drawLine(Offset(0, size.height * 0.1),
-        Offset(size.width * 0.5, size.height * 0.35), secondaryRoadPaint);
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.paddingLg,
+        vertical: AppSizes.paddingMd,
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: onBack,
+            child: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: AppSizes.iconMd18,
+              color: AppColors.textPrimaryLight,
+            ),
+          ),
+          const SizedBox(width: AppSizes.paddingMd),
+          Text(
+            AppStrings.adminLocationTitle,
+            style: GoogleFonts.lexend(
+              fontSize: AppSizes.fontXl,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
   }
+}
+
+class _SearchArea extends StatelessWidget {
+  final TextEditingController controller;
+  final StoreLocationPickerReady state;
+  final ValueChanged<String> onSearch;
+  final ValueChanged<PlaceSuggestion> onSelected;
+
+  const _SearchArea({
+    required this.controller,
+    required this.state,
+    required this.onSearch,
+    required this.onSelected,
+  });
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        PlacesSearchField(
+          controller: controller,
+          isSearching: state.isSearching || state.isResolvingAddress,
+          onSearch: onSearch,
+        ),
+        if (state.suggestions.isNotEmpty) ...[
+          const SizedBox(height: AppSizes.paddingSm),
+          PlacesSuggestionList(
+            suggestions: state.suggestions,
+            onSelected: onSelected,
+          ),
+        ],
+      ],
+    );
+  }
 }

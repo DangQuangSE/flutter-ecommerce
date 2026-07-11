@@ -95,6 +95,7 @@ import 'package:flutter_ecommerce/features/address/presentation/pages/address_fo
 import 'package:flutter_ecommerce/features/location/presentation/cubit/location_cubit.dart';
 
 // Shop
+import 'package:flutter_ecommerce/features/geo/presentation/cubit/directions_cubit.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/cubit/shop_cubit.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/pages/shop_info_page.dart';
 import 'package:flutter_ecommerce/features/shop/presentation/pages/admin_shop_config_page.dart';
@@ -882,8 +883,11 @@ class AppRouter {
         name: AppRoutes.shopInfo,
         pageBuilder: (context, state) => _slideUpPage(
           state: state,
-          child: BlocProvider(
-            create: (_) => sl<ShopCubit>()..loadShop(),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => sl<ShopCubit>()..loadShop()),
+              BlocProvider(create: (_) => sl<DirectionsCubit>()),
+            ],
             child: const ShopInfoPage(),
           ),
         ),
