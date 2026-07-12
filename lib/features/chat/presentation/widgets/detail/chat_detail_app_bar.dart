@@ -44,7 +44,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         onPressed: () => _handleBackPressed(context),
         icon: Icon(
           Icons.arrow_back_rounded,
-          color: theme.colorScheme.onSurface,
+          color: theme.appBarTheme.foregroundColor ?? Colors.white,
           size: AppSizes.paddingXl,
         ),
       ),
@@ -64,7 +64,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
           icon: Icon(
             Icons.more_vert_rounded,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: theme.appBarTheme.foregroundColor ?? Colors.white,
             size: AppSizes.paddingXl,
           ),
         ),
@@ -139,7 +139,7 @@ class _ChatAvatar extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
           ),
           clipBehavior: Clip.antiAlias,
           child: Image.network(
@@ -187,7 +187,7 @@ class _ChatTitle extends StatelessWidget {
           style: GoogleFonts.lexend(
             fontSize: AppSizes.submitButtonFontSize,
             fontWeight: FontWeight.w800,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Theme.of(context).appBarTheme.foregroundColor ?? Colors.white,
           ),
         ),
         SizedBox(height: 2),
@@ -196,7 +196,7 @@ class _ChatTitle extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: isOnline ? AppColors.textSecondary : AppColors.textHint,
+            color: Colors.white.withValues(alpha: 0.8),
           ),
         ),
       ],
