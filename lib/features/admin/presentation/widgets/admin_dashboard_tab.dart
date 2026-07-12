@@ -14,6 +14,9 @@ import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notifi
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_state.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/revenue_analytics_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/revenue_analytics_state.dart';
+import 'package:flutter_ecommerce/features/admin/domain/entities/revenue_analytics_entity.dart';
+
+enum _RevenuePeriod { week, month, year, custom }
 
 class AdminDashboardTab extends StatelessWidget {
   final AdminLoaded state;
@@ -172,72 +175,23 @@ class AdminDashboardTab extends StatelessWidget {
           ),
           SizedBox(height: 12),
           if (revenue != null) ...[
-            Text(AppStrings.adminRevenueRangeText(
-                DateFormat('dd/MM/yyyy').format(revenue.startDate),
-                DateFormat('dd/MM/yyyy').format(revenue.endDate))),
-            const SizedBox(height: 8),
-            Wrap(spacing: 8, children: [
-              ActionChip(
-                  label: const Text(AppStrings.adminRevenuePreset7Days),
-                  onPressed: () {
-                    final now = DateTime.now();
-                    context
-                        .read<RevenueAnalyticsCubit>()
-                        .load(now.subtract(const Duration(days: 6)), now);
-                  }),
-              ActionChip(
-                  label: const Text(AppStrings.adminRevenuePreset30Days),
-                  onPressed: () {
-                    final now = DateTime.now();
-                    context
-                        .read<RevenueAnalyticsCubit>()
-                        .load(now.subtract(const Duration(days: 29)), now);
-                  }),
-              ActionChip(
-                  label: const Text(AppStrings.adminRevenuePresetThisMonth),
-                  onPressed: () {
-                    final now = DateTime.now();
-                    context
-                        .read<RevenueAnalyticsCubit>()
-                        .load(DateTime(now.year, now.month), now);
-                  }),
-              ActionChip(
-                  label: const Text(AppStrings.adminRevenuePresetThisYear),
-                  onPressed: () {
-                    final now = DateTime.now();
-                    context
-                        .read<RevenueAnalyticsCubit>()
-                        .load(DateTime(now.year), now);
-                  }),
-              ActionChip(
-                  label: const Text(AppStrings.adminRevenuePresetCustom),
-                  onPressed: () async {
-                    final now = DateTime.now();
-                    final picked = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(now.year - 5, now.month, now.day),
-                        lastDate: now,
-                        initialDateRange: DateTimeRange(
-                            start: revenue.startDate, end: revenue.endDate));
-                    if (picked != null && context.mounted) {
-                      context
-                          .read<RevenueAnalyticsCubit>()
-                          .load(picked.start, picked.end);
-                    }
-                  }),
-            ]),
-            Text(AppStrings.adminRevenueDeliveredAndAverage(
-                revenue.orderCount,
-                currencyFormat
-                    .format(double.parse(revenue.averageOrderValue)))),
-            ...revenue.points.map((point) => ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                title: Text(AppStrings.adminRevenueRangeText(
-                    DateFormat('dd/MM').format(point.bucketStart),
-                    DateFormat('dd/MM').format(point.bucketEnd))),
-                trailing:
-                    Text(currencyFormat.format(double.parse(point.revenue))))),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    AppStrings.adminRevenueRangeText(
+                      DateFormat('dd/MM/yyyy').format(revenue.startDate),
+                      DateFormat('dd/MM/yyyy').format(revenue.endDate),
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () => _showPeriodFilter(context, revenue),
+                  icon: const Icon(Icons.tune_rounded, size: 18),
+                  label: const Text(AppStrings.adminRevenueFilter),
+                ),
+              ],
+            ),
             const SizedBox(height: 12),
           ],
 
@@ -248,8 +202,10 @@ class AdminDashboardTab extends StatelessWidget {
                   child: _kpiCard(
                 context: context,
                 label: AppStrings.adminOrdersCountLabel,
-                value: '${stats.totalOrders}',
-                growth: '+${stats.ordersGrowth}% tuần này',
+                value: '${revenue?.orderCount ?? stats.totalOrders}',
+                growth: revenue == null
+                    ? '+${stats.ordersGrowth}%'
+                    : AppStrings.adminOrdersSelectedPeriod,
                 icon: Icons.local_shipping_outlined,
                 iconColor: AppColors.primary,
               )),
@@ -278,6 +234,79 @@ class AdminDashboardTab extends StatelessWidget {
     final sign = growthPercent.startsWith('-') ? '' : '+';
     return '$sign$growthPercent% ${AppStrings.adminRevenueGrowthSuffix}';
   }
+
+  Future<void> _showPeriodFilter(
+    BuildContext context,
+    RevenueAnalyticsEntity revenue,
+  ) async {
+    final choice = await showModalBottomSheet<_RevenuePeriod>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ListTile(
+              title: Text(
+                AppStrings.adminRevenueFilterTitle,
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            _periodTile(sheetContext, _RevenuePeriod.week,
+                AppStrings.adminRevenuePresetThisWeek),
+            _periodTile(sheetContext, _RevenuePeriod.month,
+                AppStrings.adminRevenuePresetThisMonth),
+            _periodTile(sheetContext, _RevenuePeriod.year,
+                AppStrings.adminRevenuePresetThisYear),
+            _periodTile(sheetContext, _RevenuePeriod.custom,
+                AppStrings.adminRevenuePresetCustom),
+          ],
+        ),
+      ),
+    );
+    if (choice == null || !context.mounted) return;
+
+    final now = DateTime.now();
+    switch (choice) {
+      case _RevenuePeriod.week:
+        final start = now.subtract(Duration(days: now.weekday - 1));
+        await context.read<RevenueAnalyticsCubit>().load(start, now);
+      case _RevenuePeriod.month:
+        await context
+            .read<RevenueAnalyticsCubit>()
+            .load(DateTime(now.year, now.month), now);
+      case _RevenuePeriod.year:
+        await context
+            .read<RevenueAnalyticsCubit>()
+            .load(DateTime(now.year), now);
+      case _RevenuePeriod.custom:
+        final picked = await showDateRangePicker(
+          context: context,
+          firstDate: DateTime(now.year - 5, now.month, now.day),
+          lastDate: now,
+          initialDateRange: DateTimeRange(
+            start: revenue.startDate,
+            end: revenue.endDate,
+          ),
+        );
+        if (picked != null && context.mounted) {
+          await context
+              .read<RevenueAnalyticsCubit>()
+              .load(picked.start, picked.end);
+        }
+    }
+  }
+
+  Widget _periodTile(
+    BuildContext context,
+    _RevenuePeriod period,
+    String label,
+  ) =>
+      ListTile(
+        title: Text(label),
+        trailing: const Icon(Icons.chevron_right_rounded),
+        onTap: () => Navigator.pop(context, period),
+      );
 
   Widget _chatInboxButton(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(

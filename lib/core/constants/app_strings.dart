@@ -953,6 +953,10 @@ abstract final class AppStrings {
   static const String adminRevenuePresetThisMonth = 'Tháng này';
   static const String adminRevenuePresetThisYear = 'Năm nay';
   static const String adminRevenuePresetCustom = 'Tùy chọn';
+  static const String adminRevenuePresetThisWeek = 'Tuần này';
+  static const String adminRevenueFilter = 'Lọc';
+  static const String adminRevenueFilterTitle = 'Thời gian thống kê';
+  static const String adminOrdersSelectedPeriod = 'Trong khoảng đã chọn';
   static const String adminRevenueInvalidRange = 'Khoảng ngày không hợp lệ';
   static String adminRevenueRangeText(String start, String end) =>
       '$start – $end';
