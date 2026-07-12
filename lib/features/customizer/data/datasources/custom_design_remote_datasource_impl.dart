@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
@@ -15,6 +16,57 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
   final DioClient _dioClient;
 
   CustomDesignRemoteDataSourceImpl(this._dioClient);
+
+  @override
+  Future<String> uploadLogo(File file) async {
+    try {
+      final fileName = file.uri.pathSegments.last;
+      final ext = fileName.split('.').last.toLowerCase();
+      final mime = switch (ext) {
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+        _ => 'image/jpeg',
+      };
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: fileName,
+          contentType: DioMediaType.parse(mime),
+        ),
+      });
+      final response = await _dioClient.dio.post<Map<String, dynamic>>(
+        ApiConstants.customDesignLogo,
+        data: formData,
+      );
+      final url = response.data?['data'] as String?;
+      if (url == null || url.isEmpty) {
+        throw const ParseException('URL logo không hợp lệ');
+      }
+      return url;
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ??
+            e.message ??
+            'Lỗi upload logo',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
+  @override
+  Future<void> deleteLogo(String url) async {
+    try {
+      await _dioClient.dio.delete(
+        ApiConstants.customDesignLogo,
+        queryParameters: {'url': url},
+      );
+    } on DioException catch (e) {
+      throw NetworkException(
+        e.response?.data?['message'] as String? ?? e.message ?? 'Lỗi xóa logo',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
 
   @override
   Future<int> saveDesign({
@@ -73,17 +125,19 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
 
   @override
   Future<
-      ({
-        String? designImageUrl,
-        String? backDesignImageUrl,
-        String designMetadata,
-        String backDesignMetadata,
-        String printingMaterialName,
-        int? printingMaterialId,
-        int numTextLines,
-        int numImages,
-        double totalPrintingPrice,
-      })> getExistingDesign(int id, {DesignViewerRole role = DesignViewerRole.customer}) async {
+          ({
+            String? designImageUrl,
+            String? backDesignImageUrl,
+            String designMetadata,
+            String backDesignMetadata,
+            String printingMaterialName,
+            int? printingMaterialId,
+            int numTextLines,
+            int numImages,
+            double totalPrintingPrice,
+          })>
+      getExistingDesign(int id,
+          {DesignViewerRole role = DesignViewerRole.customer}) async {
     try {
       final path = role == DesignViewerRole.admin
           ? ApiConstants.adminCustomDesignById(id)
@@ -95,8 +149,7 @@ class CustomDesignRemoteDataSourceImpl implements CustomDesignRemoteDataSource {
         designImageUrl: data['designImageUrl'] as String?,
         backDesignImageUrl: data['backDesignImageUrl'] as String?,
         designMetadata: data['designMetadata'] as String? ?? '',
-        backDesignMetadata:
-            data['backDesignMetadata'] as String? ?? '',
+        backDesignMetadata: data['backDesignMetadata'] as String? ?? '',
         printingMaterialName:
             data['printingMaterialName'] as String? ?? 'In chuyển nhiệt',
         printingMaterialId: (data['printingMaterialId'] as num?)?.toInt(),

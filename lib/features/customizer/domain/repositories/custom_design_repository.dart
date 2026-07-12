@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/existing_design_entity.dart';
@@ -5,6 +6,10 @@ import 'package:flutter_ecommerce/features/customizer/domain/entities/printing_c
 import 'package:flutter_ecommerce/features/customizer/domain/entities/design_viewer_role.dart';
 
 abstract interface class CustomDesignRepository {
+  Future<Result<String>> uploadLogo(File file);
+
+  Future<Result<void>> deleteLogo(String url);
+
   Future<Result<int>> saveDesign({
     required int materialId,
     required int numTextLines,

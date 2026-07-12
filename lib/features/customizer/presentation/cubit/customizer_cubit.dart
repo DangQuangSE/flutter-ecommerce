@@ -1,32 +1,53 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/customization_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/existing_design_entity.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/delete_logo_usecase.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_existing_design_usecase.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/get_printing_configs_usecase.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/usecases/save_custom_design_usecase.dart';
+import 'package:flutter_ecommerce/features/customizer/domain/usecases/upload_logo_usecase.dart';
 import 'customizer_state.dart';
 
 class CustomizerCubit extends Cubit<CustomizerState> {
   final GetPrintingConfigsUseCase _getPrintingConfigs;
   final SaveCustomDesignUseCase _saveCustomDesign;
   final GetExistingDesignUseCase _getExistingDesign;
+  final UploadLogoUseCase _uploadLogo;
+  final DeleteLogoUseCase _deleteLogo;
   final Map<String, CustomizationEntity> _customizations = {};
 
   CustomizerCubit({
     required GetPrintingConfigsUseCase getPrintingConfigs,
     required SaveCustomDesignUseCase saveCustomDesign,
     required GetExistingDesignUseCase getExistingDesign,
+    required UploadLogoUseCase uploadLogo,
+    required DeleteLogoUseCase deleteLogo,
   })  : _getPrintingConfigs = getPrintingConfigs,
         _saveCustomDesign = saveCustomDesign,
         _getExistingDesign = getExistingDesign,
+        _uploadLogo = uploadLogo,
+        _deleteLogo = deleteLogo,
         super(const CustomizerInitial()) {
     _loadPersistedCustomizations();
   }
+
+  /// Uploads a single logo asset to durable storage. Does not touch
+  /// [CustomizerState] — the page owns loading/error UI for this operation
+  /// locally, the same way it owns canvas/layer editing state.
+  Future<Result<String>> uploadLogo(File file) => _uploadLogo(file);
+
+  /// Best-effort deletion of a previously uploaded logo asset. Callers must
+  /// only pass URLs uploaded in the current editing session — never a
+  /// [DesignLayer.logoUrl] restored from an already-saved design, since that
+  /// asset may still be referenced by the persisted design's metadata.
+  Future<Result<void>> deleteLogo(String url) => _deleteLogo(url);
 
   Future<void> _loadPersistedCustomizations() async {
     final prefs = await SharedPreferences.getInstance();
@@ -70,7 +91,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
     }
   }
 
-  Future<void> saveCustomization({
+  Future<Result<int>> saveCustomization({
     required String productId,
     required int materialId,
     required int numTextLines,
@@ -98,7 +119,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
           savedCustomizations: savedCustomizations,
           existingDesign: existingDesign));
     } else {
-      return;
+      return const ResultFailure(DomainFailure(AppStrings.customizerSyncError));
     }
 
     final result = await _saveCustomDesign(
@@ -116,7 +137,9 @@ class CustomizerCubit extends Cubit<CustomizerState> {
         (loadedState is CustomizerSaving) ? loadedState.printingConfigs : null;
     final existingDesign =
         (loadedState is CustomizerSaving) ? loadedState.existingDesign : null;
-    if (configs == null) return;
+    if (configs == null) {
+      return const ResultFailure(DomainFailure(AppStrings.customizerSyncError));
+    }
 
     switch (result) {
       case Success(:final data):
@@ -146,6 +169,7 @@ class CustomizerCubit extends Cubit<CustomizerState> {
           existingDesign: existingDesign,
         ));
     }
+    return result;
   }
 
   Future<void> clearAllCustomizations() async {

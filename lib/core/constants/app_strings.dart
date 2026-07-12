@@ -270,6 +270,8 @@ abstract final class AppStrings {
   static const String customizerDefaultTextColor = 'Jet Black';
   static const String customizerUploadImageError =
       'Không thể tải ảnh. Vui lòng kiểm tra quyền truy cập thư viện.';
+  static const String customizerUploadLogoServerError =
+      'Không thể tải logo lên. Vui lòng thử lại.';
   static const String customizerColorPickerTitle = 'Chọn màu sắc in';
   static const String customizerCaptureError = 'Không thể chụp hình thiết kế.';
   static const String customizerSaveSuccess =
@@ -293,7 +295,8 @@ abstract final class AppStrings {
       'Chọn hoặc thêm một lớp chữ để bắt đầu chỉnh sửa.';
   static const String customizerUploadLogoTitle = 'TẢI LÊN LOGO CỦA BẠN';
   static const String customizerUploadLogoAction = 'NHẤN ĐỂ TẢI ẢNH LÊN';
-  static const String customizerUploadLogoHint = 'PNG, JPG, SVG (Tối đa 5MB)';
+  static const String customizerUploadLogoInProgress = 'ĐANG TẢI LÊN...';
+  static const String customizerUploadLogoHint = 'PNG, JPG, WEBP (Tối đa 5MB)';
   static const String customizerTotalProduct = 'TỔNG CỘNG SẢN PHẨM';
   static const String customizerPrintingPriceLabel = 'Giá in thêm';
   static const String customizerPrintingPriceHint = '(Theo số lớp & logo)';

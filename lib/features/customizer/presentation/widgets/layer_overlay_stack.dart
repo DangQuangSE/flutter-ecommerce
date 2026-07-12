@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
@@ -84,28 +85,36 @@ class LayerOverlayStack extends StatelessWidget {
                           decoration:
                               const BoxDecoration(shape: BoxShape.circle),
                           clipBehavior: Clip.antiAlias,
-                          child: layer.logoPath != null
-                              ? (kIsWeb
-                                  ? Image.network(
-                                      layer.logoPath!,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
+                          child: layer.hasRemoteLogo
+                              ? CachedNetworkImage(
+                                  imageUrl: layer.logoUrl!,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, error, stackTrace) =>
+                                      const Icon(Icons.sports_soccer_rounded,
+                                          size: 28),
+                                )
+                              : layer.logoPath != null
+                                  ? (kIsWeb
+                                      ? Image.network(
+                                          layer.logoPath!,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error,
+                                                  stackTrace) =>
                                               const Icon(
                                                   Icons.sports_soccer_rounded,
                                                   size: 28),
-                                    )
-                                  : Image.file(
-                                      File(layer.logoPath!),
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
+                                        )
+                                      : Image.file(
+                                          File(layer.logoPath!),
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error,
+                                                  stackTrace) =>
                                               const Icon(
                                                   Icons.sports_soccer_rounded,
                                                   size: 28),
-                                    ))
-                              : const Icon(Icons.sports_soccer_rounded,
-                                  size: 28),
+                                        ))
+                                  : const Icon(Icons.sports_soccer_rounded,
+                                      size: 28),
                         ),
                     ],
                   ),

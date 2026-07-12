@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
@@ -13,6 +14,26 @@ class CustomDesignRepositoryImpl implements CustomDesignRepository {
   final CustomDesignRemoteDataSource _dataSource;
 
   CustomDesignRepositoryImpl(this._dataSource);
+
+  @override
+  Future<Result<String>> uploadLogo(File file) async {
+    try {
+      final url = await _dataSource.uploadLogo(file);
+      return Success(url);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Result<void>> deleteLogo(String url) async {
+    try {
+      await _dataSource.deleteLogo(url);
+      return const Success(null);
+    } on AppException catch (e) {
+      return ResultFailure(NetworkFailure(e.message));
+    }
+  }
 
   @override
   Future<Result<int>> saveDesign({
