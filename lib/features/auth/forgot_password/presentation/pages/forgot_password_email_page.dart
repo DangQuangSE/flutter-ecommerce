@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
+import 'package:flutter_ecommerce/app/theme/app_theme.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/widgets/state/app_loading_view.dart';
 import 'package:flutter_ecommerce/core/utils/extensions/string_extensions.dart';
@@ -42,13 +43,18 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
+    return Theme(
+      data: AppTheme.light(),
+      child: Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: AppColors.primaryDark,
+          ),
           onPressed: () => context.goNamed(AppRoutes.login),
         ),
       ),
@@ -170,6 +176,7 @@ class _ForgotPasswordEmailPageState extends State<ForgotPasswordEmailPage> {
             },
           ),
         ),
+      ),
       ),
     );
   }
