@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_ecommerce/app/router/app_routes.dart';
 import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_event.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/bloc/admin_state.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
@@ -23,6 +25,13 @@ class AdminDashboardTab extends StatelessWidget {
 
   const AdminDashboardTab({super.key, required this.state});
 
+  Future<void> _handleRefresh(BuildContext context) async {
+    context.read<AdminBloc>().add(const AdminStatsRequested());
+    final now = DateTime.now();
+    final start = now.subtract(Duration(days: now.weekday - 1));
+    await context.read<RevenueAnalyticsCubit>().load(start, now);
+  }
+
   @override
   Widget build(BuildContext context) {
     final stats = state.stats;
@@ -36,195 +45,198 @@ class AdminDashboardTab extends StatelessWidget {
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
 
     return SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Transform(
-                transform: Matrix4.skewX(-0.12),
-                alignment: Alignment.center,
-                child: Text(
-                  AppStrings.adminDashboardAppName,
-                  style: GoogleFonts.lexend(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.primary,
-                    letterSpacing: -0.8,
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  _chatInboxButton(context),
-                  _notificationBellButton(context),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                AppStrings.adminDashboardStatisticsLabel,
-                style: GoogleFonts.lexend(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-
-          if (revenueState is RevenueAnalyticsLoading)
-            const LinearProgressIndicator(),
-          if (revenueState is RevenueAnalyticsError)
-            Card(
-                child: ListTile(
-              title: Text(revenueState.message),
-              subtitle: Text(revenueState.previous == null
-                  ? AppStrings.adminRevenueErrorNoData
-                  : AppStrings.adminRevenueErrorWithPrevious),
-              trailing: TextButton(
-                  onPressed: context.read<RevenueAnalyticsCubit>().refresh,
-                  child: const Text(AppStrings.adminRevenueRetry)),
-            )),
-          if (revenue != null && revenue.points.isEmpty)
-            const Text(AppStrings.adminRevenueEmptyRange),
-
-          // Revenue block
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
+      child: RefreshIndicator(
+        onRefresh: () => _handleRefresh(context),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          children: [
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppStrings.adminRevenueLabel,
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white.withValues(alpha: 0.8),
-                        letterSpacing: 1.0,
-                      ),
+                Transform(
+                  transform: Matrix4.skewX(-0.12),
+                  alignment: Alignment.center,
+                  child: Text(
+                    AppStrings.adminDashboardAppName,
+                    style: GoogleFonts.lexend(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      fontStyle: FontStyle.italic,
+                      color: AppColors.primary,
+                      letterSpacing: -0.8,
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      revenue == null
-                          ? AppStrings.adminRevenueLoading
-                          : currencyFormat
-                              .format(double.parse(revenue.realizedRevenue)),
-                      style: GoogleFonts.lexend(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.arrow_upward_rounded,
-                            size: 12,
-                            color: Colors.white.withValues(alpha: 0.9)),
-                        SizedBox(width: 2),
-                        Text(
-                          _growthText(revenue?.growthPercent),
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white.withValues(alpha: 0.9),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.account_balance_wallet_rounded,
-                      size: 28, color: Colors.white),
+                ),
+                Row(
+                  children: [
+                    _chatInboxButton(context),
+                    _notificationBellButton(context),
+                  ],
                 ),
               ],
             ),
-          ),
-          SizedBox(height: 12),
-          if (revenue != null) ...[
+            SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppStrings.adminDashboardStatisticsLabel,
+                  style: GoogleFonts.lexend(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+
+            if (revenueState is RevenueAnalyticsLoading)
+              const LinearProgressIndicator(),
+            if (revenueState is RevenueAnalyticsError)
+              Card(
+                  child: ListTile(
+                title: Text(revenueState.message),
+                subtitle: Text(revenueState.previous == null
+                    ? AppStrings.adminRevenueErrorNoData
+                    : AppStrings.adminRevenueErrorWithPrevious),
+                trailing: TextButton(
+                    onPressed: context.read<RevenueAnalyticsCubit>().refresh,
+                    child: const Text(AppStrings.adminRevenueRetry)),
+              )),
+            if (revenue != null && revenue.points.isEmpty)
+              const Text(AppStrings.adminRevenueEmptyRange),
+
+            // Revenue block
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppStrings.adminRevenueLabel,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white.withValues(alpha: 0.8),
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        revenue == null
+                            ? AppStrings.adminRevenueLoading
+                            : currencyFormat
+                                .format(double.parse(revenue.realizedRevenue)),
+                        style: GoogleFonts.lexend(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.arrow_upward_rounded,
+                              size: 12,
+                              color: Colors.white.withValues(alpha: 0.9)),
+                          SizedBox(width: 2),
+                          Text(
+                            _growthText(revenue?.growthPercent),
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white.withValues(alpha: 0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.account_balance_wallet_rounded,
+                        size: 28, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 12),
+            if (revenue != null) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      AppStrings.adminRevenueRangeText(
+                        DateFormat('dd/MM/yyyy').format(revenue.startDate),
+                        DateFormat('dd/MM/yyyy').format(revenue.endDate),
+                      ),
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _showPeriodFilter(context, revenue),
+                    icon: const Icon(Icons.tune_rounded, size: 18),
+                    label: const Text(AppStrings.adminRevenueFilter),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+
+            // KPI row
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    AppStrings.adminRevenueRangeText(
-                      DateFormat('dd/MM/yyyy').format(revenue.startDate),
-                      DateFormat('dd/MM/yyyy').format(revenue.endDate),
-                    ),
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () => _showPeriodFilter(context, revenue),
-                  icon: const Icon(Icons.tune_rounded, size: 18),
-                  label: const Text(AppStrings.adminRevenueFilter),
-                ),
+                    child: _kpiCard(
+                  context: context,
+                  label: AppStrings.adminOrdersCountLabel,
+                  value: '${revenue?.orderCount ?? stats.totalOrders}',
+                  growth: revenue == null
+                      ? '+${stats.ordersGrowth}%'
+                      : AppStrings.adminOrdersSelectedPeriod,
+                  icon: Icons.local_shipping_outlined,
+                  iconColor: AppColors.primary,
+                )),
+                SizedBox(width: 12),
+                Expanded(
+                    child: _kpiCard(
+                  context: context,
+                  label: AppStrings.adminNewCustomersLabel,
+                  value: '${stats.newCustomers}',
+                  growth: '+${stats.customersGrowth}%',
+                  icon: Icons.people_alt_outlined,
+                  iconColor: Colors.orange,
+                )),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 24),
+
+            // Traffic chart removed as requested
           ],
-
-          // KPI row
-          Row(
-            children: [
-              Expanded(
-                  child: _kpiCard(
-                context: context,
-                label: AppStrings.adminOrdersCountLabel,
-                value: '${revenue?.orderCount ?? stats.totalOrders}',
-                growth: revenue == null
-                    ? '+${stats.ordersGrowth}%'
-                    : AppStrings.adminOrdersSelectedPeriod,
-                icon: Icons.local_shipping_outlined,
-                iconColor: AppColors.primary,
-              )),
-              SizedBox(width: 12),
-              Expanded(
-                  child: _kpiCard(
-                context: context,
-                label: AppStrings.adminNewCustomersLabel,
-                value: '${stats.newCustomers}',
-                growth: '+${stats.customersGrowth}%',
-                icon: Icons.people_alt_outlined,
-                iconColor: Colors.orange,
-              )),
-            ],
-          ),
-          SizedBox(height: 24),
-
-          // Traffic chart removed as requested
-        ],
+        ),
       ),
     );
   }
