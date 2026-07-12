@@ -24,6 +24,7 @@ class DesignConfigPanel extends StatelessWidget {
   final ValueChanged<Color> onColorSelected;
   final VoidCallback onCustomColorTap;
   final ValueChanged<double> onFontSizeChanged;
+  final ValueChanged<double> onLogoSizeChanged;
   final VoidCallback onAddLayer;
   final VoidCallback onUploadLogo;
   final bool isUploadingLogo;
@@ -47,6 +48,7 @@ class DesignConfigPanel extends StatelessWidget {
     required this.onColorSelected,
     required this.onCustomColorTap,
     required this.onFontSizeChanged,
+    required this.onLogoSizeChanged,
     required this.onAddLayer,
     required this.onUploadLogo,
     required this.isUploadingLogo,
@@ -116,6 +118,7 @@ class DesignConfigPanel extends StatelessWidget {
               onColorSelected: onColorSelected,
               onCustomColorTap: onCustomColorTap,
               onFontSizeChanged: onFontSizeChanged,
+              onLogoSizeChanged: onLogoSizeChanged,
               onAddLayer: onAddLayer,
             ),
             AppSizes.spacingLg,

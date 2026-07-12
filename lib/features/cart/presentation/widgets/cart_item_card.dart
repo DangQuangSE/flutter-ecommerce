@@ -248,12 +248,13 @@ class CartItemCard extends StatelessWidget {
 
   Widget _buildBottomRow(BuildContext context, String category) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
       children: [
         _buildQuantityControl(context),
-        SizedBox(width: 8),
-        if (category == 'TRANG BỊ HIỆU NĂNG' && item.customDesignId == null)
+        if (category == 'TRANG BỊ HIỆU NĂNG' && item.customDesignId == null) ...[
+          SizedBox(width: 8),
           _buildCustomizeButton(context),
+        ],
         const Spacer(),
         _buildDeleteButton(),
       ],

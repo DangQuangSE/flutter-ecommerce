@@ -13,6 +13,7 @@ class LayerOverlayStack extends StatelessWidget {
   final ValueChanged<DesignLayer> onLayerActivated;
   final void Function(String id, Offset delta) onLayerDragged;
   final ValueChanged<String> onLayerDeleted;
+  final void Function(String id, double scaleDelta) onLayerScaled;
   final TextStyle Function(String font) getFontFamily;
 
   const LayerOverlayStack({
@@ -24,6 +25,7 @@ class LayerOverlayStack extends StatelessWidget {
     required this.onLayerActivated,
     required this.onLayerDragged,
     required this.onLayerDeleted,
+    required this.onLayerScaled,
     required this.getFontFamily,
   });
 
@@ -31,26 +33,86 @@ class LayerOverlayStack extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
-      children: layers.map((layer) => _buildLayerItem(layer)).toList(),
+      children: layers
+          .map(
+            (layer) => _LayerItem(
+              key: ValueKey(layer.id),
+              layer: layer,
+              isActive: activeLayerId == layer.id,
+              canvasWidth: canvasWidth,
+              canvasHeight: canvasHeight,
+              onLayerActivated: onLayerActivated,
+              onLayerDragged: onLayerDragged,
+              onLayerDeleted: onLayerDeleted,
+              onLayerScaled: onLayerScaled,
+              getFontFamily: getFontFamily,
+            ),
+          )
+          .toList(),
     );
   }
+}
 
-  Widget _buildLayerItem(DesignLayer layer) {
-    final bool isActive = activeLayerId == layer.id;
+class _LayerItem extends StatefulWidget {
+  final DesignLayer layer;
+  final bool isActive;
+  final double canvasWidth;
+  final double canvasHeight;
+  final ValueChanged<DesignLayer> onLayerActivated;
+  final void Function(String id, Offset delta) onLayerDragged;
+  final ValueChanged<String> onLayerDeleted;
+  final void Function(String id, double scaleDelta) onLayerScaled;
+  final TextStyle Function(String font) getFontFamily;
+
+  const _LayerItem({
+    super.key,
+    required this.layer,
+    required this.isActive,
+    required this.canvasWidth,
+    required this.canvasHeight,
+    required this.onLayerActivated,
+    required this.onLayerDragged,
+    required this.onLayerDeleted,
+    required this.onLayerScaled,
+    required this.getFontFamily,
+  });
+
+  @override
+  State<_LayerItem> createState() => _LayerItemState();
+}
+
+class _LayerItemState extends State<_LayerItem> {
+  double _lastScale = 1.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final layer = widget.layer;
+    final isActive = widget.isActive;
+
     return Positioned(
-      left: (canvasWidth / 2) + layer.x,
-      top: (canvasHeight / 2) + layer.y,
+      left: (widget.canvasWidth / 2) + layer.x,
+      top: (widget.canvasHeight / 2) + layer.y,
       child: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             Listener(
-              onPointerDown: (_) => onLayerActivated(layer),
+              onPointerDown: (_) => widget.onLayerActivated(layer),
               child: GestureDetector(
-                onPanStart: (_) => onLayerActivated(layer),
-                onPanUpdate: (details) =>
-                    onLayerDragged(layer.id, details.delta),
+                onScaleStart: (details) {
+                  widget.onLayerActivated(layer);
+                  _lastScale = 1.0;
+                },
+                onScaleUpdate: (details) {
+                  if (details.pointerCount >= 2) {
+                    final scaleDelta = details.scale / _lastScale;
+                    _lastScale = details.scale;
+                    widget.onLayerScaled(layer.id, scaleDelta);
+                  } else {
+                    widget.onLayerDragged(layer.id, details.focalPointDelta);
+                  }
+                },
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -69,7 +131,7 @@ class LayerOverlayStack extends StatelessWidget {
                           transform: Matrix4.skewX(-0.15),
                           child: Text(
                             layer.text.toUpperCase(),
-                            style: getFontFamily(layer.font).copyWith(
+                            style: widget.getFontFamily(layer.font).copyWith(
                               fontSize: layer.fontSize,
                               fontWeight: FontWeight.w900,
                               fontStyle: FontStyle.italic,
@@ -80,8 +142,8 @@ class LayerOverlayStack extends StatelessWidget {
                         ),
                       if (layer.type == LayerType.logo)
                         Container(
-                          width: 48,
-                          height: 48,
+                          width: layer.logoSize,
+                          height: layer.logoSize,
                           decoration:
                               const BoxDecoration(shape: BoxShape.circle),
                           clipBehavior: Clip.antiAlias,
@@ -134,7 +196,7 @@ class LayerOverlayStack extends StatelessWidget {
         right: -16,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => onLayerDeleted(layerId),
+          onTap: () => widget.onLayerDeleted(layerId),
           child: Container(
             padding: const EdgeInsets.all(4),
             decoration: const BoxDecoration(
@@ -148,15 +210,24 @@ class LayerOverlayStack extends StatelessWidget {
         ),
       );
 
-  Widget _buildResizeHandle() => Positioned(
+  Widget _buildResizeHandle() => const Positioned(
         bottom: -16,
         right: -16,
-        child: Container(
-          padding: const EdgeInsets.all(2),
-          decoration: const BoxDecoration(
-              color: AppColors.primary, shape: BoxShape.circle),
-          child: const Icon(Icons.open_in_full_rounded,
-              size: 10, color: Colors.white),
+        child: IgnorePointer(
+          child: Padding(
+            padding: EdgeInsets.all(2),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(2),
+                child: Icon(Icons.open_in_full_rounded,
+                    size: 10, color: Colors.white),
+              ),
+            ),
+          ),
         ),
       );
 }

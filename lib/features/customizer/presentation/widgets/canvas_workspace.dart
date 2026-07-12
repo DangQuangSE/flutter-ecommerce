@@ -18,6 +18,7 @@ class CanvasWorkspace extends StatelessWidget {
   final ValueChanged<DesignLayer> onLayerActivated;
   final void Function(String id, Offset delta) onLayerDragged;
   final ValueChanged<String> onLayerDeleted;
+  final void Function(String id, double scaleDelta) onLayerScaled;
   final TextStyle Function(String font) getFontFamily;
 
   const CanvasWorkspace({
@@ -33,6 +34,7 @@ class CanvasWorkspace extends StatelessWidget {
     required this.onLayerActivated,
     required this.onLayerDragged,
     required this.onLayerDeleted,
+    required this.onLayerScaled,
     required this.getFontFamily,
   });
 
@@ -99,6 +101,7 @@ class CanvasWorkspace extends StatelessWidget {
                       onLayerActivated: onLayerActivated,
                       onLayerDragged: onLayerDragged,
                       onLayerDeleted: onLayerDeleted,
+                      onLayerScaled: onLayerScaled,
                       getFontFamily: getFontFamily,
                     ),
                   ],

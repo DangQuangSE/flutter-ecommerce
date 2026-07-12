@@ -45,6 +45,22 @@ extension CustomizerLayerHandlers on CustomizerPageState {
     });
   }
 
+  void onLayerScaled(String id, double scaleFactor) {
+    updateState(() {
+      final index = layers.indexWhere((layer) => layer.id == id);
+      if (index == -1) return;
+      final currentLayer = layers[index];
+      if (currentLayer.type == LayerType.logo) {
+        final newSize = (currentLayer.logoSize * scaleFactor).clamp(24.0, 200.0);
+        layers[index] = currentLayer.copyWith(logoSize: newSize);
+      } else if (currentLayer.type == LayerType.text) {
+        final newFontSize = (currentLayer.fontSize * scaleFactor).clamp(8.0, 72.0);
+        layers[index] = currentLayer.copyWith(fontSize: newFontSize);
+      }
+      activeLayer = layers[index];
+    });
+  }
+
   void onLayerDragged(String id, Offset delta) {
     updateState(() {
       final index = layers.indexWhere((layer) => layer.id == id);
