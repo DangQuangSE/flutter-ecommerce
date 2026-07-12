@@ -16,6 +16,7 @@ class DesignLayer {
   final double y;
   final String? logoPath;
   final String? logoUrl;
+  final double logoSize;
 
   DesignLayer({
     required this.id,
@@ -29,6 +30,7 @@ class DesignLayer {
     this.y = 0.0,
     this.logoPath,
     this.logoUrl,
+    this.logoSize = 80.0,
   });
 
   /// True when [logoUrl] is a durable, remotely-hosted asset. Legacy layers
@@ -48,6 +50,7 @@ class DesignLayer {
     String? logoPath,
     String? logoUrl,
     LayerView? view,
+    double? logoSize,
   }) {
     return DesignLayer(
       id: id,
@@ -61,6 +64,7 @@ class DesignLayer {
       y: y ?? this.y,
       logoPath: logoPath ?? this.logoPath,
       logoUrl: logoUrl ?? this.logoUrl,
+      logoSize: logoSize ?? this.logoSize,
     );
   }
 
@@ -76,6 +80,7 @@ class DesignLayer {
         'y': y,
         'logoPath': logoPath,
         'logoUrl': logoUrl,
+        'logoSize': logoSize,
       };
 
   factory DesignLayer.fromJson(Map<String, dynamic> json) => DesignLayer(
@@ -92,5 +97,6 @@ class DesignLayer {
         y: (json['y'] as num?)?.toDouble() ?? 0.0,
         logoPath: json['logoPath'] as String?,
         logoUrl: json['logoUrl'] is String ? json['logoUrl'] as String : null,
+        logoSize: (json['logoSize'] as num?)?.toDouble() ?? 80.0,
       );
 }

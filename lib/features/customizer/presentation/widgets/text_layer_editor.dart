@@ -17,6 +17,7 @@ class TextLayerEditor extends StatelessWidget {
   final ValueChanged<Color> onColorSelected;
   final VoidCallback onCustomColorTap;
   final ValueChanged<double> onFontSizeChanged;
+  final ValueChanged<double> onLogoSizeChanged;
   final VoidCallback onAddLayer;
 
   const TextLayerEditor({
@@ -31,6 +32,7 @@ class TextLayerEditor extends StatelessWidget {
     required this.onColorSelected,
     required this.onCustomColorTap,
     required this.onFontSizeChanged,
+    required this.onLogoSizeChanged,
     required this.onAddLayer,
   });
 
@@ -128,11 +130,34 @@ class TextLayerEditor extends StatelessWidget {
           ),
           Slider(
             value: activeLayer!.fontSize,
-            min: 12,
+            min: 6,
             max: 60,
             activeColor: AppColors.primary,
             inactiveColor: theme.colorScheme.surfaceContainerHighest,
             onChanged: onFontSizeChanged,
+          ),
+        ] else if (activeLayer != null && activeLayer!.type == LayerType.logo) ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const _FieldLabel('KÍCH THƯỚC LOGO'),
+              Text(
+                '${activeLayer!.logoSize.toInt()}px',
+                style: GoogleFonts.inter(
+                  fontSize: AppSizes.fontSm,
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+          Slider(
+            value: activeLayer!.logoSize,
+            min: 24,
+            max: 200,
+            activeColor: AppColors.primary,
+            inactiveColor: theme.colorScheme.surfaceContainerHighest,
+            onChanged: onLogoSizeChanged,
           ),
         ] else ...[
           Container(

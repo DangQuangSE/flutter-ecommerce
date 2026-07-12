@@ -167,6 +167,8 @@ extension CustomizerViewHelpers on CustomizerPageState {
       onCustomColorTap: showColorPicker,
       onFontSizeChanged: (value) =>
           onActiveLayerPropChanged((layer) => layer.copyWith(fontSize: value)),
+      onLogoSizeChanged: (value) =>
+          onActiveLayerPropChanged((layer) => layer.copyWith(logoSize: value)),
       onAddLayer: addNewTextLayer,
       onUploadLogo: uploadLogo,
       isUploadingLogo: isUploadingLogo,
@@ -196,6 +198,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
         onLayerActivated: onLayerActivatedFromCanvas,
         onLayerDragged: onLayerDragged,
         onLayerDeleted: onLayerDeletedFromCanvas,
+        onLayerScaled: onLayerScaled,
         getFontFamily: getFontFamily,
       ),
     );
