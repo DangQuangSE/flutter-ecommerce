@@ -71,10 +71,10 @@ Safely reconcile only auditable legacy rows, validate the complete backend–Flu
 
 ## Quality and Testing State
 
-- Quality: not evaluated.
+- Quality: `ck:quality --gate` approved 2026-07-12 (report: `quality/phase-04-legacy-migration-verification-quality-report.json`; no receipt issued — the receipt fingerprint mechanism requires report and reviewed files to share one git repo root, but this phase's artifacts live in `java-ecommerce` while the plan lives in `flutter-ecommerce`, same as phases 1-2). Zero findings: report-then-mutate ordering, evidence-gated idempotent UPDATE, expected-row-count guard, reconciliation checks, and rollback/backup guidance all verified present in `docs/sql/migrate_legacy_order_payment_delivery_timestamps.sql` and `docs/revenue-analytics-rollout.md`.
 - Testing: not started; execution reserved for later `ck:test`.
-- Migration: not executed.
-- Release gate: blocked until all evidence above exists.
+- Migration: not executed (artifact authoring and static review only, per Binding Cook Scope Override).
+- Release gate: blocked until migration rehearsal, E2E scenarios, and p95/query-plan evidence exist — all explicitly post-Cook.
 
 ## Binding Cook Scope Override
 

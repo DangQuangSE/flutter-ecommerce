@@ -1,0 +1,25 @@
+{
+  "target": "phase-03-flutter-dashboard",
+  "verdict": "APPROVED",
+  "policy_version": "1.0.0",
+  "report_path": "plans/revenue-range-analytics/quality/phase-03-flutter-dashboard-quality-report.json",
+  "reviewed_files": [
+    "lib/core/constants/app_strings.dart",
+    "lib/features/admin/admin_module.dart",
+    "lib/features/admin/data/datasources/admin_remote_datasource.dart",
+    "lib/features/admin/data/datasources/admin_remote_datasource_impl.dart",
+    "lib/features/admin/data/models/revenue_analytics_model.dart",
+    "lib/features/admin/data/repositories/admin_repository_impl.dart",
+    "lib/features/admin/domain/entities/revenue_analytics_entity.dart",
+    "lib/features/admin/domain/repositories/admin_repository.dart",
+    "lib/features/admin/domain/usecases/get_revenue_analytics_usecase.dart",
+    "lib/features/admin/presentation/cubit/admin_order_cubit.dart",
+    "lib/features/admin/presentation/cubit/revenue_analytics_cubit.dart",
+    "lib/features/admin/presentation/cubit/revenue_analytics_state.dart",
+    "lib/features/admin/presentation/pages/admin_dashboard_page.dart",
+    "lib/features/admin/presentation/widgets/admin_dashboard_tab.dart"
+  ],
+  "source_fingerprint": "sha256:15093efd69403a8e6a773ee1625ec71c3da75e451b2e1700a13c4bd9398d0e04",
+  "reviewed_at": "2026-07-12T13:05:00Z",
+  "open_blocking_findings": 0
+}

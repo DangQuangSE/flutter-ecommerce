@@ -925,6 +925,7 @@ abstract final class AppStrings {
 
   // Admin dashboard tab
   static const String adminDashboardTitle = 'Dashboard';
+  static const String adminDashboardStatisticsLabel = 'Thống kê';
   static const String adminRevenueLabel = 'DOANH THU';
   static const String adminOrdersCountLabel = 'ĐƠN HÀNG';
   static const String adminNewCustomersLabel = 'KHÁCH MỚI';
@@ -933,9 +934,32 @@ abstract final class AppStrings {
   static String adminTrafficDay(String day, int value) =>
       'Lưu lượng $day: $value%';
 
+  // Admin revenue analytics
+  static const String adminRevenueLoading = 'Đang tải…';
+  static const String adminRevenueEmptyRange =
+      'Không có doanh thu trong khoảng đã chọn';
+  static const String adminRevenueErrorWithPrevious =
+      'Dữ liệu cũ đang được giữ lại';
+  static const String adminRevenueErrorNoData =
+      'Không thể tải dữ liệu doanh thu';
+  static const String adminRevenueRetry = 'Thử lại';
+  static const String adminRevenueGrowthNone = 'Không có dữ liệu kỳ trước';
+  static const String adminRevenueGrowthSuffix = 'so với kỳ trước';
+  static const String adminRevenuePreset7Days = '7 ngày';
+  static const String adminRevenuePreset30Days = '30 ngày';
+  static const String adminRevenuePresetThisMonth = 'Tháng này';
+  static const String adminRevenuePresetThisYear = 'Năm nay';
+  static const String adminRevenuePresetCustom = 'Tùy chọn';
+  static const String adminRevenueInvalidRange = 'Khoảng ngày không hợp lệ';
+  static String adminRevenueRangeText(String start, String end) =>
+      '$start – $end';
+  static String adminRevenueDeliveredAndAverage(int count, String average) =>
+      'Đơn đã giao: $count · Trung bình: $average';
+
   // Admin notification sheet
   static const String adminNotificationSheetTitle = 'Thông báo đơn hàng mới';
   static const String adminNotificationEmpty = 'Chưa có thông báo nào';
+  static const String adminNotificationDefaultTitle = 'Thông báo mới';
   static String adminNotificationOrderText(dynamic orderId, String createdAt) =>
       'Đơn hàng #$orderId • $createdAt';
 

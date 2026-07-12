@@ -12,6 +12,8 @@ import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_cubit.da
 import 'package:flutter_ecommerce/features/chat/presentation/cubit/chat_state.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_state.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/revenue_analytics_cubit.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/revenue_analytics_state.dart';
 
 class AdminDashboardTab extends StatelessWidget {
   final AdminLoaded state;
@@ -21,6 +23,13 @@ class AdminDashboardTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = state.stats;
+    final revenueState = context.watch<RevenueAnalyticsCubit>().state;
+    final revenue = switch (revenueState) {
+      RevenueAnalyticsLoaded(:final data) => data,
+      RevenueAnalyticsLoading(:final previous) => previous,
+      RevenueAnalyticsError(:final previous) => previous,
+      _ => null,
+    };
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
 
     return SafeArea(
@@ -58,7 +67,7 @@ class AdminDashboardTab extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Thống kê',
+                AppStrings.adminDashboardStatisticsLabel,
                 style: GoogleFonts.lexend(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -68,6 +77,22 @@ class AdminDashboardTab extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20),
+
+          if (revenueState is RevenueAnalyticsLoading)
+            const LinearProgressIndicator(),
+          if (revenueState is RevenueAnalyticsError)
+            Card(
+                child: ListTile(
+              title: Text(revenueState.message),
+              subtitle: Text(revenueState.previous == null
+                  ? AppStrings.adminRevenueErrorNoData
+                  : AppStrings.adminRevenueErrorWithPrevious),
+              trailing: TextButton(
+                  onPressed: context.read<RevenueAnalyticsCubit>().refresh,
+                  child: const Text(AppStrings.adminRevenueRetry)),
+            )),
+          if (revenue != null && revenue.points.isEmpty)
+            const Text(AppStrings.adminRevenueEmptyRange),
 
           // Revenue block
           Container(
@@ -104,9 +129,10 @@ class AdminDashboardTab extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      stats.totalRevenue >= 1000000
-                          ? '${(stats.totalRevenue / 1000000).toStringAsFixed(1)}M'
-                          : currencyFormat.format(stats.totalRevenue),
+                      revenue == null
+                          ? AppStrings.adminRevenueLoading
+                          : currencyFormat
+                              .format(double.parse(revenue.realizedRevenue)),
                       style: GoogleFonts.lexend(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
@@ -121,7 +147,7 @@ class AdminDashboardTab extends StatelessWidget {
                             color: Colors.white.withValues(alpha: 0.9)),
                         SizedBox(width: 2),
                         Text(
-                          '+${stats.revenueGrowth}% so với tuần trước',
+                          _growthText(revenue?.growthPercent),
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -145,6 +171,75 @@ class AdminDashboardTab extends StatelessWidget {
             ),
           ),
           SizedBox(height: 12),
+          if (revenue != null) ...[
+            Text(AppStrings.adminRevenueRangeText(
+                DateFormat('dd/MM/yyyy').format(revenue.startDate),
+                DateFormat('dd/MM/yyyy').format(revenue.endDate))),
+            const SizedBox(height: 8),
+            Wrap(spacing: 8, children: [
+              ActionChip(
+                  label: const Text(AppStrings.adminRevenuePreset7Days),
+                  onPressed: () {
+                    final now = DateTime.now();
+                    context
+                        .read<RevenueAnalyticsCubit>()
+                        .load(now.subtract(const Duration(days: 6)), now);
+                  }),
+              ActionChip(
+                  label: const Text(AppStrings.adminRevenuePreset30Days),
+                  onPressed: () {
+                    final now = DateTime.now();
+                    context
+                        .read<RevenueAnalyticsCubit>()
+                        .load(now.subtract(const Duration(days: 29)), now);
+                  }),
+              ActionChip(
+                  label: const Text(AppStrings.adminRevenuePresetThisMonth),
+                  onPressed: () {
+                    final now = DateTime.now();
+                    context
+                        .read<RevenueAnalyticsCubit>()
+                        .load(DateTime(now.year, now.month), now);
+                  }),
+              ActionChip(
+                  label: const Text(AppStrings.adminRevenuePresetThisYear),
+                  onPressed: () {
+                    final now = DateTime.now();
+                    context
+                        .read<RevenueAnalyticsCubit>()
+                        .load(DateTime(now.year), now);
+                  }),
+              ActionChip(
+                  label: const Text(AppStrings.adminRevenuePresetCustom),
+                  onPressed: () async {
+                    final now = DateTime.now();
+                    final picked = await showDateRangePicker(
+                        context: context,
+                        firstDate: DateTime(now.year - 5, now.month, now.day),
+                        lastDate: now,
+                        initialDateRange: DateTimeRange(
+                            start: revenue.startDate, end: revenue.endDate));
+                    if (picked != null && context.mounted) {
+                      context
+                          .read<RevenueAnalyticsCubit>()
+                          .load(picked.start, picked.end);
+                    }
+                  }),
+            ]),
+            Text(AppStrings.adminRevenueDeliveredAndAverage(
+                revenue.orderCount,
+                currencyFormat
+                    .format(double.parse(revenue.averageOrderValue)))),
+            ...revenue.points.map((point) => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(AppStrings.adminRevenueRangeText(
+                    DateFormat('dd/MM').format(point.bucketStart),
+                    DateFormat('dd/MM').format(point.bucketEnd))),
+                trailing:
+                    Text(currencyFormat.format(double.parse(point.revenue))))),
+            const SizedBox(height: 12),
+          ],
 
           // KPI row
           Row(
@@ -178,6 +273,12 @@ class AdminDashboardTab extends StatelessWidget {
     );
   }
 
+  String _growthText(String? growthPercent) {
+    if (growthPercent == null) return AppStrings.adminRevenueGrowthNone;
+    final sign = growthPercent.startsWith('-') ? '' : '+';
+    return '$sign$growthPercent% ${AppStrings.adminRevenueGrowthSuffix}';
+  }
+
   Widget _chatInboxButton(BuildContext context) {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
@@ -199,8 +300,7 @@ class AdminDashboardTab extends StatelessWidget {
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  constraints:
-                      BoxConstraints(minWidth: 16, minHeight: 16),
+                  constraints: BoxConstraints(minWidth: 16, minHeight: 16),
                   decoration: const BoxDecoration(
                       color: AppColors.error, shape: BoxShape.circle),
                   child: Text(
@@ -265,8 +365,6 @@ class AdminDashboardTab extends StatelessWidget {
       ),
     );
   }
-
-
 
   Widget _notificationBellButton(BuildContext context) {
     return BlocBuilder<AdminNotificationCubit, AdminNotificationState>(
@@ -357,75 +455,81 @@ class AdminDashboardTab extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final notif = state.notifications[index];
                       return Opacity(
-                        opacity: notif.isRead ? 0.6 : 1.0,
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: Stack(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.receipt_long_rounded,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                              if (!notif.isRead)
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                    ),
+                          opacity: notif.isRead ? 0.6 : 1.0,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Stack(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.receipt_long_rounded,
+                                    color: AppColors.primary,
                                   ),
                                 ),
-                            ],
-                          ),
-                          title: Text(
-                            notif.title.isNotEmpty ? notif.title : 'Thông báo mới',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: notif.isRead ? FontWeight.w500 : FontWeight.bold,
-                              color: AppColors.textPrimary,
+                                if (!notif.isRead)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      width: 10,
+                                      height: 10,
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.primary,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                notif.message,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: AppColors.textPrimary,
-                                ),
+                            title: Text(
+                              notif.title.isNotEmpty
+                                  ? notif.title
+                                  : AppStrings.adminNotificationDefaultTitle,
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: notif.isRead
+                                    ? FontWeight.w500
+                                    : FontWeight.bold,
+                                color: AppColors.textPrimary,
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                AppStrings.adminNotificationOrderText(notif.orderId, notif.createdAt),
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary,
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  notif.message,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: AppColors.textPrimary,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          context.pushNamed(
-                            AppRoutes.adminOrderDetail,
-                            pathParameters: {
-                              'orderId': notif.orderId.toString()
+                                const SizedBox(height: 2),
+                                Text(
+                                  AppStrings.adminNotificationOrderText(
+                                      notif.orderId, notif.createdAt),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              context.pushNamed(
+                                AppRoutes.adminOrderDetail,
+                                pathParameters: {
+                                  'orderId': notif.orderId.toString()
+                                },
+                              );
                             },
-                          );
-                        },
-                      ));
+                          ));
                     },
                   ),
                 ),

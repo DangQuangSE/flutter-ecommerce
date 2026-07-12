@@ -77,9 +77,9 @@ Backend root: `D:/GitHub/java-ecommerce`.
 
 ## Quality and Testing State
 
-- Quality: not evaluated.
+- Quality: APPROVED (verify pass 2026-07-12). Initial gate found 1 HIGH (REV2-QUAL-001, duplicated createdAt revenue rules) + 2 MEDIUM (REV2-QUAL-002 day-count year bound, REV2-QUAL-003 double-precision growth). All three resolved and confirmed in `plans/revenue-range-analytics/quality/phase-02-revenue-api-quality-report.json`. REV2-QUAL-004 (NOTED, EXPLAIN/p95 evidence) remains open and deferred to the later verification pass — non-blocking.
 - Testing: not started; cases above are reserved for later `ck:test`.
-- Build/performance gate: not run.
+- Build/performance gate: `mvn compile` passes (exit 0). EXPLAIN ANALYZE/p95 benchmark still outstanding (REV2-QUAL-004).
 
 ## Binding Implementation Addendum
 

@@ -4,7 +4,7 @@
 
 - Mode: Hard
 - Source: `plans/revenue-range-analytics/spec.md`
-- Implementation: not started
+- Implementation: Phase 1 (order payment lifecycle) quality-approved. Phase 2 (revenue API) quality-approved 2026-07-12. Phase 3 (Flutter dashboard) quality-approved 2026-07-12. Phase 4 (legacy migration and verification) quality-approved 2026-07-12 — artifacts authored and statically reviewed only; migration execution, tests, E2E and performance evidence remain post-Cook per phase-04's Binding Cook Scope Override.
 - Testing: deferred to a later `ck:test`, but test design and mandatory build/quality gates are part of every phase
 
 ## Scope Challenge

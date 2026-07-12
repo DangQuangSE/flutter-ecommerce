@@ -32,6 +32,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   AdminOrderCubit? _adminOrderCubit;
   ShopCubit? _shopCubit;
   late final RevenueAnalyticsCubit _revenueCubit;
+  int _consumedAnalyticsRevision = 0;
 
   /// Built lazily so the Location tab's real map + shop load only fire once the
   /// admin actually opens that tab (R10 — IndexedStack is eager).
@@ -47,12 +48,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   void _onNavTap(int index) {
-    if (_currentIndex != 0 && index == 0) _revenueCubit.refresh();
+    if (_currentIndex != 0 && index == 0) {
+      final revision = _adminOrderCubit?.analyticsInvalidationRevision ?? 0;
+      if (revision != _consumedAnalyticsRevision) {
+        _consumedAnalyticsRevision = revision;
+        _revenueCubit.refresh();
+      }
+    }
     setState(() {
       _currentIndex = index;
       if (index == _locationTabIndex) _locationVisited = true;
     });
   }
+
+  void _returnToDashboard() => _onNavTap(0);
 
   /// Location tab, provided with its cubits and built only after first visit.
   Widget _buildLocationTab() {
@@ -63,7 +72,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         BlocProvider(create: (_) => sl<StoreLocationPickerCubit>()),
       ],
       child: AdminLocationTab(
-        onBackToDashboard: () => setState(() => _currentIndex = 0),
+        onBackToDashboard: _returnToDashboard,
       ),
     );
   }
@@ -117,7 +126,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             return IndexedStack(
               index: _currentIndex,
               children: [
-                BlocProvider.value(value: _revenueCubit, child: AdminDashboardTab(state: state)),
+                BlocProvider.value(
+                    value: _revenueCubit,
+                    child: AdminDashboardTab(state: state)),
                 const AdminManagementTab(),
                 BlocProvider.value(
                   value: _ordersCubit,
