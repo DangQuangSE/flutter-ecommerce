@@ -39,7 +39,9 @@ class ColorSelector extends StatelessWidget {
           ),
         ),
         SizedBox(height: 12),
-        Row(
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
           children: List.generate(colors.length, (index) {
             final isSelected = selectedColorIndex == index;
             final colorHex = colors[index]['hex']!;
@@ -49,7 +51,6 @@ class ColorSelector extends StatelessWidget {
             return GestureDetector(
               onTap: () => onColorSelected(index),
               child: Container(
-                margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
