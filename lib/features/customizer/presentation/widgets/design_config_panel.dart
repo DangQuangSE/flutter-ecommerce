@@ -26,6 +26,7 @@ class DesignConfigPanel extends StatelessWidget {
   final ValueChanged<double> onFontSizeChanged;
   final VoidCallback onAddLayer;
   final VoidCallback onUploadLogo;
+  final bool isUploadingLogo;
   final List<DesignLayer> layers;
   final String? activeLayerId;
   final ValueChanged<DesignLayer> onLayerActivated;
@@ -48,6 +49,7 @@ class DesignConfigPanel extends StatelessWidget {
     required this.onFontSizeChanged,
     required this.onAddLayer,
     required this.onUploadLogo,
+    required this.isUploadingLogo,
     required this.layers,
     required this.activeLayerId,
     required this.onLayerActivated,
@@ -117,7 +119,10 @@ class DesignConfigPanel extends StatelessWidget {
               onAddLayer: onAddLayer,
             ),
             AppSizes.spacingLg,
-            _LogoUploadSection(onUploadLogo: onUploadLogo),
+            _LogoUploadSection(
+              onUploadLogo: onUploadLogo,
+              isUploading: isUploadingLogo,
+            ),
             AppSizes.spacingLg,
             LayerEditor(
               layers: layers,
@@ -219,8 +224,12 @@ class _MaterialSection extends StatelessWidget {
 
 class _LogoUploadSection extends StatelessWidget {
   final VoidCallback onUploadLogo;
+  final bool isUploading;
 
-  const _LogoUploadSection({required this.onUploadLogo});
+  const _LogoUploadSection({
+    required this.onUploadLogo,
+    required this.isUploading,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +247,7 @@ class _LogoUploadSection extends StatelessWidget {
         ),
         AppSizes.spacingSm,
         GestureDetector(
-          onTap: onUploadLogo,
+          onTap: isUploading ? null : onUploadLogo,
           child: Container(
             height: 98,
             decoration: BoxDecoration(
@@ -252,14 +261,26 @@ class _LogoUploadSection extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.cloud_upload_outlined,
-                  color: AppColors.primary,
-                  size: AppSizes.iconLg,
-                ),
+                if (isUploading)
+                  SizedBox(
+                    width: AppSizes.iconLg,
+                    height: AppSizes.iconLg,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary,
+                    ),
+                  )
+                else
+                  Icon(
+                    Icons.cloud_upload_outlined,
+                    color: AppColors.primary,
+                    size: AppSizes.iconLg,
+                  ),
                 SizedBox(height: AppSizes.paddingXs + 2),
                 Text(
-                  AppStrings.customizerUploadLogoAction,
+                  isUploading
+                      ? AppStrings.customizerUploadLogoInProgress
+                      : AppStrings.customizerUploadLogoAction,
                   style: GoogleFonts.inter(
                     fontSize: AppSizes.fontMd,
                     fontWeight: FontWeight.w800,

@@ -1,0 +1,84 @@
+{
+  "mode": "verify",
+  "target": "phase-02-revenue-api",
+  "verdict": "APPROVED",
+  "reviewed_at": "2026-07-12T05:10:00Z",
+  "reviewed_files": [
+    "src/main/java/com/sport_pro_be/modules/analytics/service/AnalyticsService.java",
+    "src/main/java/com/sport_pro_be/modules/analytics/controller/AnalyticsController.java",
+    "src/main/java/com/sport_pro_be/modules/analytics/interfaces/IAnalyticsService.java",
+    "src/main/java/com/sport_pro_be/modules/analytics/dto/DailyRevenueProjection.java",
+    "src/main/java/com/sport_pro_be/modules/analytics/dto/RevenueSeriesPointResponse.java",
+    "src/main/java/com/sport_pro_be/modules/analytics/dto/RevenueSummaryResponse.java",
+    "src/main/java/com/sport_pro_be/modules/order/repository/OrderRepository.java",
+    "src/main/java/com/sport_pro_be/config/SecurityConfig.java",
+    "docs/sql/add_order_revenue_timestamps.sql",
+    "docs/revenue-analytics-rollout.md"
+  ],
+  "summary": {
+    "blocker": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "noted": 1
+  },
+  "findings": [
+    {
+      "id": "REV2-QUAL-001",
+      "severity": "HIGH",
+      "rule": "DOM_SINGLE_SOURCE",
+      "status": "RESOLVED",
+      "introduced_by_current_change": false,
+      "applicable": true,
+      "confidence": "high",
+      "location": "src/main/java/com/sport_pro_be/modules/order/repository/OrderRepository.java",
+      "evidence": "calculateDailyRevenue and calculateTotalRevenue have been removed from OrderRepository. AnalyticsService.getDailyRevenue (lines 106-111) now delegates through getRevenueSummary()/aggregateRealizedRevenue, the same authoritative deliveredAt/paymentCompleted range service used by revenue-summary and dashboard-summary.",
+      "why_it_matters": "Single authoritative revenue rule confirmed; no remaining createdAt-based revenue query in the module.",
+      "required_action": "None — resolved.",
+      "owner": "cook"
+    },
+    {
+      "id": "REV2-QUAL-002",
+      "severity": "MEDIUM",
+      "rule": "CORR_BOUNDARY_VALIDATION",
+      "status": "RESOLVED",
+      "introduced_by_current_change": true,
+      "applicable": true,
+      "confidence": "high",
+      "location": "src/main/java/com/sport_pro_be/modules/analytics/service/AnalyticsService.java:98",
+      "evidence": "validateRange now checks `end.isAfter(start.plusYears(5).minusDays(1))`, a direct calendar-based 5-year bound, replacing the 366*5 day-count approximation. 2021-01-01..2026-01-02 is now correctly rejected.",
+      "why_it_matters": "API boundary now matches the promised inclusive 5-year maximum exactly.",
+      "required_action": "None — resolved.",
+      "owner": "cook"
+    },
+    {
+      "id": "REV2-QUAL-003",
+      "severity": "MEDIUM",
+      "rule": "CORR_PRECISE_DATA_TYPE",
+      "status": "RESOLVED",
+      "introduced_by_current_change": true,
+      "applicable": true,
+      "confidence": "high",
+      "location": "src/main/java/com/sport_pro_be/modules/analytics/service/AnalyticsService.java:161",
+      "evidence": "Dashboard growth is now computed via the new calculateGrowth(BigDecimal, BigDecimal) overload (lines 183-187); `.doubleValue()` is applied only once, at the final assignment to the legacy double response field.",
+      "why_it_matters": "Monetary growth calculation stays in BigDecimal precision; only the legacy DTO boundary loses precision, as intended.",
+      "required_action": "None — resolved.",
+      "owner": "cook"
+    },
+    {
+      "id": "REV2-QUAL-004",
+      "severity": "NOTED",
+      "rule": "PERF_OPTIMIZATION_HAS_EVIDENCE",
+      "status": "OPEN",
+      "introduced_by_current_change": true,
+      "applicable": true,
+      "confidence": "high",
+      "location": "docs/revenue-analytics-rollout.md:14",
+      "evidence": "The required five-year EXPLAIN (ANALYZE, BUFFERS) and p95 evidence is still listed only as future post-Cook verification; no measured query-plan evidence is present.",
+      "why_it_matters": "The partial index is plausible but the phase performance success criterion remains unverified. Non-blocking: owner is the later test/verification pass, not Cook.",
+      "required_action": "Record EXPLAIN and production-like p95 evidence during the deferred verification pass before release.",
+      "owner": "test"
+    }
+  ],
+  "report_path": "plans/revenue-range-analytics/quality/phase-02-revenue-api-quality-report.json"
+}

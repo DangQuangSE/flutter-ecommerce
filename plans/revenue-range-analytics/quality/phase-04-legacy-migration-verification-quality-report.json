@@ -1,0 +1,35 @@
+{
+  "mode": "gate",
+  "target": "phase-04-legacy-migration-verification",
+  "verdict": "APPROVED",
+  "reviewed_at": "2026-07-12T13:45:00Z",
+  "repo": "d:/GitHub/java-ecommerce",
+  "reviewed_files": [
+    "docs/sql/migrate_legacy_order_payment_delivery_timestamps.sql",
+    "docs/revenue-analytics-rollout.md",
+    "src/main/java/com/sport_pro_be/modules/analytics/service/AnalyticsService.java",
+    "src/main/java/com/sport_pro_be/modules/order/repository/OrderRepository.java"
+  ],
+  "summary": {
+    "blocker": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "noted": 0
+  },
+  "findings": [],
+  "gates": {
+    "maven_compile": "BUILD SUCCESS (./mvnw -q -o compile, exit 0)",
+    "formatter_checkstyle": "not configured in pom.xml - no formatter/checkstyle/spotless plugin present, gate is a no-op",
+    "static_sql_review": "PASS - report-then-mutate ordering, evidence-gated idempotent UPDATE, expected-row-count guard, reconciliation DO-block, idempotency assertion, no dynamic/injectable SQL",
+    "git_diff_check": "clean (exit 0; only CRLF/LF autocrlf notices, no conflict markers or trailing whitespace)"
+  },
+  "notes": [
+    "No receipt issued: receipt.py's fingerprint mechanism requires report and reviewed_files to share one git repo root; this phase's artifacts live in java-ecommerce while the plan/report live in flutter-ecommerce. Same limitation applied to phases 1-2 (also backend-only, also no receipt on disk). The plan.md checkbox-completion hook (quality_receipt_gate.py) does not fire for this plan's numbered-list phase format, so this is consistent with how phases 1-2 were already recorded.",
+    "AnalyticsService.java/OrderRepository.java diffs are the already-approved Phase 2 fixes (REV2-QUAL-001/002/003), carried as background context; re-verified coherent and unchanged in this pass.",
+    "Migration SQL and rollout doc are new Phase 4 artifacts, reviewed for the first time here.",
+    "Per phase-04's Binding Cook Scope Override: no migration execution, dry-run, Docker/E2E, or performance benchmarking was performed or is claimed. Those remain explicitly post-Cook / operator-approved release verification.",
+    "revenue_timestamp_migration_evidence staging table is created idempotently (IF NOT EXISTS) and populated only from operator-approved evidence, never inferred from order status."
+  ],
+  "report_path": "plans/revenue-range-analytics/quality/phase-04-legacy-migration-verification-quality-report.json"
+}

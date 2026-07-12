@@ -70,6 +70,7 @@ abstract final class ApiConstants {
   static const String profileAvatar = '/api/profiles/me/avatar';
 
   static const String customDesigns = '/api/custom-designs';
+  static const String customDesignLogo = '/api/custom-designs/logo';
   static String customDesignById(int id) => '/api/custom-designs/$id';
   static String adminCustomDesignById(int id) =>
       '/api/admin/custom-designs/$id';

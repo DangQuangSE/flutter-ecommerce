@@ -1,0 +1,34 @@
+{
+  "mode": "verify",
+  "target": "phase-01-simplify-dashboard",
+  "verdict": "APPROVED",
+  "reviewed_at": "2026-07-12T13:18:00Z",
+  "reviewed_files": [
+    "lib/features/admin/presentation/widgets/admin_dashboard_tab.dart",
+    "lib/core/constants/app_strings.dart"
+  ],
+  "summary": {
+    "blocker": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "noted": 0
+  },
+  "findings": [
+    {
+      "id": "QUAL-ADM-DASH-001",
+      "severity": "MEDIUM",
+      "rule": "CORR_DEFINED_BRANCH_BEHAVIOR",
+      "status": "RESOLVED",
+      "introduced_by_current_change": true,
+      "applicable": true,
+      "confidence": "high",
+      "location": "lib/features/admin/presentation/widgets/admin_dashboard_tab.dart:205",
+      "evidence": "The Orders card value now uses revenue.orderCount, which changes with week/month/year/custom selections, while line 206 still displays stats.ordersGrowth with the fixed suffix 'tuần này'. For month, year, and custom ranges this combines metrics from different periods in one card.",
+      "why_it_matters": "The card can present a filtered total beside a weekly comparison, making the statistic misleading even though both individual values are valid.",
+      "required_action": "Make the Orders card comparison use the same selected reporting period, or remove/hide that comparison when a period-aligned value is unavailable. Do not label a weekly growth value as context for month/year/custom order totals.",
+      "owner": "cook"
+    }
+  ],
+  "report_path": "plans/admin-dashboard-simplification/quality/phase-01-simplify-dashboard-quality-report.json"
+}

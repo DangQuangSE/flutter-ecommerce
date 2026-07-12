@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -14,6 +15,7 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_ecommerce/core/constants/printing_constants.dart';
+import 'package:flutter_ecommerce/core/errors/result.dart';
 import 'package:flutter_ecommerce/core/utils/ui/app_snack_bar.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/customizer_state.dart';
@@ -23,10 +25,8 @@ import 'package:flutter_ecommerce/features/customizer/presentation/pages/customi
 extension CustomizerActions on CustomizerPageState {
   void addNewTextLayer() {
     updateState(() {
-      final currentView =
-          isFrontView ? LayerView.front : LayerView.back;
-      final viewLayers =
-          layers.where((l) => l.view == currentView).toList();
+      final currentView = isFrontView ? LayerView.front : LayerView.back;
+      final viewLayers = layers.where((l) => l.view == currentView).toList();
       final offset = (viewLayers.length % 4) * 0.1 - 0.15;
       final newLayer = DesignLayer(
         id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
@@ -45,26 +45,50 @@ extension CustomizerActions on CustomizerPageState {
   }
 
   Future<void> uploadLogo() async {
+    if (isUploadingLogo) return;
+
+    ImagePicker? imagePicker;
     try {
-      final imagePicker = ImagePicker();
+      imagePicker = ImagePicker();
       final image = await imagePicker.pickImage(source: ImageSource.gallery);
       if (image == null) return;
+      if (!mounted) return;
 
-      updateState(() {
-        final currentView =
-            isFrontView ? LayerView.front : LayerView.back;
-        final newLayer = DesignLayer(
-          id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
-          type: LayerType.logo,
-          view: currentView,
-          logoPath: image.path,
-          y: -0.3,
-        );
-        layers.add(newLayer);
-        activeLayer = newLayer;
-      });
+      updateState(() => isUploadingLogo = true);
+
+      final result =
+          await context.read<CustomizerCubit>().uploadLogo(File(image.path));
+
+      if (!mounted) return;
+      switch (result) {
+        case Success(:final data):
+          final url = data;
+          newlyUploadedLogoUrls.add(url);
+          updateState(() {
+            isUploadingLogo = false;
+            final currentView = isFrontView ? LayerView.front : LayerView.back;
+            final newLayer = DesignLayer(
+              id: 'layer-${DateTime.now().millisecondsSinceEpoch}',
+              type: LayerType.logo,
+              view: currentView,
+              logoUrl: url,
+              y: -0.3,
+            );
+            layers.add(newLayer);
+            activeLayer = newLayer;
+          });
+        case ResultFailure():
+          // Upload failed server-side: create no layer, no orphan, no local path.
+          updateState(() => isUploadingLogo = false);
+          AppSnackBar.show(
+            context,
+            message: AppStrings.customizerUploadLogoServerError,
+            type: AppSnackBarType.error,
+          );
+      }
     } catch (_) {
       if (!mounted) return;
+      updateState(() => isUploadingLogo = false);
       AppSnackBar.show(
         context,
         message: AppStrings.customizerUploadImageError,
@@ -73,7 +97,33 @@ extension CustomizerActions on CustomizerPageState {
     }
   }
 
+  /// Best-effort delete of a logo asset uploaded this session. No-op for
+  /// logos restored from an already-saved design (see
+  /// [CustomizerPageState.newlyUploadedLogoUrls]). Failure is swallowed —
+  /// this must never block layer removal/reset/save from completing.
+  Future<void> deleteSessionLogoIfOwned(String? logoUrl) async {
+    if (logoUrl == null || !newlyUploadedLogoUrls.remove(logoUrl)) return;
+    try {
+      await context.read<CustomizerCubit>().deleteLogo(logoUrl);
+    } catch (_) {
+      // Best-effort: a failed cleanup delete must not surface to the user.
+    }
+  }
+
   void handleReset() {
+    // Best-effort cleanup of session-uploaded logos before clearing layers.
+    // Restored (already-saved-design) logoUrls are excluded — see
+    // newlyUploadedLogoUrls doc comment. Fired without awaiting: reset must
+    // not block on network cleanup.
+    final sessionLogoUrls = layers
+        .where((l) => l.type == LayerType.logo && l.logoUrl != null)
+        .map((l) => l.logoUrl!)
+        .where(newlyUploadedLogoUrls.contains)
+        .toList(growable: false);
+    for (final url in sessionLogoUrls) {
+      deleteSessionLogoIfOwned(url);
+    }
+
     updateState(() {
       layers.clear();
       activeLayer = null;
@@ -197,10 +247,8 @@ extension CustomizerActions on CustomizerPageState {
     }
 
     // Split layers by view
-    final frontLayers =
-        layers.where((l) => l.view == LayerView.front).toList();
-    final backLayers =
-        layers.where((l) => l.view == LayerView.back).toList();
+    final frontLayers = layers.where((l) => l.view == LayerView.front).toList();
+    final backLayers = layers.where((l) => l.view == LayerView.back).toList();
 
     final primary = extractPrimaryTextLayer();
     final hasLogo = layers.any((layer) => layer.type == LayerType.logo);
@@ -217,7 +265,7 @@ extension CustomizerActions on CustomizerPageState {
     final imagesCount =
         layers.where((layer) => layer.type == LayerType.logo).length;
 
-    await cubit.saveCustomization(
+    final saveResult = await cubit.saveCustomization(
       productId: widget.productId,
       materialId: materialId,
       numTextLines: textLayersCount,
@@ -237,8 +285,10 @@ extension CustomizerActions on CustomizerPageState {
 
     if (!mounted) return;
 
-    final state = context.read<CustomizerCubit>().state;
-    if (state is CustomizerLoaded) {
+    if (saveResult is Success<int>) {
+      // Saved successfully: session-uploaded logos are now referenced by a
+      // persisted design and must never be swept by later reset/cleanup.
+      newlyUploadedLogoUrls.clear();
       AppSnackBar.show(
         context,
         message: AppStrings.customizerSaveSuccess,
@@ -258,6 +308,12 @@ extension CustomizerActions on CustomizerPageState {
       if (!mounted) return;
       context.goNamed(AppRoutes.cart);
     } else {
+      // Save failed: compensating delete for logos uploaded this session so
+      // they don't sit orphaned on Cloudinary forever. Best-effort.
+      final sessionLogoUrls = List<String>.from(newlyUploadedLogoUrls);
+      for (final url in sessionLogoUrls) {
+        deleteSessionLogoIfOwned(url);
+      }
       if (!mounted) return;
       AppSnackBar.show(
         context,

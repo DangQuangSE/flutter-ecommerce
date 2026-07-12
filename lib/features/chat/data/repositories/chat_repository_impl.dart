@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_ecommerce/core/errors/exceptions.dart';
 import 'package:flutter_ecommerce/core/errors/failures.dart';
 import 'package:flutter_ecommerce/core/errors/result.dart';
+import 'package:flutter_ecommerce/core/network/dio_error_mapper.dart';
 import 'package:flutter_ecommerce/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:flutter_ecommerce/features/chat/data/datasources/chat_socket_client.dart';
 import 'package:flutter_ecommerce/features/chat/domain/entities/chat_entity.dart';
@@ -47,6 +49,18 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<Result<T>> _guard<T>(Future<T> Function() action) async {
     try {
       return Success(await action());
+    } on DioException catch (e) {
+      final failure = failureFromDioException(e);
+      if (failure case NetworkFailure(statusCode: final code?)
+          when code >= 500) {
+        return ResultFailure(
+          NetworkFailure(
+            'Hệ thống đang gặp sự cố. Vui lòng thử lại sau.',
+            statusCode: code,
+          ),
+        );
+      }
+      return ResultFailure(failure);
     } on UnauthorisedException catch (e) {
       return ResultFailure(AuthFailure(e.message));
     } on ServerException catch (e) {

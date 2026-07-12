@@ -169,6 +169,7 @@ extension CustomizerViewHelpers on CustomizerPageState {
           onActiveLayerPropChanged((layer) => layer.copyWith(fontSize: value)),
       onAddLayer: addNewTextLayer,
       onUploadLogo: uploadLogo,
+      isUploadingLogo: isUploadingLogo,
       layers: layers,
       activeLayerId: activeLayer?.id,
       onLayerActivated: onPanelLayerActivated,

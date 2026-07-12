@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ecommerce/core/constants/app_sizes.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/models/design_layer.dart';
+import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_actions.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/pages/customizer_page.dart';
 
 extension CustomizerLayerHandlers on CustomizerPageState {
@@ -69,11 +70,16 @@ extension CustomizerLayerHandlers on CustomizerPageState {
   }
 
   void onLayerDeletedFromCanvas(String id) {
+    final removedIndex = layers.indexWhere((layer) => layer.id == id);
+    final removed = removedIndex == -1 ? null : layers[removedIndex];
     updateState(() {
       layers.removeWhere((layer) => layer.id == id);
       activeLayer = null;
       textController.clear();
     });
+    if (removed != null && removed.type == LayerType.logo) {
+      deleteSessionLogoIfOwned(removed.logoUrl);
+    }
   }
 
   void onActiveLayerPropChanged(DesignLayer Function(DesignLayer) updater) {
@@ -93,6 +99,8 @@ extension CustomizerLayerHandlers on CustomizerPageState {
   }
 
   void onPanelLayerDeleted(int index, String id) {
+    final removedIndex = layers.indexWhere((l) => l.id == id);
+    final removed = removedIndex == -1 ? null : layers[removedIndex];
     updateState(() {
       layers.removeWhere((l) => l.id == id);
       if (activeLayer?.id == id) {
@@ -100,5 +108,8 @@ extension CustomizerLayerHandlers on CustomizerPageState {
         textController.clear();
       }
     });
+    if (removed != null && removed.type == LayerType.logo) {
+      deleteSessionLogoIfOwned(removed.logoUrl);
+    }
   }
 }

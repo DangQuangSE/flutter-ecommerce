@@ -103,7 +103,7 @@ class _SelectedLayerDetails extends StatelessWidget {
     final side = layer.view == LayerView.front
         ? AppStrings.designViewerFront
         : AppStrings.designViewerBack;
-    final asset = layer.logoPath?.isNotEmpty == true
+    final asset = layer.hasRemoteLogo
         ? AppStrings.designViewerAssetAvailable
         : AppStrings.designViewerAssetUnavailable;
     return Card(
@@ -117,8 +117,28 @@ class _SelectedLayerDetails extends StatelessWidget {
               Text(layer.text),
               Text('${layer.font} · ${layer.fontSize.toStringAsFixed(0)}px'),
               Text('#${layer.color.toARGB32().toRadixString(16).padLeft(8, '0')}'),
-            ] else
+            ] else ...[
               Text(asset),
+              if (layer.hasRemoteLogo) ...[
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 96,
+                  width: double.infinity,
+                  child: CachedNetworkImage(
+                    imageUrl: layer.logoUrl!,
+                    fit: BoxFit.contain,
+                    placeholder: (_, __) => const Center(
+                      child: SizedBox.square(
+                        dimension: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                    errorWidget: (_, __, ___) =>
+                        const Icon(Icons.broken_image_outlined),
+                  ),
+                ),
+              ],
+            ],
             Text('X: ${layer.x.toStringAsFixed(1)} · Y: ${layer.y.toStringAsFixed(1)}'),
           ],
         ),
@@ -155,7 +175,9 @@ class _LayerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final detail = layer.type == LayerType.text
         ? '${layer.text} · ${layer.font} · ${layer.fontSize.toStringAsFixed(0)}px'
-        : (layer.logoPath?.isNotEmpty == true ? layer.logoPath! : AppStrings.designViewerLimited);
+        : (layer.hasRemoteLogo
+            ? AppStrings.designViewerAssetAvailable
+            : AppStrings.designViewerAssetUnavailable);
     return Card(
       color: selected ? Theme.of(context).colorScheme.primaryContainer : null,
       child: ListTile(

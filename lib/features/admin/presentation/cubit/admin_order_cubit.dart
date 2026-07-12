@@ -15,6 +15,11 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
   final GetAdminOrderDetailUseCase _getAdminOrderDetailUseCase;
   final UpdateAdminOrderStatusUseCase _updateAdminOrderStatusUseCase;
 
+  /// Bumped on every successful status update that can change revenue
+  /// eligibility. AdminDashboardPage compares this against the last consumed
+  /// value on tab re-entry to decide whether analytics need a refetch.
+  int analyticsInvalidationRevision = 0;
+
   AdminOrderCubit({
     required GetAdminOrdersUseCase getAdminOrdersUseCase,
     required GetAdminOrderDetailUseCase getAdminOrderDetailUseCase,
@@ -219,6 +224,7 @@ class AdminOrderCubit extends Cubit<AdminOrderState> {
         final detailResult = await _getAdminOrderDetailUseCase(orderId);
         switch (detailResult) {
           case Success(:final data):
+            analyticsInvalidationRevision++;
             emit(AdminOrderDetailLoaded(
               order: data,
               message: AppStrings.adminOrderUpdateStatusSuccess,

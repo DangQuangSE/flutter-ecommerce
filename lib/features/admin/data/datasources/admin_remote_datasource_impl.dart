@@ -2,6 +2,8 @@ import 'package:flutter_ecommerce/core/network/dio_client.dart';
 import '../models/admin_stats_model.dart';
 import '../models/admin_notification_model.dart';
 import 'admin_remote_datasource.dart';
+import '../models/revenue_analytics_model.dart';
+import 'package:intl/intl.dart';
 
 class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   // ignore: unused_field
@@ -24,5 +26,13 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   @override
   Future<void> markAllNotificationsAsRead() async {
     await _dioClient.dio.put('/api/v1/notifications/admin/read-all', data: {});
+  }
+  @override
+  Future<RevenueAnalyticsModel> getRevenueAnalytics(DateTime start, DateTime end) async {
+    final format = DateFormat('yyyy-MM-dd');
+    final response = await _dioClient.dio.get('/api/v1/admin/analytics/revenue-summary', queryParameters: {
+      'startDate': format.format(start), 'endDate': format.format(end),
+    });
+    return RevenueAnalyticsModel.fromJson(response.data['data'] as Map<String, dynamic>);
   }
 }

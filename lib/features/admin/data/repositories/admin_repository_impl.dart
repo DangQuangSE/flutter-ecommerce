@@ -5,6 +5,7 @@ import '../datasources/admin_remote_datasource.dart';
 import '../../domain/entities/admin_stats_entity.dart';
 import '../../domain/repositories/admin_repository.dart';
 import '../models/admin_notification_model.dart';
+import '../../domain/entities/revenue_analytics_entity.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final AdminRemoteDataSource _remoteDataSource;
@@ -43,5 +44,11 @@ class AdminRepositoryImpl implements AdminRepository {
     } catch (e) {
       return ResultFailure(NetworkFailure(e.toString()));
     }
+  }
+  @override
+  Future<Result<RevenueAnalyticsEntity>> getRevenueAnalytics(DateTime start, DateTime end) async {
+    try { return Success(await _remoteDataSource.getRevenueAnalytics(start, end)); }
+    on AppException catch (e) { return ResultFailure(NetworkFailure(e.message)); }
+    catch (e) { return ResultFailure(NetworkFailure(e.toString())); }
   }
 }

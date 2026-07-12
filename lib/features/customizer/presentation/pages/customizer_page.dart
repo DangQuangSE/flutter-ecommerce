@@ -46,6 +46,14 @@ class CustomizerPageState extends State<CustomizerPage> {
   final List<DesignLayer> layers = [];
   DesignLayer? activeLayer;
   bool hasRestoredExistingDesign = false;
+  bool isUploadingLogo = false;
+
+  /// Logo URLs uploaded to durable storage during THIS editing session only.
+  /// Never includes [DesignLayer.logoUrl] values restored from an
+  /// already-saved design — those may still be referenced by that design's
+  /// persisted metadata and must not be deleted by session-local cleanup
+  /// (reset, per-layer removal, save-failure compensation).
+  final Set<String> newlyUploadedLogoUrls = {};
 
   final List<Color> presetColors = [
     AppColors.canvasGradientStart,
@@ -139,8 +147,7 @@ class CustomizerPageState extends State<CustomizerPage> {
         layers.where((layer) => layer.type == LayerType.text).length;
     final logoLayerCount =
         layers.where((layer) => layer.type == LayerType.logo).length;
-    return (textLayerCount * textUnitPrice) +
-        (logoLayerCount * imageUnitPrice);
+    return (textLayerCount * textUnitPrice) + (logoLayerCount * imageUnitPrice);
   }
 
   double get totalPrice =>

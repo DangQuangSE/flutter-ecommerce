@@ -15,6 +15,7 @@ class DesignLayer {
   final double x;
   final double y;
   final String? logoPath;
+  final String? logoUrl;
 
   DesignLayer({
     required this.id,
@@ -27,7 +28,15 @@ class DesignLayer {
     this.x = 0.0,
     this.y = 0.0,
     this.logoPath,
+    this.logoUrl,
   });
+
+  /// True when [logoUrl] is a durable, remotely-hosted asset. Legacy layers
+  /// only ever have [logoPath] (a local device path that cannot be trusted
+  /// off-device), so they are never "available" by this check.
+  bool get hasRemoteLogo =>
+      logoUrl != null &&
+      (logoUrl!.startsWith('http://') || logoUrl!.startsWith('https://'));
 
   DesignLayer copyWith({
     String? text,
@@ -37,6 +46,7 @@ class DesignLayer {
     double? x,
     double? y,
     String? logoPath,
+    String? logoUrl,
     LayerView? view,
   }) {
     return DesignLayer(
@@ -50,6 +60,7 @@ class DesignLayer {
       x: x ?? this.x,
       y: y ?? this.y,
       logoPath: logoPath ?? this.logoPath,
+      logoUrl: logoUrl ?? this.logoUrl,
     );
   }
 
@@ -64,6 +75,7 @@ class DesignLayer {
         'x': x,
         'y': y,
         'logoPath': logoPath,
+        'logoUrl': logoUrl,
       };
 
   factory DesignLayer.fromJson(Map<String, dynamic> json) => DesignLayer(
@@ -79,5 +91,6 @@ class DesignLayer {
         x: (json['x'] as num?)?.toDouble() ?? 0.0,
         y: (json['y'] as num?)?.toDouble() ?? 0.0,
         logoPath: json['logoPath'] as String?,
+        logoUrl: json['logoUrl'] is String ? json['logoUrl'] as String : null,
       );
 }
