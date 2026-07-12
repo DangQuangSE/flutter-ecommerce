@@ -23,17 +23,13 @@ class ProductDetailAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+      backgroundColor: Colors.transparent,
       elevation: 0,
-      scrolledUnderElevation: 1,
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(
-          color: theme.dividerColor.withValues(alpha: 0.3),
-          height: 1,
-        ),
-      ),
+      scrolledUnderElevation: 0,
       leading: IconButton(
+        style: IconButton.styleFrom(
+          backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.7),
+        ),
         onPressed: () {
           if (context.canPop()) {
             context.pop();
@@ -59,16 +55,30 @@ class ProductDetailAppBar extends StatelessWidget
               fontStyle: FontStyle.italic,
               color: AppColors.primary,
               letterSpacing: -1.2,
+              shadows: [
+                Shadow(
+                  offset: const Offset(0, 1),
+                  blurRadius: 3.0,
+                  color: theme.colorScheme.surface.withValues(alpha: 0.8),
+                ),
+              ],
             ),
           ),
         ),
       ),
       centerTitle: false,
-      actions: const [
-        NotificationBellIcon(),
-        _CartActionIcon(),
-        _ChatActionIcon(),
-        SizedBox(width: 12),
+      actions: [
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface.withValues(alpha: 0.7),
+            shape: BoxShape.circle,
+          ),
+          child: const NotificationBellIcon(),
+        ),
+        const _CartActionIcon(),
+        const _ChatActionIcon(),
+        const SizedBox(width: 12),
       ],
     );
   }
@@ -126,6 +136,9 @@ class _BadgedIconButton extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         IconButton(
+          style: IconButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
+          ),
           onPressed: onPressed,
           icon: Icon(icon, color: AppColors.primary, size: 24),
         ),
