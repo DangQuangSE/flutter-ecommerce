@@ -1,0 +1,28 @@
+{
+  "mode": "verify",
+  "target": "phase-01-order-payment-lifecycle",
+  "verdict": "APPROVED",
+  "reviewed_at": "2026-07-12T03:26:00Z",
+  "reviewed_files": [
+    "src/main/java/com/sport_pro_be/config/BusinessTimeConfig.java",
+    "src/main/java/com/sport_pro_be/modules/order/domain/Order.java",
+    "src/main/java/com/sport_pro_be/modules/order/repository/OrderRepository.java",
+    "src/main/java/com/sport_pro_be/modules/order/service/OrderTransitionService.java",
+    "src/main/java/com/sport_pro_be/modules/order/service/OrderService.java",
+    "src/main/java/com/sport_pro_be/modules/order/service/ReturnService.java",
+    "src/main/java/com/sport_pro_be/modules/payment/vnpay/service/VnpayService.java",
+    "src/main/resources/config/common.properties",
+    "docs/sql/add_order_revenue_timestamps.sql"
+  ],
+  "summary": {"blocker": 0, "high": 0, "medium": 0, "low": 1, "noted": 0},
+  "findings": [{
+    "id": "P1-TXN-006", "severity": "LOW", "rule": "TXN_IDEMPOTENT_ON_REPLAY",
+    "status": "OPEN", "introduced_by_current_change": true, "applicable": true,
+    "confidence": "medium", "location": "src/main/java/com/sport_pro_be/modules/order/service/ReturnService.java:70",
+    "evidence": "Return status assignment does not explicitly model identical retries or reject regressions.",
+    "why_it_matters": "Replay semantics are less explicit than the guarded spending reversal.",
+    "required_action": "Model identical return updates as no-ops and reject invalid return transitions in follow-up work.",
+    "owner": "cook"
+  }],
+  "report_path": "plans/revenue-range-analytics/quality/phase-01-order-payment-lifecycle-quality-report.json"
+}

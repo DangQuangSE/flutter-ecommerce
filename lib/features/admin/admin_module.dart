@@ -24,6 +24,8 @@ import 'package:flutter_ecommerce/features/admin/data/datasources/admin_socket_c
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notification_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/get_admin_notifications_usecase.dart';
 import 'package:flutter_ecommerce/features/admin/domain/usecases/mark_all_admin_notifications_as_read_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/domain/usecases/get_revenue_analytics_usecase.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/cubit/revenue_analytics_cubit.dart';
 
 void setupAdminModule(GetIt sl) {
   sl.registerLazySingleton<AdminRemoteDataSource>(
@@ -35,6 +37,8 @@ void setupAdminModule(GetIt sl) {
   sl.registerLazySingleton<GetAdminStatsUseCase>(
     () => GetAdminStatsUseCase(sl<AdminRepository>()),
   );
+  sl.registerLazySingleton(() => GetRevenueAnalyticsUseCase(sl<AdminRepository>()));
+  sl.registerFactory(() => RevenueAnalyticsCubit(sl<GetRevenueAnalyticsUseCase>()));
   sl.registerLazySingleton<AdminOrderRemoteDataSource>(
     () => AdminOrderRemoteDataSourceImpl(sl<DioClient>()),
   );
