@@ -80,7 +80,7 @@ class ProductDetailContent extends StatelessWidget {
         : product.stockQuantity;
 
     return Scaffold(
-      
+      extendBodyBehindAppBar: true,
       appBar: const ProductDetailAppBar(),
       body: Column(
         children: [

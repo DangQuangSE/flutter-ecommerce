@@ -7,8 +7,7 @@ import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_ambien
 import 'package:flutter_ecommerce/features/auth/presentation/widgets/auth_brand_header.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/widgets/login_animated_entrance.dart';
 import 'package:flutter_ecommerce/features/auth/presentation/widgets/login_card.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/widgets/login_google_button.dart';
-import 'package:flutter_ecommerce/features/auth/presentation/widgets/login_or_divider.dart';
+
 import 'package:flutter_ecommerce/features/auth/presentation/widgets/terms_agreement_footer.dart';
 
 class LoginPage extends StatefulWidget {
@@ -105,18 +104,7 @@ class _LoginPageState extends State<LoginPage>
                             setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
-                    const SizedBox(height: AppSizes.paddingLg),
-                    LoginAnimatedEntrance(
-                      delay: 250,
-                      controller: _animationController,
-                      child: const LoginOrDivider(),
-                    ),
-                    const SizedBox(height: AppSizes.paddingLg),
-                    LoginAnimatedEntrance(
-                      delay: 300,
-                      controller: _animationController,
-                      child: const LoginGoogleButton(),
-                    ),
+
                     const SizedBox(height: AppSizes.paddingXl + 4),
                     LoginAnimatedEntrance(
                       delay: 400,
