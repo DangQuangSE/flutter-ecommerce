@@ -17,6 +17,7 @@ import 'package:flutter_ecommerce/features/admin/presentation/cubit/admin_notifi
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/revenue_analytics_cubit.dart';
 import 'package:flutter_ecommerce/features/admin/presentation/cubit/revenue_analytics_state.dart';
 import 'package:flutter_ecommerce/features/admin/domain/entities/revenue_analytics_entity.dart';
+import 'package:flutter_ecommerce/features/admin/presentation/widgets/admin_notifications_sheet.dart';
 
 enum _RevenuePeriod { week, month, year, custom }
 
@@ -415,10 +416,7 @@ class AdminDashboardTab extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             IconButton(
-              onPressed: () {
-                context.read<AdminNotificationCubit>().markAllAsRead();
-                _showNotificationsSheet(context, state);
-              },
+              onPressed: () => AdminNotificationsSheet.show(context, state),
               icon: Icon(Icons.notifications_none_rounded,
                   color: AppColors.textPrimary),
             ),
@@ -444,138 +442,6 @@ class AdminDashboardTab extends StatelessWidget {
                 ),
               ),
           ],
-        );
-      },
-    );
-  }
-
-  void _showNotificationsSheet(
-      BuildContext context, AdminNotificationState state) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppStrings.adminNotificationSheetTitle,
-                style: GoogleFonts.lexend(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (state.notifications.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    AppStrings.adminNotificationEmpty,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                )
-              else
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: state.notifications.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final notif = state.notifications[index];
-                      return Opacity(
-                          opacity: notif.isRead ? 0.6 : 1.0,
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: Stack(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary
-                                        .withValues(alpha: 0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.receipt_long_rounded,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                if (!notif.isRead)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.primary,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            title: Text(
-                              notif.title.isNotEmpty
-                                  ? notif.title
-                                  : AppStrings.adminNotificationDefaultTitle,
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: notif.isRead
-                                    ? FontWeight.w500
-                                    : FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  notif.message,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  AppStrings.adminNotificationOrderText(
-                                      notif.orderId, notif.createdAt),
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            onTap: () {
-                              Navigator.pop(sheetContext);
-                              context.pushNamed(
-                                AppRoutes.adminOrderDetail,
-                                pathParameters: {
-                                  'orderId': notif.orderId.toString()
-                                },
-                              );
-                            },
-                          ));
-                    },
-                  ),
-                ),
-            ],
-          ),
         );
       },
     );
