@@ -5,7 +5,8 @@ import 'package:flutter_ecommerce/app/theme/app_colors.dart';
 import 'package:flutter_ecommerce/core/utils/price_formatter.dart';
 import 'package:flutter_ecommerce/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:flutter_ecommerce/features/cart/presentation/utils/cart_item_pricing.dart';
-import 'package:flutter_ecommerce/features/cart/presentation/widgets/custom_design_spec_card.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_item_actions.dart';
+import 'package:flutter_ecommerce/features/cart/presentation/widgets/cart_item_design_section.dart';
 import 'package:flutter_ecommerce/features/customizer/domain/entities/custom_design_spec_entity.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_cubit.dart';
 import 'package:flutter_ecommerce/features/customizer/presentation/cubit/custom_design_spec_state.dart';
@@ -36,63 +37,120 @@ class CartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final category =
-        item.isCustomizable ? 'TRANG BỊ HIỆU NĂNG' : 'THỜI TRANG THỂ THAO';
-
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final designId = item.customDesignId;
 
-    Widget content(double displayPrintingPrice) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardTheme.color ??
-                Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildCheckbox(),
-                    _buildThumbnail(context, isDark),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: _buildDetails(
-                        context,
-                        category,
-                        isDark,
-                        displayPrintingPrice,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (designId != null) _buildDesignSection(context, isDark),
-            ],
-          ),
-        );
-
-    if (designId == null) return content(item.printingPrice);
+    if (designId == null) {
+      return _CartItemCardContent(
+        item: item,
+        isSelected: isSelected,
+        onToggleSelected: onToggleSelected,
+        onIncrementQuantity: onIncrementQuantity,
+        onDecrementQuantity: onDecrementQuantity,
+        onRemove: onRemove,
+        onCustomize: onCustomize,
+        onEditDesign: onEditDesign,
+        onRemoveDesign: onRemoveDesign,
+        displayPrintingPrice: item.printingPrice,
+      );
+    }
 
     return BlocSelector<CustomDesignSpecCubit, CustomDesignSpecState,
         CustomDesignSpecEntity?>(
       selector: (state) =>
           state is CustomDesignSpecSnapshot ? state.specOf(designId) : null,
       builder: (context, spec) {
-        return content(resolvedDisplayPrintingPrice(item, spec: spec));
+        return _CartItemCardContent(
+          item: item,
+          isSelected: isSelected,
+          onToggleSelected: onToggleSelected,
+          onIncrementQuantity: onIncrementQuantity,
+          onDecrementQuantity: onDecrementQuantity,
+          onRemove: onRemove,
+          onCustomize: onCustomize,
+          onEditDesign: onEditDesign,
+          onRemoveDesign: onRemoveDesign,
+          displayPrintingPrice: resolvedDisplayPrintingPrice(item, spec: spec),
+        );
       },
+    );
+  }
+}
+
+class _CartItemCardContent extends StatelessWidget {
+  final CartItemEntity item;
+  final bool isSelected;
+  final ValueChanged<bool> onToggleSelected;
+  final VoidCallback onIncrementQuantity;
+  final VoidCallback onDecrementQuantity;
+  final VoidCallback onRemove;
+  final VoidCallback? onCustomize;
+  final VoidCallback? onEditDesign;
+  final VoidCallback onRemoveDesign;
+  final double displayPrintingPrice;
+
+  const _CartItemCardContent({
+    required this.item,
+    required this.isSelected,
+    required this.onToggleSelected,
+    required this.onIncrementQuantity,
+    required this.onDecrementQuantity,
+    required this.onRemove,
+    required this.onCustomize,
+    required this.onEditDesign,
+    required this.onRemoveDesign,
+    required this.displayPrintingPrice,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final category =
+        item.isCustomizable ? 'TRANG BỊ HIỆU NĂNG' : 'THỜI TRANG THỂ THAO';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ??
+            Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildCheckbox(),
+                CartItemThumbnail(
+                  imageUrl: item.imageUrl,
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildDetails(context, category, isDark),
+                ),
+              ],
+            ),
+          ),
+          if (item.customDesignId != null)
+            CartItemDesignSection(
+              item: item,
+              isDark: isDark,
+              onEditDesign: onEditDesign,
+              onRemoveDesign: onRemoveDesign,
+            ),
+        ],
+      ),
     );
   }
 
@@ -115,42 +173,12 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildThumbnail(BuildContext context, bool isDark) {
-    return Container(
-      width: 80,
-      height: 90,
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F3F8),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          item.imageUrl ?? '',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Center(
-            child: Icon(Icons.image_not_supported_outlined,
-                color: AppColors.textSecondary),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetails(
-    BuildContext context,
-    String category,
-    bool isDark,
-    double displayPrintingPrice,
-  ) {
+  Widget _buildDetails(BuildContext context, String category, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildHeaderRow(context, category, displayPrintingPrice),
-        SizedBox(height: 6),
+        _buildHeaderRow(context, category),
+        const SizedBox(height: 6),
         Text(
           'Màu sắc: ${item.color ?? "N/A"}    Kích cỡ: ${item.size ?? "N/A"}',
           style: GoogleFonts.inter(
@@ -160,20 +188,16 @@ class CartItemCard extends StatelessWidget {
           ),
         ),
         if (item.customDesignId != null) ...[
-          SizedBox(height: 6),
-          _buildCustomBadge(displayPrintingPrice),
+          const SizedBox(height: 6),
+          CartItemCustomBadge(displayPrintingPrice: displayPrintingPrice),
         ],
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         _buildBottomRow(context, category),
       ],
     );
   }
 
-  Widget _buildHeaderRow(
-    BuildContext context,
-    String category,
-    double displayPrintingPrice,
-  ) {
+  Widget _buildHeaderRow(BuildContext context, String category) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +215,7 @@ class CartItemCard extends StatelessWidget {
                   letterSpacing: 0.5,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 item.productName,
                 maxLines: 1,
@@ -205,7 +229,7 @@ class CartItemCard extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           formatPrice(item.price + displayPrintingPrice),
           style: GoogleFonts.lexend(
@@ -219,254 +243,22 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomBadge(double displayPrintingPrice) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8F0FE),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: const Color(0xFFADCCF6)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.build_outlined,
-              size: 10, color: Color(0xFF0058BC)),
-          SizedBox(width: 4),
-          Text(
-            'IN TÙY CHỌN: +${formatPrice(displayPrintingPrice)}',
-            style: GoogleFonts.inter(
-              fontSize: 9,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF0058BC),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBottomRow(BuildContext context, String category) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        _buildQuantityControl(context),
+        CartItemQuantityControl(
+          quantity: item.quantity,
+          onIncrement: onIncrementQuantity,
+          onDecrement: onDecrementQuantity,
+        ),
         if (category == 'TRANG BỊ HIỆU NĂNG' && item.customDesignId == null) ...[
-          SizedBox(width: 8),
-          _buildCustomizeButton(context),
+          const SizedBox(width: 8),
+          CartItemCustomizeButton(onCustomize: onCustomize),
         ],
         const Spacer(),
-        _buildDeleteButton(),
+        CartItemDeleteButton(onRemove: onRemove),
       ],
-    );
-  }
-
-  Widget _buildQuantityControl(BuildContext context) {
-    return Container(
-      height: 28,
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: onDecrementQuantity,
-            child: SizedBox(
-                width: 28, height: 28, child: Icon(Icons.remove, size: 12)),
-          ),
-          Text(
-            '${item.quantity}',
-            style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurface),
-          ),
-          GestureDetector(
-            onTap: onIncrementQuantity,
-            child: SizedBox(
-                width: 28, height: 28, child: Icon(Icons.add, size: 12)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCustomizeButton(BuildContext context) {
-    return GestureDetector(
-      onTap: onCustomize,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primary, width: 1.2),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.brush_rounded, size: 12, color: AppColors.primary),
-            SizedBox(width: 4),
-            Text(
-              'CUSTOM',
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDeleteButton() {
-    return GestureDetector(
-      onTap: onRemove,
-      child: Row(
-        children: [
-          Icon(Icons.delete_outline_rounded,
-              size: 14, color: AppColors.textSecondary),
-          SizedBox(width: 4),
-          Text(
-            'XÓA',
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDesignSection(BuildContext context, bool isDark) {
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12),
-          height: 1,
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.15),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildDesignHeader(context),
-              SizedBox(height: 10),
-              _buildDesignDetail(context, isDark),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDesignHeader(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.build_outlined,
-                  size: 12, color: Color(0xFF0058BC)),
-              SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  'CHI TIẾT THIẾT KẾ IN ẤN',
-                  style: GoogleFonts.inter(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(width: 8),
-        GestureDetector(
-          onTap: onEditDesign,
-          child: Text(
-            'CHỈNH SỬA THIẾT KẾ',
-            style: GoogleFonts.inter(
-              fontSize: 9,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF0058BC),
-            ),
-          ),
-        ),
-        Text(
-          '  |  ',
-          style: GoogleFonts.inter(
-              fontSize: 9, color: AppColors.textSecondary),
-        ),
-        GestureDetector(
-          onTap: onRemoveDesign,
-          child: Text(
-            'XÓA THIẾT KẾ',
-            style: GoogleFonts.inter(
-              fontSize: 9,
-              fontWeight: FontWeight.w800,
-              color: AppColors.error,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDesignDetail(BuildContext context, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.25),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Image.network(
-                item.designImageUrl ?? '',
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => Center(
-                  child: Icon(Icons.broken_image_outlined,
-                      size: 14, color: AppColors.textSecondary),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: CustomDesignSpecCard(
-              customDesignId: item.customDesignId!,
-              fallbackPrintingPrice: item.printingPrice,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
