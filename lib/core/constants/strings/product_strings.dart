@@ -1,95 +1,92 @@
-/// Product and customizer feature strings
+/// Product catalog, list, filter, and detail feature strings.
 abstract final class ProductStrings {
-  // Customizer
-  static const String customizerTitle = 'Tùy chỉnh sản phẩm';
-  static const String customizerAddText = 'Thêm chữ';
-  static const String customizerAddImage = 'Thêm ảnh';
-  static const String customizerLayers = 'Tầng xếp lớp';
-  static const String customizerUndo = 'Hoàn tác';
-  static const String customizerRedo = 'Làm lại';
-  static const String customizerSave = 'Lưu thiết kế';
-  static const String customizerPreview = 'Xem trước';
-  static const String customizerReset = 'Đặt lại';
-  static const String customizerFontLabel = 'Font chữ';
-  static const String customizerColorLabel = 'Màu sắc';
-  static const String customizerSizeLabel = 'Kích thước';
-  static const String customizerRotationLabel = 'Xoay';
-  static const String customizerOpacityLabel = 'Độ trong suốt';
-  static const String customizerTextColor = 'Màu chữ';
-  static const String customizerBackgroundColor = 'Màu nền';
-  static const String customizerNoLayers = 'Chưa có tầng nào';
-  static const String customizerLayerText = 'Chữ';
-  static const String customizerLayerImage = 'Ảnh';
-  static const String customizerLayerShape = 'Hình';
-  static const String customizerDeleteLayer = 'Xóa tầng';
-  static const String customizerDuplicateLayer = 'Nhân bản';
-  static const String customizerMoveUp = 'Di chuyển lên';
-  static const String customizerMoveDown = 'Di chuyển xuống';
-  static const String customizerProductName = 'Sản phẩm';
-  static const String customizerDesignName = 'Tên thiết kế';
-  static const String customizerDesignNameHint = 'Nhập tên thiết kế';
-  static const String customizerSaveSuccess = 'Đã lưu thiết kế';
-  static const String customizerSaveError = 'Lỗi khi lưu thiết kế';
-  static const String customizerLoadError = 'Lỗi khi tải thiết kế';
-  static const String customizerEmptyDesign = 'Thiết kế trống';
-  static const String customizerConfirmDelete = 'Xóa thiết kế?';
-  static const String customizerConfirmDeleteMessage = 'Bạn có chắc muốn xóa thiết kế này?';
-  static const String customizerTotalProduct = 'TỔNG CỘNG SẢN PHẨM';
-  static const String customizerPrintingPriceLabel = 'Giá in thêm';
-  static const String customizerPrintingPriceHint = '(Theo số lớp & logo)';
-  static const String customizerSelectedColor = 'Selected Color';
-  static String customizerSportFontLabel(String font) => '$font ($customizerSportFontSuffix)';
-  static String customizerPrintingPrice(String price) => '$customizerPrintingPriceLabel: $price ₫';
-  static const String customizerSportFontSuffix = 'Sport Pro Font';
-
-  // Product detail
-  static const String detailTitle = 'Chi tiết sản phẩm';
-  static const String detailSpecifications = 'Thông số kỹ thuật';
-  static const String detailReviews = 'Đánh giá';
-  static const String detailAddToCart = 'THÊM VÀO GIỎ';
-  static const String detailBuyNow = 'MUA NGAY';
-  static const String detailSelectSize = 'Chọn kích thước';
-  static const String detailSelectColor = 'Chọn màu sắc';
-  static const String detailOutOfStock = 'Hết hàng';
-  static const String detailInStock = 'Còn hàng';
-  static const String detailSizeGuide = 'Hướng dẫn kích thước';
-  static const String detailShippingInfo = 'Thông tin giao hàng';
-  static const String detailReturnPolicy = 'Chính sách đổi trả';
-  static const String detailWriteReview = 'Viết đánh giá';
-  static const String detailNoReviews = 'Chưa có đánh giá';
-  static const String detailBeFirstReview = 'Hãy là người đầu tiên đánh giá sản phẩm này';
-  static const String detailRating = 'Đánh giá';
-  static const String detailYourReview = 'Đánh giá của bạn';
-  static const String detailReviewTitle = 'Tiêu đề đánh giá';
-  static const String detailReviewContent = 'Nội dung đánh giá';
-  static const String detailReviewSubmit = 'Gửi đánh giá';
-  static const String detailReviewSuccess = 'Đã gửi đánh giá';
-  static const String detailReviewError = 'Lỗi khi gửi đánh giá';
-  static const String detailRelatedProducts = 'Sản phẩm liên quan';
-  static const String detailShareProduct = 'Chia sẻ sản phẩm';
-
-  // Product list/filter
+  // Product catalog / filter
+  static const String searchHint = 'Tìm kiếm sản phẩm...';
   static const String filterTitle = 'Bộ lọc';
+  static const String filterClearAll = 'Xóa tất cả';
+  static const String filterReset = 'Đặt lại';
   static const String filterApply = 'Áp dụng';
-  static const String filterClear = 'Xóa bộ lọc';
-  static const String filterPrice = 'Giá';
   static const String filterCategory = 'Danh mục';
   static const String filterBrand = 'Thương hiệu';
-  static const String filterSize = 'Kích thước';
-  static const String filterColor = 'Màu sắc';
   static const String filterGender = 'Giới tính';
-  static const String filterSortBy = 'Sắp xếp theo';
-  static const String filterSortNewest = 'Mới nhất';
-  static const String filterSortPriceLow = 'Giá thấp đến cao';
-  static const String filterSortPriceHigh = 'Giá cao đến thấp';
-  static const String filterSortPopular = 'Phổ biến nhất';
+  static const String filterColor = 'Màu sắc';
+  static const String filterPriceRange = 'Khoảng giá';
+  static const String filterAll = 'Tất cả';
+  static const String filterMale = 'Nam';
+  static const String filterFemale = 'Nữ';
+  static const String filterUnisex = 'Unisex';
+  static const String filterMinPrice = 'Từ';
+  static const String filterMaxPrice = 'Đến';
+  static const String filterCurrencySuffix = 'đ';
+  static const String filterUnderOneMillion = 'Dưới 1.000.000đ';
+  static const String filterOneToThreeMillion = '1 - 3 triệu';
+  static const String filterCategoryLoadError = 'Không tải được danh mục';
+  static const String filterBrandLoadError = 'Không tải được thương hiệu';
+  static const String sortNewest = 'Mới nhất';
+  static const String sortPriceAsc = 'Giá tăng dần';
+  static const String sortPriceDesc = 'Giá giảm dần';
+  static const String catalogEmpty = 'Không tìm thấy sản phẩm';
+  static const String catalogClearFilter = 'Xóa bộ lọc';
+  static const String homeCategoriesTitle = 'Danh mục';
+  static const String homeViewAll = 'XEM TẤT CẢ';
+  static const String homeFeaturedTitle = 'Sản phẩm nổi bật';
+  static const String homeFeaturedEmpty = 'Không có sản phẩm nổi bật nào.';
+  static const String homeLoadError = 'Đã xảy ra lỗi khi tải trang chủ.';
+  static const String homeHeroEyebrow = 'DÒNG SẢN PHẨM MỚI NHẤT';
+  static const String homeHeroTitle = 'BỨT PHÁ GIỚI HẠN';
+  static const String homeHeroSubtitle =
+      'Trang bị đỉnh cao cho những vận động viên không ngừng vươn lên và chinh phục đỉnh cao mới.';
+  static const String homeHeroCta = 'MUA SẮM NGAY';
+  static const String listCollectionEyebrow = 'BỘ SƯU TẬP SPORT PRO';
+  static const String listAllProducts = 'Tất cả sản phẩm';
+  static const String listBack = 'Trở về';
+  static const String listEmptySubtitle =
+      'Không có sản phẩm nào phù hợp với bộ lọc đã chọn.';
+  static const String listLoadError = 'Đã xảy ra lỗi khi tải sản phẩm.';
+  static const String listFilterAndSort = 'Bộ lọc & Sắp xếp';
+  static const String listSortByPrice = 'SẮP XẾP THEO GIÁ';
+  static const String listSortNone = 'Không sắp xếp';
+  static const String listSortPriceLowToHigh = 'Giá từ thấp đến cao';
+  static const String listSortPriceHighToLow = 'Giá từ cao đến thấp';
+  static const String listCategoryRunning = 'Giày chạy bộ';
+  static const String listCategoryMen = 'Nam';
+  static const String listCategorySize42 = 'Size 42';
+  static const String listCategoryClothing = 'Quần áo';
   static String filterPriceBetween(String min, String max) => '$min - $max';
-  static String filterPriceFrom(String price) => 'Từ $price';
-  static String filterPriceTo(String price) => 'Đến $price';
+  static String filterPriceFrom(String min) => 'Từ $min';
+  static String filterPriceTo(String max) => 'Đến $max';
 
-  // Wishlist
-  static const String wishlistTitle = 'Danh sách yêu thích';
-  static const String wishlistEmpty = 'Chưa có sản phẩm yêu thích';
-  static const String wishlistAddSuccess = 'Đã thêm vào yêu thích';
-  static const String wishlistRemoveSuccess = 'Đã xóa khỏi yêu thích';
+  // Product detail — brand / rating
+  static const String brandName = 'Sport Pro';
+  static const String noRatingYet = 'Chưa có đánh giá';
+
+  // Product detail — specs panel
+  static const String specsTitle = 'THÔNG SỐ KỸ THUẬT';
+  static const String noProductDescription = 'Sản phẩm chưa có mô tả.';
+
+  // Product detail — reviews panel
+  static const String reviewsLoadError =
+      'Không thể tải đánh giá. Vui lòng thử lại sau.';
+  static const String noReviewsYet = 'Sản phẩm chưa có đánh giá nào.';
+  static const String anonymousReviewer = 'Khách hàng';
+  static String reviewsTitle(int count) => 'ĐÁNH GIÁ KHÁCH HÀNG ($count)';
+  static String reviewCount(int count) => '($count)';
+  static String reviewImageCounter(int current, int total) =>
+      '$current / $total';
+
+  // Product detail — return policy panel
+  static const String returnPolicyTitle = 'CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH';
+  static const String returnPolicyEmpty = 'Chưa có nội dung chính sách.';
+  static const String returnPolicyLoadError =
+      'Không thể tải nội dung chính sách. Vui lòng thử lại sau.';
+  static const String returnPolicyLoading = 'Đang tải nội dung chính sách...';
+
+  // Product detail — wishlist / cart feedback
+  static const String addedToWishlist = 'Đã thêm vào danh sách yêu thích!';
+  static const String removedFromWishlist =
+      'Đã xóa khỏi danh sách yêu thích.';
+  static const String detailLoadError =
+      'Đã xảy ra lỗi khi tải chi tiết sản phẩm.';
+  static String addedToCartMessage(String productName, String size) =>
+      'Đã thêm $productName (Size $size) vào giỏ hàng!';
 }
